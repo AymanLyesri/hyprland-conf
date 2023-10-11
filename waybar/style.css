@@ -1,7 +1,5 @@
 * {
-  border: none;
-  border-radius: 0;
-  font-family: JetBrains Mono, monospace;
+  /* font-family: JetBrains Mono, monospace; */
   font-weight: bold;
   font-size: 12px;
 }
@@ -36,7 +34,7 @@ window#waybar {
 }
 
 #workspaces {
-  background: #2727f8;
+  /* background: #2727f8; */
   border-radius: 5px;
   margin-left: 10px;
 }
@@ -60,7 +58,6 @@ window#waybar {
 
 #clock {
   margin-left: 10px;
-  border-left: 1px solid white;
   color: #fab387;
   border-radius: 5px 0px 0px 5px;
 }
@@ -80,7 +77,6 @@ window#waybar {
 #pulseaudio.microphone {
   color: #a6ccf7;
   margin-right: 10px;
-  border-right: 1px solid white;
   border-radius: 0 5px 5px 0;
 }
 
