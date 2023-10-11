@@ -1,0 +1,2 @@
+#!/bin/sh
+foot -e micro ~/.config/hypr/cheatsheet.md

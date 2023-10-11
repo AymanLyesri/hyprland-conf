@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# Files
+CONFIG="$HOME/.config/hypr/wofifull/config"
+STYLE="$HOME/.config/hypr/wofifull/style.css"
+COLORS="$HOME/.config/hypr/wofifull/colors"
+
+WAYBARFILE="$HOME/.config/hypr/waybar/config"
+WOFIFILE="$HOME/.config/hypr/wofi/config"
+
+# Wofi Command
+wofi_command="wofi --show dmenu \
+                --prompt 'choose..' \
+                --conf ${CONFIG} --style ${STYLE} --color ${COLORS} \
+                --width=5% --height=18% \
+                --cache-file=/dev/null \
+                --hide-scroll --no-actions \
+                --define=matching=fuzzy"
+
+menu(){
+printf "1. default\n" 
+printf "2. plasma-style\n" 
+printf "3. gnome-style\n"
+printf "4. no panel" 
+}
+
+main() {
+    choice=$(menu | ${wofi_command} | cut -d. -f1)
+    case $choice in
+        1)
+            ln -sf "$HOME/.config/hypr/waybar/configs/config-default" "$WAYBARFILE"
+            ln -sf "$HOME/.config/hypr/wofi/configs/config-default" "$WOFIFILE"
+            ;;
+        2)
+            ln -sf "$HOME/.config/hypr/waybar/configs/config-plasma" "$WAYBARFILE"
+            ln -sf "$HOME/.config/hypr/wofi/configs/config-plasma" "$WOFIFILE"
+            ;;
+        3)
+            ln -sf "$HOME/.config/hypr/waybar/configs/config-gnome" "$WAYBARFILE"
+            ln -sf "$HOME/.config/hypr/wofi/configs/config-gnome" "$WOFIFILE"
+            ;;
+        4)
+            if pgrep -x "waybar" >/dev/null; then
+                killall waybar
+                exit
+            fi
+            ;;        
+        *)
+            ;;
+    esac
+}
+
+# Check if wofi is already running
+if pidof wofi >/dev/null; then
+    killall wofi
+    exit 0
+else
+    main
+fi
+
+# Restart Waybar and run other scripts if a choice was made
+if [[ -n "$choice" ]]; then
+    # Restart Waybar
+    killall waybar
+    exec ~/.config/hypr/scripts/statusbar &	
+    exec ~/.config/hypr/scripts/changeWallpaper2 &
+fi
