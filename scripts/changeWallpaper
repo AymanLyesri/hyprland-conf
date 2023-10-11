@@ -1,0 +1,18 @@
+#!/bin/bash
+
+DIR=$HOME/.config/hypr/wallpapers/
+PICS=($(ls ${DIR}))
+
+RANDOMPICS=${PICS[ $RANDOM % ${#PICS[@]} ]}
+
+if [[ $(pidof swaybg) ]]; then
+  pkill swaybg
+fi
+
+if [[ $(pidof swww-daemon) ]]; then
+  swww kill
+fi
+
+
+swaybg -m fill -i ${DIR}/${RANDOMPICS}
+## notify-send "${RANDOMPICS}"
