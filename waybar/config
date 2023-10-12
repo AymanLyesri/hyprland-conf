@@ -8,6 +8,7 @@
     "modules-left": [
         "clock",
         "custom/weather",
+        "battery",
         "cpu",
         "memory",
         "custom/resetWaybar"
@@ -19,27 +20,11 @@
         "custom/media",
         "mpd",
         "pulseaudio",
-        "pulseaudio#microphone"
+        "pulseaudio#microphone",
     ],
-
     "hyprland/window": {
         "format": "{}",
         "max-length":75
-    },
-    "wlr/workspaces": {
-        "disable-scroll": true,
-        "all-outputs": true,
-        "format": "{name}: {icon}",
-        "format-icons": {
-            "1": "",
-            "2": "",
-            "3": "",
-            "4": "",
-            "5": "",
-            "urgent": "",
-            "focused": "",
-            "default": ""
-        }
     },
     "cpu": {
 	"interval": 1,
@@ -147,6 +132,19 @@
         "on-scroll-up": "pamixer --default-source -i 5",
         "on-scroll-down": "pamixer --default-source -d 5",
         "scroll-step": 5
-    }
+    },
+
+    "battery": {
+        	"states": {
+            		"warning": 30,
+            		"critical": 15
+        	},
+        	"format": "{icon} {capacity}%",
+        	"format-charging": " {capacity}%",
+        	"format-plugged": "{capacity}%",
+        	"format-alt": "{time} {icon}",
+        	"format-full": " {capacity}%",
+        	"format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
+	}
  
 }
