@@ -1,0 +1,43 @@
+device_name = "AT Translated Set 2 keyboard"
+
+[[remap]]
+input = ["KEY_KPDOT"]
+output = ["KEY_0"]
+
+[[remap]]
+input = ["KEY_KP1"]
+output = ["KEY_1"]
+
+[[remap]]
+input = ["KEY_KPENTER"]
+output = ["KEY_2"]
+
+[[remap]]
+input = ["KEY_KP3"]
+output = ["KEY_3"]
+
+[[remap]]
+input = ["KEY_KP4"]
+output = ["KEY_4"]
+
+[[remap]]
+input = ["KEY_KP5"]
+output = ["KEY_5"]
+
+[[remap]]
+input = ["KEY_KP6"]
+output = ["KEY_6"]
+
+[[remap]]
+input = ["KEY_KP7"]
+output = ["KEY_7"]
+
+[[remap]]
+input = ["KEY_KP8"]
+output = ["KEY_8"]
+
+[[remap]]
+input = ["KEY_KP9"]
+output = ["KEY_9"]
+
+

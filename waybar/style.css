@@ -21,10 +21,11 @@ window#waybar {
 #tray,
 #memory,
 #cpu,
-#backlight {
+#backlight,
+#battery {
   background: rgba(0, 0, 0, 0.5);
   padding: 0px 5px;
-  margin-top: 10px;
+  margin-top: 5px;
   border: none;
 }
 
