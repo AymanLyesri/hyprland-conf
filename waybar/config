@@ -1,150 +1,174 @@
 {
-    "layer": "top",
-    "position": "top",
-    "mod": "dock",
-    "exclusive": true,
-    "passtrough": false,
-    "gtk-layer-shell": true,
-    "modules-left": [
-        "clock",
-        "custom/weather",
-        "battery",
-        "cpu",
-        "memory",
-        "custom/resetWaybar"
+  "layer": "top",
+  "position": "top",
+  "mod": "dock",
+  "exclusive": true,
+  "passthrough": false,
+  "gtk-layer-shell": true,
+  "modules-left": [
+    "clock",
+    "custom/weather",
+    "battery",
+    "cpu",
+    "memory",
+    "custom/resetWaybar"
+  ],
+  "modules-center": [
+    "hyprland/window"
+  ],
+  "modules-right": [
+    "tray",
+    "network",
+    "custom/media",
+    "mpd",
+    "pulseaudio",
+    "pulseaudio#microphone"
+  ],
+  "hyprland/window": {
+    "format": "{}",
+    "max-length": 75
+  },
+  "cpu": {
+    "interval": 1,
+    "format": " {usage:>2}%{icon0}{icon1}{icon2}{icon3}",
+    "format-icons": [
+      "▁",
+      "▂",
+      "▃",
+      "▄",
+      "▅",
+      "▆",
+      "▇",
+      "█"
     ],
-    "modules-center": ["hyprland/window"],
-    "modules-right": [
-        "tray",
-        "network",
-        "custom/media",
-        "mpd",
-        "pulseaudio",
-        "pulseaudio#microphone",
+    "on-click": ""
+  },
+  "memory": {
+    "interval": 1,
+    "format": " {}%",
+    "format-alt": "{used:0.1f}G/{total:0.1f}G "
+  },
+  "custom/resetWaybar": {
+    "format": "",
+    "on-click": "/usr/bin/bash /home/ayman/.config/hypr/waybar/scripts/reLaunch.sh"
+  },
+  "custom/weather": {
+    "tooltip": true,
+    "format": "{}",
+    "restart-interval": 300,
+    "exec": "/usr/bin/python /home/ayman/.config/hypr/waybar/scripts/waybar-wttr.py",
+    "return-type": "json"
+  },
+  "custom/media": {
+    "format": "{icon} {}",
+    "return-type": "json",
+    "max-length": 40,
+    "format-icons": {
+      "spotify": "",
+      "default": "🎜"
+    },
+    "on-click": "playerctl play-pause",
+    "on-click-right": "playerctl --player=spotify play-pause",
+    "on-scroll-up": "playerctl --player=spotify next",
+    "on-scroll-down": "playerctl --player=spotify previous",
+    "escape": true,
+    "exec": "/usr/bin/python /home/ayman/.config/hypr/waybar/scripts/mediaplayer.py 2> /dev/null"
+  },
+  "mpd": {
+    "format": "{stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist}-{album}-{title}({elapsedTime:%M:%S}/{totalTime:%M:%S}) ⸨{songPosition}|{queueLength}⸩ {volume}% ",
+    "format-disconnected": "Disconnected ",
+    "format-stopped": "{consumeIcon}{randomIcon}{repeatIcon}{singleIcon}Stopped ",
+    "unknown-tag": "N/A",
+    "interval": 2,
+    "consume-icons": {
+      "on": ""
+    },
+    "random-icons": {
+      "off": "<span color=\"#f53c3c\"></span> ",
+      "on": ""
+    },
+    "repeat-icons": {
+      "on": ""
+    },
+    "single-icons": {
+      "on": "1"
+    },
+    "state-icons": {
+      "paused": "",
+      "playing": ""
+    },
+    "tooltip-format": "MPD (connected)",
+    "tooltip-format-disconnected": "MPD (disconnected)"
+  },
+  "network": {
+    "format-wifi": "{bandwidthUpBits} {bandwidthDownBits}",
+    "format-ethernet": " {ifname} {bandwidthUpBits} {bandwidthDownBits}",
+    "format-linked": " (No IP) ",
+    "format-disconnected": "睊",
+    "interval": 1
+  },
+  "tray": {
+    "icon-size": 15,
+    "tooltip": true,
+    "spacing": 5
+  },
+  "clock": {
+    "format": "{: %R   %d/%m}",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+  },
+  "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "tooltip": false,
+    "format-muted": " Muted",
+    "on-click": "pamixer -t",
+    "on-scroll-down": "pamixer -i 1",
+    "on-scroll-up": "pamixer -d 1",
+    "scroll-step": 5,
+    "format-icons": {
+      "headphone": "",
+      "hands-free": "",
+      "headset": "",
+      "phone": "",
+      "portable": "",
+      "car": "",
+      "default": [
+        "",
+        "",
+        ""
+      ]
+    }
+  },
+  "pulseaudio#microphone": {
+    "format": "{format_source}",
+    "tooltip": false,
+    "format-source": "🎙 {volume}%",
+    "format-source-muted": " Muted",
+    "on-click": "pamixer --default-source -t",
+    "on-scroll-down": "pamixer --default-source -i 1",
+    "on-scroll-up": "pamixer --default-source -d 1",
+    "scroll-step": 5
+  },
+  "battery": {
+    "states": {
+      "warning": 30,
+      "critical": 15
+    },
+    "format": "{icon} {capacity}%",
+    "format-charging": "⚡ {capacity}%",
+    "format-plugged": "⚡{capacity}%",
+    "format-alt": "{time} {icon}",
+    "format-full": " {capacity}%",
+    "format-icons": [
+      "▁",
+      "▂",
+      "▃",
+      "▄",
+      "▅",
+      "▆",
+      "▇",
+      "█"
     ],
-    "hyprland/window": {
-        "format": "{}",
-        "max-length":75
-    },
-    "cpu": {
-	"interval": 1,
-	"format": " {usage:>2}%{icon0}{icon1}{icon2}{icon3}",
-	"format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
-    "on-click":""
-    },
-    "memory": {
-         "interval": 1,
-         "format": " {}%",
-         "format-alt": "{used:0.1f}G/{total:0.1f}G "
-    },
-    "custom/resetWaybar":{
-        "format" : "↻",
-        "on-click": "/usr/bin/bash /home/ayman/.config/hypr/waybar/scripts/reLaunch.sh"
-    },
-    "custom/weather" : {
-        "tooltip" : true,
-        "format" : "{}",
-        "restart-interval" : 300,
-        "exec" : "/usr/bin/python /home/ayman/.config/hypr/waybar/scripts/waybar-wttr.py",
-        "return-type" : "json"
-    },
-    "custom/media": {
-        "format": "{icon} {}",
-        "return-type": "json",
-        "max-length": 40,
-        "format-icons": {
-            "spotify": "",
-            "default": "🎜"
-        },
-        "on-click": "playerctl play-pause",
-    	"on-click-right": "playerctl --player=spotify play-pause",
-   		"on-scroll-up": "playerctl --player=spotify next",
-   		"on-scroll-down": "playerctl --player=spotify previous",
-        "escape": true,
-        "exec": "/usr/bin/python /home/ayman/.config/hypr/waybar/scripts/mediaplayer.py 2> /dev/null" 
-    },
-    "mpd": {
-        "format": "{stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist}-{album}-{title}({elapsedTime:%M:%S}/{totalTime:%M:%S}) ⸨{songPosition}|{queueLength}⸩ {volume}% ",
-        "format-disconnected": "Disconnected ",
-        "format-stopped": "{consumeIcon}{randomIcon}{repeatIcon}{singleIcon}Stopped ",
-        "unknown-tag": "N/A",
-        "interval": 2,
-        "consume-icons": {
-            "on": " "
-        },
-        "random-icons": {
-            "off": "<span color=\"#f53c3c\"></span> ",
-            "on": " "
-        },
-        "repeat-icons": {
-            "on": " "
-        },
-        "single-icons": {
-            "on": "1 "
-        },
-        "state-icons": {
-            "paused": "",
-            "playing": ""
-        },
-        "tooltip-format": "MPD (connected)",
-        "tooltip-format-disconnected": "MPD (disconnected)"
-    },
-     "network": {
-        "format-wifi": "{bandwidthUpBits} {bandwidthDownBits}",
-        "format-ethernet": " {ifname} {bandwidthUpBits} {bandwidthDownBits}",
-        "format-linked": " (No IP) ",
-        "format-disconnected": "睊",
-        "interval": 1
-    },
-    "tray": {
-        "icon-size": 15,
-        "tooltip": true,
-        "spacing": 5
-    },
-    "clock": {
-        "format": "{: %R   %d/%m}",
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
-    },
-    "pulseaudio": {
-        "format": "{icon} {volume}%",
-        "tooltip": false,
-        "format-muted": " Muted",
-        "on-click": "pamixer -t",
-        "on-scroll-up": "pamixer -i 5",
-        "on-scroll-down": "pamixer -d 5",
-        "scroll-step": 5,
-        "format-icons": {
-            "headphone": "",
-            "hands-free": "",
-            "headset": "",
-            "phone": "",
-            "portable": "",
-            "car": "",
-            "default": ["", "", ""]
-        }
-    },
-    "pulseaudio#microphone": {
-        "format": "{format_source}",
-        "tooltip": false,
-        "format-source": "🎙 {volume}%",
-        "format-source-muted": " Muted",
-        "on-click": "pamixer --default-source -t",
-        "on-scroll-up": "pamixer --default-source -i 5",
-        "on-scroll-down": "pamixer --default-source -d 5",
-        "scroll-step": 5
-    },
-
-    "battery": {
-        	"states": {
-            		"warning": 30,
-            		"critical": 15
-        	},
-        	"format": "{icon} {capacity}%",
-        	"format-charging": " {capacity}%",
-        	"format-plugged": "{capacity}%",
-        	"format-alt": "{time} {icon}",
-        	"format-full": " {capacity}%",
-        	"format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
-	}
- 
+    "on-scroll-down": "light -A 1",
+    "on-scroll-up": "light -U 1"
+  }
 }
