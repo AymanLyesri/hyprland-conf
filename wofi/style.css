@@ -7,9 +7,9 @@
 
 #window {
 	/*background-color: --wofi-color0;*/
-	background-color: rgba(50, 50, 50, 0.5);
+	background-color: rgba(25, 25, 25, 0.9);
 	color: rgba(255, 255, 255, 0.5);
-	border: 1px solid rgba(255, 255, 255, 0.5);
+	border: 1px solid rgba(0, 0, 0, 0.5);
 	border-radius: 10px;
 }
 

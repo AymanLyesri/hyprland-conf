@@ -30,4 +30,4 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 # source <(ng completion script)
 
 # Neofetch
-neofetch --ascii /home/ayman/.config/hypr/neofetch/swastika --ascii_colors 240 240 --colors 240 240 240 240 240 240 
+neofetch --ascii /home/ayman/.config/hypr/neofetch/swastika --ascii_colors 240 1 --colors 240 240 240 240 240 240 
