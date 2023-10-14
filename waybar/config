@@ -15,9 +15,9 @@
   ],
   "modules-right": [
     "tray",
-    "custom/media",
     "mpd",
     "pulseaudio",
+    "custom/media",
     "pulseaudio#microphone",
     "battery",
     "cpu",
@@ -28,15 +28,15 @@
     "max-length": 75
   },
   "hyprland/workspaces": {
-	"format": "{name}: {icon}",
-	"format-icons": {
-		"1": "",
-		"2": "",
-		"3": "",
-		"active": "",
-		"default": ""
-	},
-	"sort-by-number": true
+    "format": "{icon}",
+    "format-icons": {
+      "1": "",
+      "2": "",
+      "3": "",
+      "active": "<span color=\"#f53c3c\">卐</span>",
+      "default": ""
+    },
+    "sort-by-number": true
   },
   "cpu": {
     "interval": 1,
