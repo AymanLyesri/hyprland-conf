@@ -1,0 +1,10 @@
+#!/bin/bash
+
+hyprctl dispatch exit
+
+loginctl kill-user $(whoami)
+
+killall Hyprland
+
+# BUG
+killall xdg-desktop-portal-hyprland
