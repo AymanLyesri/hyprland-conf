@@ -29,14 +29,11 @@ window#waybar {
   border: none;
 }
 
-#tray {
-  border-radius: 5px;
-  margin-right: 5px;
+window#waybar * {
+  border-radius: 10px;
 }
 
 #workspaces {
-  /* background: #2727f8; */
-  border-radius: 5px;
   margin-left: 10px;
 }
 
@@ -46,21 +43,13 @@ window#waybar {
   background-color: rgba(0, 50, 0, 0.5);
 }
 
-#custom-resetWaybar {
-  border-radius: 0 5px 5px 0;
+#custom-resetWaybar { 
+  margin-left: 10px;
 }
 
-#window {
-  font-size: x-small;
-  border-radius: 5px;
-  margin-left: 10px;
-  margin-right: 10px;
-}
 
 #clock {
-  margin-left: 10px;
   color: #fab387;
-  border-radius: 5px 0px 0px 5px;
 }
 
 #cpu {
@@ -78,12 +67,10 @@ window#waybar {
 #pulseaudio.microphone {
   color: #a6ccf7;
   margin-right: 10px;
-  border-radius: 0 5px 5px 0;
 }
 
 #network {
   font-size: x-small;
-  border-radius: 5px 0 0 5px;
 }
 
 #network.disconnected {
