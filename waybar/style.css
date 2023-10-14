@@ -1,12 +1,19 @@
 * {
   /* font-family: JetBrains Mono, monospace; */
   font-weight: bold;
-  font-size: 12px;
+  font-size: 11px;
+  min-height: 0;
 }
 
 window#waybar {
+  padding: 0;
+  margin: 0;
   background: rgba(255, 0, 0, 0);
   color: rgb(180, 180, 180);
+}
+
+window * {
+  border-radius: 10px;
 }
 
 #custom-resetWaybar,
@@ -25,17 +32,47 @@ window#waybar {
 #battery {
   background: rgba(0, 0, 0, 0.5);
   padding: 0px 5px;
-  margin-top: 5px;
+  margin-top: 3;
   border: none;
 }
 
-window#waybar * {
-  border-radius: 10px;
+
+/* CLOCK */
+#clock {
+  color: #fab387;
 }
 
+/* WORKSPACES */
 #workspaces {
   margin-left: 10px;
+
+} * {
+  color: #aaaaaa;
 }
+
+/* RESET ALL */
+#custom-resetWaybar { 
+  margin-left: 10px;
+}
+
+/* ______________________________________________________________ */
+
+/* TRAY */
+#tray{
+  margin-right: 10px;
+}
+
+/* AUDIO */
+#pulseaudio {
+  color: rgb(100, 170, 200);
+  border-radius: 10px 0px 0px 10px;
+}
+#pulseaudio.microphone {
+  color: rgb(100, 170, 200);
+  border-radius: 0px 10px 10px 0px;
+  margin-right: 10px;
+}
+
 
 #custom-media {
   font-size: x-small;
@@ -43,36 +80,25 @@ window#waybar * {
   background-color: rgba(0, 50, 0, 0.5);
 }
 
-#custom-resetWaybar { 
-  margin-left: 10px;
+/* SYSTEM */
+#battery {
+  border-radius: 10px 0px 0px 10px;
+  color: rgb(140, 200, 140);
 }
-
-
-#clock {
-  color: #fab387;
-}
-
 #cpu {
+  border-radius: 0px 0px 0px 0px;
   color: rgb(255, 140, 140);
 }
-
 #memory {
+  border-radius: 0px 10px 10px 0px;
   color: rgb(255, 140, 140);
 }
 
-#pulseaudio {
-  color: #00ccff;
-}
 
-#pulseaudio.microphone {
-  color: #a6ccf7;
-  margin-right: 10px;
-}
-
+/* NETWORK */
 #network {
   font-size: x-small;
 }
-
 #network.disconnected {
   background-color: #f53c3c;
 }
