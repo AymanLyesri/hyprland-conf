@@ -12,7 +12,8 @@ zstyle ':vcs_info:git:*' formats '%b '
 
 #Enable color and change prompt
 setopt PROMPT_SUBST
-PROMPT="%F{240}%m%f.%F{150}%n%f%F{240}>>%f%F{202}%d%f%F{8}-->%f"
+# %F{240} X %f  color of X
+PROMPT="%F{240}⮓%m%f %F{red}卐%f %F{red}%n%f%F{240} ⮚ %f%F{222}%d%f%F{240} ⮚ %f"
 
 #Zsh Tab Complete
 autoload -U compinit
@@ -29,4 +30,4 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 # source <(ng completion script)
 
 # Neofetch
-neofetch --ascii_colors 240 240 --colors 240 240 240 240 240 240 
+neofetch --ascii /home/ayman/.config/hypr/neofetch/swastika --ascii_colors 240 240 --colors 240 240 240 240 240 240 

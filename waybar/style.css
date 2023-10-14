@@ -36,7 +36,6 @@ window * {
   border: none;
 }
 
-
 /* CLOCK */
 #clock {
   color: #fab387;
@@ -77,6 +76,7 @@ window * {
 #custom-media {
   font-size: x-small;
   border: none;
+  border-radius: unset;
   background-color: rgba(0, 50, 0, 0.5);
 }
 
@@ -94,11 +94,11 @@ window * {
   color: rgb(255, 140, 140);
 }
 
-
 /* NETWORK */
 #network {
   font-size: x-small;
 }
+
 #network.disconnected {
   background-color: #f53c3c;
 }
