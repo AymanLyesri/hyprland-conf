@@ -1,0 +1,29 @@
+configuration{
+    modi: "run,drun,window";
+    // show-icons: true;
+    terminal: "foot";
+    drun-display-format: " => {name}";
+    // location: 0;
+    disable-history: false;
+    hide-scrollbar: true;
+    display-drun: " 卐 > ";
+    // display-run: "   Run ";
+    // display-window: " 﩯  Window";
+    // display-Network: " 󰤨  Network";
+    // sidebar-mode: true;
+}
+
+@theme "theme1.rasi"
+
+* {
+    font:bold;
+    background-color: @bg-col;
+    color: white;
+    // border-color: white;
+    margin: 1px;
+}
+
+window {
+    width: 20%;
+}
+

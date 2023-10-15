@@ -1,0 +1,13 @@
+* {
+    bg-col:  rgba(0,0,0,0);
+    border-col: #000000;
+    selected-col: #000000;
+    tab: #000000;
+    tab-selected: #000000;
+    fg-col: #000000;
+    fg-col2: #000000;
+    bubble: #000000;
+    grey: #808080;
+
+    // width: 600;
+}
