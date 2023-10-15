@@ -12,7 +12,6 @@ zstyle ':vcs_info:git:*' formats '%b '
 
 #Enable color and change prompt
 setopt PROMPT_SUBST
-# %F{240} X %f  color of X
 PROMPT="%F{240}⮓%m%f %F{red}卐%f %F{red}%n%f%F{240} ⮚ %f%F{222}%d%f%F{240} ⮚ %f"
 
 #Zsh Tab Complete
@@ -26,8 +25,8 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ff00ff,bold"
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-# Load Angular CLI autocompletion.
-# source <(ng completion script)
-
 # Neofetch
-neofetch --ascii /home/ayman/.config/hypr/neofetch/swastika --ascii_colors 240 1 --colors 240 240 240 240 240 240 
+NEOFETCH="neofetch --ascii /home/ayman/.config/hypr/neofetch/swastika --ascii_colors 240 1 --colors 240 240 240 240 240 240"
+eval $NEOFETCH
+alias n=$NEOFETCH 
+alias neofetch=$NEOFETCH

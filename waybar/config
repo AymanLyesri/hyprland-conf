@@ -7,8 +7,8 @@
   "gtk-layer-shell": true,
   "modules-left": [
     "clock",
-    "hyprland/workspaces",
-    "custom/resetWaybar"
+    "custom/resetWaybar",
+    "hyprland/workspaces"
   ],
   "modules-center": [
     "hyprland/window"
@@ -33,7 +33,7 @@
       "1": "",
       "2": "",
       "3": "",
-      "active": "<span color=\"#f53c3c\">卐</span>",
+      "active": "卐",
       "default": ""
     },
     "sort-by-number": true
@@ -50,7 +50,11 @@
   },
   "custom/resetWaybar": {
     "format": "",
-    "on-click": "/usr/bin/bash /home/ayman/.config/hypr/waybar/scripts/reLaunch.sh"
+    "on-click": "$HOME/.config/hypr/waybar/scripts/reLaunch.sh"
+  },
+  "custom/controls": {
+    "format": "",
+    "on-click": "echo 2 /tmp/wcp"
   },
   "custom/weather": {
     "tooltip": true,

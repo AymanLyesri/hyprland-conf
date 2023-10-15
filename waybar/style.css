@@ -1,8 +1,9 @@
 * {
   /* font-family: JetBrains Mono, monospace; */
-  font-weight: bold;
-  font-size: 11px;
+  font-weight: bolder;
+  font-size: 12px;
   min-height: 0;
+  font-family: JetBrainsMono Nerd Font;
 }
 
 window#waybar {
@@ -14,6 +15,15 @@ window#waybar {
 
 window * {
   border-radius: 10px;
+}
+
+window#waybar.empty #window {
+  background-color: rgba(0, 0, 0, 0);
+  padding: 10px;
+  transition: padding 0.5s cubic-bezier(0.5, 1, 0, 2);
+}
+window#waybar.empty * {
+  /* font-size: 14px; */
 }
 
 #custom-resetWaybar,
@@ -42,22 +52,102 @@ window * {
 }
 
 /* WORKSPACES */
-#workspaces {
-  margin-left: 10px;
 
-} * {
-  color: #aaaaaa;
+#workspaces {
+  background-color: transparent;
+}
+
+#workspaces button {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 15px;
+  border: 1px;
+  border-color: rgba(0, 0, 0, 0);
+  padding: 10px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  margin-right: 10px;
+  font-weight: bolder;
+  transition: all 0.5s cubic-bezier(0.55, -0.68, 0.48, 1.68);
+}
+
+#workspaces button.active {
+  padding-right: 20px;
+  padding-left: 20px;
+  background: radial-gradient(
+    circle,
+    rgb(0, 0, 0) 0%,
+    rgb(90, 0, 0) 50%,
+    rgb(0, 0, 0) 100%
+  );
+  background-size: 400% 400%;
+  animation: gradient_f 10s linear infinite;
+  transition: all 0.3s cubic-bezier(0.55, -0.68, 0.48, 1.682);
+}
+
+#workspaces button label {
+  color: rgb(255, 255, 255);
+}
+
+#workspaces button.active label {
+  color: rgb(255, 100, 100);
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 30%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes gradient_f {
+  0% {
+    background-position: 0% 200%;
+  }
+  50% {
+    background-position: 200% 0%;
+  }
+  100% {
+    background-position: 400% 200%;
+  }
+}
+
+@keyframes gradient_f_nh {
+  0% {
+    background-position: 0% 200%;
+  }
+  100% {
+    background-position: 200% 200%;
+  }
 }
 
 /* RESET ALL */
-#custom-resetWaybar { 
+#custom-resetWaybar {
+  color: rgb(255, 255, 255);
   margin-left: 10px;
+  padding-right: 10px;
+  padding-left: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* ______________________________________________________________ */
+
+#window {
+  /* background-color: #f53c3c; */
+  padding: 0px;
+  padding-right: 10px;
+  padding-left: 10px;
+  transition: all 1s cubic-bezier(0.55, -0.68, 0.48, 1.682);
 }
 
 /* ______________________________________________________________ */
 
 /* TRAY */
-#tray{
+#tray {
   margin-right: 10px;
 }
 
@@ -71,7 +161,6 @@ window * {
   border-radius: 0px 10px 10px 0px;
   margin-right: 10px;
 }
-
 
 #custom-media {
   font-size: x-small;
