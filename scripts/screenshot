@@ -13,7 +13,7 @@ if [[ "$1" == "--now" ]]; then
 
 elif [[ "$1" == "--area" ]]; then
 
-	grim -g "$(slurp)" $file | wl-copy
+	grim -g "$(slurp)" $file - | wl-copy
 
 	${notify_cmd_shot} "Copied to clipboard."
 

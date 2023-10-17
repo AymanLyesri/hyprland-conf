@@ -1,0 +1,11 @@
+#!/bin/bash
+
+spaces (){
+	WORKSPACE_WINDOWS=$(hyprctl workspaces -j | jq 'map(select(.windows != 0))' | jq 'sort_by(.id)' | jq 'map(.id)' )
+	echo $WORKSPACE_WINDOWS
+}
+
+spaces
+socat -u UNIX-CONNECT:/tmp/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock - | while read -r line; do
+	spaces
+done

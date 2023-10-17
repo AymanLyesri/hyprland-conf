@@ -29,6 +29,7 @@ window#waybar.empty * {
 #custom-resetWaybar,
 #custom-weather,
 #custom-media,
+#custom-controls,
 #mpd,
 #window,
 #clock,
@@ -89,7 +90,7 @@ window#waybar.empty * {
 }
 
 #workspaces button.active label {
-  color: rgb(255, 100, 100);
+  color: rgb(255, 45, 45);
 }
 
 @keyframes gradient {
@@ -160,6 +161,10 @@ window#waybar.empty * {
   color: rgb(100, 170, 200);
   border-radius: 0px 10px 10px 0px;
   margin-right: 10px;
+}
+#custom-controls {
+  color: rgb(100, 170, 200);
+  border-radius: unset;
 }
 
 #custom-media {

@@ -12,3 +12,5 @@ done
 
 echo "" >> $config
 echo "wallpaper = eDP-1,$random" >> $config
+
+hyprpaper
