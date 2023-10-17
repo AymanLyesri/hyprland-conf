@@ -18,6 +18,7 @@
     "mpd",
     "pulseaudio",
     "custom/media",
+    "custom/controls",
     "pulseaudio#microphone",
     "battery",
     "cpu",
@@ -32,9 +33,10 @@
     "format-icons": {
       "1": "",
       "2": "",
-      "3": "",
+      "3": "",
+      "4": "",
       "active": "卐",
-      "default": ""
+      "default": "＋"
     },
     "sort-by-number": true
   },
@@ -44,7 +46,7 @@
     "on-click": ""
   },
   "memory": {
-    "interval": 1,
+    "interval": 5,
     "format": " {}%",
     "format-alt": "{used:0.1f}G/{total:0.1f}G "
   },
@@ -53,8 +55,8 @@
     "on-click": "$HOME/.config/hypr/waybar/scripts/reLaunch.sh"
   },
   "custom/controls": {
-    "format": "",
-    "on-click": "echo 2 /tmp/wcp"
+    "format": "⚙",
+    "on-click": "echo 2 > /tmp/wcp"
   },
   "custom/weather": {
     "tooltip": true,
@@ -66,7 +68,7 @@
   "custom/media": {
     "format": "{icon} {}",
     "return-type": "json",
-    "max-length": 40,
+    "max-length": 30,
     "format-icons": {
       "spotify": "",
       "default": "🎜"

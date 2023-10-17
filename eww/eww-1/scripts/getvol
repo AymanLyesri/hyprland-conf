@@ -1,0 +1,6 @@
+#!/bin/bash 
+# apulse -D pulse sget Master | grep 'Left:' | awk -F'[][]' '{ print $2 }' | tr -d '%' | head -1
+
+echo 1
+
+volume=$(pamixer --get-volume)

@@ -1,0 +1,97 @@
+* {
+  all: unset; //Unsets everything so you can style everything from scratch
+}
+
+//Global Styles
+.bar {
+  // background-color: rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+  padding: 10px;
+}
+
+.workspaces {
+  button {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0);
+    padding: 0 15px;
+    margin-right: 5px;
+    font-weight: bolder;
+    transition: all 0.5s cubic-bezier(0.55, -0.68, 0.48, 1.68);
+
+    &.active {
+      // padding: 0 25px;
+      background: radial-gradient(
+        circle,
+        rgb(0, 0, 0) 0%,
+        rgb(90, 0, 0) 50%,
+        rgb(0, 0, 0) 100%
+      );
+      background-size: 400% 400%;
+      animation: gradient_f 10s linear infinite;
+      transition: all 0.5s cubic-bezier(0.55, -0.68, 0.48, 1.682);
+      color: #ff0000;
+    }
+    &:hover {
+      color: #ffb300;
+      padding: 0 20px;
+    }
+    &.focused {
+      color: #919191;
+    }
+    &.urgent {
+      color: #ff0000;
+    }
+
+    @keyframes gradient_f {
+      0% {
+        background-position: 0% 200%;
+      }
+      50% {
+        background-position: 200% 0%;
+      }
+      100% {
+        background-position: 400% 200%;
+      }
+    }
+  }
+}
+
+.music {
+  padding: 0 10px;
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+// Styles on classes (see eww.yuck for more information)
+
+.rightPanel {
+  padding: 0 10px;
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  slider {
+    // background-color: rgba(0, 0, 0, 0.5);
+    // all: unset;
+    color: #ffd5cd;
+  }
+}
+.metric scale trough {
+  all: unset;
+  background-color: #4e4e4e;
+  border-radius: 50px;
+  min-height: 3px;
+  min-width: 50px;
+  margin-left: 10px;
+  margin-right: 20px;
+}
+.metric scale trough highlight {
+  all: unset;
+  background-color: #b9b9b9;
+  color: #000000;
+  border-radius: 10px;
+  min-height: 10px;
+}
+
+// .label-ram {
+//   font-size: large;
+// }
