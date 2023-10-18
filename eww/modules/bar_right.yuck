@@ -107,10 +107,7 @@
     :space-evenly false :spacing 10
     :orientation "h"
     :valign "center"
-    (label
-      :class "icon"
-      :text "󰍛"
-    )
+    
     (box ; Resources
       :space-evenly false :spacing 5
       :orientation "v"
@@ -118,6 +115,7 @@
       (box ; CPU
         :space-evenly false :orientation "h" :spacing 5
         (progress
+          :flipped true
           :class "prog-bar"
           :valign "center"
           :value {EWW_CPU.avg}
@@ -126,36 +124,50 @@
       (box ; RAM
         :space-evenly false :orientation "h" :spacing 5
         (progress
+          :flipped true
           :class "prog-bar"
           :valign "center"
           :value {EWW_RAM.used_mem_perc}
         )
       )
     )
+    (label
+      :class "icon"
+      :text "󰍛"
+    )
     (box ; Resources
       :space-evenly false :spacing 5
       :orientation "h"
       :valign "center"
-      (box ; BATTERY
+      (box
         :space-evenly false :orientation "h" :spacing 5
         (progress
+          :flipped true
+          :orientation "v"
           :class "prog-bar-temp"
           :valign "center"
           :value {EWW_TEMPS.CORETEMP_CORE_0}
         )
         (progress
+          :flipped true
+          :orientation "v"
           :class "prog-bar-temp"
-          :valign "center"
-          :value {EWW_TEMPS.CORETEMP_CORE_1}
-        )
-      )
-      (box ; TEMPS
-        :space-evenly false :orientation "v" :spacing 5
-        (progress
-          :class "prog-bar battery"
           :valign "center"
           :value {EWW_BATTERY.BAT1.capacity}
         )
+      )
+    )
+    (label
+      :class "icon"
+      :text "⚡"
+    )
+    (box ; BATTERY
+      :space-evenly false :orientation "v" :spacing 5
+      :valign "center"
+      (progress
+        :class "prog-bar battery"
+        :valign "center"
+        :value {EWW_BATTERY.BAT1.capacity}
       )
     )
   )
@@ -171,7 +183,7 @@
     (label
       :text " ${clock_time}"
     :class "icon")
-
+    
   )
 )
 

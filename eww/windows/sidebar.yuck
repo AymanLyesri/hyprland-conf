@@ -171,24 +171,38 @@
       (box ; Tag Buttons
         :space-evenly false :spacing 6
         :orientation "v"
-        :width 100
-        (button ; NSFW
-          :class "sidebar-waifu-toggle"
-          :onclick "scripts/./waifu.py fuckyWucky &"
-          :style "font-size: 11"
-          "NSFW 🔞"
-        )
-        (for id in WAIFU_TAG_ID_LIST_1
-          (button
-            :class "sidebar-waifu-tag"
-            :onclick "${EWW_CMD} update waifu_art=\"$(scripts/waifu.py ${WAIFU_CATEGORIES_ARGS[id]} ${is_nsfw == 'True' ? 'nsfw' : 'sfw'})\" &"
-            {WAIFU_CATEGORIES[id]}
-          )
-        )
+
+        ; (button ; NSFW
+        ;   :class "sidebar-waifu-toggle"
+        ;   :onclick "scripts/./waifu.py fuckyWucky &"
+        ;   :style "font-size: 11"
+        ;   "NSFW 🔞"
+        ; )
         
+        (revealer
+          :transition "slidedown"
+          :duration "500ms"
+          :reveal display_tags
+          (box
+            :space-evenly false :spacing 6
+            :orientation "v"
+            (for id in WAIFU_TAG_ID_LIST
+              (button
+                :onhover "${EWW_CMD} update display_tags=true"
+                :class "sidebar-waifu-tag"
+                :onclick "${EWW_CMD} update waifu_art=\"$(scripts/waifu.py ${WAIFU_CATEGORIES_ARGS[id]} ${is_nsfw == 'True' ? 'nsfw' : 'sfw'})\" &"
+                {WAIFU_CATEGORIES[id]}
+              )
+            )
+          )
+          
+        )
       )
-      (box
+      (eventbox
+        :height 300
         :class "sidebar-waifu-image"
+        :onhover "${EWW_CMD} update display_tags=true"
+        :onhoverlost "if [ '${display_tags}' = true ] ; then sleep 2 && ${EWW_CMD} update display_tags=false & fi"
         :style "background-image: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.5)), url('${waifu_art}');"
         :hexpand true
       )
@@ -196,36 +210,33 @@
         ; :class "sidebar-waifu-content"
         :space-evenly false
         :spacing 6
-        :width 100
         :orientation "v"
-        (combo-box-text 
-        :items "['sqs','sqdds']"
-        :style "color:white;"
-        )
         ; (for id in WAIFU_TAG_ID_LIST_2
-        ;   (button
-        ;     :class "sidebar-waifu-tag"
-        ;     :onclick "${EWW_CMD} update waifu_art=\"$(scripts/waifu.py ${WAIFU_CATEGORIES_ARGS[id]} ${is_nsfw == 'True' ? 'nsfw' : 'sfw'})\" &"
-        ;     {WAIFU_CATEGORIES[id]}
-        ;   )
+          ;   (button
+            ;     :class "sidebar-waifu-tag"
+            ;     :onclick "${EWW_CMD} update waifu_art=\"$(scripts/waifu.py ${WAIFU_CATEGORIES_ARGS[id]} ${is_nsfw == 'True' ? 'nsfw' : 'sfw'})\" &"
+            ;     {WAIFU_CATEGORIES[id]}
+          ;   )
         ; )
-        (button ; Pin
-          :class "sidebar-waifu-reset"
-          :style "padding: 10px 10px"
-          :onclick "eww --config $HOME/.config/hypr/eww update waifu_art=''"
-          "🗑"
-        )
+        ; (button ; Pin
+        ;   :class "sidebar-waifu-reset"
+        ;   :style "padding: 10px 10px"
+        ;   :onclick "eww --config $HOME/.config/hypr/eww update waifu_art=''"
+        ;   "🗑"
+        ; )
       )
       
     )
   )
 )
 
+(defvar display_tags false)
+
 (defwidget sidebar_quote []
   (box
+    :height 50
     :hexpand true
     :space-evenly false
-    :spacing 10
     :orientation "v"
     (box ;Title
       :class "sidebar-title"
