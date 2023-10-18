@@ -1,0 +1,11 @@
+@import 'scss/colors.scss';
+@import 'scss/lib.scss';
+@import 'scss/bar.scss';
+@import 'scss/sidebar.scss';
+
+* {
+  all: unset;
+
+  font-family: mononoki Nerd Font;
+  border-radius: 12;
+}

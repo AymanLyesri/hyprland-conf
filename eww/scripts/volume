@@ -1,0 +1,71 @@
+#!/bin/bash
+
+get() {
+  # volume=$(amixer get Master | tail -n1 | awk -F ' ' '{print $5}' | tr -d '[%]')
+  # echo -n $volume
+  volume=$(pamixer --get-volume)
+  echo $volume
+}
+
+toggle_mute() {
+  # amixer set Master 1+ toggle -q
+  set_icon
+}
+
+get_icon() {
+  volume=$(get)
+  if [[ $volume == 0 ]]; then
+    echo 0
+  elif [[ $volume > 60 ]]; then
+    echo 3
+  elif [[ $volume > 40 ]]; then
+    echo 2
+  elif [[ $volume > 0 ]]; then
+    echo 1
+  fi
+}
+
+set_icon() {
+  volume=$(get)
+  if [[ $volume == 0 ]]; then
+    eww --config $HOME/.config/hypr/eww update vol_state=0
+  elif [[ $volume > 60 ]]; then
+    eww --config $HOME/.config/hypr/eww update vol_state=3
+  elif [[ $volume > 40 ]]; then
+    eww --config $HOME/.config/hypr/eww update vol_state=2
+  elif [[ $volume > 1 ]]; then
+    eww --config $HOME/.config/hypr/eww update vol_state=1
+  fi
+}
+
+inc() {
+  # amixer set Master 1%+
+  pamixer -i 1
+}
+
+dec() {
+  # amixer set Master 1%-
+  pamixer -d 1
+}
+
+#One arg at a time a w9
+case "$1" in
+"--get")
+  get
+  ;;
+"--get-state")
+  get_icon
+  ;;
+"--toggle")
+  toggle_mute
+  ;;
+"--icon")
+  set_icon
+  ;;
+"--inc")
+  inc
+  ;;
+"--dec")
+  dec
+  ;;
+esac

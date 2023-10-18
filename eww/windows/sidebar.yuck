@@ -1,0 +1,241 @@
+(defwindow sidebar
+  ; :stacking "fg"
+  :monitor 0
+  :exclusive false
+  :geometry (geometry
+    :anchor "top left"
+    ; :height "500px"
+  )
+  (sidebar_layout)
+)
+
+(defwidget sidebar_layout []
+  (eventbox
+    :onhover "eww --config $HOME/.config/hypr/eww update sidebar_rev=true"
+    :onhoverlost "eww --config $HOME/.config/hypr/eww update sidebar_rev=false"
+    (revealer
+      :reveal sidebar_rev
+      :transition "slideright"
+      (box
+        :class "sidebar-layout"
+        :space-evenly false
+        ; :spacing 10
+        :width 500
+        :orientation "v"
+        (sidebar_top)
+        (sidebar_center)
+        (sidebar_bottom)
+      )
+    )
+  )
+)
+
+(defwidget sidebar_top []
+  (box
+    :orientation "v"
+    :space-evenly false
+    (sidebar_music)
+  )
+)
+
+(defwidget sidebar_center []
+  (box
+    :space-evenly false
+    :vexpand true
+    (sidebar_waifu)
+  )
+)
+
+(defwidget sidebar_bottom []
+  (box
+    :space-evenly false
+    :valign "end"
+    (sidebar_quote)
+  )
+)
+
+(defwidget sidebar_music []
+  (overlay
+    :height 100
+    (box ;Background
+      :class "sidebar-music-background"
+      :style "background-image: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.5)), url('${music_art}');"
+    )
+    (centerbox
+      :class "sidebar-music-box"
+      :orientation "v"
+      (box
+        (label
+          :class "sidebar-music-mediacontrols"
+          :style "font-size: 5px;"
+          :halign "start"
+          :valign "start"
+          :text music_icon
+        )
+      )
+      (overlay
+        (box
+          :orientation "v"
+          :halign "start"
+          (label
+            :class "sidebar-music-mediacontrols"
+            :style "font-size: 1px"
+            :halign "start"
+            :text "${music_title}"
+            :limit-width "30"
+          )
+          (label
+            :class "sidebar-music-mediacontrols"
+            :style "font-size: 14px"
+            :halign "start"
+            :text music_artist
+            :limit-width "20"
+          )
+        )
+        (button ;Play button
+          :class "sidebar-music-mediacontrols-bg"
+          :width 45
+          :halign "end"
+          :onclick "scripts/music --play-pause"
+          (label
+            :class "sidebar-music-mediacontrols-font"
+            :style "font-size: 26px"
+            :halign "center"
+            :text  "${player_active == 2 ? '󰏤' : '󰐊'}"
+          )
+        )
+      )
+      (box
+        :space-evenly false
+        :orientation "h"
+        :style "margin-bottom: -15px"
+        (button
+          :width 25
+          :halign "start"
+          :onclick "scripts/music --previous"
+          (label
+            :class "sidebar-music-mediacontrols"
+            :style "font-size: 26px"
+            :text  "󰒮"
+          )
+        )
+        (scale
+          :class "sidebar-music-progress"
+          :halign "center"
+          :hexpand true
+          :max 100
+          :min 0
+          :value "${music_prog}"
+          :onchange "scripts/music --set-pos {}"
+        )
+        (button
+          :width 25
+          :halign "end"
+          :onclick "scripts/music --next"
+          (label
+            :class "sidebar-music-mediacontrols"
+            :style "font-size: 26px"
+            :text  "󰒭"
+          )
+        )
+      )
+    )
+  )
+)
+
+; (defpoll url :interval "1s" "light")
+
+(defwidget sidebar_waifu []
+  (box
+    :space-evenly false :spacing 10
+    :orientation "v"
+    :hexpand true
+    :vexpand true
+    (box ;Title
+      :class "sidebar-title"
+      (label
+        :class "sidebar-title-text"
+        :halign "start"
+        :text "  Culture"
+      )
+      (label
+        :class "sidebar-subtitle txt-low"
+        :halign "end"
+        :text "Dayumn those waifus !"
+      )
+    )
+    (box ;Content
+      :class "sidebar-waifu-content"
+      :space-evenly false :spacing 12
+      :orientation "h"
+      :vexpand true
+      (box ; Tag Buttons
+        :space-evenly false :spacing 6
+        :orientation "v"
+        :width 100
+        (box
+          :space-evenly false :spacing 4
+          :orientation "h"
+          (button ; NSFW
+            :class "sidebar-waifu-toggle"
+            :onclick "scripts/./waifu.py fuckyWucky &"
+            :style "font-size: 11"
+            "NSFW 🔞"
+          )
+          (button ; Pin
+            :class "sidebar-waifu-reset"
+            :style "padding: 5px 10px"
+            :onclick "eww --config $HOME/.config/hypr/eww update waifu_art=''"
+            "🗑"
+          )
+        )
+        (for id in WAIFU_TAG_ID
+          (button
+            :class "sidebar-waifu-tag"
+            :onclick "${EWW_CMD} update waifu_art=\"$(scripts/waifu.py ${WAIFU_CATEGORIES_ARGS[id]} ${is_nsfw == 'True' ? 'nsfw' : 'sfw'})\" &"
+            {WAIFU_CATEGORIES[id]}
+          )
+        )
+      )
+      (box
+        :class "sidebar-waifu-image"
+        :style "background-image: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.5)), url('${waifu_art}');"
+        :hexpand true
+      )
+    )
+  )
+)
+
+(defwidget sidebar_quote []
+  (box
+    :hexpand true
+    :space-evenly false
+    :spacing 10
+    :orientation "v"
+    (box ;Title
+      :class "sidebar-title"
+      (label
+        :class "sidebar-title-text"
+        :halign "start"
+        :text ""
+      )
+    )
+    (box ;Content
+      :class "sidebar-quote-content"
+      :orientation "v"
+      (label ; A Quote
+        :halign "start"
+        :valign "start"
+        :text "${quote}"
+        ;; sidebar_quote
+      )
+      (label ; Its Author
+        :halign "end"
+        :valign "end"
+        :text "卐 lilayman 卐"
+      )
+    )
+  )
+)
+
+

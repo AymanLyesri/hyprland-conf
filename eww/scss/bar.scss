@@ -1,0 +1,171 @@
+.bar {
+  margin-top: 5px;
+  padding: 0px;
+  // padding: 5 0 0 0;
+}
+
+//#region left-bar
+//#region Music
+.music {
+  @extend .module;
+  // padding-left: 0;
+  // background-repeat: no-repeat;
+  // background-size: 80%;
+  // background-position: right 55%;
+  border: 1 solid;
+  border-color: $unfocused;
+  border-radius: 10px;
+}
+
+.music-cover {
+  // margin: 2 2 2 2;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 200%;
+  border-radius: 25;
+}
+
+.music-label {
+  color: $foreground;
+  font-size: 12;
+  font-weight: bolder;
+}
+
+.music-unlabel {
+  margin-left: 10;
+  color: $foreground-alt;
+  font-size: 14;
+  font-weight: bolder;
+}
+
+//#endregion
+//#endregion
+
+//#region center-bar
+//#region workspaces
+
+@mixin ws-btn-font {
+  font-size: 16;
+  font-weight: bolder;
+  border: 2 solid;
+
+  label {
+    padding-bottom: 2px;
+  }
+}
+
+.ws {
+  button {
+    border-bottom: 0 solid;
+    @include ws-btn-font();
+    transition: all 0.5s;
+    &.ws-btn {
+      background-color: $background;
+      color: $foreground-darker;
+      border-color: $unfocused;
+    }
+    &.ws-btn-active {
+      background-color: $background;
+      color: $foreground-alt;
+      border-color: $focused-alt;
+    }
+    &.ws-btn-focused {
+      color: $foreground;
+      background-color: $background-darker;
+      border-bottom: 5 solid;
+      border-color: $focused;
+    }
+    &:hover {
+      padding: 0px 15px;
+      color: $hover-alt;
+      background-color: $hover;
+      border-color: $hover-alt;
+    }
+  }
+}
+
+//#endregion
+//#endregion
+
+//#region right-bar
+//#region Titlebar
+.titlebar-label {
+  padding-right: 2px;
+}
+
+//#endregion
+//#region Toggles
+// .toggles-wifi-essid {
+// }
+
+.scale {
+  border-radius: 99px;
+  transition: 0ms cubic-bezier(0.05, 0.7, 0.1, 1);
+  margin-right: 6px;
+
+  trough {
+    min-height: 3px;
+    min-width: 60px;
+    border-radius: 99px;
+    background-color: mix($foreground-alt, rgba(0, 0, 0, 0), 30%);
+  }
+
+  highlight {
+    min-width: 3px;
+    border-radius: 99px;
+    background-color: $focused;
+    transition: 0ms cubic-bezier(0.05, 0.7, 0.1, 1);
+  }
+
+  slider {
+    min-width: 5px;
+    margin: -5px;
+    border-radius: 99px;
+    background-color: $focused;
+  }
+}
+
+//#endregion
+//#region Resources
+.prog-bar {
+  min-height: 4px;
+  padding: 0px;
+  border-radius: 99px;
+
+  trough {
+    min-height: 4px;
+    min-width: 60px;
+    border-radius: 99px;
+    background-color: mix($foreground-alt, rgba(0, 0, 0, 0), 30%);
+    // background-color: $background-accented;
+  }
+
+  progress {
+    min-height: 4px;
+    min-width: 4px;
+    border-radius: 99px;
+    border-radius: 99px;
+    background-color: $focused;
+  }
+}
+
+.prog-bar-temp {
+  min-height: 4px;
+  min-width: 10px;
+
+  trough {
+    min-height: 4px;
+    min-width: 10px;
+  }
+
+  progress {
+    min-height: 4px;
+    min-width: 4px;
+    border-radius: 99px;
+    border-radius: 99px;
+    background-color: $focused;
+  }
+}
+
+//#endregion
+//#endregion

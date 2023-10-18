@@ -1,0 +1,38 @@
+;; the lower are the update times, the higher is the performance.
+;Wifi
+(defvar wifi_rev false)
+(defvar ESSID_WLAN "online")
+;Volume
+(defvar vol_rev false)
+(defvar VOL_ICON '["󰖁","󰕿","󰖀","󰕾"]')
+(defpoll vol_state :interval "10s" "scripts/volume --get-state")
+;Brightness
+(defvar bright_rev false)
+;Music
+(defvar player_active false)
+(defvar music_art "")
+(defvar music_icon "")
+(defvar music_title "")
+(defvar music_artist "")
+(defvar music_prog 0)
+;Sidebar
+(defvar sidebar_rev false)
+(defpoll quote :interval "5h" "python scripts/quotes.py 60 | sed -e 's/.\{20\}/&\n/g'")
+;W   
+(defvar WAIFU_CATEGORIES '["zerotwo",      "waifu",        "neko",        "wifey",      "maid", "       megumin",               "marin",               "mori",             "raiden", "     oppai",      "selfies", "       shinobu",      "uniform",        "awoo", "fetish"]')
+(defvar WAIFU_CATEGORIES_ARGS '["02", "--im waifu", "--pics neko", "--pics waifu", "--im maid", "--pics megumin", "--im marin-kitagawa", "--im mori-calliope", "--im raiden-shogun", "--im oppai", "--im selfies", "--pics shinobu", "--im uniform", "--pics awoo", "--af fetish"]')
+(defvar WAIFU_TAG_ID '[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14]')
+(defvar waifu_art "img.jpg")
+(defvar is_nsfw false)
+
+;Scripts listeners
+(deflisten script_workspace "scripts/workspace")
+
+(defpoll apptitles :interval "1s" "scripts/workspace --active-window")
+(defpoll clock_time :interval "5s" "date '+\%H:\%M'")
+(defpoll vol_percent :interval "5s" "scripts/volume --get")
+(defpoll brightness_percent :interval "5s" "light")
+
+;Updaters                   --update
+(defpoll music_updater :interval "3s" "scripts/music")  
+(defpoll sidebar_quote :interval "10s" "hyprctl splash")
