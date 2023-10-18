@@ -1,0 +1,59 @@
+#!/bin/bash
+
+ic=(0 一 二 三 四 五 六 七 八 九 〇)
+
+ws_focused=$(hyprctl monitors | grep active | awk '{print $3}')
+ws_active=$(hyprctl workspaces)
+max_workspace=9
+
+workspace() {
+  ws_focused=$(hyprctl monitors | grep active | awk '{print $3}')
+  ws_active=$(hyprctl workspaces)
+
+  echo -n "(eventbox :onscroll \"echo {} | sed -e 's/down/+1/g' -e 's/up/-1/g' | xargs scripts/./workspace\" \
+(box :class 'ws' :spacing 5 :space-evenly 'false' :halign 'start'"
+
+  for i in $(seq 1 $max_workspace); do
+    if [[ $ws_focused == $i ]]; then
+      echo -n "(button :class 'ws-btn-focused' :width 35 :onclick 'hyprctl dispatch workspace $i' '${ic[$i]}') "
+    elif [[ $(echo "$ws_active" | grep "ID $i" | awk '{print $3}') == $i ]]; then
+      echo -n "(button :class 'ws-btn-active' :width 35 :onclick 'hyprctl dispatch workspace $i' '${ic[$i]}') "
+    else
+      echo -n "(button :class 'ws-btn' :width 35 :onclick 'hyprctl dispatch workspace $i' '${ic[$i]}') "
+    fi
+  done
+  echo "))"
+}
+
+get_window_active() {
+  win_active=$(hyprctl activewindow | grep -m 1 'initialClass' | awk '{print $2}')
+  if [[ ! -z "$win_active" ]]; then
+    echo "󰖲 $win_active"
+  else
+    echo "󰖲"
+  fi
+}
+
+case "$1" in
+"--active-window")
+  get_window_active
+  ;;
+*)
+  if [[ $1 == +1 && $ws_focused -ge $max_workspace ]]; then
+    hyprctl dispatch workspace 1
+    exit 1
+  elif [[ $1 == -1 && $ws_focused == 1 ]]; then
+    hyprctl dispatch workspace $max_workspace
+    exit 1
+  elif [[ ! -z "$1" ]]; then
+    hyprctl dispatch workspace "$1"
+    exit 1
+  fi
+
+  workspace
+
+  socat -u UNIX-CONNECT:/tmp/hypr/"$HYPRLAND_INSTANCE_SIGNATURE"/.socket2.sock - | while read -r event; do
+    workspace
+  done
+  ;;
+esac

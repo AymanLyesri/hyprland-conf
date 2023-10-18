@@ -1,0 +1,143 @@
+#! /bin/bash
+
+isPlayerActive() {
+    status=$(playerctl status --no-messages)
+    [[ -z "$status" ]] && echo 0 || echo "$([[ "$status" = "Paused" ]] && echo 1 || echo 2)"
+}
+
+getMusicArtist() {
+    echo $(playerctl metadata --format '{{artist}}')
+}
+
+getMusicTitle() {
+    echo $(playerctl metadata --format '{{title}}')
+}
+
+getMusicDuration() {
+    dur=$(playerctl metadata mpris:length)
+    echo "$(expr $dur / 1000000)"
+}
+
+getMusicPosition() {
+    pos=$(playerctl position)
+    echo "${pos%%.*}"
+}
+
+getMusicProgress() {
+    playerStatus=$(playerctl -l --no-messages)
+    if [ "${playerStatus:0:7}" == "firefox" ]; then
+        echo 0
+    fi
+    pos=$(getMusicPosition)
+    dur=$(getMusicDuration)
+    dur=$(echo "$dur / 100" | bc -l)
+    echo "$pos / $dur" | bc -l
+}
+
+getMusicArt() {
+    playerStatus=$(playerctl -l --no-messages)
+
+    # Firefox
+    if [ "${playerStatus:0:7}" == "firefox" ]; then
+        path="$HOME/.mozilla/firefox/firefox-mpris/"
+        image="$(ls $path)"
+
+        echo "$path$image"
+        return
+    fi
+
+    # Spotify
+    if [ "$playerStatus" == "spotify" ]; then
+        echo $(playerctl metadata mpris:artUrl)
+        return
+    else
+        echo $(playerctl metadata mpris:artUrl)
+        return
+    fi
+
+    #Fallback
+    echo "/home/satanx016/.config/eww/assets/music/default_art.jpg"
+}
+
+getMusicPlayerIcon() {
+    playerStatus=$(playerctl -l --no-messages)
+    icon="󰎆"
+    # Firefox
+    if [ "${playerStatus:0:7}" == "firefox" ]; then
+        icon="󰈹"
+    # Spotify
+    elif [ "$playerStatus" == "spotify" ]; then
+        icon=""
+    fi
+    echo $icon
+}
+
+noPlayerMode() {
+    eww --config $HOME/.config/hypr/eww update music_art="$(getMusicArt)"
+    eww --config $HOME/.config/hypr/eww update player_active=false
+}
+
+playerMode() {
+    eww --config $HOME/.config/hypr/eww update player_active=$1
+    eww --config $HOME/.config/hypr/eww update music_art="$(getMusicArt)"
+    eww --config $HOME/.config/hypr/eww update music_icon="$(getMusicPlayerIcon)"
+    eww --config $HOME/.config/hypr/eww update music_title="$(getMusicTitle)"
+    eww --config $HOME/.config/hypr/eww update music_artist="$(getMusicArtist)"
+    eww --config $HOME/.config/hypr/eww update music_prog="$(getMusicProgress)"
+}
+
+update() {
+    playerState=$(isPlayerActive)
+    if [[ $playerState != 0 ]]; then
+        playerMode $playerState
+    else
+        noPlayerMode
+    fi
+}
+
+togglePlay() {
+    playerctl play-pause
+    eww --config $HOME/.config/hypr/eww update player_active=$(isPlayerActive)
+}
+
+previousTrack() {
+    playerctl previous
+    playerMode 2
+}
+
+nextTrack() {
+    playerctl next
+    playerMode 2
+}
+
+setProgress() {
+    newPos=$1
+    dur=$(getMusicDuration)
+    dur=$(echo "$dur / 100" | bc -l)
+    newPos=$(echo "$newPos * $dur" | bc -l && echo -n "%")
+    playerctl position $newPos
+}
+
+case "$1" in
+"--update")
+    update
+    ;;
+"--play-pause")
+    togglePlay
+    ;;
+"--previous")
+    previousTrack
+    ;;
+"--next")
+    nextTrack
+    ;;
+"--set-pos")
+    setProgress $2
+    ;;
+"--is-active")
+    isPlayerActive
+    ;;
+"--art")
+    getMusicArt
+    ;;
+esac

@@ -1,0 +1,72 @@
+(defwidget bar_center []
+  (box
+    :space-evenly false
+    :halign "center"
+    :class "bar-center"
+    (music)
+  )
+)
+
+(defwidget start []
+  (box
+    :class "module"
+    (button
+      :onclick "scripts/start"
+      (label
+        :class "icon" :style "padding-right: 5px"
+        :text "󰣇"
+      )
+    )
+  )
+)
+
+(defwidget music []
+  (revealer
+    :reveal "${player_active}"
+        ; TO BE CHANGED
+    :transition "crossfade" 
+    :duration "700ms"
+    (box
+      :class "music"
+      :hexpand "true"
+      :space-evenly false
+      :width 400
+      :style "background-image: linear-gradient(to right, #131313 , rgba(90, 20, 52, 0)), url('${music_art}');"
+      (revealer
+        :reveal "${player_active}"
+        :transition "slideright"
+        :duration "700ms"
+        (box
+          :space-evenly false
+          :spacing 10
+          (box ; Cover
+            :class "music-cover"
+            :style "background-image: url('${music_art}');"
+            ; :width 30
+          )
+          (box
+            :orientation "v"
+            (label ; Title
+              :class "music-label"
+              :limit-width "22"
+              :text music_title
+            )
+            (label ; Author
+              :class "music-label"
+              :halign "start"
+              :text music_artist
+            )
+          )
+        )
+      )
+      (revealer
+        :reveal "${player_active}"
+        :transition "slideleft"
+        (label
+          :class "music-unlabel"
+          :text "󰎈${music_updater}" ; updating music vars while render text
+        )
+      )
+    )
+  )
+)

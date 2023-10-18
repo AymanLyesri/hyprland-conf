@@ -1,0 +1,16 @@
+
+
+(defwidget bar_left []
+  (box
+    :halign "center"
+    :class "bar_left"
+    (workspace)
+  )
+)
+
+(defwidget workspace []
+  (literal
+    :content script_workspace
+  )
+)
+
