@@ -92,14 +92,14 @@
 
 //#region right-bar
 
-.bar-right{
-  .module{
-      box-shadow: -5px 3px 3px $background-darker-alt;
+.bar-right {
+  .module {
+    box-shadow: -5px 3px 3px $background-darker-alt;
   }
 }
 //#region Titlebar
 .titlebar {
-  box-shadow: 0px 4px 2px $background-darker-alt;
+  box-shadow: 0px 1px 2px $background-darker-alt;
 
   label {
     // padding-right: 2px;
@@ -153,7 +153,6 @@
     background-color: mix($foreground-alt, rgba(0, 0, 0, 0), 30%);
     // background-color: $background-accented;
   }
-
   progress {
     min-height: 4px;
     min-width: 4px;
@@ -164,20 +163,21 @@
 }
 
 .prog-bar-temp {
-  min-height: 4px;
+  // margin: 1px 1px;
+  padding: 0px;
+  min-height: 10px;
   min-width: 10px;
 
   trough {
-    min-height: 4px;
+    min-height: 20px;
     min-width: 10px;
   }
-
   progress {
     min-height: 4px;
     min-width: 4px;
     border-radius: 99px;
     border-radius: 99px;
-    background-color: $focused;
+    background-color: rgb(255, 75, 75);
   }
 }
 

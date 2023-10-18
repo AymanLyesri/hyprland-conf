@@ -10,13 +10,16 @@
 
 
 (defwidget titlebar []
-  (box
-    :class "module titlebar"
-    (label
-      :class "txt-low"
-      :limit-width "10"
-      :text apptitles
-    )
+  (revealer
+    :reveal {apptitles == '󰖲'?false:true}
+    :transition "crossfade"
+    :duration "500ms"
+      (label
+        :class "module titlebar txt-low"
+        :style "padding: 5px"
+        :limit-width "10"
+        :text apptitles
+      )
   )
 )
 

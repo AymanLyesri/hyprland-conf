@@ -23,8 +23,8 @@
 ;W   
 (defvar WAIFU_CATEGORIES '["zerotwo",      "waifu",        "neko",        "wifey",      "maid", "       megumin",               "marin",               "mori",             "raiden", "     oppai",      "selfies", "       shinobu",      "uniform",        "awoo", "fetish"]')
 (defvar WAIFU_CATEGORIES_ARGS '["02", "--im waifu", "--pics neko", "--pics waifu", "--im maid", "--pics megumin", "--im marin-kitagawa", "--im mori-calliope", "--im raiden-shogun", "--im oppai", "--im selfies", "--pics shinobu", "--im uniform", "--pics awoo", "--af fetish"]')
-(defvar WAIFU_TAG_ID_LIST_1 '[0,1,2,3,4,5,6,7]')
-(defvar WAIFU_TAG_ID_LIST_2 '[8,9,10,11,12,13,14]')
+(defvar WAIFU_TAG_ID_LIST '[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14]')
+; (defvar WAIFU_TAG_ID_LIST_2 '[8,9,10,11,12,13,14]')
 (defvar waifu_art "img.jpg")
 (defvar is_nsfw false)
 
