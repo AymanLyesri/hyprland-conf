@@ -2,7 +2,6 @@
 
 (defwidget bar_left []
   (box
-    :halign "center"
     :class "bar_left"
     (workspace)
   )

@@ -4,7 +4,6 @@
   :exclusive false
   :geometry (geometry
     :anchor "top left"
-    ; :height "500px"
   )
   (sidebar_layout)
 )
@@ -19,7 +18,7 @@
       (box
         :class "sidebar-layout"
         :space-evenly false
-        ; :spacing 10
+        ; :spacing 0
         :width 500
         :orientation "v"
         (sidebar_top)
@@ -87,28 +86,16 @@
           (label
             :class "sidebar-music-mediacontrols"
             :style "font-size: 14px"
+            
             :halign "start"
             :text music_artist
             :limit-width "20"
-          )
-        )
-        (button ;Play button
-          :class "sidebar-music-mediacontrols-bg"
-          :width 45
-          :halign "end"
-          :onclick "scripts/music --play-pause"
-          (label
-            :class "sidebar-music-mediacontrols-font"
-            :style "font-size: 26px"
-            :halign "center"
-            :text  "${player_active == 2 ? '󰏤' : '󰐊'}"
           )
         )
       )
       (box
         :space-evenly false
         :orientation "h"
-        :style "margin-bottom: -15px"
         (button
           :width 25
           :halign "start"
@@ -136,6 +123,18 @@
             :class "sidebar-music-mediacontrols"
             :style "font-size: 26px"
             :text  "󰒭"
+          )
+        )
+        (button ;Play button
+          :class "sidebar-music-mediacontrols-bg"
+          :width 45
+          :halign "end"
+          :onclick "scripts/music --play-pause"
+          (label
+            :class "sidebar-music-mediacontrols-font"
+            :style "font-size: 26px"
+            :halign "center"
+            :text  "${player_active == 2 ? '󰏤' : '󰐊'}"
           )
         )
       )
@@ -173,35 +172,51 @@
         :space-evenly false :spacing 6
         :orientation "v"
         :width 100
-        (box
-          :space-evenly false :spacing 4
-          :orientation "h"
-          (button ; NSFW
-            :class "sidebar-waifu-toggle"
-            :onclick "scripts/./waifu.py fuckyWucky &"
-            :style "font-size: 11"
-            "NSFW 🔞"
-          )
-          (button ; Pin
-            :class "sidebar-waifu-reset"
-            :style "padding: 5px 10px"
-            :onclick "eww --config $HOME/.config/hypr/eww update waifu_art=''"
-            "🗑"
-          )
+        (button ; NSFW
+          :class "sidebar-waifu-toggle"
+          :onclick "scripts/./waifu.py fuckyWucky &"
+          :style "font-size: 11"
+          "NSFW 🔞"
         )
-        (for id in WAIFU_TAG_ID
+        (for id in WAIFU_TAG_ID_LIST_1
           (button
             :class "sidebar-waifu-tag"
             :onclick "${EWW_CMD} update waifu_art=\"$(scripts/waifu.py ${WAIFU_CATEGORIES_ARGS[id]} ${is_nsfw == 'True' ? 'nsfw' : 'sfw'})\" &"
             {WAIFU_CATEGORIES[id]}
           )
         )
+        
       )
       (box
         :class "sidebar-waifu-image"
         :style "background-image: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.5)), url('${waifu_art}');"
         :hexpand true
       )
+      (box
+        ; :class "sidebar-waifu-content"
+        :space-evenly false
+        :spacing 6
+        :width 100
+        :orientation "v"
+        (combo-box-text 
+        :items "['sqs','sqdds']"
+        :style "color:white;"
+        )
+        ; (for id in WAIFU_TAG_ID_LIST_2
+        ;   (button
+        ;     :class "sidebar-waifu-tag"
+        ;     :onclick "${EWW_CMD} update waifu_art=\"$(scripts/waifu.py ${WAIFU_CATEGORIES_ARGS[id]} ${is_nsfw == 'True' ? 'nsfw' : 'sfw'})\" &"
+        ;     {WAIFU_CATEGORIES[id]}
+        ;   )
+        ; )
+        (button ; Pin
+          :class "sidebar-waifu-reset"
+          :style "padding: 10px 10px"
+          :onclick "eww --config $HOME/.config/hypr/eww update waifu_art=''"
+          "🗑"
+        )
+      )
+      
     )
   )
 )

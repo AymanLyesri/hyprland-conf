@@ -1,32 +1,21 @@
 (defwidget bar_right []
   (box
-    :space-evenly "false"
+    :space-evenly false
     :orientation "h"
-    :halign "center"
+    :halign "end"
     :class "bar-right"
-    (titlebar)
     (system)
     (clock)
   )
 )
 
-(defwidget titlebar []
-  (box
-    :class "module"
-    (label
-      :class "titlebar-label txt-low"
-      :limit-width "10"
-      :text apptitles
-    )
-  )
-)
 
 (defwidget system []
   (box
     :space-evenly "false"
     :orientation "h"
     :spacing "10"
-    :halign "end"
+    ; :halign "end"
     :class "module"
     (Toggles)
     (sep)
@@ -180,10 +169,9 @@
     :spacing "10"
     :class "module"
     (label
-      :text ""
+      :text " ${clock_time}"
     :class "icon")
-    (label
-    :text clock_time)
+
   )
 )
 
