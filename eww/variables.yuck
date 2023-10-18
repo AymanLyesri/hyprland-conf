@@ -15,18 +15,22 @@
 (defvar music_title "")
 (defvar music_artist "")
 (defvar music_prog 0)
+; Left Bar
+(defvar workspace_icons "[0 ,'一' ,'二', '三' ,'四', '五' ,'六' ,'七' ,'八' ,'九' ,'〇']")
 ;Sidebar
 (defvar sidebar_rev false)
 (defpoll quote :interval "5h" "python scripts/quotes.py 60 | sed -e 's/.\{20\}/&\n/g'")
 ;W   
 (defvar WAIFU_CATEGORIES '["zerotwo",      "waifu",        "neko",        "wifey",      "maid", "       megumin",               "marin",               "mori",             "raiden", "     oppai",      "selfies", "       shinobu",      "uniform",        "awoo", "fetish"]')
 (defvar WAIFU_CATEGORIES_ARGS '["02", "--im waifu", "--pics neko", "--pics waifu", "--im maid", "--pics megumin", "--im marin-kitagawa", "--im mori-calliope", "--im raiden-shogun", "--im oppai", "--im selfies", "--pics shinobu", "--im uniform", "--pics awoo", "--af fetish"]')
-(defvar WAIFU_TAG_ID '[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14]')
+(defvar WAIFU_TAG_ID_LIST_1 '[0,1,2,3,4,5,6,7]')
+(defvar WAIFU_TAG_ID_LIST_2 '[8,9,10,11,12,13,14]')
 (defvar waifu_art "img.jpg")
 (defvar is_nsfw false)
 
 ;Scripts listeners
 (deflisten script_workspace "scripts/workspace")
+(deflisten script_workspace__ "scripts/workspace2")
 
 (defpoll apptitles :interval "1s" "scripts/workspace --active-window")
 (defpoll clock_time :interval "5s" "date '+\%H:\%M'")

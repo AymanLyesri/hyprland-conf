@@ -1,5 +1,6 @@
 .bar {
-  margin-top: 5px;
+  margin-top: 4px;
+  margin-bottom: 6px;
   padding: 0px;
   // padding: 5 0 0 0;
 }
@@ -56,6 +57,7 @@
 
 .ws {
   button {
+    box-shadow: 5px 3px 3px $background-darker-alt;
     border-bottom: 0 solid;
     @include ws-btn-font();
     transition: all 0.5s;
@@ -70,6 +72,7 @@
       border-color: $focused-alt;
     }
     &.ws-btn-focused {
+      box-shadow: 3px 2px 3px $focused-alt;
       color: $foreground;
       background-color: $background-darker;
       border-bottom: 5 solid;
@@ -88,9 +91,20 @@
 //#endregion
 
 //#region right-bar
+
+.bar-right{
+  .module{
+      box-shadow: -5px 3px 3px $background-darker-alt;
+  }
+}
 //#region Titlebar
-.titlebar-label {
-  padding-right: 2px;
+.titlebar {
+  box-shadow: 0px 4px 2px $background-darker-alt;
+
+  label {
+    // padding-right: 2px;
+    transition: all 1s;
+  }
 }
 
 //#endregion

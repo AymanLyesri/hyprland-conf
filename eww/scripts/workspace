@@ -10,19 +10,18 @@ workspace() {
   ws_focused=$(hyprctl monitors | grep active | awk '{print $3}')
   ws_active=$(hyprctl workspaces)
 
-  echo -n "(eventbox :onscroll \"echo {} | sed -e 's/down/+1/g' -e 's/up/-1/g' | xargs scripts/./workspace\" \
-(box :class 'ws' :spacing 5 :space-evenly 'false' :halign 'start'"
+  echo -n "(box :class 'ws' :spacing 5 :space-evenly 'false'"
 
   for i in $(seq 1 $max_workspace); do
     if [[ $ws_focused == $i ]]; then
-      echo -n "(button :class 'ws-btn-focused' :width 35 :onclick 'hyprctl dispatch workspace $i' '${ic[$i]}') "
+      echo -n "(button :class 'ws-btn-focused' :width 35 :onclick 'hyprctl dispatch workspace $i' '卍') "
     elif [[ $(echo "$ws_active" | grep "ID $i" | awk '{print $3}') == $i ]]; then
       echo -n "(button :class 'ws-btn-active' :width 35 :onclick 'hyprctl dispatch workspace $i' '${ic[$i]}') "
     else
       echo -n "(button :class 'ws-btn' :width 35 :onclick 'hyprctl dispatch workspace $i' '${ic[$i]}') "
     fi
   done
-  echo "))"
+  echo ")"
 }
 
 get_window_active() {
