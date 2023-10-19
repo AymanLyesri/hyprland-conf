@@ -1,5 +1,7 @@
 #! /bin/bash
 
+EWW='eww --config /home/ayman/.config/hypr/eww' 
+
 isPlayerActive() {
     status=$(playerctl status --no-messages)
     [[ -z "$status" ]] && echo 0 || echo "$([[ "$status" = "Paused" ]] && echo 1 || echo 2)"
@@ -72,32 +74,46 @@ getMusicPlayerIcon() {
     echo $icon
 }
 
+getMusicPlayerColor() {
+    playerStatus=$(playerctl -l --no-messages)
+    color=''
+    # Firefox
+    if [ "${playerStatus:0:7}" == "firefox" ]; then
+        color="rgb(255, 150, 50)"
+    # Spotify
+    elif [ "$playerStatus" == "spotify" ]; then
+        color="rgb(0, 200, 100)"
+    fi
+    echo $color
+}
+
 noPlayerMode() {
-    eww --config $HOME/.config/hypr/eww update music_art="$(getMusicArt)"
-    eww --config $HOME/.config/hypr/eww update player_active=false
+    ${EWW} update music_art="$(getMusicArt)"
+    ${EWW} update player_active=false
 }
 
 playerMode() {
-    eww --config $HOME/.config/hypr/eww update player_active=$1
-    eww --config $HOME/.config/hypr/eww update music_art="$(getMusicArt)"
-    eww --config $HOME/.config/hypr/eww update music_icon="$(getMusicPlayerIcon)"
-    eww --config $HOME/.config/hypr/eww update music_title="$(getMusicTitle)"
-    eww --config $HOME/.config/hypr/eww update music_artist="$(getMusicArtist)"
-    eww --config $HOME/.config/hypr/eww update music_prog="$(getMusicProgress)"
+    ${EWW} update player_active=$1
+    ${EWW} update music_art="$(getMusicArt)"
+    ${EWW} update music_icon="$(getMusicPlayerIcon)"
+    ${EWW} update music_title="$(getMusicTitle)"
+    ${EWW} update music_title_color="$(getMusicPlayerColor)"
+    ${EWW} update music_artist="$(getMusicArtist)"
+    ${EWW} update music_prog="$(getMusicProgress)"
 }
 
 update() {
     playerState=$(isPlayerActive)
     if [[ $playerState != 0 ]]; then
         playerMode $playerState
-    else
-        noPlayerMode
+    # else
+    #     noPlayerMode
     fi
 }
 
 togglePlay() {
     playerctl play-pause
-    eww --config $HOME/.config/hypr/eww update player_active=$(isPlayerActive)
+    ${EWW} update player_active=$(isPlayerActive)
 }
 
 previousTrack() {

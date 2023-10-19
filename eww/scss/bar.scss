@@ -27,9 +27,15 @@
 }
 
 .music-label {
-  color: $foreground;
+  color: $foreground-alt;
+  margin: 0px;
+
+  &.title{
   font-size: 12;
-  font-weight: bolder;
+  }
+  &.artist{
+  font-size: 10;
+  }
 }
 
 .music-unlabel {

@@ -12,14 +12,14 @@
 (defwidget titlebar []
   (revealer
     :reveal {apptitles == '󰖲'?false:true}
-    :transition "crossfade"
+    :transition "slideright"
     :duration "500ms"
-      (label
-        :class "module titlebar txt-low"
-        :style "padding: 5px"
-        :limit-width "10"
-        :text apptitles
-      )
+    (label
+      :class "module titlebar txt-low"
+      :style "padding: 5px"
+      :limit-width "10"
+      :text apptitles
+    )
   )
 )
 
@@ -38,9 +38,9 @@
 
 (defwidget music []
   (revealer
-    :reveal "${player_active}"
+    :reveal {player_active == 2}
     ; TO BE CHANGED
-    :transition "crossfade"
+    :transition "slideleft"
     :duration "700ms"
     (box
       :class "music"
@@ -48,39 +48,34 @@
       :space-evenly false
       ; :width 400
       :style "background-image: linear-gradient(to right, #131313 , rgba(90, 20, 52, 0)), url('${music_art}');"
-      (revealer
-        :reveal "${player_active}"
-        :transition "slideright"
-        :duration "700ms"
+      (box
+        :space-evenly false
+        (box ; Cover
+          :class "music-cover"
+          :style "background-image: url('${music_art}');"
+          ; :width 30
+        )
         (box
           :space-evenly false
-          :spacing 10
-          (box ; Cover
-            :class "music-cover"
-            :style "background-image: url('${music_art}');"
-            ; :width 30
+          :orientation "h"
+          (label ; Title
+            :class "music-label title"
+            :style "color:${music_title_color}"
+            :limit-width "25"
+            :text "${music_icon} ${music_title}"
           )
-          (box
-            :orientation "v"
-            (label ; Title
-              :class "music-label"
-              :limit-width "22"
-              :text music_title
-            )
-            (label ; Author
-              :class "music-label"
-              :halign "start"
-              :text music_artist
-            )
+          (label ; Author
+            :style "color:${music_title_color}"
+            :class "music-label artist"
+            :text "🡄${music_artist}"
           )
         )
       )
       (revealer
-        :reveal "${player_active}"
-        :transition "slideleft"
+        :reveal {player_active == 2}
         (label
           :class "music-unlabel"
-          :text "󰎈${music_updater}" ; updating music vars while render text
+          :text "${music_updater}" ; updating music vars while render text
         )
       )
     )

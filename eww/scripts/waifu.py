@@ -40,7 +40,7 @@ def nsfw():
         json.dump(content, waifuson, indent=4)
     isnsfw = content["is_nsfw"]
 
-    os.system("eww --config $HOME/.config/hypr/eww update is_nsfw=" + str(isnsfw))
+    os.system("${EWW_CMD} update is_nsfw=" + str(isnsfw))
 
 
 def loadImage(mode, url, tag=None):
@@ -94,4 +94,4 @@ write_url(image_of_choice())
 
 print('img.jpg')
 
-# os.system("eww --config $HOME/.config/hypr/eww update waifu_art='img.jpg'")
+# os.system("${EWW_CMD} update waifu_art='img.jpg'")
