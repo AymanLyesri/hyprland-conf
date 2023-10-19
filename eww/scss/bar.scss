@@ -1,6 +1,6 @@
 .bar {
-  margin-top: 4px;
-  margin-bottom: 6px;
+  margin-top: 3px;
+  margin-bottom: 5px;
   padding: 0px;
   // padding: 5 0 0 0;
 }
@@ -19,16 +19,16 @@
 }
 
 .music-cover {
-  // margin: 2 2 2 2;
   background-repeat: no-repeat;
-  background-position: center center;
-  background-size: 200%;
+  background-position: center;
+  background-size: contain;
   border-radius: 25;
 }
 
 .music-label {
   color: $foreground-alt;
   margin: 0px;
+  text-shadow: 2px 2px 2px black;
 
   &.title{
   font-size: 12;

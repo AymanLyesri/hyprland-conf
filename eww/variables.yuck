@@ -11,6 +11,7 @@
 ;Music
 (defvar player_active 0)
 (defvar music_art "")
+(defvar music_art_URL "")
 (defvar music_icon "")
 (defvar music_title "")
 (defvar music_title_color "")
@@ -21,6 +22,7 @@
 (defvar workspace_icons "[0 ,'一' ,'二', '三' ,'四', '五' ,'六' ,'七' ,'八' ,'九' ,'〇']")
 
 ;Sidebar
+(defvar ratio false)
 (defvar display_tags false)
 (defvar sidebar_rev false)
 (defpoll quote :interval "5h" "python scripts/quotes.py 60 | sed -e 's/.\{20\}/&\n/g'")

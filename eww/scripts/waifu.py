@@ -92,6 +92,9 @@ def image_of_choice():
 
 write_url(image_of_choice())
 
+
 print('img.jpg')
+
+os.system("identify img.jpg | gawk '{split($3,sizes,'x'); print sizes[1]/sizes[2]}")
 
 # os.system("${EWW_CMD} update waifu_art='img.jpg'")

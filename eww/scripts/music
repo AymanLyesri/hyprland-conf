@@ -1,6 +1,6 @@
 #! /bin/bash
 
-EWW='eww --config /home/ayman/.config/hypr/eww' 
+EWW='eww --config /home/ayman/.config/hypr/eww'
 
 isPlayerActive() {
     status=$(playerctl status --no-messages)
@@ -43,22 +43,28 @@ getMusicArt() {
     if [ "${playerStatus:0:7}" == "firefox" ]; then
         path="$HOME/.mozilla/firefox/firefox-mpris/"
         image="$(ls $path)"
-
         echo "$path$image"
         return
     fi
 
     # Spotify
     if [ "$playerStatus" == "spotify" ]; then
-        echo $(playerctl metadata mpris:artUrl)
+        art_url=$(playerctl metadata mpris:artUrl)
+        og_url=$(${EWW} get music_art_URL)
+        if [ "$og_url" != "$art_url" ]; then #check if the same image as previous one
+            curl $art_url >spotify.jpg
+            ${EWW} update music_art_URL=$art_url
+        fi
+        echo "spotify.jpg"
         return
-    else
-        echo $(playerctl metadata mpris:artUrl)
-        return
+    # else
+    #     # curl $(playerctl metadata mpris:artUrl) > spotify.jpg
+    #     echo $(playerctl metadata mpris:artUrl)
+    #     return
     fi
 
     #Fallback
-    echo "/home/satanx016/.config/eww/assets/music/default_art.jpg"
+    echo "$HOME/.config/eww/assets/music/default_art.jpg"
 }
 
 getMusicPlayerIcon() {
