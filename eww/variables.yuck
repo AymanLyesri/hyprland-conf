@@ -22,7 +22,7 @@
 (defvar workspace_icons "[0 ,'一' ,'二', '三' ,'四', '五' ,'六' ,'七' ,'八' ,'九' ,'〇']")
 
 ;Sidebar
-(defvar ratio false)
+(defpoll image_ratio :interval "1s" "printf '%.1f' $(identify -format '%[fx:h/w]' img.jpg)")
 (defvar display_tags false)
 (defvar sidebar_rev false)
 (defpoll quote :interval "5h" "python scripts/quotes.py 60 | sed -e 's/.\{20\}/&\n/g'")

@@ -89,12 +89,10 @@ def image_of_choice():
         return loadImage(mode, "https://anime-feet-api.vercel.app/api/posts?")
     elif mode == "02":
         print("https://i.pinimg.com/736x/5a/b1/3b/5ab13b95d7e57630b303442c1d2d47ac.jpg")
-
+    
 write_url(image_of_choice())
-
 
 print('img.jpg')
 
-os.system("identify img.jpg | gawk '{split($3,sizes,'x'); print sizes[1]/sizes[2]}")
-
+os.system("eww --config /home/ayman/.config/hypr/eww update image_ratio=$(identify -format '%[fx:w/h]' img.jpg)")
 # os.system("${EWW_CMD} update waifu_art='img.jpg'")
