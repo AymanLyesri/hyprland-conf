@@ -1,23 +1,24 @@
 .sidebar-layout {
   @extend .module;
   padding: unset;
-  padding: 10px;
+  // padding: 10px;
   margin: unset;
-  margin-left: 10px;
+  border: 10px black;
+  // margin-left: 10px;
 }
 
-.sidebar-title {
-  padding: 5px;
-}
+// .sidebar-title {
+//   padding: 5px;
+// }
 
-.sidebar-title-text {
-  font-size: 18;
-  color: $foreground-accented;
-}
+// .sidebar-title-text {
+//   font-size: 18;
+//   color: $foreground-accented;
+// }
 
-.sidebar-subtitle {
-  font-size: 14;
-}
+// .sidebar-subtitle {
+//   font-size: 14;
+// }
 
 //#region sidebar music
 .sidebar-music-background {
@@ -26,7 +27,7 @@
   background-size: cover;
   background-position: center;
   border-color: $unfocused;
-  opacity: 0.55;
+  // opacity: 0.55;
 }
 
 .sidebar-music-box {
@@ -75,9 +76,14 @@
 //#endregion
 //#region sidebar Waifu
 
-.sidebar-waifu-content {
-  padding: 10;
+.sidebar-waifu {
+  border: 5px solid $background;
+  border-radius: 0px 0px 10px 10px;
 }
+
+// .sidebar-waifu-content {
+//   // padding: 10;
+// }
 
 .sidebar-waifu-toggle {
   padding: 2px 5px;
@@ -88,24 +94,6 @@
   &:hover {
     background-color: $unfocused;
   }
-
-  &:active {
-    background-color: $focused;
-  }
-}
-
-.sidebar-waifu-reset {
-  padding: 2px 5px;
-  background-color: $background-accented;
-  border-radius: 12px;
-  min-height: 20px;
-  transition: all 0.5s;
-
-  &:hover {
-    background-color: $unfocused;
-    min-width: 25px;
-  }
-
   &:active {
     background-color: $focused;
   }
@@ -115,7 +103,7 @@
   background-color: $background-accented;
   border-radius: 5px;
   min-height: 30px;
-  font-size: 14;
+  font-size: 11;
   transition: all 0.5s;
 
   &:hover {
@@ -126,6 +114,11 @@
   &:active {
     background-color: $focused;
   }
+
+  &.reset {
+    padding: 2px 2px;
+    font-size: 20;
+  }
 }
 
 .sidebar-waifu-image {
@@ -133,7 +126,6 @@
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
-  
 }
 
 //#endregion
@@ -143,10 +135,11 @@
 // }
 
 .sidebar-quote-content {
+  font-size: 13;
   padding: 10px;
   background-color: $background-accented;
-  .author{
-    color: red;
+  .author {
+    color: rgb(255, 36, 36);
   }
 }
 

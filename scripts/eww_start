@@ -1,7 +1,8 @@
 #!/bin/bash
 
-
-
 eww --config $HOME/.config/hypr/eww open bar &
 
+sleep 1
+
 eww --config $HOME/.config/hypr/eww open sidebar &
+
