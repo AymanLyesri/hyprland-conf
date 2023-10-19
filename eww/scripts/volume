@@ -28,13 +28,13 @@ get_icon() {
 set_icon() {
   volume=$(get)
   if [[ $volume == 0 ]]; then
-    eww --config $HOME/.config/hypr/eww update vol_state=0
+    ${EWW_CMD} update vol_state=0
   elif [[ $volume > 60 ]]; then
-    eww --config $HOME/.config/hypr/eww update vol_state=3
+    ${EWW_CMD} update vol_state=3
   elif [[ $volume > 40 ]]; then
-    eww --config $HOME/.config/hypr/eww update vol_state=2
+    ${EWW_CMD} update vol_state=2
   elif [[ $volume > 1 ]]; then
-    eww --config $HOME/.config/hypr/eww update vol_state=1
+    ${EWW_CMD} update vol_state=1
   fi
 }
 

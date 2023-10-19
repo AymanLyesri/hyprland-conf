@@ -27,8 +27,8 @@
   (box ; Quick Toggles
     :space-evenly false :spacing 7
     (eventbox ; Brightness
-      :onhover "eww --config $HOME/.config/hypr/eww update bright_rev=true"
-      :onhoverlost "eww --config $HOME/.config/hypr/eww update bright_rev=false"
+      :onhover "${EWW_CMD} update bright_rev=true"
+      :onhoverlost "${EWW_CMD} update bright_rev=false"
       (box
         :vexpand "false"
         :hexpand "false"
@@ -59,8 +59,8 @@
     )
     (sep)
     (eventbox ; Volume
-      :onhover "eww --config $HOME/.config/hypr/eww update vol_rev=true"
-      :onhoverlost "eww --config $HOME/.config/hypr/eww update vol_rev=false"
+      :onhover "${EWW_CMD} update vol_rev=true"
+      :onhoverlost "${EWW_CMD} update vol_rev=false"
       :onclick "scripts/volume --toggle"
       (box
         :vexpand "false"
@@ -153,7 +153,7 @@
           :orientation "v"
           :class "prog-bar-temp"
           :valign "center"
-          :value {EWW_BATTERY.BAT1.capacity}
+          :value {EWW_TEMPS.CORETEMP_CORE_1}
         )
       )
     )

@@ -3,15 +3,15 @@
   :monitor 0
   :exclusive false
   :geometry (geometry
-    :anchor "top left"
+    :anchor "center left"
   )
   (sidebar_layout)
 )
 
 (defwidget sidebar_layout []
   (eventbox
-    :onhover "eww --config $HOME/.config/hypr/eww update sidebar_rev=true"
-    :onhoverlost "eww --config $HOME/.config/hypr/eww update sidebar_rev=false"
+    :onhover "${EWW_CMD} update sidebar_rev=true"
+    :onhoverlost "${EWW_CMD} update sidebar_rev=false"
     (revealer
       :reveal sidebar_rev
       :transition "slideright"
@@ -55,7 +55,7 @@
 
 (defwidget sidebar_music []
   (overlay
-    :height 100
+    :height 69
     (box ;Background
       :class "sidebar-music-background"
       :style "background-image: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.5)), url('${music_art}');"
@@ -81,7 +81,7 @@
             :style "font-size: 1px"
             :halign "start"
             :text "${music_title}"
-            :limit-width "30"
+            :limit-width "30px"
           )
           (label
             :class "sidebar-music-mediacontrols"
@@ -145,92 +145,84 @@
 ; (defpoll url :interval "1s" "light")
 
 (defwidget sidebar_waifu []
-  (box
-    :space-evenly false :spacing 10
+  (eventbox
+    :space-evenly false
     :orientation "v"
     :hexpand true
     :vexpand true
-    (box ;Title
-      :class "sidebar-title"
-      (label
-        :class "sidebar-title-text"
-        :halign "start"
-        :text "  Culture"
-      )
-      (label
-        :class "sidebar-subtitle txt-low"
-        :halign "end"
-        :text "Dayumn those waifus !"
-      )
-    )
-    (box ;Content
-      :class "sidebar-waifu-content"
-      :space-evenly false :spacing 12
-      :orientation "h"
+    ; :class "sidebar-waifu-image"
+    :onhover "${EWW_CMD} update display_tags=true"
+    :onhoverlost "${EWW_CMD} update display_tags=false"
+    
+    (box
+      :space-evenly false :spacing 10
+      :orientation "v"
+      :hexpand true
       :vexpand true
-      (box ; Tag Buttons
-        :space-evenly false :spacing 6
-        :orientation "v"
-
-        ; (button ; NSFW
-        ;   :class "sidebar-waifu-toggle"
-        ;   :onclick "scripts/./waifu.py fuckyWucky &"
-        ;   :style "font-size: 11"
-        ;   "NSFW 🔞"
-        ; )
-        
-        (revealer
-          :transition "slidedown"
-          :duration "500ms"
-          :reveal display_tags
-          (box
-            :space-evenly false :spacing 6
-            :orientation "v"
-            (for id in WAIFU_TAG_ID_LIST
-              (button
-                :onhover "${EWW_CMD} update display_tags=true"
-                :class "sidebar-waifu-tag"
-                :onclick "${EWW_CMD} update waifu_art=\"$(scripts/waifu.py ${WAIFU_CATEGORIES_ARGS[id]} ${is_nsfw == 'True' ? 'nsfw' : 'sfw'})\" &"
-                {WAIFU_CATEGORIES[id]}
-              )
-            )
-          )
-          
+      (box ;Title
+        :class "sidebar-title"
+        (label
+          :class "sidebar-title-text"
+          :halign "start"
+          :text "  Culture"
+        )
+        (label
+          :class "sidebar-subtitle txt-low"
+          :halign "end"
+          :text "Dayumn those waifus !"
         )
       )
-      (eventbox
-        :height 300
-        :class "sidebar-waifu-image"
-        :onhover "${EWW_CMD} update display_tags=true"
-        :onhoverlost "if [ '${display_tags}' = true ] ; then sleep 2 && ${EWW_CMD} update display_tags=false & fi"
-        :style "background-image: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.5)), url('${waifu_art}');"
-        :hexpand true
+      (box ;Content
+        :class "sidebar-waifu-content"
+        :space-evenly false :spacing 12
+        :orientation "h"
+        :vexpand true
+        (box ; Tag Buttons
+          :space-evenly false :spacing 6
+          :orientation "v"
+          
+          ; (button ; NSFW
+            ;   :class "sidebar-waifu-toggle"
+            ;   :onclick "scripts/./waifu.py fuckyWucky &"
+            ;   :style "font-size: 11"
+            ;   "NSFW 🔞"
+          ; )
+          
+          (revealer
+            :transition "slidedown"
+            :duration "500ms"
+            :reveal display_tags
+            (box
+              :space-evenly false :spacing 6
+              :orientation "v"
+              (button ; Pin
+                :class "sidebar-waifu-reset"
+                :style "padding: 10px 10px"
+                :onclick "${EWW_CMD} update waifu_art=''"
+                "🗑"
+              )
+              (for id in WAIFU_TAG_ID_LIST
+                (button
+                  :onhover "${EWW_CMD} update display_tags=true"
+                  :class "sidebar-waifu-tag"
+                  :onclick "${EWW_CMD} update waifu_art=\"$(scripts/waifu.py ${WAIFU_CATEGORIES_ARGS[id]} ${is_nsfw == 'True' ? 'nsfw' : 'sfw'})\" &"
+                  {WAIFU_CATEGORIES[id]}
+                )
+              )
+            )
+            
+          )
+        )
+        (box
+          :height 300
+          :class "sidebar-waifu-image"
+          :style "background-image: url('${waifu_art}');"
+          :hexpand true
+        )
       )
-      (box
-        ; :class "sidebar-waifu-content"
-        :space-evenly false
-        :spacing 6
-        :orientation "v"
-        ; (for id in WAIFU_TAG_ID_LIST_2
-          ;   (button
-            ;     :class "sidebar-waifu-tag"
-            ;     :onclick "${EWW_CMD} update waifu_art=\"$(scripts/waifu.py ${WAIFU_CATEGORIES_ARGS[id]} ${is_nsfw == 'True' ? 'nsfw' : 'sfw'})\" &"
-            ;     {WAIFU_CATEGORIES[id]}
-          ;   )
-        ; )
-        ; (button ; Pin
-        ;   :class "sidebar-waifu-reset"
-        ;   :style "padding: 10px 10px"
-        ;   :onclick "eww --config $HOME/.config/hypr/eww update waifu_art=''"
-        ;   "🗑"
-        ; )
-      )
-      
     )
   )
 )
-
-(defvar display_tags false)
 
 (defwidget sidebar_quote []
   (box
@@ -255,10 +247,13 @@
         :text "${quote}"
         ;; sidebar_quote
       )
-      (label ; Its Author
-        :halign "end"
-        :valign "end"
-        :text "卐 lilayman 卐"
+      (box
+        (label ; Its Author
+          :class "author"
+          :halign "end"
+          :valign "end"
+          :text "卐 lilayman"
+        )
       )
     )
   )

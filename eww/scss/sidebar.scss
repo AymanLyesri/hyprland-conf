@@ -133,6 +133,7 @@
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
+  
 }
 
 //#endregion
@@ -144,6 +145,18 @@
 .sidebar-quote-content {
   padding: 10px;
   background-color: $background-accented;
+  .author{
+    color: red;
+  }
 }
+
+// @keyframes spin-animation {
+//   0% {
+//     transform: rotate(0deg);
+//   }
+//   100% {
+//     transform: rotate(359deg);
+//   }
+// }
 
 //#endregion
