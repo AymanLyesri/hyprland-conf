@@ -15,7 +15,8 @@
   // background-position: right 55%;
   border: 1 solid;
   border-color: $unfocused;
-  border-radius: 10px;
+  border-radius: 10px 0px 0px 10px;
+  margin: 0px;
 }
 
 .music-cover {
@@ -33,6 +34,7 @@
   &.title{
   font-size: 12;
   }
+
   &.artist{
   font-size: 10;
   }
@@ -49,6 +51,30 @@
 //#endregion
 
 //#region center-bar
+.clock{
+  margin: 0px;
+  border-radius: 10px;
+  &.no-radius-left{
+    border-radius: 0px 10px 10px 0px;
+  }
+  &.no-radius-right{
+    border-radius: 10px 0px 0px 10px;
+  }
+  &.no-radius{
+    border-radius: 0px;
+  }
+}
+
+.titlebar {
+  box-shadow: 0px 1px 2px $background-darker-alt;
+  border-radius: 0px 10px 10px 0px;
+  margin-left: 0px;
+  label {
+    // padding-right: 2px;
+    transition: all 1s;
+  }
+}
+
 //#region workspaces
 
 @mixin ws-btn-font {
@@ -97,21 +123,13 @@
 //#endregion
 
 //#region right-bar
-
 .bar-right {
   .module {
     box-shadow: -5px 3px 3px $background-darker-alt;
   }
 }
-//#region Titlebar
-.titlebar {
-  box-shadow: 0px 1px 2px $background-darker-alt;
 
-  label {
-    // padding-right: 2px;
-    transition: all 1s;
-  }
-}
+
 
 //#endregion
 //#region Toggles

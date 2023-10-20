@@ -1,13 +1,28 @@
 (defwidget bar_center []
   (box
     :space-evenly false
+    ; :spacing 0
     :halign "center"
     :class "bar-center"
     (music)
+    (clock)
     (titlebar)
   )
 )
 
+
+(defwidget start []
+  (box
+    :class "module"
+    (button
+      :onclick "scripts/start"
+      (label
+        :class "icon" :style "padding-right: 5px"
+        :text "󰣇"
+      )
+    )
+  )
+)
 
 (defwidget titlebar []
   (revealer
@@ -23,15 +38,16 @@
   )
 )
 
-(defwidget start []
+
+(defwidget clock []
   (box
-    :class "module"
-    (button
-      :onclick "scripts/start"
-      (label
-        :class "icon" :style "padding-right: 5px"
-        :text "󰣇"
-      )
+    :space-evenly "false"
+    :orientation "h"
+    :spacing "10"
+    :class {player_active == 2 && apptitles != '󰖲' ? "module clock no-radius" : player_active == 2 ? "module clock no-radius-left" : apptitles != '󰖲' ? "module clock no-radius-right" : "module clock" }
+    (label
+      :text " ${clock_time}"
+      :class "txt-low"
     )
   )
 )
