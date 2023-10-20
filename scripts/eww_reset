@@ -1,0 +1,12 @@
+#!/bin/bash
+
+scripts="$HOME/.config/hypr/scripts"
+# STYLE="$HOME/.config/hypr/waybar/style.css"
+
+killall eww
+
+source ${scripts}/eww_start
+
+
+
+# --style ${STYLE}

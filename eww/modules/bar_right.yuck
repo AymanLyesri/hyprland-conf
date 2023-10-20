@@ -5,7 +5,7 @@
     :halign "end"
     :class "bar-right"
     (system)
-    (clock)
+    ; (clock)
   )
 )
 
@@ -174,18 +174,6 @@
   
 )
 
-(defwidget clock []
-  (box
-    :space-evenly "false"
-    :orientation "h"
-    :spacing "10"
-    :class "module"
-    (label
-      :text " ${clock_time}"
-    :class "icon")
-    
-  )
-)
 
 (defwidget powerview []
   (box

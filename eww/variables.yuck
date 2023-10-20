@@ -8,6 +8,7 @@
 (defpoll vol_state :interval "10s" "scripts/volume --get-state")
 ;Brightness
 (defvar bright_rev false)
+(defvar bright_icons '["🔅","🔆"]')
 ;Music
 (defvar player_active 0)
 (defvar music_art "")
@@ -19,7 +20,7 @@
 (defvar music_prog 0)
 
 ; Left Bar
-(defvar workspace_icons "[0 ,'一' ,'二', '三' ,'四', '五' ,'六' ,'七' ,'八' ,'九' ,'〇']")
+; (defvar workspace_icons "[0 ,'一' ,'二', '三' ,'四', '五' ,'六' ,'七' ,'八' ,'九' ,'〇']")
 
 ;Sidebar
 (defpoll image_ratio :interval "1s" "printf '%.1f' $(identify -format '%[fx:h/w]' img.jpg)")
@@ -38,7 +39,6 @@
 
 ;Scripts listeners
 (deflisten script_workspace "scripts/workspace")
-(deflisten script_workspace__ "scripts/workspace2")
 
 (defpoll apptitles :interval "1s" "scripts/workspace --active-window")
 (defpoll clock_time :interval "5s" "date '+\%H:\%M'")
