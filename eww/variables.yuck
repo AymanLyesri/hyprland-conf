@@ -1,4 +1,7 @@
 ;; the lower are the update times, the higher is the performance.
+; BAR
+; (defvar bar_height "100")
+
 ;Wifi
 (defvar wifi_rev false)
 (defvar ESSID_WLAN "online")
@@ -38,13 +41,14 @@
 (defvar is_nsfw false)
 
 ;Scripts listeners
-(deflisten script_workspace "scripts/workspace")
+(deflisten script_workspace "scripts/workspaces")
 
-(defpoll apptitles :interval "1s" "scripts/workspace --active-window")
+(defpoll apptitles :interval "1s" "scripts/workspaces --active-window")
 (defpoll clock_time :interval "5s" "date '+\%H:\%M'")
 (defpoll vol_percent :interval "5s" "scripts/volume --get")
 (defpoll brightness_percent :interval "5s" "light")
 
 ;Updaters                   --update
 (defpoll music_updater :interval "2s" "scripts/music --update")  
+(defpoll bar_height :initial "100" :interval "2s" "scripts/empty_workspace")  
 ; (defpoll sidebar_quote :interval "10s" "hyprctl splash")

@@ -82,9 +82,9 @@
   font-weight: bolder;
   border: 2 solid;
 
-  label {
-    padding-bottom: 2px;
-  }
+  // label {
+  //   padding-bottom: 2px;
+  // }
 }
 
 .ws {
@@ -93,6 +93,7 @@
     border-bottom: 0 solid;
     @include ws-btn-font();
     transition: all 0.5s;
+    transition: min-height 1s;
     &.ws-btn {
       background-color: $background;
       color: $foreground-darker;
@@ -124,9 +125,14 @@
 
 //#region right-bar
 .bar-right {
+  transition: all 1s;
   .module {
     box-shadow: -5px 3px 3px $background-darker-alt;
   }
+}
+
+.bar-center{
+  transition: all 1s;
 }
 
 

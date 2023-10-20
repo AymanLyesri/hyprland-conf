@@ -2,8 +2,8 @@
 
 ic=(0 一 二 三 四 五 六 七 八 九 〇)
 
-ws_focused=$(hyprctl monitors | grep active | awk '{print $3}')
-ws_active=$(hyprctl workspaces)
+# ws_focused=$(hyprctl monitors | grep active | awk '{print $3}')
+# ws_active=$(hyprctl workspaces)
 max_workspace=9
 
 workspace() {
@@ -14,7 +14,7 @@ workspace() {
 
   for i in $(seq 1 $max_workspace); do
     if [[ $ws_focused == $i ]]; then
-      echo -n "(button :class 'ws-btn-focused' :width 35 :onclick 'hyprctl dispatch workspace $i' '卍') "
+      echo -n "(button :class 'ws-btn-focused' :style 'min-height:\${bar_height}px' :width 35 :onclick 'hyprctl dispatch workspace $i' '卍') "
     elif [[ $(echo "$ws_active" | grep "ID $i" | awk '{print $3}') == $i ]]; then
       echo -n "(button :class 'ws-btn-active' :width 35 :onclick 'hyprctl dispatch workspace $i' '${ic[$i]}') "
     else

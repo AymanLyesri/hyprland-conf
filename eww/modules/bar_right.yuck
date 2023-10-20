@@ -4,6 +4,7 @@
     :orientation "h"
     :halign "end"
     :class "bar-right"
+    :style "min-height:${bar_height}px"
     (system)
     ; (clock)
   )
