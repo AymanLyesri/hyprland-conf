@@ -4,6 +4,7 @@
     ; :spacing 0
     :halign "center"
     :class "bar-center"
+    :style "min-height:${bar_height}px"
     (music)
     (clock)
     (titlebar)
@@ -37,7 +38,6 @@
     )
   )
 )
-
 
 (defwidget clock []
   (box

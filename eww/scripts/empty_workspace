@@ -1,0 +1,7 @@
+#!/bin/bash
+if [ $(hyprctl activewindow) == 'Invalid' ] ; then
+    echo 40
+else
+    echo 10
+fi
+
