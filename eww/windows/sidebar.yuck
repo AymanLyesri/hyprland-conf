@@ -3,7 +3,7 @@
   :monitor 0
   :exclusive false
   :geometry (geometry
-    :anchor "top left"
+    :anchor "center left"
   )
   (sidebar_layout)
 )
@@ -67,7 +67,7 @@
       (box
         (label
           :class "sidebar-music-mediacontrols"
-          :style "font-size: 5px;"
+          :style "font-size: 15px;"
           :halign "start"
           :valign "start"
           :text music_icon
@@ -82,7 +82,7 @@
             :style "font-size: 1px"
             :halign "start"
             :text "${music_title}"
-            :limit-width "30"
+            ; :limit-width "30"
           )
           (label
             :class "sidebar-music-mediacontrols"
@@ -90,7 +90,7 @@
             
             :halign "start"
             :text music_artist
-            :limit-width "20"
+            ; :limit-width "20"
           )
         )
       )
@@ -98,7 +98,7 @@
         :space-evenly false
         :orientation "h"
         (button
-          :width 25
+          ; :width 25
           :halign "start"
           :onclick "scripts/music --previous"
           (label
@@ -198,7 +198,7 @@
               )
               (button ; Pin
                 :class "sidebar-waifu-tag reset"
-                "SAVE"
+                "💾"
               )
             )
             (for id in WAIFU_TAG_ID_LIST
@@ -214,8 +214,8 @@
         )
       )
       (box
-        :width 300
-        :height { image_ratio * 300 }
+        :width 400
+        :height { 400 * image_ratio }
         :class "sidebar-waifu-image"
         :style "background-image: url('${waifu_art}');"
         :hexpand true

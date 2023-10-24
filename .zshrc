@@ -30,3 +30,4 @@ NEOFETCH="neofetch --ascii /home/ayman/.config/hypr/neofetch/swastika --ascii_co
 eval $NEOFETCH
 alias n=$NEOFETCH 
 alias neofetch=$NEOFETCH
+alias vim=nvim

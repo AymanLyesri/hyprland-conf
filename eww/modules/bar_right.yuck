@@ -145,14 +145,14 @@
         (progress
           :flipped true
           :orientation "v"
-          :class "prog-bar-temp"
+          :class "prog-bar temp"
           :valign "center"
           :value {EWW_TEMPS.CORETEMP_CORE_0}
         )
         (progress
           :flipped true
           :orientation "v"
-          :class "prog-bar-temp"
+          :class "prog-bar temp"
           :valign "center"
           :value {EWW_TEMPS.CORETEMP_CORE_1}
         )
