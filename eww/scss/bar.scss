@@ -87,40 +87,46 @@
   // }
 }
 
-@keyframes to-active {
+@keyframes to-focused {
   0%{
     border-bottom: 0 solid;
+    border-top: 0 solid;
   }
   100%{
     border-bottom: 5 solid;
+    border-top: 5 solid;
     border-color: $focused;
   }
 }
 
 .ws {
-  transition: min-height 1s;
+  padding:0px;
   button {
    // box-shadow: 5px 3px 3px $background-darker-alt;
-   border-bottom: 5 solid;
-    @include ws-btn-font();
+   //border-bottom: 5 solid;
+  // margin:10px;
+   @include ws-btn-font();
     transition: all 0.5s;
+    border-top: 5 solid;
+      border-bottom: 5 solid;
     &.ws-btn {
-      background-color: $background-darker-alt;
+      background-color: $background;
       color: $foreground-darker;
       border-color: rgba(0,0,0,0);
+      border-radius: 90%;
     }
     &.ws-btn-active {
       background-color: $background;
       color: $foreground; 
       border-color: rgba(0,0,0,0);
+      border-radius: 75%;
     }
     &.ws-btn-focused {
-      box-shadow: 3px 2px 3px $focused-alt;
       color: $foreground;
       background-color: $background-darker;
-      border-bottom: 5 solid;
       border-color: $focused;
-    animation: to-active 1s linear;
+      animation: to-focused 1s linear;
+      border-radius: 50%;
     }
     &:hover {
       padding: 0px 15px;
