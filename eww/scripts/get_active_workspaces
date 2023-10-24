@@ -1,0 +1,15 @@
+#!/bin/bash
+
+ic=(0 一 二 三 四 五 六 七 八 九 〇)
+
+max_workspace=9
+
+# ws_focused=$(hyprctl monitors | grep active | awk '{print $3}')
+get_active() {
+    ws_active=$(hyprctl workspaces | grep "ID $i" | awk '{print $3}')
+    echo $ws_active
+}
+
+socat -u UNIX-CONNECT:/tmp/hypr/"$HYPRLAND_INSTANCE_SIGNATURE"/.socket2.sock - | while read -r event; do
+    echo $ic
+done

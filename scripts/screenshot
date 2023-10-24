@@ -7,13 +7,13 @@ notify_cmd_shot="notify-send -h string:x-canonical-private-synchronous:shot-noti
 
 if [[ "$1" == "--now" ]]; then
 
-	grim $file | wl-copy
+	grim - | wl-copy && wl-paste > $file
 
 	${notify_cmd_shot} "Copied to clipboard."
 
 elif [[ "$1" == "--area" ]]; then
 
-	grim -g "$(slurp)" $file - | wl-copy
+	grim -g "$(slurp)" - | wl-copy && wl-paste > $file
 
 	${notify_cmd_shot} "Copied to clipboard."
 

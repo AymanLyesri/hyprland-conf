@@ -1,14 +1,14 @@
 .bar {
-  margin-top: 3px;
-  margin-bottom: 5px;
-  padding: 0px;
+  margin-top: 5px;
+  margin-bottom: 1px;
+  padding: 0px 10px;
   // padding: 5 0 0 0;
 }
 
 //#region left-bar
 //#region Music
 .music {
-  @extend .module;
+   @extend .module;
   // padding-left: 0;
   // background-repeat: no-repeat;
   // background-size: 80%;
@@ -31,12 +31,12 @@
   margin: 0px;
   text-shadow: 2px 2px 2px black;
 
-  &.title{
-  font-size: 12;
+  &.title {
+    font-size: 12;
   }
 
-  &.artist{
-  font-size: 10;
+  &.artist {
+    font-size: 10;
   }
 }
 
@@ -51,22 +51,22 @@
 //#endregion
 
 //#region center-bar
-.clock{
+.clock {
   margin: 0px;
   border-radius: 10px;
-  &.no-radius-left{
+  &.no-radius-left {
     border-radius: 0px 10px 10px 0px;
   }
-  &.no-radius-right{
+  &.no-radius-right {
     border-radius: 10px 0px 0px 10px;
   }
-  &.no-radius{
+  &.no-radius {
     border-radius: 0px;
   }
 }
 
 .titlebar {
-  box-shadow: 0px 1px 2px $background-darker-alt;
+  //box-shadow: 0px 1px 2px $background-darker-alt;
   border-radius: 0px 10px 10px 0px;
   margin-left: 0px;
   label {
@@ -78,31 +78,41 @@
 //#region workspaces
 
 @mixin ws-btn-font {
-  font-size: 16;
+  font-size: 12;
   font-weight: bolder;
-  border: 2 solid;
+  // border: 2 solid;
 
   // label {
   //   padding-bottom: 2px;
   // }
 }
 
-.ws {
-  button {
-    box-shadow: 5px 3px 3px $background-darker-alt;
+@keyframes to-active {
+  0%{
     border-bottom: 0 solid;
+  }
+  100%{
+    border-bottom: 5 solid;
+    border-color: $focused;
+  }
+}
+
+.ws {
+  transition: min-height 1s;
+  button {
+   // box-shadow: 5px 3px 3px $background-darker-alt;
+   border-bottom: 5 solid;
     @include ws-btn-font();
     transition: all 0.5s;
-    transition: min-height 1s;
     &.ws-btn {
-      background-color: $background;
+      background-color: $background-darker-alt;
       color: $foreground-darker;
-      border-color: $unfocused;
+      border-color: rgba(0,0,0,0);
     }
     &.ws-btn-active {
       background-color: $background;
-      color: $foreground-alt;
-      border-color: $focused-alt;
+      color: $foreground; 
+      border-color: rgba(0,0,0,0);
     }
     &.ws-btn-focused {
       box-shadow: 3px 2px 3px $focused-alt;
@@ -110,6 +120,7 @@
       background-color: $background-darker;
       border-bottom: 5 solid;
       border-color: $focused;
+    animation: to-active 1s linear;
     }
     &:hover {
       padding: 0px 15px;
@@ -127,15 +138,13 @@
 .bar-right {
   transition: all 1s;
   .module {
-    box-shadow: -5px 3px 3px $background-darker-alt;
+    //box-shadow: -5px 3px 3px $background-darker-alt;
   }
 }
 
-.bar-center{
+.bar-center {
   transition: all 1s;
 }
-
-
 
 //#endregion
 //#region Toggles
@@ -190,24 +199,33 @@
     border-radius: 99px;
     background-color: $focused;
   }
-}
 
-.prog-bar-temp {
-  // margin: 1px 1px;
-  padding: 0px;
-  min-height: 10px;
-  min-width: 10px;
-
-  trough {
-    min-height: 20px;
+  &.temp {
+    padding: 0px;
+    min-height: 10px;
     min-width: 10px;
+
+    trough {
+      min-height: 20px;
+      min-width: 10px;
+      background-color: unset;
+    }
+    progress {
+      min-height: 4px;
+      min-width: 4px;
+      border-radius: 99px;
+      border-radius: 99px;
+      background-color: rgb(255, 75, 75);
+    }
   }
-  progress {
-    min-height: 4px;
-    min-width: 4px;
-    border-radius: 99px;
-    border-radius: 99px;
-    background-color: rgb(255, 75, 75);
+
+  &.battery {
+    trough {
+      min-width: 30px;
+    }
+    progress {
+      background-color: rgb(100, 200, 100);
+    }
   }
 }
 
