@@ -33,7 +33,7 @@
     "format-icons": {
       "1": "",
       "2": "",
-      "3": "",
+      "3": "󰍛",
       "4": "",
       "active": "卐",
       "default": "＋"
@@ -42,7 +42,7 @@
   },
   "cpu": {
     "interval": 1,
-    "format": " {usage:>2}%{icon0}{icon1}{icon2}{icon3}",
+    "format": "󰍛 {usage:>2}%{icon0}{icon1}{icon2}{icon3}",
     "on-click": ""
   },
   "memory": {
