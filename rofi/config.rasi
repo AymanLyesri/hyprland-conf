@@ -1,15 +1,15 @@
 configuration{
     modi: "run,drun,window";
-    // show-icons: true;
+    show-icons: true;
     terminal: "foot";
-    drun-display-format: " => {name}";
+    drun-display-format: " ➣ {name}";
     // location: 0;
     disable-history: false;
     hide-scrollbar: true;
-    display-drun: " 卐 > ";
+    display-drun: " 卐 ⤏ ";
     // display-run: "   Run ";
     // display-window: " 﩯  Window";
-    // display-Network: " 󰤨  Network";
+    display-Network: " 󰤨  Network";
     // sidebar-mode: true;
 }
 
@@ -19,11 +19,11 @@ configuration{
     font:bold;
     background-color: @bg-col;
     color: white;
-    // border-color: white;
-    margin: 1px;
+    //border-color: @bg-col;
+    margin: 2px;
 }
 
 window {
-    width: 20%;
+    width: 50%;
 }
 

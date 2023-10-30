@@ -12,7 +12,6 @@
   (centerbox
     :class "bar"
     :orientation "h"
-    ; :halign "baseline"
     (bar_left)
     (bar_center)
     (bar_right)
