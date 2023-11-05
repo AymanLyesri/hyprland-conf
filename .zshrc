@@ -36,3 +36,7 @@ eval $NEOFETCH
 alias n=$NEOFETCH 
 alias neofetch=$NEOFETCH
 alias v="neovide && exit" 
+
+
+# Load Angular CLI autocompletion.
+source <(ng completion script)
