@@ -13,13 +13,11 @@ configuration{
     // sidebar-mode: true;
 }
 
-@theme "theme1.rasi"
+/* Dark theme. */
+@import "~/.cache/wal/colors-rofi-dark"
 
 * {
     font:bold;
-    background-color: @bg-col;
-    color: white;
-    //border-color: @bg-col;
     margin: 2px;
 }
 
