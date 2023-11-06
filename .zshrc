@@ -1,5 +1,8 @@
 # Created by newuser for 5.9
 
+# Dynamic Color scheme
+(cat ~/.cache/wal/sequences &)
+
 #History
 HISTSIZE=10000                   # Maximum events for internal history
 SAVEHIST=10000                   # Maximum events in history file
@@ -17,8 +20,8 @@ PROMPT='%n in ${PWD/#$HOME/~} ${vcs_info_msg_0_}
 
 #Enable color and change prompt
 setopt PROMPT_SUBST
-PROMPT="%F{222}⤘%f %F{240}%m%f %F{red}卐%f %F{red}%n%f%F{240} ⮚ %f%F{222}%d%f%F{240} ⮚ %f"
-
+# PROMPT="%F{222}⤘%f %F{240}%m%f %F{red}卐%f %F{red}%n%f%F{240} ⮚ %f%F{222}%d%f%F{240} ⮚ %f"
+PROMPT="%F{white}⤘%f %F{red}%m%f %F{red}卐%f %F{red}%n%f%F{240} ⮚ %f%F{yellow}%d%f%F{240} ⮚ %f"
 #Zsh Tab Complete
 autoload -U compinit
 zstyle ':completion:*' menu select
