@@ -1,11 +1,11 @@
 #!/bin/bash
 
-random=$(find /home/ayman/.config/hypr/wallpapers -type f | shuf -n 1)
+random=$(find /home/ayman/.config/hypr/wallpapers/normal -type f | shuf -n 1)
 config=/home/ayman/.config/hypr/hyprpaper.conf
 
 > $config
 
-for wallpaper in $(find /home/ayman/.config/hypr/wallpapers/ -type f)
+for wallpaper in $(find /home/ayman/.config/hypr/wallpapers/normal -type f)
 do
     echo "preload = $wallpaper" >> $config
 done
