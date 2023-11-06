@@ -1,3 +1,5 @@
+@import url("/home/ayman/.cache/wal/colors-custom-gtk3.css");
+
 * {
   /* font-family: JetBrains Mono, monospace; */
   font-weight: bolder;
@@ -9,8 +11,10 @@
 window#waybar {
   padding: 0;
   margin: 0;
-  background: rgba(255, 0, 0, 0);
+  background: @backgroundAlpha;
+  border-bottom: .1rem solid @color0Alpha;
   color: rgb(180, 180, 180);
+
 }
 
 window * {
@@ -20,12 +24,39 @@ window * {
 window#waybar.empty #window {
   background-color: rgba(0, 0, 0, 0);
   padding: 10px;
-  transition: padding 0.5s cubic-bezier(0.5, 1, 0, 2);
+  transition: all 0.5s cubic-bezier(0.5, 1, 0, 2);
 }
-window#waybar.empty * {
-  /* font-size: 14px; */
+window#waybar.empty{
+  background-color: unset;
+  border-bottom: unset;
 }
 
+window#waybar.empty #custom-resetWaybar,
+window#waybar.empty #custom-media,
+window#waybar.empty #custom-weather,
+window#waybar.empty #custom-controls,
+window#waybar.empty #mpd,
+/* window#waybar.empty #window, */
+window#waybar.empty #clock,
+window#waybar.empty #pulseaudio,
+window#waybar.empty #network,
+window#waybar.empty #tray,
+window#waybar.empty #memory,
+window#waybar.empty #cpu,
+window#waybar.empty #backlight,
+window#waybar.empty #workspaces button,
+window#waybar.empty #battery{
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+ 
+window#waybar.empty #workspaces button.active {
+  background: radial-gradient(
+    circle,
+    rgba(0, 0, 0,0.5) 0%,
+    rgba(90, 0, 0,0.5) 50%,
+    rgba(0, 0, 0,0.5) 100%
+  );
+}
 #custom-resetWaybar,
 #custom-weather,
 #custom-media,
@@ -41,7 +72,7 @@ window#waybar.empty * {
 #cpu,
 #backlight,
 #battery {
-  background: rgba(0, 0, 0, 0.5);
+  /* background: rgba(0, 0, 0, 0.5); */
   padding: 0px 5px;
   margin-top: 3;
   border: none;
@@ -59,10 +90,10 @@ window#waybar.empty * {
 }
 
 #workspaces button {
-  background-color: rgba(0, 0, 0, 0.5);
+  /* background-color: rgba(0, 0, 0, 0.5); */
   border-radius: 15px;
   border: 1px;
-  border-color: rgba(0, 0, 0, 0);
+  border-color: rgba(0, 0, 0, 0.5);
   padding: 10px;
   padding-top: 1px;
   padding-bottom: 1px;
@@ -76,14 +107,18 @@ window#waybar.empty * {
   padding-left: 20px;
   background: radial-gradient(
     circle,
-    rgb(0, 0, 0) 0%,
-    rgb(90, 0, 0) 50%,
-    rgb(0, 0, 0) 100%
+    rgba(0, 0, 0,0.3) 0%,
+    rgba(90, 0, 0,0.3) 50%,
+    rgba(0, 0, 0,0.3) 100%
   );
   background-size: 400% 400%;
   animation: gradient_f 10s linear infinite;
   transition: all 0.3s cubic-bezier(0.55, -0.68, 0.48, 1.682);
 }
+
+/* #workspaces button.focused {
+  background-color: #f53c3c;
+} */
 
 #workspaces button label {
   color: rgb(255, 255, 255);
@@ -132,7 +167,6 @@ window#waybar.empty * {
   margin-left: 10px;
   padding-right: 10px;
   padding-left: 10px;
-  background-color: rgba(0, 0, 0, 0.5);
 }
 
 /* ______________________________________________________________ */
