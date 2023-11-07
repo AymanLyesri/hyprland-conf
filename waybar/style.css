@@ -13,7 +13,8 @@ window#waybar {
   margin: 0;
   /* background: @backgroundAlpha; */
   /* border-bottom: .1rem solid @color0Alpha; */
-  background: rgba(0, 0, 0,0.5);
+  border-bottom: 1px solid rgba(255, 255, 255,0.9);
+  background: rgba(0, 0, 0,0.8);
   color: rgb(180, 180, 180);
 }
 
@@ -73,7 +74,7 @@ window#waybar.empty #workspaces button.active {
 #backlight,
 #battery {
   /* background: rgba(0, 0, 0, 0.5); */
-  padding: 3px 10px;
+  padding: 1px 10px;
   /* margin-top: 3; */
   border: none;
 }
