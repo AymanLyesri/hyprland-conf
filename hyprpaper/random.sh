@@ -1,8 +1,11 @@
 #!/bin/bash
 random=$(find /home/ayman/.config/hypr/wallpapers/normal -type f | shuf -n 1)
 
-hyprctl hyprpaper wallpaper "eDP-1,$random"
+wal -i $random &
 
-wal -i $random
+monitor=$(hyprctl monitors | grep Monitor | awk '{print $2}')
+
+hyprctl hyprpaper wallpaper "$monitor,$random"
+
 
 
