@@ -35,9 +35,8 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 
 # Neofetch
 NEOFETCH="neofetch --ascii /home/ayman/.config/hypr/neofetch/swastika --ascii_colors 240 1 --colors 240 240 240 240 240 240"
-eval $NEOFETCH
+eval $NEOFETCH | lolcat
 alias n=$NEOFETCH 
-alias neofetch=$NEOFETCH
 alias v="neovide && exit" 
 
 
