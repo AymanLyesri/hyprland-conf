@@ -15,13 +15,13 @@ zstyle ':vcs_info:git:*' formats '%b '
 
 # Set up the prompt (with git branch name)
 setopt PROMPT_SUBST
-PROMPT='%n in ${PWD/#$HOME/~} ${vcs_info_msg_0_}
-%# '
+PROMPT='%n in ${PWD/#$HOME/~} ${vcs_info_msg_0_}%#'
 
 #Enable color and change prompt
 setopt PROMPT_SUBST
 # PROMPT="%F{222}⤘%f %F{240}%m%f %F{red}卐%f %F{red}%n%f%F{240} ⮚ %f%F{222}%d%f%F{240} ⮚ %f"
 PROMPT="%F{red}%m%f %F{red}卐%f %F{red}%n%f%F{240} ⮚ %f%F{yellow}%d%f%F{240} ⮚ %f"
+
 #Zsh Tab Complete
 autoload -U compinit
 zstyle ':completion:*' menu select
@@ -34,11 +34,13 @@ source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Neofetch
-NEOFETCH="neofetch --ascii /home/ayman/.config/hypr/neofetch/swastika --ascii_colors 240 1 --colors 240 240 240 240 240 240"
+NEOFETCH="neofetch --config $HOME/.config/hypr/neofetch/config.conf --ascii $HOME/.config/hypr/neofetch/swastika --ascii_colors 240 1 --colors 240 240 240 240 240 240"
 eval $NEOFETCH | lolcat
-alias n=$NEOFETCH 
-alias v="neovide && exit" 
 
+# Aliases
+alias n=$NEOFETCH 
+alias v="neovide && exit"
+alias ranger="ranger -r /home/ayman/.config/hypr/ranger"
 
 # Load Angular CLI autocompletion.
 source <(ng completion script)
