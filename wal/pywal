@@ -1,0 +1,5 @@
+#!/bin/bash
+
+random=$1
+
+wal --saturate 0.69 -i $random

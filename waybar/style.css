@@ -13,9 +13,13 @@ window#waybar {
   margin: 0;
   /* background: @backgroundAlpha; */
   /* border-bottom: .1rem solid @color0Alpha; */
-  border-bottom: 1px solid rgba(255, 255, 255,0.9);
-  background: rgba(0, 0, 0,0.8);
+  /* border-bottom: 1px solid rgba(255, 255, 255,0.9); */
+  background: rgba(0, 0, 0,0);
   color: rgb(180, 180, 180);
+}
+
+window{
+  margin: 3px 3px;
 }
 
 window * {
@@ -26,6 +30,7 @@ window#waybar.empty #window {
   background-color: rgba(0, 0, 0, 0);
   padding: 10px;
   transition: all 0.5s cubic-bezier(0.5, 1, 0, 2);
+
 }
 window#waybar.empty{
   background-color: unset;
@@ -73,9 +78,9 @@ window#waybar.empty #workspaces button.active {
 #cpu,
 #backlight,
 #battery {
-  /* background: rgba(0, 0, 0, 0.5); */
-  padding: 1px 10px;
-  /* margin-top: 3; */
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0px 10px;
+  /* margin: 3px 3px; */
   border: none;
 }
 
@@ -91,7 +96,7 @@ window#waybar.empty #workspaces button.active {
 }
 
 #workspaces button {
-  /* background-color: rgba(0, 0, 0, 0.5); */
+  background-color: rgba(0, 0, 0, 0.5);
   border-radius: 15px;
   border: 1px;
   border-color: rgba(0, 0, 0, 0.5);
@@ -108,9 +113,9 @@ window#waybar.empty #workspaces button.active {
   padding-left: 20px;
   background: radial-gradient(
     circle,
-    rgba(0, 0, 0,0.3) 0%,
-    rgba(90, 0, 0,0.3) 50%,
-    rgba(0, 0, 0,0.3) 100%
+    rgba(0, 0, 0,0.75) 0%,
+    rgba(90, 0, 0,0.75) 50%,
+    rgba(0, 0, 0,0.75) 100%
   );
   background-size: 400% 400%;
   animation: gradient_f 10s linear infinite;
@@ -190,11 +195,13 @@ window#waybar.empty #workspaces button.active {
 /* AUDIO */
 #pulseaudio {
   color: rgb(55, 195, 255);
+  /* border-radius: 10px 0px 0px 10px; */
   border-radius: 10px 0px 0px 10px;
 }
 #pulseaudio.microphone {
-  border-radius: 0px 10px 10px 0px;
-  margin-right: 10px;
+  /* border-radius: 0px 10px 10px 0px; */
+  /* margin-right: 10px; */
+  border-radius: unset;
 }
 #custom-controls {
   color: rgb(55, 195, 255);
@@ -205,7 +212,8 @@ window#waybar.empty #workspaces button.active {
   font-size: x-small;
   border: none;
   border-radius: unset;
-  background-color: rgb(0, 255, 0);
+  color: rgb(0, 255, 0);
+  background-color: rgb(95, 133, 95);
 }
 
 /* SYSTEM */
