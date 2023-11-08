@@ -39,8 +39,12 @@ eval $NEOFETCH | lolcat
 
 # Aliases
 alias n=$NEOFETCH 
-alias v="neovide && exit"
-alias ranger="ranger -r /home/ayman/.config/hypr/ranger"
+alias neofetch=$NEOFETCH
+alias v="neovide && exit" 
+
+TEST_CONNECTION="/home/ayman/.config/hypr/scripts/test-connection"
+alias test=$TEST_CONNECTION
+
 
 # Load Angular CLI autocompletion.
 source <(ng completion script)
