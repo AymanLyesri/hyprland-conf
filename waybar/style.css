@@ -14,11 +14,11 @@ window#waybar {
   /* background: @backgroundAlpha; */
   /* border-bottom: .1rem solid @color0Alpha; */
   /* border-bottom: 1px solid rgba(255, 255, 255,0.9); */
-  background: rgba(0, 0, 0,0);
+  background: rgba(0, 0, 0, 0);
   color: rgb(180, 180, 180);
 }
 
-window{
+window {
   margin: 3px 3px;
 }
 
@@ -30,9 +30,8 @@ window#waybar.empty #window {
   background-color: rgba(0, 0, 0, 0);
   padding: 10px;
   transition: all 0.5s cubic-bezier(0.5, 1, 0, 2);
-
 }
-window#waybar.empty{
+window#waybar.empty {
   background-color: unset;
   border-bottom: unset;
 }
@@ -51,16 +50,16 @@ window#waybar.empty #memory,
 window#waybar.empty #cpu,
 window#waybar.empty #backlight,
 window#waybar.empty #workspaces button,
-window#waybar.empty #battery{
-    background-color: rgba(0, 0, 0, 0.5);
-  }
- 
+window#waybar.empty #battery {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
 window#waybar.empty #workspaces button.active {
   background: radial-gradient(
     circle,
-    rgba(0, 0, 0,0.5) 0%,
-    rgba(90, 0, 0,0.5) 50%,
-    rgba(0, 0, 0,0.5) 100%
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(90, 0, 0, 0.5) 50%,
+    rgba(0, 0, 0, 0.5) 100%
   );
 }
 #custom-resetWaybar,
@@ -81,7 +80,7 @@ window#waybar.empty #workspaces button.active {
   background: rgba(0, 0, 0, 0.5);
   padding: 0px 10px;
   /* margin: 3px 3px; */
-  border: none;
+  border: unset;
 }
 
 /* CLOCK */
@@ -113,9 +112,9 @@ window#waybar.empty #workspaces button.active {
   padding-left: 20px;
   background: radial-gradient(
     circle,
-    rgba(0, 0, 0,0.75) 0%,
-    rgba(90, 0, 0,0.75) 50%,
-    rgba(0, 0, 0,0.75) 100%
+    rgba(0, 0, 0, 0.75) 0%,
+    rgba(90, 0, 0, 0.75) 50%,
+    rgba(0, 0, 0, 0.75) 100%
   );
   background-size: 400% 400%;
   animation: gradient_f 10s linear infinite;
@@ -218,7 +217,8 @@ window#waybar.empty #workspaces button.active {
 
 /* SYSTEM */
 #battery {
-  border-radius: 10px 0px 0px 10px;
+  /* border-radius: 10px 0px 0px 10px; */
+  border-radius: unset;
   color: rgb(140, 200, 140);
 }
 #cpu {
