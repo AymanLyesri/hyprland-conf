@@ -125,7 +125,6 @@
       color: $foreground;
       background-color: $background-darker;
       border-color: $focused;
-      animation: to-focused 1s linear;
       border-radius: 50%;
     }
     &:hover {

@@ -62,7 +62,7 @@
     (eventbox ; Volume
       :onhover "${EWW_CMD} update vol_rev=true"
       :onhoverlost "${EWW_CMD} update vol_rev=false"
-      :onclick "scripts/volume --toggle"
+      :onclick "pavucontrol &"
       (box
         :vexpand "false"
         :hexpand "false"

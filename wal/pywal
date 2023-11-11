@@ -2,4 +2,4 @@
 
 random=$1
 
-wal --saturate 0.69 -i $random
+wal --saturate 0.8 -i $random

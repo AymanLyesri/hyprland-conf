@@ -8,6 +8,7 @@
   "modules-left": [
     "clock",
     "custom/resetWaybar",
+    "keyboard-state",
     "hyprland/workspaces"
   ],
   "modules-center": [
@@ -18,7 +19,6 @@
     "mpd",
     "pulseaudio",
     "custom/media",
-    "custom/controls",
     "pulseaudio#microphone",
     "battery",
     "cpu",
@@ -50,12 +50,21 @@
     "format": " {}%",
     "format-alt": "{used:0.1f}G/{total:0.1f}G "
   },
+  "keyboard-state": {
+    "numlock": true,
+    "capslock": true,
+    "format": "{name} {icon}",
+    "format-icons": {
+      "locked": "",
+      "unlocked": ""
+    }
+  },
   "custom/resetWaybar": {
     "format": "",
-    "on-click": "$HOME/.config/hypr/waybar/scripts/reLaunch.sh"
+    "on-click": "$HOME/.config/hypr/waybar/scripts/reLaunch"
   },
   "custom/controls": {
-    // "format": "⚙",
+    "format": "⚙",
     "on-click": "echo 2 > /tmp/wcp"
   },
   "custom/weather": {
@@ -126,7 +135,7 @@
     "format": "{icon} {volume}%",
     "tooltip": false,
     "format-muted": " Muted",
-    "on-click": "pamixer -t",
+    "on-click-right": "pamixer -t",
     "on-scroll-down": "pamixer -i 1",
     "on-scroll-up": "pamixer -d 1",
     "scroll-step": 5,
@@ -142,12 +151,13 @@
         "",
         ""
       ]
-    }
+    },
+    "on-click": "pavucontrol"
   },
   "pulseaudio#microphone": {
     "format": "{format_source}",
     "tooltip": false,
-    "format-source": "🎙 {volume}%",
+    "format-source": "M {volume}%",
     "format-source-muted": " Muted",
     "on-click": "pamixer --default-source -t",
     "on-scroll-down": "pamixer --default-source -i 1",
