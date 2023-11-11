@@ -2,8 +2,8 @@
 
 * {
   /* font-family: JetBrains Mono, monospace; */
-  font-weight: bolder;
-  font-size: 12px;
+  font-weight: bold;
+  font-size: 14px;
   min-height: 0;
   font-family: JetBrainsMono Nerd Font;
 }
@@ -16,10 +16,6 @@ window#waybar {
   /* border-bottom: 1px solid rgba(255, 255, 255,0.9); */
   background: rgba(0, 0, 0, 0);
   color: rgb(180, 180, 180);
-}
-
-window {
-  margin: 3px 3px;
 }
 
 window * {
@@ -79,6 +75,7 @@ window#waybar.empty #workspaces button.active {
 #battery {
   background: rgba(0, 0, 0, 0.5);
   padding: 0px 10px;
+  margin-top: 3px;
   /* margin: 3px 3px; */
   border: unset;
 }
@@ -130,7 +127,7 @@ window#waybar.empty #workspaces button.active {
 }
 
 #workspaces button.active label {
-  color: rgb(255, 45, 45);
+  color: rgb(255, 130, 130);
 }
 
 @keyframes gradient {
@@ -213,6 +210,9 @@ window#waybar.empty #workspaces button.active {
   border-radius: unset;
   color: rgb(0, 255, 0);
   background-color: rgb(95, 133, 95);
+}
+#custom-media:hover{
+ min-width: 500px;
 }
 
 /* SYSTEM */
