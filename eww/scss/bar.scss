@@ -40,12 +40,12 @@
   }
 }
 
-.music-unlabel {
-  margin-left: 10;
-  color: $foreground-alt;
-  font-size: 14;
-  font-weight: bolder;
-}
+// .music-unlabel {
+//   margin-left: 10;
+//   color: $foreground-alt;
+//   font-size: 14;
+//   font-weight: bolder;
+// }
 
 //#endregion
 //#endregion
@@ -80,11 +80,6 @@
 @mixin ws-btn-font {
   font-size: 12;
   font-weight: bolder;
-  // border: 2 solid;
-
-  // label {
-  //   padding-bottom: 2px;
-  // }
 }
 
 @keyframes to-focused {
@@ -100,13 +95,16 @@
 }
 
 .ws {
+  font-size: 12;
+  font-weight: bolder;
+  transition: all 0.5s;
   button {
-    @include ws-btn-font();
+    margin: 0px;
+    padding: 0px;
+    color: rgba(255, 255, 255, 0.103);
     transition: all 0.5s;
     &.ws-btn {
-      background-color: $background;
-      color: $foreground-darker;
-      border-color: rgba(0, 0, 0, 1);
+      background-color: $background-alt;
       border-radius: 90%;
       border-top: 10 solid;
       border-bottom: 10 solid;
@@ -119,19 +117,19 @@
       }
     }
     &.ws-btn-active {
-      background-color: $background;
-      color:  rgb(155, 155, 155);
+      background-color: rgba(0, 0, 0, 0.507);
+      color: rgb(78, 78, 78);
       border-radius: 75%;
-      border-top: 5 solid;
-      border-bottom: 5 solid;
+      border-top: 6 solid;
+      border-bottom: 6 solid;
       label {
         color: aliceblue;
         font-size: 0.75em;
       }
     }
     &.ws-btn-focused {
-      color: $foreground;
-      background-color: $background-darker;
+      color: $hover-alt;
+      background-color: $hover;
       border-color: $focused;
       border-radius: 50%;
       border-top: 2 solid;
@@ -143,7 +141,7 @@
       border-color: $hover-alt;
       border-top: 1 solid;
       border-bottom: 1 solid;
-      label{
+      label {
         color: black;
       }
     }
