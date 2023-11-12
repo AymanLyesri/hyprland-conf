@@ -6,6 +6,8 @@
 #History
 HISTSIZE=10000 # Maximum events for internal history
 SAVEHIST=10000 # Maximum events in history file
+HISTFILE=~/.cache/zsh/history    # History filepath
+
 # Find and set branch name var if in git repository.
 function git_branch_name() {
     branch=$(git symbolic-ref HEAD 2>/dev/null | awk 'BEGIN{FS="/"} {print $NF}')

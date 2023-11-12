@@ -3,11 +3,12 @@
 ic=(0 一 二 三 四 五 六 七 八 九 〇)
 
 max_workspace=9
-ws_focused=$(hyprctl monitors | grep active | awk '{print $3}')
-ws_active=$(hyprctl workspaces)
 workspace_width="\${bar_height * 1.2}px"
 
 workspace() {
+
+  ws_focused=$(hyprctl monitors | grep active | awk '{print $3}')
+  ws_active=$(hyprctl workspaces)
 
   echo -n "(box :class 'ws' :style 'min-height:\${bar_height}px' :spacing 5 :space-evenly 'false'"
 

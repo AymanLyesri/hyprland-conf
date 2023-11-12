@@ -1,0 +1,4 @@
+#!/bin/bash
+systemctl suspend
+sleep 1
+systemctl hibernate
