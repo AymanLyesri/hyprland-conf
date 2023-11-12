@@ -1,6 +1,6 @@
 #!/bin/bash
 if [ $(hyprctl activewindow) == 'Invalid' ] ; then
-    echo 30
+    echo 50 #in pixels
 else
     echo 10
 fi

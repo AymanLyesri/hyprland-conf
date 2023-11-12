@@ -8,26 +8,27 @@
 )
 
 (defwidget workspace []
-    (literal
-        :content script_workspace
-    )
+  (literal
+    :content script_workspace
+  )
 )
+
 
 
 ; (deflisten workspaces :initial "[]" "scripts/get-workspaces")
 ; (deflisten active_worspaces :initial "[0 ,1]" "scripts/get-active-workspaces")
 ; (defwidget workspaces []
-;   (box :class "workspaces"
-;     :orientation "h"
-;     :space-evenly false
-;     :halign "start"
-;     ; for values to update
-;     (label :text "${active_worspaces}" :visible false)
-;     (for id in active_worspaces
-;       (button
-;         ; :class {active_worspaces == id ? "active" : "d"}
-;         ; :onhover
-;       :onclick "hyprctl dispatch workspace ${id}" id)
-;     )
-;   ))
+  ;   (box :class "workspaces"
+    ;     :orientation "h"
+    ;     :space-evenly false
+    ;     :halign "start"
+    ;     ; for values to update
+    ;     (label :text "${active_worspaces}" :visible false)
+    ;     (for id in active_worspaces
+      ;       (button
+        ;         ; :class {active_worspaces == id ? "active" : "d"}
+        ;         ; :onhover
+      ;       :onclick "hyprctl dispatch workspace ${id}" id)
+    ;     )
+  ;   ))
 

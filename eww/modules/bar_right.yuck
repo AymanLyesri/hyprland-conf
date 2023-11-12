@@ -116,71 +116,53 @@
 )
 
 (defwidget resources []
-  (box
-    :space-evenly false :spacing 10
-    :orientation "h"
-    :valign "center"
-    
-    (box ; Resources
-      :space-evenly false :spacing 5
-      :orientation "v"
+  (eventbox
+    :onclick "hyprctl dispatch workspace 3"
+    (box
+      :space-evenly false :spacing 10
+      :orientation "h"
       :valign "center"
-      (box ; CPU
-        :space-evenly false :orientation "h" :spacing 5
-        (progress
-          :flipped true
-          :class "prog-bar"
-          :valign "center"
-          :value {EWW_CPU.avg}
-        )
-      )
-      (box ; RAM
-        :space-evenly false :orientation "h" :spacing 5
-        (progress
-          :flipped true
-          :class "prog-bar"
-          :valign "center"
-          :value {EWW_RAM.used_mem_perc}
-        )
-      )
-    )
-    (label
-      :class "icon"
-      :text "󰍛"
-    )
-    ; (box ; Resources
-    ;   :space-evenly false :spacing 5
-    ;   :orientation "h"
-    ;   :valign "center"
-    ;   (box
-    ;     :space-evenly false :orientation "h" :spacing 5
-    ;     (progress
-    ;       :flipped true
-    ;       :orientation "v"
-    ;       :class "prog-bar temp"
-    ;       :valign "center"
-    ;       :value {EWW_TEMPS.CORETEMP_CORE_0}
-    ;     )
-    ;     (progress
-    ;       :flipped true
-    ;       :orientation "v"
-    ;       :class "prog-bar temp"
-    ;       :valign "center"
-    ;       :value {EWW_TEMPS.CORETEMP_CORE_1}
-    ;     )
-    ;   )
-    ; )
-    (label
-      :class "icon"
-      :text "⚡"
-    )
-    (box ; BATTERY
-      :space-evenly false :orientation "v" :spacing 5
-      :valign "center"
-      (progress
-        :class "prog-bar battery"
+      
+      (box ; Resources
+        :space-evenly false :spacing 5
+        :orientation "v"
         :valign "center"
-        :value {EWW_BATTERY.BAT1.capacity}
+        (box ; CPU
+          :space-evenly false :orientation "h" :spacing 5
+          (progress
+            :flipped true
+            :class "prog-bar"
+            :valign "center"
+            :value {EWW_CPU.avg}
+          )
+        )
+        (box ; RAM
+          :space-evenly false :orientation "h" :spacing 5
+          (progress
+            :flipped true
+            :class "prog-bar"
+            :valign "center"
+            :value {EWW_RAM.used_mem_perc}
+          )
+        )
+      )
+      (label
+        :class "icon"
+        :text "󰍛"
+      )
+      
+      (label
+        :class "icon"
+        :text "⚡"
+      )
+      (box ; BATTERY
+        :space-evenly false :orientation "v" :spacing 5
+        :valign "center"
+        (progress
+          :class "prog-bar battery"
+          :valign "center"
+          :value {EWW_BATTERY.BAT1.capacity}
+        )
       )
     )
   )
