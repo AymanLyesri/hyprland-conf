@@ -1,4 +1,5 @@
 #! /bin/bash
+# requires eww, playerctl, bc, curl
 
 EWW='eww --config /home/ayman/.config/hypr/eww'
 

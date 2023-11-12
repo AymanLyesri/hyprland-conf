@@ -67,37 +67,40 @@
 
 (defwidget music []
   (revealer
-    :reveal {player_active == 2}
+    :reveal {player_active == 1 || player_active == 2}
     ; TO BE CHANGED
     :transition "slideleft"
     :duration "700ms"
-    (box
-      :class "music"
-      :hexpand "true"
-      :space-evenly false
-      ; :width 400
-      :style "background-image: linear-gradient(to right, #131313 , rgba(90, 20, 52, 0)), url('${music_art}');"
+    (eventbox
+      :onclick "/home/ayman/.config/hypr/eww/scripts/music --play-pause"
+      :ons
       (box
+        :class "music"
+        :hexpand "true"
         :space-evenly false
-        :orientation "h"
-        (label ; Title
-          :class "music-label title"
-          :style "color:${music_title_color}"
-          :limit-width "25"
-          :text "${music_icon} ${music_title}"
+        ; :width 400
+        :style "background-image: linear-gradient(to right, #131313 , rgba(90, 20, 52, 0)), url('${music_art}');"
+        (box
+          :space-evenly false
+          :orientation "h"
+          (label ; Title
+            :class "music-label title"
+            :style "color:${music_title_color}"
+            :limit-width "25"
+            :text "${music_icon} ${music_title}"
+          )
+          (label ; Author
+            :style "color:${music_title_color}"
+            :class "music-label artist"
+            :text "🡄${music_artist}"
+          )
         )
-        (label ; Author
-          :style "color:${music_title_color}"
-          :class "music-label artist"
-          :text "🡄${music_artist}"
-        )
-        
-      )
-      (revealer
-        :reveal {player_active == 2}
-        (label
-          :class "music-unlabel"
-          :text "${music_updater}" ; updating music vars while render text
+        (revealer
+          :reveal {player_active == 2}
+          (label
+            :class "music-unlabel"
+            :text "${music_updater}" ; updating music vars while render text
+          )
         )
       )
     )
