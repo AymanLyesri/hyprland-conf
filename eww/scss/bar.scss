@@ -47,9 +47,6 @@
 //   font-weight: bolder;
 // }
 
-//#endregion
-//#endregion
-
 //#region center-bar
 .clock {
   margin: 0px;
@@ -100,16 +97,16 @@
   transition: all 0.5s;
   button {
     margin: 0px;
-    padding: 0px;
-    color: rgba(255, 255, 255, 0.103);
     transition: all 0.5s;
+    background-color: $foreground-alt;
+    color: $background;
     &.ws-btn {
-      background-color: $background-alt;
       border-radius: 90%;
       border-top: 10 solid;
       border-bottom: 10 solid;
       label {
-        font-size: 0.1em;
+        font-size: 0.2em;
+        color: rgb(255, 255, 255);
       }
       &:hover label {
         font-size: 0.75em;
@@ -117,8 +114,6 @@
       }
     }
     &.ws-btn-active {
-      background-color: rgba(0, 0, 0, 0.507);
-      color: rgb(78, 78, 78);
       border-radius: 75%;
       border-top: 6 solid;
       border-bottom: 6 solid;
@@ -148,22 +143,15 @@
   }
 }
 
-//#endregion
-//#endregion
-
 //#region right-bar
 .bar-right {
   transition: all 1s;
-  .module {
-    //box-shadow: -5px 3px 3px $background-darker-alt;
-  }
 }
 
 .bar-center {
   transition: all 1s;
 }
 
-//#endregion
 //#region Toggles
 // .toggles-wifi-essid {
 // }
@@ -195,8 +183,6 @@
   }
 }
 
-//#endregion
-//#region Resources
 .prog-bar {
   min-height: 4px;
   padding: 0px;
