@@ -54,7 +54,7 @@
         )
         (button
           :class "icon" :style "padding-right:8px;font-size: 20;"
-          "🔆"
+          "☼"
         )
       )
     )
@@ -87,17 +87,29 @@
       )
     )
     (sep)
-    (box ; WIFI
-      :vexpand "false"
-      :hexpand "false"
-      :space-evenly "false" :spacing 2
-      (label
-        :class "icon" :style "padding-right: 17px"
-        :text ""
-      )
-      (label
-        :class "toggles-wifi-essid txt-low"
-        :text ESSID_WLAN
+    ; Wifi (nm-connection-editor)
+    (eventbox
+      :onhover "${EWW_CMD} update wifi_state=true"
+      :onhoverlost "${EWW_CMD} update wifi_state=false"
+      :onclick "nm-connection-editor &"
+      (box
+        :vexpand "false"
+        :hexpand "false"
+        :space-evenly "false" :spacing 2
+        (label
+          :class "icon"
+          :text ""
+        )
+        (revealer
+          :transition "slideright"
+          :reveal wifi_state
+          :duration "350ms"
+          (label
+            :class "toggles-wifi-essid txt-low"
+            :style "padding-left: 5px;"
+            :text ESSID_WLAN
+          )
+        )
       )
     )
   )
@@ -136,28 +148,28 @@
       :class "icon"
       :text "󰍛"
     )
-    (box ; Resources
-      :space-evenly false :spacing 5
-      :orientation "h"
-      :valign "center"
-      (box
-        :space-evenly false :orientation "h" :spacing 5
-        (progress
-          :flipped true
-          :orientation "v"
-          :class "prog-bar temp"
-          :valign "center"
-          :value {EWW_TEMPS.CORETEMP_CORE_0}
-        )
-        (progress
-          :flipped true
-          :orientation "v"
-          :class "prog-bar temp"
-          :valign "center"
-          :value {EWW_TEMPS.CORETEMP_CORE_1}
-        )
-      )
-    )
+    ; (box ; Resources
+    ;   :space-evenly false :spacing 5
+    ;   :orientation "h"
+    ;   :valign "center"
+    ;   (box
+    ;     :space-evenly false :orientation "h" :spacing 5
+    ;     (progress
+    ;       :flipped true
+    ;       :orientation "v"
+    ;       :class "prog-bar temp"
+    ;       :valign "center"
+    ;       :value {EWW_TEMPS.CORETEMP_CORE_0}
+    ;     )
+    ;     (progress
+    ;       :flipped true
+    ;       :orientation "v"
+    ;       :class "prog-bar temp"
+    ;       :valign "center"
+    ;       :value {EWW_TEMPS.CORETEMP_CORE_1}
+    ;     )
+    ;   )
+    ; )
     (label
       :class "icon"
       :text "⚡"
