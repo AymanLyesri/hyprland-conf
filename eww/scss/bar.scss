@@ -8,7 +8,7 @@
 //#region left-bar
 //#region Music
 .music {
-   @extend .module;
+  @extend .module;
   // padding-left: 0;
   // background-repeat: no-repeat;
   // background-size: 80%;
@@ -88,11 +88,11 @@
 }
 
 @keyframes to-focused {
-  0%{
+  0% {
     border-bottom: 0 solid;
     border-top: 0 solid;
   }
-  100%{
+  100% {
     border-bottom: 5 solid;
     border-top: 5 solid;
     border-color: $focused;
@@ -100,38 +100,52 @@
 }
 
 .ws {
-  padding:0px;
   button {
-   // box-shadow: 5px 3px 3px $background-darker-alt;
-   //border-bottom: 5 solid;
-  // margin:10px;
-   @include ws-btn-font();
+    @include ws-btn-font();
     transition: all 0.5s;
-    border-top: 5 solid;
-      border-bottom: 5 solid;
     &.ws-btn {
       background-color: $background;
       color: $foreground-darker;
-      border-color: rgba(0,0,0,0);
+      border-color: rgba(0, 0, 0, 1);
       border-radius: 90%;
+      border-top: 10 solid;
+      border-bottom: 10 solid;
+      label {
+        font-size: 0.1em;
+      }
+      &:hover label {
+        font-size: 0.75em;
+        transition-delay: 500ms;
+      }
     }
     &.ws-btn-active {
       background-color: $background;
-      color: $foreground; 
-      border-color: rgba(0,0,0,0);
+      color:  rgb(155, 155, 155);
       border-radius: 75%;
+      border-top: 5 solid;
+      border-bottom: 5 solid;
+      label {
+        color: aliceblue;
+        font-size: 0.75em;
+      }
     }
     &.ws-btn-focused {
       color: $foreground;
       background-color: $background-darker;
       border-color: $focused;
       border-radius: 50%;
+      border-top: 2 solid;
+      border-bottom: 2 solid;
     }
     &:hover {
-      padding: 0px 15px;
       color: $hover-alt;
       background-color: $hover;
       border-color: $hover-alt;
+      border-top: 1 solid;
+      border-bottom: 1 solid;
+      label{
+        color: black;
+      }
     }
   }
 }

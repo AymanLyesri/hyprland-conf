@@ -14,11 +14,11 @@ workspace() {
 
   for i in $(seq 1 $max_workspace); do
     if [[ $ws_focused == $i ]]; then
-      echo -n "(button :class 'ws-btn-focused' :height 25 :width 35 :onclick 'hyprctl dispatch workspace $i' '卍') "
+      echo -n "(button :class 'ws-btn-focused' :height 25 :width 35 :onclick 'hyprctl dispatch workspace $i' (label :text '卍')) "
     elif [[ $(echo "$ws_active" | grep "ID $i" | awk '{print $3}') == $i ]]; then
-      echo -n "(button :class 'ws-btn-active' :height 15 :width 35 :onclick 'hyprctl dispatch workspace $i' '${ic[$i]}') "
+      echo -n "(button :class 'ws-btn-active' :height 15 :width 35 :onclick 'hyprctl dispatch workspace $i' (label :text '${ic[$i]}')) "
     else
-      echo -n "(button :class 'ws-btn' :height 10 :width 35 :onclick 'hyprctl dispatch workspace $i' '${ic[$i]}') "
+      echo -n "(button :class 'ws-btn' :height 10 :width 35 :onclick 'hyprctl dispatch workspace $i' (label :text '${ic[$i]}')) "
     fi
   done
   echo ")"
