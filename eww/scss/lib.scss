@@ -2,7 +2,7 @@
     background-color: $background;
     color: $foreground;
     border: 1 solid;
-    border-color: $unfocused;
+    border-color: $color1;
     font-size: 16;
     font-weight: bolder;
 }
@@ -11,7 +11,7 @@
     background-color: $background;
     color: $foreground;
     // border: 1 solid;
-    // border-color: $unfocused;
+    // border-color: $color1;
     font-size: 12;
     font-weight: bolder;
     padding: 0px 10px;
@@ -19,16 +19,16 @@
 }
 
 .txt-low{
-    color: $foreground-alt;
+    color: $foreground;
 }
 
 .icon {
     font-size: 15;
-    color: $focused;
+    color: $foreground;
 }
 
 .sep {
     font-size: 8;
     font-weight: bolder;
-    color: $foreground-alt
+    color: $foreground
 }

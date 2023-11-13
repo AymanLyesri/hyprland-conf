@@ -100,7 +100,7 @@ noPlayerMode() {
 }
 
 playerMode() {
-    ${EWW} update player_active=$1
+    ${EWW} update player_active=2
     ${EWW} update music_art="$(getMusicArt)"
     ${EWW} update music_icon="$(getMusicPlayerIcon)"
     ${EWW} update music_title="$(getMusicTitle)"

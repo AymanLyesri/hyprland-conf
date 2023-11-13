@@ -10,7 +10,7 @@
 ;Volume
 (defvar vol_rev false)
 (defvar VOL_ICON '["󰖁","󰕿","󰖀","󰕾"]')
-(defpoll vol_state :interval "10s" "scripts/volume --get-state")
+(defpoll vol_state :intial 1 :interval "10s" "scripts/volume --get-state")
 ;Brightness
 (defvar bright_rev false)
 (defvar bright_icons '["🔅","🔆"]')
@@ -49,9 +49,9 @@
 (defpoll clock_time :interval "5s" "date '+\%H:\%M'")
 (defpoll clock_date :interval "5s" "date '+\%a, \%d \%b'")
 (defpoll vol_percent :interval "5s" "scripts/volume --get")
-(defpoll brightness_percent :interval "5s" "light | echo 1")
+(defpoll brightness_percent :interval "5s" "echo 0.1")
 
 ;Updaters                   --update
 (defpoll music_updater :interval "2s" "scripts/music --update")  
-(defpoll bar_height :initial "100" :interval "2s" "scripts/empty_workspace")  
+(defpoll bar_height :interval "3s" "scripts/empty_workspace")  
 ; (defpoll sidebar_quote :interval "10s" "hyprctl splash")

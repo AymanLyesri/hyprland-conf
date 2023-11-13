@@ -155,15 +155,15 @@
         :class "icon"
         :text "⚡"
       )
-      (box ; BATTERY
-        :space-evenly false :orientation "v" :spacing 5
-        :valign "center"
-        (progress
-          :class "prog-bar battery"
-          :valign "center"
-          :value {EWW_BATTERY.BAT1.capacity}
-        )
-      )
+      ; (box ; BATTERY
+      ;   :space-evenly false :orientation "v" :spacing 5
+      ;   :valign "center"
+      ;   (progress
+      ;     :class "prog-bar battery"
+      ;     :valign "center"
+      ;     :value {EWW_BATTERY.BAT1.capacity}
+      ;   )
+      ; )
     )
   )
   
