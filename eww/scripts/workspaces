@@ -3,22 +3,26 @@
 ic=(0 一 二 三 四 五 六 七 八 九 〇)
 
 max_workspace=9
-workspace_width="\${bar_height * 1.2}px"
 
 workspace() {
+
+  workspace_height="\${bar_height}px"
+  workspace_width="\${bar_height * 1.2}px"
+  workspace_margin="\${5 - bar_height * 0.2}px"
+  button_style="min-width:${workspace_width}; margin-left:${workspace_margin}; margin-right:${workspace_margin}"
 
   ws_focused=$(hyprctl monitors | grep active | awk '{print $3}')
   ws_active=$(hyprctl workspaces)
 
-  echo -n "(box :class 'ws' :style 'min-height:\${bar_height}px' :spacing 5 :space-evenly 'false'"
+  echo -n "(box :class 'ws' :style 'min-height:${workspace_height}' :spacing 5 :space-evenly 'false'"
 
   for i in $(seq 1 $max_workspace); do
     if [[ $ws_focused == $i ]]; then
-      echo -n "(button :class 'ws-btn-focused' :style 'min-width:${workspace_width}'  :onclick 'hyprctl dispatch workspace $i' (label :text '卍')) "
+      echo -n "(button :class 'ws-btn-focused' :style '$button_style'  :onclick 'hyprctl dispatch workspace $i' (label :text '卍')) "
     elif [[ $(echo "$ws_active" | grep "ID $i" | awk '{print $3}') == $i ]]; then
-      echo -n "(button :class 'ws-btn-active' :style 'min-width:${workspace_width}' :onclick 'hyprctl dispatch workspace $i' (label :text '${ic[$i]}')) "
+      echo -n "(button :class 'ws-btn-active' :style '$button_style' :onclick 'hyprctl dispatch workspace $i' (label :text '${ic[$i]}')) "
     else
-      echo -n "(button :class 'ws-btn' :style 'min-width:${workspace_width}' :onclick 'hyprctl dispatch workspace $i' (label :text '${ic[$i]}')) "
+      echo -n "(button :class 'ws-btn' :style '$button_style' :onclick 'hyprctl dispatch workspace $i' (label :text '${ic[$i]}')) "
     fi
   done
   echo ")"

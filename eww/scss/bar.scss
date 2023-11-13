@@ -14,7 +14,7 @@
   // background-size: 80%;
   // background-position: right 55%;
   border: 1 solid;
-  border-color: $unfocused;
+  border-color: $color5;
   border-radius: 10px 0px 0px 10px;
   margin: 0px;
 }
@@ -27,7 +27,7 @@
 }
 
 .music-label {
-  color: $foreground-alt;
+  color: $color3;
   margin: 0px;
   text-shadow: 2px 2px 2px black;
 
@@ -42,7 +42,7 @@
 
 // .music-unlabel {
 //   margin-left: 10;
-//   color: $foreground-alt;
+//   color: $color3;
 //   font-size: 14;
 //   font-weight: bolder;
 // }
@@ -74,36 +74,32 @@
 
 //#region workspaces
 
-@mixin ws-btn-font {
-  font-size: 12;
-  font-weight: bolder;
-}
-
-@keyframes to-focused {
-  0% {
-    border-bottom: 0 solid;
-    border-top: 0 solid;
-  }
-  100% {
-    border-bottom: 5 solid;
-    border-top: 5 solid;
-    border-color: $focused;
-  }
-}
+// @keyframes to-focused {
+//   0% {
+//     border-bottom: 0 solid;
+//     border-top: 0 solid;
+//   }
+//   100% {
+//     border-bottom: 5 solid;
+//     border-top: 5 solid;
+//     border-color: $color2;
+//   }
+// }
 
 .ws {
   font-size: 12;
   font-weight: bolder;
   transition: all 0.5s;
   button {
+    border-radius: 100%;
+    padding: 0px;
     margin: 0px;
     transition: all 0.5s;
-    background-color: $foreground-alt;
+    background-color: mix($color1, $background, $weight: 50%);
     color: $background;
     &.ws-btn {
-      border-radius: 90%;
-      border-top: 10 solid;
-      border-bottom: 10 solid;
+      border-top: 11 solid;
+      border-bottom: 11 solid;
       label {
         font-size: 0.2em;
         color: rgb(255, 255, 255);
@@ -123,21 +119,20 @@
       }
     }
     &.ws-btn-focused {
-      color: $hover-alt;
-      background-color: $hover;
-      border-color: $focused;
+      color: $foreground;
+      background-color: $color1;
+      border-color: $color2;
       border-radius: 50%;
       border-top: 2 solid;
       border-bottom: 2 solid;
     }
     &:hover {
-      color: $hover-alt;
-      background-color: $hover;
-      border-color: $hover-alt;
+      color: $foreground;
+      background-color: $color1;
       border-top: 1 solid;
       border-bottom: 1 solid;
       label {
-        color: black;
+        color: $foreground;
       }
     }
   }
@@ -152,10 +147,6 @@
   transition: all 1s;
 }
 
-//#region Toggles
-// .toggles-wifi-essid {
-// }
-
 .scale {
   border-radius: 99px;
   transition: 0ms cubic-bezier(0.05, 0.7, 0.1, 1);
@@ -165,13 +156,13 @@
     min-height: 3px;
     min-width: 60px;
     border-radius: 99px;
-    background-color: mix($foreground-alt, rgba(0, 0, 0, 0), 30%);
+    background-color: mix($color1, rgba(0, 0, 0, 0), 75%);
   }
 
   highlight {
     min-width: 3px;
     border-radius: 99px;
-    background-color: $focused;
+    background-color: $color2;
     transition: 0ms cubic-bezier(0.05, 0.7, 0.1, 1);
   }
 
@@ -179,7 +170,7 @@
     min-width: 5px;
     margin: -5px;
     border-radius: 99px;
-    background-color: $focused;
+    background-color: $color3;
   }
 }
 
@@ -192,15 +183,14 @@
     min-height: 4px;
     min-width: 60px;
     border-radius: 99px;
-    background-color: mix($foreground-alt, rgba(0, 0, 0, 0), 30%);
-    // background-color: $background-accented;
+    background-color: mix($color1, $background, 50%);
   }
   progress {
     min-height: 4px;
     min-width: 4px;
     border-radius: 99px;
     border-radius: 99px;
-    background-color: $focused;
+    background-color: mix($color2, $foreground, 50%);
   }
 
   &.temp {
@@ -227,10 +217,7 @@
       min-width: 30px;
     }
     progress {
-      background-color: rgb(100, 200, 100);
+      background-color: rgb(73, 204, 73);
     }
   }
 }
-
-//#endregion
-//#endregion

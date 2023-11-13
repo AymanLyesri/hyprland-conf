@@ -49,7 +49,7 @@
       :spacing "10"
       :class {player_active == 2 && apptitles != '󰖲' ? "module clock no-radius" : player_active == 2 ? "module clock no-radius-left" : apptitles != '󰖲' ? "module clock no-radius-right" : "module clock" }
       (label
-        :text " ${clock_time}"
+        :text " ${clock_time}  ${player_active}"
         :class "txt-low"
       )
       (revealer
@@ -73,7 +73,6 @@
     :duration "700ms"
     (eventbox
       :onclick "/home/ayman/.config/hypr/eww/scripts/music --play-pause"
-      :ons
       (box
         :class "music"
         :hexpand "true"

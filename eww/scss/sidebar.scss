@@ -29,7 +29,7 @@
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-  border-color: $unfocused;
+  border-color: $color1;
   // opacity: 0.55;
 }
 
@@ -38,16 +38,16 @@
 }
 
 .sidebar-music-mediacontrols {
-  color: $focused;
+  color: $foreground;
 }
 
 .sidebar-music-mediacontrols-bg {
-  background-color: $focused;
+  background-color: $foreground;
   border-radius: 15px;
 }
 
 .sidebar-music-mediacontrols-font {
-  color: $background-accented;
+  color: $background;
 }
 
 .sidebar-music-progress {
@@ -58,13 +58,13 @@
     min-height: 3px;
     min-width: 200px;
     border-radius: 99px;
-    background-color: mix($foreground-alt, rgba(0, 0, 0, 0), 30%);
+    background-color: mix($foreground, rgba(0, 0, 0, 0), 30%);
   }
 
   highlight {
     min-width: 3px;
     border-radius: 99px;
-    background-color: $focused;
+    background-color: $foreground;
     transition: 0ms cubic-bezier(0.05, 0.7, 0.1, 1);
   }
 
@@ -72,7 +72,7 @@
     min-width: 5px;
     margin: -5px;
     border-radius: 99px;
-    background-color: $focused;
+    background-color: $foreground;
   }
 }
 
@@ -90,32 +90,32 @@
 
 .sidebar-waifu-toggle {
   padding: 2px 5px;
-  background-color: $background-accented;
+  background-color: $background;
   border-radius: 12px;
   min-height: 20px;
 
   &:hover {
-    background-color: $unfocused;
+    background-color: $color1;
   }
   &:active {
-    background-color: $focused;
+    background-color: $foreground;
   }
 }
 
 .sidebar-waifu-tag {
-  background-color: $background-accented;
+  background-color: $background;
   border-radius: 5px;
   min-height: 20px;
   font-size: 11;
   transition: all 0.5s;
 
   &:hover {
-    background-color: $unfocused;
+    background-color: $color1;
     min-height: 40px;
   }
 
   &:active {
-    background-color: $focused;
+    background-color: $foreground;
   }
 
   &.reset {
@@ -140,7 +140,7 @@
 .sidebar-quote-content {
   font-size: 13;
   padding: 10px;
-  background-color: $background-accented;
+  background-color: $background;
   .author {
     color: rgb(255, 36, 36);
   }
