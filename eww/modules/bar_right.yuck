@@ -53,7 +53,7 @@
           )
         )
         (button
-          :class "icon" :style "padding-right:8px;font-size: 20;"
+          :class "icon" :style "font-size: 20;"
           "☼"
         )
       )
@@ -81,7 +81,7 @@
           )
         )
         (label
-          :class "icon" :style "padding-right:4px;font-size: 21;"
+          :class "icon" :style "font-size: 18;"
           :text {VOL_ICON[vol_state]}
         )
       )
@@ -105,8 +105,7 @@
           :reveal wifi_state
           :duration "350ms"
           (label
-            :class "toggles-wifi-essid txt-low"
-            :style "padding-left: 5px;"
+            :class "wifi-essid"
             :text ESSID_WLAN
           )
         )
@@ -150,20 +149,20 @@
         :class "icon"
         :text "󰍛"
       )
-      
+          (sep)
       (label
         :class "icon"
         :text "⚡"
       )
-      ; (box ; BATTERY
-      ;   :space-evenly false :orientation "v" :spacing 5
-      ;   :valign "center"
-      ;   (progress
-      ;     :class "prog-bar battery"
-      ;     :valign "center"
-      ;     :value {EWW_BATTERY.BAT1.capacity}
-      ;   )
-      ; )
+      (box ; BATTERY
+        :space-evenly false :orientation "v" :spacing 5
+        :valign "center"
+        (progress
+          :class "prog-bar battery"
+          :valign "center"
+          :value {EWW_BATTERY.BAT1.capacity}
+        )
+      )
     )
   )
   

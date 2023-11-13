@@ -11,7 +11,7 @@ COLORS="$HOME/.config/hypr/wofi/colors"
 # fi
 
 if [[ ! $(pidof rofi) ]]; then
-	rofi -show drun --conf ${CONFIG}
+	rofi -show combi -modes combi -combi-modes "window,drun,run" --conf ${CONFIG}
 else
-	pkill wofi
+	pkill rofi
 fi
