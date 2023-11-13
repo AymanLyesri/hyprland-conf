@@ -45,10 +45,17 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 NEOFETCH="neofetch --config $HOME/.config/hypr/neofetch/config.conf --ascii $HOME/.config/hypr/neofetch/swastika --ascii_colors 240 1 --colors 240 240 240 240 240 240"
 eval "$NEOFETCH | lolcat"
 
-# Aliases
+# Aliases for neofetch
 alias n=$NEOFETCH
 alias neofetch=$NEOFETCH
+
+# Aliases for neovide
 alias v="neovide && exit"
+
+# Aliase functions
+function code() {
+    /bin/code $1 && exit
+}
 
 # Test Connection
 TEST_CONNECTION="/home/ayman/.config/hypr/scripts/test-connection"
