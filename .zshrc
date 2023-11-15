@@ -4,9 +4,9 @@
 (cat ~/.cache/wal/sequences &)
 
 #History
-HISTSIZE=10000 # Maximum events for internal history
-SAVEHIST=10000 # Maximum events in history file
-HISTFILE=~/.cache/zsh/history    # History filepath
+HISTSIZE=10000                # Maximum events for internal history
+SAVEHIST=10000                # Maximum events in history file
+HISTFILE=~/.cache/zsh/history # History filepath
 
 # Find and set branch name var if in git repository.
 function git_branch_name() {
@@ -32,17 +32,22 @@ PROMPT="%F{red}%m%f %F{red}卐%f %F{red}%n%f%F{240} ⮚ %f%F{yellow}%d%f%F{240} 
 
 #Zsh Tab Complete
 autoload -U compinit
-zstyle ':completion:*' menu select
 compinit
-_comp_options+=(globdots)
+zstyle ':completion:*' completer _extensions _complete _approximate
+# zstyle ':completion:*' format '%F{245}-- %d --%f'
+zstyle ':completion:*' menu select
+zstyle ':completion:*:*:*:*:descriptions' format '%F{2}-- %d --%f'
+zstyle ':completion:*:*:*:*:corrections' format '%F{208}!- %d (errors: %e) -!%f'
+zstyle ':completion:*:messages' format ' %F{11} -- %d --%f'
+zstyle ':completion:*:warnings' format ' %F{9}-- no matches found --%f'
 
-#Zsh Auto-Completion
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ff00ff,bold"
+#Zsh Auto-Suggestions
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#696969,bold"
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Neofetch
-NEOFETCH="neofetch --config $HOME/.config/hypr/neofetch/config.conf --ascii $HOME/.config/hypr/neofetch/swastika --ascii_colors 240 1 --colors 240 240 240 240 240 240"
+NEOFETCH="neofetch --config $HOME/.config/hypr/neofetch/config.conf --ascii $HOME/.config/hypr/neofetch/swastika"
 eval "$NEOFETCH | lolcat"
 
 # Aliases for neofetch
@@ -51,6 +56,9 @@ alias neofetch=$NEOFETCH
 
 # Aliases for neovide
 alias v="neovide && exit"
+
+# Aliases for ls
+alias ls='lsd'
 
 # Aliase functions
 function code() {

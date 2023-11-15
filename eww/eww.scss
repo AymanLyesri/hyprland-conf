@@ -1,5 +1,3 @@
-// @import 'scss/colors.scss';
-// @import '/home/ayman/.cache/wal/gg.scss';
 @import '/home/ayman/.cache/wal/colors.scss';
 @import 'scss/lib.scss';
 @import 'scss/bar.scss';
@@ -7,7 +5,6 @@
 
 * {
   all: unset;
-
   font-family: mononoki Nerd Font;
   border-radius: 12;
 }
