@@ -4,7 +4,6 @@ random=$(find /home/ayman/.config/hypr/wallpapers/normal -type f | shuf -n 1)
 config=/home/ayman/.config/hypr/hyprpaper.conf
 monitor=$(hyprctl monitors | grep Monitor | awk '{print $2}')
 
-
 > $config
 
 echo "preload = $random" >> $config
