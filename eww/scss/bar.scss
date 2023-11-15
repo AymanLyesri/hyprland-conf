@@ -1,12 +1,8 @@
 .bar {
-  margin-top: 5px;
-  margin-bottom: 1px;
-  padding: 0px 10px;
-  // padding: 5 0 0 0;
+  margin-top: 3px;
+  // padding: 0px 10px;
 }
 
-//#region left-bar
-//#region Music
 .music {
   @extend .module;
   // padding-left: 0;
@@ -48,7 +44,6 @@
 //   font-weight: bolder;
 // }
 
-//#region center-bar
 .clock {
   margin: 0px;
   border-radius: 10px;
@@ -64,11 +59,9 @@
 }
 
 .titlebar {
-  //box-shadow: 0px 1px 2px $background-darker-alt;
   border-radius: 0px 10px 10px 0px;
   margin-left: 0px;
   label {
-    // padding-right: 2px;
     transition: all 1s;
   }
 }
@@ -119,7 +112,7 @@
     padding: 0px;
     margin: 0px;
     transition: all 1s;
-    background-color: mix($color2 , $background, $weight: 40%);
+    background-color: mix(mix($color0 , $color1, $weight: 50%), $background, $weight: 50%);
     color: $background;
     &.ws-btn {
       border-top: 11 solid;
@@ -139,7 +132,7 @@
       label {
         color: aliceblue;
         font-size: 0.75em;
-        // animation: eye-blink-label 10s infinite;
+        // animation: eye-blink-label 1s infinite;
       }
       // animation: eye-blink 1s infinite;
     }
@@ -183,7 +176,7 @@
     min-height: 3px;
     min-width: 60px;
     border-radius: 99px;
-    background-color: mix($color1, rgba(0, 0, 0, 0), 75%);
+    background-color: mix($color1, $background, 75%);
   }
 
   highlight {
@@ -219,24 +212,24 @@
     background-color: mix($color2, $foreground, 50%);
   }
 
-  &.temp {
-    padding: 0px;
-    min-height: 10px;
-    min-width: 10px;
+  // &.temp {
+  //   padding: 0px;
+  //   min-height: 10px;
+  //   min-width: 10px;
 
-    trough {
-      min-height: 20px;
-      min-width: 10px;
-      background-color: unset;
-    }
-    progress {
-      min-height: 4px;
-      min-width: 4px;
-      border-radius: 99px;
-      border-radius: 99px;
-      background-color: rgb(255, 75, 75);
-    }
-  }
+  //   trough {
+  //     min-height: 20px;
+  //     min-width: 10px;
+  //     background-color: unset;
+  //   }
+  //   progress {
+  //     min-height: 4px;
+  //     min-width: 4px;
+  //     border-radius: 99px;
+  //     border-radius: 99px;
+  //     background-color: rgb(255, 75, 75);
+  //   }
+  // }
 
   &.battery {
     trough {
