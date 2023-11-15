@@ -32,14 +32,14 @@ PROMPT="%F{red}%m%f %F{red}卐%f %F{red}%n%f%F{240} ⮚ %f%F{yellow}%d%f%F{240} 
 
 #Zsh Tab Complete
 autoload -U compinit
-compinit
+zstyle '*:compinit' arguments -D -i -u -C -w
 zstyle ':completion:*' completer _extensions _complete _approximate
-# zstyle ':completion:*' format '%F{245}-- %d --%f'
 zstyle ':completion:*' menu select
 zstyle ':completion:*:*:*:*:descriptions' format '%F{2}-- %d --%f'
 zstyle ':completion:*:*:*:*:corrections' format '%F{208}!- %d (errors: %e) -!%f'
 zstyle ':completion:*:messages' format ' %F{11} -- %d --%f'
 zstyle ':completion:*:warnings' format ' %F{9}-- no matches found --%f'
+compinit
 
 #Zsh Auto-Suggestions
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#696969,bold"
