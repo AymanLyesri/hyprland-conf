@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# This is a Bash script for OneDrive
+
+onedriveDir="$HOME/OneDrive"
+config="$HOME/.config/onedrive/foot.ini"
+
+
+foot -D $onedriveDir & -c $config
