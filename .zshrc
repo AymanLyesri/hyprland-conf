@@ -50,6 +50,8 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 NEOFETCH="neofetch --config $HOME/.config/hypr/neofetch/config.conf --ascii $HOME/.config/hypr/neofetch/swastika"
 eval "$NEOFETCH | lolcat"
 
+eval "echo $1"
+
 # Aliases for neofetch
 alias n=$NEOFETCH
 alias neofetch=$NEOFETCH
@@ -63,6 +65,11 @@ alias ls='lsd'
 # Aliase functions
 function code() {
     /bin/code $1 && exit
+}
+
+# Aliase functions
+function onedrive() {
+    ranger $HOME/OneDrive && exit
 }
 
 # Test Connection
