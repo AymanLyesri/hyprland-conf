@@ -2,7 +2,7 @@
 
 (defwidget bar_left []
   (box
-    :class "bar_left"
+    :class "bar-left"
     (workspace)
   )
 )
