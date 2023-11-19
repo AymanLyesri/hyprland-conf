@@ -1,4 +1,4 @@
 {
-    "last_waifu_art": " 2023-11-16T13:30:10.043Z ERROR eww::error_handling_ctx > Failed to connect to daemon",
+    "last_waifu_art": " 2023-11-18T19:30:28.497Z ERROR eww::error_handling_ctx > Failed to initialize eww paths\n\nCaused by:\n    Configuration directory /home/ayman/.config/eww does not exist",
     "is_nsfw": false
 }
