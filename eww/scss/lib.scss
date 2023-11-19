@@ -8,13 +8,14 @@
 }
 
 .module {
-  background-color: mix(mix($color0,$color1, 75%),$background,60%);
+  background-color: mix(mix($color0, $color1, 50%), $background, 50%);
   color: $foreground;
   // border: 1 solid;
   // border-color: $color1;
   font-size: 12;
   font-weight: bolder;
   padding: 0px 10px;
+  transition: all 0.5s;
   // margin: 0px 4px;
 }
 

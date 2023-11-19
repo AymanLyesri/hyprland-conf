@@ -2,13 +2,13 @@
   margin-top: 3px;
   margin-left: 5px;
   margin-right: 5px;
+  transition: all 0.5s;
   // padding: 0px 10px;
 }
 
 .music {
   @extend .module;
   border: none;
-  border-color: $color5;
   border-radius: 10px 0px 0px 10px;
   margin: 0px;
 }
@@ -78,7 +78,7 @@
     border-bottom: 6 solid;
     border-top: 6 solid;
   }
-   100% {
+  100% {
     border-bottom: 6 solid;
     border-top: 6 solid;
   }
@@ -86,7 +86,7 @@
 
 @keyframes eye-blink-label {
   0% {
-   font-size: 0.75em;
+    font-size: 0.75em;
   }
   10% {
     font-size: 0.2em;
@@ -94,26 +94,30 @@
   20% {
     font-size: 0.75em;
   }
-   100% {
+  100% {
     font-size: 0.75em;
   }
 }
 
-.bar-left{
+.bar-left {
   // margin-left: 5px;
-    transition: all 0.5s;
+  // transition: all 0.5s;
 }
 
 .ws {
   font-size: 12;
   font-weight: bolder;
-
+  transition: all 0.5s;
   button {
     border-radius: 100%;
     padding: 0px;
     margin: 0px;
     transition: all 1s;
-    background-color: mix(mix($color0 , $color1, $weight: 50%), $background, $weight: 50%);
+    background-color: mix(
+      mix($color0, $color1, $weight: 50%),
+      $background,
+      $weight: 50%
+    );
     color: $background;
     &.ws-btn {
       border-top: 11 solid;
@@ -147,7 +151,7 @@
       border-top: 1 solid;
       border-bottom: 1 solid;
       label {
-        color: $foreground;
+        color: $background;
       }
     }
   }
