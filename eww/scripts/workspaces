@@ -7,8 +7,8 @@ max_workspace=9
 workspace() {
 
   workspace_height="\${bar_height}px"
-  workspace_width="\${bar_height * 1.2}px"
-  workspace_margin="\${5 - bar_height * 0.2}px"
+  workspace_width="\${bar_height * 1.15}px"
+  workspace_margin="\${2 - bar_height * 0.1}px"
   button_style="min-width:${workspace_width}; margin-left:${workspace_margin}; margin-right:${workspace_margin}"
 
   ws_focused=$(hyprctl monitors | grep active | awk '{print $3}')
