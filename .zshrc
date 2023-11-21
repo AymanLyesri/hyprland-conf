@@ -5,7 +5,7 @@
 
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source <(ng completion script)
+source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
 
 #History
 HISTSIZE=10000                # Maximum events for internal history
@@ -61,3 +61,6 @@ function onedrive() {
 
 # Test Connection
 alias test=$TEST_CONNECTION
+
+# Aliases for angular
+source <(ng completion script)
