@@ -1,11 +1,20 @@
-# Created by newuser for 5.9
-
-# Dynamic Color scheme
 (cat ~/.cache/wal/sequences &)
+
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
+source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f $HOME/.config/hypr/zsh/.p10k.zsh ]] || source $HOME/.config/hypr/zsh/.p10k.zsh
 
 #History
 HISTSIZE=10000                # Maximum events for internal history
@@ -13,9 +22,9 @@ SAVEHIST=10000                # Maximum events in history file
 HISTFILE=~/.cache/zsh/history # History filepath
 
 #Enable color and change prompt
-setopt PROMPT_SUBST
+# setopt PROMPT_SUBST
 # PROMPT="%F{222}⤘%f %F{240}%m%f %F{red}卐%f %F{red}%n%f%F{240} ⮚ %f%F{222}%d%f%F{240} ⮚ %f"
-PROMPT="%F{red}%m%f %F{red}卐%f %F{red}%n%f%F{240} ⮚ %f%F{yellow}%d%f%F{240} ⮚ %f"
+# PROMPT="%F{red}%m%f %F{red}卐%f %F{red}%n%f%F{240} ⮚ %f%F{yellow}%d%f%F{240} ⮚ %f"
 
 #Zsh Tab Complete
 autoload -U compinit
