@@ -27,6 +27,7 @@
 (defwidget Toggles []
   (box ; Quick Toggles
     :space-evenly false :spacing 7
+    
     (eventbox ; Brightness
       :onhover "${EWW_CMD} update bright_rev=true"
       :onhoverlost "${EWW_CMD} update bright_rev=false"
@@ -34,17 +35,20 @@
         :vexpand "false"
         :hexpand "false"
         :space-evenly "false"
+        
         ; (revealer
           ;   :transition "slideright"
           ;   :reveal bright_rev
           ;   :duration "350ms"
         ; )
         (revealer
+          
           :transition "slideright"
           :reveal bright_rev
           :duration "350ms"
           (scale
             :class "scale"
+            :style "padding-left: 5px"
             :value brightness_percent
             :orientation "h"
             :max 100
@@ -149,7 +153,7 @@
         :class "icon"
         :text "󰍛"
       )
-          (sep)
+      (sep)
       (label
         :class "icon"
         :text "⚡"
