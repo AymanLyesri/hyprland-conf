@@ -20,12 +20,13 @@
 }
 
 .txt-low {
-  color: $foreground;
+  color: mix($foreground, $background, $weight: 75%);
 }
 
 .icon {
+  margin: 0px 5px;
   font-size: 15;
-  color: $foreground;
+  color: mix($foreground, $background, $weight: 75%);
 }
 
 .sep {

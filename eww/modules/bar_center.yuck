@@ -39,31 +39,6 @@
   )
 )
 
-(defwidget clock []
-  (eventbox
-    :onhover "${EWW_CMD} update time_date=true"
-    :onhoverlost "${EWW_CMD} update time_date=false"
-    (box
-      :space-evenly "false"
-      :orientation "h"
-      :spacing "10"
-      :class {player_active == 2 && apptitles != '󰖲' ? "module clock no-radius" : player_active == 2 ? "module clock no-radius-left" : apptitles != '󰖲' ? "module clock no-radius-right" : "module clock" }
-      (label
-        :text " ${clock_time}"
-        :class "txt-low"
-      )
-      (revealer
-        :transition "slideright"
-        :duration "350ms"
-        :reveal time_date
-        (label
-          :text "${clock_date}"
-          :class "txt-low"
-        )
-      )
-    )
-  )
-)
 
 (defwidget music []
   (revealer
@@ -100,6 +75,32 @@
             :class "music-unlabel"
             :text "${music_updater}" ; updating music vars while render text
           )
+        )
+      )
+    )
+  )
+)
+
+(defwidget clock []
+  (eventbox
+    :onhover "${EWW_CMD} update time_date=true"
+    :onhoverlost "${EWW_CMD} update time_date=false"
+    (box
+      :space-evenly "false"
+      :orientation "h"
+      :spacing "10"
+      :class {player_active == 2 && apptitles != '󰖲' ? "module clock no-radius" : player_active == 2 ? "module clock no-radius-left" : apptitles != '󰖲' ? "module clock no-radius-right" : "module clock" }
+      (label
+        :text " ${clock_time}"
+        :class "txt-low"
+      )
+      (revealer
+        :transition "slideright"
+        :duration "350ms"
+        :reveal time_date
+        (label
+          :text "${clock_date}"
+          :class "txt-low"
         )
       )
     )
