@@ -70,7 +70,7 @@ def loadImage(mode, url, tag=None):
 
 def write_url(url):
     data = requests.get(url).content 
-    f = open('img.jpg','wb') 
+    f = open('waifu/img.jpg','wb') 
     f.write(data) 
     f.close() 
 
@@ -92,7 +92,15 @@ def image_of_choice():
     
 write_url(image_of_choice())
 
-print('img.jpg')
+print('waifu/img.jpg')
 
-os.system("eww --config /home/ayman/.config/hypr/eww update image_ratio=$(identify -format '%[fx:w/h]' img.jpg)")
+# Get the image ratio
+image_ratio = os.popen("identify -format '%[fx:w/h]' /home/ayman/.config/hypr/eww/waifu/img.jpg").read()
+
+# Remove the '%' character
+image_ratio = image_ratio.replace('%', '')
+
+# Update eww
+os.system(f"eww --config /home/ayman/.config/hypr/eww update image_ratio={image_ratio}")
+
 # os.system("${EWW_CMD} update waifu_art='img.jpg'")

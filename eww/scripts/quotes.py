@@ -18,4 +18,5 @@ response = requests.get(api_url, headers={'X-Api-Key': KEY})
 if response.status_code == requests.codes.ok:
     print("\n".join(tw.wrap(response.json()[0]['quote']))+'\t*'+response.json()[0]['author']+'*')
 else:
-    print("Error:", response.status_code, response.text)
+    quote_alt = os.popen('hyprctl splash').read()
+    print(quote_alt)

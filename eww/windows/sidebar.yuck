@@ -198,7 +198,7 @@
               )
               (button ; Pin
                 :class "sidebar-waifu-tag reset"
-                "💾"
+                "♻"
               )
             )
             (for id in WAIFU_TAG_ID_LIST
