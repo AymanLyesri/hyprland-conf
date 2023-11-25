@@ -1,8 +1,6 @@
 #!/bin/bash
 
 CONFIG="$HOME/.config/hypr/rofi/config"
-STYLE="$HOME/.config/hypr/wofi/style.css"
-COLORS="$HOME/.config/hypr/wofi/colors"
 
 # if [[ ! $(pidof wofi) ]]; then
 # 	wofi --show drun --prompt 'Search...' --conf ${CONFIG} --style ${STYLE} --color ${COLORS}
@@ -13,5 +11,5 @@ COLORS="$HOME/.config/hypr/wofi/colors"
 if [[ ! $(pidof rofi) ]]; then
 	rofi -show combi -modes combi -combi-modes "window,drun,run" --conf ${CONFIG}
 else
-	pkill rofi
+	killall rofi
 fi

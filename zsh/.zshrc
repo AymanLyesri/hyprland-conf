@@ -56,7 +56,7 @@ bindkey '^[[B' history-substring-search-down
 TEST_CONNECTION="/home/ayman/.config/hypr/scripts/test-connection"
 
 # Aliases for neovide
-alias v="neovide && exit"
+alias v="nvim"
 
 # Aliases for ls
 alias ls='lsd'
