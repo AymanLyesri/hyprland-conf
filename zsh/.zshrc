@@ -1,8 +1,12 @@
 (cat ~/.cache/wal/sequences &)
 
 # Neofetch
-NEOFETCH="neofetch --config $HOME/.config/hypr/neofetch/config.conf --ascii $HOME/.config/hypr/neofetch/swastika | lolcat"
-eval "$NEOFETCH"
+# NEOFETCH="neofetch --config $HOME/.config/hypr/neofetch/config.conf --ascii $HOME/.config/hypr/neofetch/swastika | lolcat"
+# eval "$NEOFETCH"
+
+# Pfetch
+PFETCH="pfetch | lolcat"
+eval "$PFETCH"
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
