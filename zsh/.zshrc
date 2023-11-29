@@ -73,12 +73,13 @@ function cpdir {
 }
 
 # Test Connection
-alias test=$TEST_CONNECTION
+alias connn=$TEST_CONNECTION
 
 # Aliases for angular
-source <(ng completion script)
+# source <(ng completion script)
 
 # Aliases for neofetch
 alias n=$NEOFETCH
 
-
+# The fuck
+eval $(thefuck --alias)
