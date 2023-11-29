@@ -1,4 +1,4 @@
 {
-    "last_waifu_art": " 2023-11-24T19:57:07.445Z ERROR eww::error_handling_ctx > Failed to initialize eww paths\n\nCaused by:\n    Configuration directory /home/ayman/.config/eww does not exist",
+    "last_waifu_art": " 2023-11-29T18:12:28.563Z ERROR eww::error_handling_ctx > Failed to initialize eww paths\n\nCaused by:\n    Configuration directory /home/ayman/.config/eww does not exist",
     "is_nsfw": false
 }
