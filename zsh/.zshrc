@@ -53,13 +53,14 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#696969,bold"
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 
-TEST_CONNECTION="/home/ayman/.config/hypr/scripts/test-connection"
-
 # Aliases for neovide
 alias v="nvim"
 
 # Aliases for ls
 alias ls='lsd'
+
+# Aliases for cat
+alias cat='bat'
 
 # Aliase functions
 function code() {
@@ -73,6 +74,7 @@ function cpdir {
 }
 
 # Test Connection
+TEST_CONNECTION="/home/ayman/.config/hypr/scripts/test-connection"
 alias connn=$TEST_CONNECTION
 
 # Aliases for angular
