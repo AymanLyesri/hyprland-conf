@@ -95,7 +95,7 @@
     (eventbox
       :onhover "${EWW_CMD} update wifi_state=true"
       :onhoverlost "${EWW_CMD} update wifi_state=false"
-      :onclick "nm-connection-editor &"
+      :onclick "kitty nmtui &"
       (box
         :vexpand "false"
         :hexpand "false"
