@@ -49,7 +49,7 @@
 (defpoll clock_time :interval "5s" "date '+\%H:\%M'")
 (defpoll clock_date :interval "5s" "date '+\%a, \%d \%b'")
 (defpoll vol_percent :interval "5s" "scripts/volume --get")
-(defpoll brightness_percent :interval "5s" "echo 100")
+(defpoll brightness_percent :interval "5s" "")
 (defpoll music_updater :interval "2s" "scripts/music --update")
 
 (defpoll bar_height :interval "3s" "scripts/empty_workspace")

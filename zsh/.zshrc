@@ -85,3 +85,6 @@ alias n=$NEOFETCH
 
 # The fuck
 eval $(thefuck --alias)
+
+# navi
+eval "$(navi widget zsh)"
