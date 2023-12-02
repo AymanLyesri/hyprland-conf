@@ -1,7 +1,13 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  min-height: 0px;
+}
+
 .bar {
-  margin-top: 5px;
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-top: 4px;
+  margin-left: 4px;
+  margin-right: 4px;
   transition: all 0.5s;
   // padding: 0px 10px;
 }
@@ -10,7 +16,6 @@
   @extend .module;
   border: none;
   border-radius: 10px 0px 0px 10px;
-  margin: 0px;
 }
 
 .music-cover {
@@ -34,13 +39,6 @@
   }
 }
 
-// .music-unlabel {
-//   margin-left: 10;
-//   color: $color3;
-//   font-size: 14;
-//   font-weight: bolder;
-// }
-
 .clock {
   margin: 0px;
   border-radius: 10px;
@@ -57,7 +55,7 @@
 
 .titlebar {
   border-radius: 0px 10px 10px 0px;
-  margin-left: 0px;
+  margin: 0px;
   label {
     transition: all 1s;
   }
@@ -97,11 +95,6 @@
   100% {
     font-size: 0.75em;
   }
-}
-
-.bar-left {
-  // margin-left: 5px;
-  // transition: all 0.5s;
 }
 
 .ws {
@@ -157,11 +150,6 @@
   }
 }
 
-//#region right-
-.bar-right {
-  transition: all 1s;
-}
-
 .wifi-essid {
   padding-left: 5px;
   color: $color3;
@@ -171,12 +159,16 @@
   transition: all 1s;
 }
 
+.bar-right {
+  transition: all 1s;
+}
+
 .scale {
   border-radius: 99px;
   margin-right: 6px;
 
   trough {
-    min-height: 3px;
+    min-height: 2px;
     min-width: 60px;
     border-radius: 99px;
     background-color: mix($color1, $background, 75%);
@@ -197,42 +189,23 @@
 }
 
 .prog-bar {
-  min-height: 4px;
+  min-height: 2px;
   padding: 0px;
   border-radius: 99px;
 
   trough {
-    min-height: 4px;
+    min-height: 2px;
     min-width: 60px;
     border-radius: 99px;
     background-color: mix($color1, $background, 50%);
   }
   progress {
-    min-height: 4px;
+    min-height: 2px;
     min-width: 4px;
     border-radius: 99px;
     border-radius: 99px;
     background-color: mix($color2, $foreground, 50%);
   }
-
-  // &.temp {
-  //   padding: 0px;
-  //   min-height: 10px;
-  //   min-width: 10px;
-
-  //   trough {
-  //     min-height: 20px;
-  //     min-width: 10px;
-  //     background-color: unset;
-  //   }
-  //   progress {
-  //     min-height: 4px;
-  //     min-width: 4px;
-  //     border-radius: 99px;
-  //     border-radius: 99px;
-  //     background-color: rgb(255, 75, 75);
-  //   }
-  // }
 
   &.battery {
     trough {
