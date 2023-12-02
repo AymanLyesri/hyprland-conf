@@ -9,7 +9,15 @@
 )
 
 (defwidget bar_layout []
-  (centerbox
+  ; (centerbox
+    ;   :class "bar"
+    ;   :orientation "h"
+    ;   (bar_left)
+    ;   (bar_center)
+    ;   (bar_right)
+  ; )
+  
+  (box
     :class "bar"
     :orientation "h"
     (bar_left)

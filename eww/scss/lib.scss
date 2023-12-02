@@ -1,22 +1,16 @@
-.test {
-  background-color: $background;
-  color: $foreground;
-  border: 1 solid;
-  border-color: $color1;
-  font-size: 16;
-  font-weight: bolder;
+* {
+  margin: 0px;
+  padding: 0px;
+  min-height: 0px;
 }
 
 .module {
   background-color: mix(mix($color0, $color1, 50%), $background, 50%);
   color: $foreground;
-  // border: 1 solid;
-  // border-color: $color1;
   font-size: 12;
   font-weight: bolder;
   padding: 0px 10px;
   transition: all 0.5s;
-  // margin: 0px 4px;
 }
 
 .txt-low {
@@ -25,12 +19,12 @@
 
 .icon {
   margin: 0px 5px;
-  font-size: 15;
+  font-size: 12;
   color: mix($foreground, $background, $weight: 75%);
 }
 
 .sep {
-  font-size: 8;
+  font-size: 5;
   font-weight: bolder;
   color: $foreground;
 }
