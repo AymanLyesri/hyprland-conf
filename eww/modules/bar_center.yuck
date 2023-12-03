@@ -1,24 +1,24 @@
 (defwidget bar_center []
   (box
     :space-evenly false
-    ; :spacing 0
     :halign "center"
     :class "bar-center"
     :style "min-height:${bar_height}px"
     (music)
+    (arch)
     (clock)
     (titlebar)
   )
 )
 
 
-(defwidget start []
+(defwidget arch []
   (box
-    :class "module"
+    :class "module arch"
     (button
-      :onclick "scripts/start"
+      :onclick "$HOME/.config/hypr/scripts/menu"
       (label
-        :class "icon" :style "padding-right: 5px"
+        :class "icon"
         :text "󰣇"
       )
     )
@@ -27,13 +27,12 @@
 
 (defwidget titlebar []
   (revealer
-    :reveal {apptitles == '󰖲'?false:true}
+    :reveal {apptitles != ''}
     :transition "slideright"
     :duration "500ms"
     (label
       :class "module titlebar txt-low"
-      :style "padding: 5px"
-      :limit-width "10"
+      :limit-width "15"
       :text apptitles
     )
   )
@@ -61,12 +60,12 @@
             :class "music-label title"
             :style "color:${music_title_color}"
             :limit-width "25"
-            :text "${music_icon} ${music_title}"
+            :text "${music_icon}  ${music_title}"
           )
           (label ; Author
             :style "color:${music_title_color}"
             :class "music-label artist"
-            :text "🡄${music_artist}"
+            :text "🡄 ${music_artist}"
           )
         )
         (revealer
@@ -89,7 +88,7 @@
       :space-evenly "false"
       :orientation "h"
       :spacing "10"
-      :class {player_active == 2 && apptitles != '󰖲' ? "module clock no-radius" : player_active == 2 ? "module clock no-radius-left" : apptitles != '󰖲' ? "module clock no-radius-right" : "module clock" }
+      :class "module clock ${ apptitles != '' ? 'no-radius-right' : '' }"
       (label
         :text " ${clock_time}"
         :class "txt-low"

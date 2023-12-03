@@ -31,9 +31,9 @@ workspace() {
 get_window_active() {
   win_active=$(hyprctl activewindow | grep -m 1 'initialClass' | awk '{print $2}')
   if [[ ! -z "$win_active" ]]; then
-    echo "󰖲 $win_active"
+    echo "$win_active"
   else
-    echo "󰖲"
+    echo ""
   fi
 }
 

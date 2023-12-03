@@ -2,12 +2,6 @@
 
 CONFIG="$HOME/.config/hypr/rofi/config"
 
-# if [[ ! $(pidof wofi) ]]; then
-# 	wofi --show drun --prompt 'Search...' --conf ${CONFIG} --style ${STYLE} --color ${COLORS}
-# else
-# 	pkill wofi
-# fi
-
 if [[ ! $(pidof rofi) ]]; then
 	rofi -show combi -modes combi -combi-modes "window,drun,run" --conf ${CONFIG}
 else
