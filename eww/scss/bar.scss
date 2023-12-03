@@ -9,19 +9,37 @@
   margin-left: 4px;
   margin-right: 4px;
   transition: all 0.5s;
-  // padding: 0px 10px;
+}
+
+.arch {
+  margin-left: 5px;
+  margin-right: 5px;
+  padding: 0px;
+
+  & button {
+    transition: all 0.5s;
+    padding: 5px;
+    padding-right: 7px;
+    &:hover {
+      background-color: mix($color1, $color2, $weight: 50%);
+      label {
+        color: $background;
+        text-shadow: $background;
+      }
+    }
+  }
 }
 
 .music {
   @extend .module;
   border: none;
-  border-radius: 10px 0px 0px 10px;
+  border-radius: 10px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
 }
 
 .music-cover {
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
   border-radius: 25;
 }
 
