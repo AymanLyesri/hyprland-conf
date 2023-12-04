@@ -13,4 +13,4 @@ source /home/ayman/.config/hypr/wal/pywal $random
 
 ##########################################
 
-source /home/ayman/.config/hypr/scripts/eww_reset
+source /home/ayman/.config/hypr/scripts/eww_reset # reset eww
