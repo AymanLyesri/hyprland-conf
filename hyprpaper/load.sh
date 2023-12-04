@@ -1,27 +1,30 @@
 #!/bin/bash
 
-random=$(find /home/ayman/.config/hypr/wallpapers/normal -type f | shuf -n 1)
-config=/home/ayman/.config/hypr/hyprpaper.conf
+hyprDir=$HOME/.config/hypr
+random=$(find $hyprDir/wallpapers/normal -type f | shuf -n 1)
+config=$hyprDir/hyprpaper.conf
 monitors=$(hyprctl monitors | grep Monitor | awk '{print $2}')
+default_wallpaper=$($hyprDir/hyprpaper/default.sh)
+
+#################################################
 
 >$config
 
-echo "preload = $random" >>$config
+echo "preload = $default_wallpaper" >>$config
 echo "" >>$config
 
 for monitor in $monitors; do
-    echo "wallpaper = $monitor,$random" >>$config
+    echo "wallpaper = $monitor,$default_wallpaper" >>$config
 done
 
 hyprpaper &
 
 #################################################
 
-source /home/ayman/.config/hypr/wal/pywal $random
+source $hyprDir/wal/pywal $default_wallpaper
 
 #################################################
 
-for wallpaper in $(find /home/ayman/.config/hypr/wallpapers/normal -type f); do
+for wallpaper in $(find $hyprDir/wallpapers/normal -type f); do
     hyprctl hyprpaper preload $wallpaper
-    # echo "preload = $wallpaper" >> $config
 done
