@@ -1,10 +1,17 @@
 #!/bin/bash
 
-hyprctl dispatch exit
+# hyprctl dispatch exit
 
-loginctl kill-user $(whoami)
+# loginctl kill-user $(whoami)
 
-killall Hyprland
+# killall Hyprland
+
+# swayidle -w \
+#     timeout 1 'hyprctl dispatch dpms off' \
+#     timeout 2 'waylock -fork-on-lock' \
+#     timeout 3 'loginctl suspend' \
+#     resume 'hyprctl dispatch dpms on' \
+#     before-sleep 'waylock -fork-on-lock'
 
 # BUG
-killall xdg-desktop-portal-hyprland
+# killall xdg-desktop-portal-hyprland
