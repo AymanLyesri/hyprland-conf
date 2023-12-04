@@ -8,7 +8,7 @@ default_wallpaper=$($hyprDir/hyprpaper/default.sh)
 
 #################################################
 
->$config
+>$config # clear config
 
 echo "preload = $default_wallpaper" >>$config
 echo "" >>$config
@@ -17,7 +17,7 @@ for monitor in $monitors; do
     echo "wallpaper = $monitor,$default_wallpaper" >>$config
 done
 
-hyprpaper &
+hyprpaper & # start hyprpaper
 
 #################################################
 
