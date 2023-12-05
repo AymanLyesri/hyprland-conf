@@ -1,0 +1,10 @@
+/* Search Suggestions Fix*/
+#urlbar-container #urlbar-input-container {
+  opacity: 0;
+}
+.urlbarView {
+  background-color: var(
+    --lwt-accent-color
+  ); /* Pop-up background color (adaptive) */
+  color: grey; /* Pop-up text color */
+}
