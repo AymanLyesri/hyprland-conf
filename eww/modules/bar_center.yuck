@@ -26,13 +26,12 @@
 )
 
 (defwidget titlebar []
-  
   (revealer
     :reveal {active_window != ''}
     :transition "slideright"
     :duration "500ms"
     (label
-      :style "background-color: ${active_window_color}"
+      :style active_window_color
       :class "titlebar"
       :limit-width "15"
       :text active_window

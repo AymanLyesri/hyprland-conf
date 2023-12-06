@@ -2,7 +2,7 @@
 
 ic=(0 一 二 三 四 五 六 七 八 九 〇)
 
-max_workspace=9
+max_workspace=10
 
 workspace() {
 
@@ -52,13 +52,15 @@ get_window_active() {
 get_active_window_color() {
   win_active=$(get_window_active)
   if [[ "$win_active" == "Code" ]]; then
-    echo "rgb(100,100,200)"
+    echo "background-color: rgb(100,100,200); color: rgb(255,255,255);"
   elif [[ "$win_active" == "kitty" ]]; then
-    echo "rgb(200,100,100)"
+    echo "background-color: rgb(200,100,100); color: rgb(255,255,255);"
   elif [[ "$win_active" == "Spotify" ]]; then
-    echo "rgb(100,150,100)"
+    echo "background-color: rgb(100,150,100); color: rgb(255,255,255);"
   elif [[ "$win_active" == "firefox" ]]; then
-    echo "rgb(240,155,100)"
+    echo "background-color: rgb(240,155,100); color: rgb(255,255,255);"
+  elif [[ "$win_active" == "Rofi" ]]; then
+    echo "background-color: rgb(255,255,255); color: rgb(0,0,0);"
   else
     echo ""
   fi

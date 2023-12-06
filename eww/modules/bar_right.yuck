@@ -32,14 +32,7 @@
         :vexpand "false"
         :hexpand "false"
         :space-evenly "false"
-        
-        ; (revealer
-          ;   :transition "slideright"
-          ;   :reveal bright_rev
-          ;   :duration "350ms"
-        ; )
         (revealer
-          
           :transition "slideright"
           :reveal bright_rev
           :duration "350ms"
@@ -149,18 +142,22 @@
         :class "icon"
         :text "󰍛"
       )
-      (sep)
-      (label
-        :class "icon"
-        :text "⚡"
-      )
-      (box ; BATTERY
-        :space-evenly false :orientation "v" :spacing 5
+      (revealer
+        :reveal {EWW_BATTERY}
+        :transition "slideright"
+        :space-evenly false
         :valign "center"
-        (progress
-          :class "prog-bar battery"
-          :valign "center"
-          :value {EWW_BATTERY.BAT1.capacity}
+        (box
+          (sep)
+          (label
+            :class "icon"
+            :text "⚡"
+          )
+          (progress
+            :class "prog-bar battery"
+            :valign "center"
+            :value {EWW_BATTERY.BAT1.capacity}
+          )
         )
       )
     )

@@ -174,18 +174,7 @@
       (box ; Tag Buttons
         :space-evenly false
         :orientation "v"
-        
-        ; (button ; NSFW
-          ;   :class "sidebar-waifu-toggle"
-          ;   :onclick "scripts/./waifu.py fuckyWucky &"
-          ;   :style "font-size: 11"
-          ;   "NSFW 🔞"
-        ; )
-        
-        ; (revealer
-          ;   :transition "slidedown"
-          ;   :duration "500ms"
-          ;   :reveal display_tags
+      
           (box
             :spacing 2
             :space-evenly false
