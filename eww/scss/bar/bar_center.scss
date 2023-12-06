@@ -1,0 +1,75 @@
+.bar-center {
+  //   @extend .module;
+  border-radius: 10px;
+  transition: all 1s;
+}
+
+.arch {
+  @extend .module;
+  padding: 0px;
+  margin: 0px 5px;
+  border-radius: 10px;
+  & button {
+    transition: all 0.5s;
+    padding: 5px;
+    padding-right: 7px;
+    &:hover {
+      background-color: mix($color1, $color2, $weight: 50%);
+      label {
+        color: $background;
+        text-shadow: $background;
+      }
+    }
+  }
+}
+
+.music {
+  @extend .module;
+  border: none;
+  border-radius: 10px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.music-cover {
+  border-radius: 25;
+}
+
+.music-label {
+  color: $color3;
+  margin: 0px;
+  text-shadow: 2px 2px 2px black;
+
+  &.title {
+    font-size: 12;
+  }
+
+  &.artist {
+    font-size: 10;
+  }
+}
+
+.clock {
+  @extend .module;
+  margin: 0px;
+  border-radius: 10px;
+  //   &.no-radius-left {
+  //     border-radius: 0px 10px 10px 0px;
+  //   }
+  //   &.no-radius-right {
+  //     border-radius: 10px 0px 0px 10px;
+  //   }
+  //   &.no-radius {
+  //     border-radius: 0px;
+  //   }
+}
+
+.titlebar {
+  @extend .module;
+  border-radius: 10px;
+  margin-left: 5px;
+  label {
+    transition: all 1s;
+  }
+}

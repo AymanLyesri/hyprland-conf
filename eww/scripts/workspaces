@@ -37,11 +37,30 @@ get_window_active() {
   fi
 }
 
+get_active_window_color() {
+  win_active=$(get_window_active)
+  if [[ "$win_active" == "Code" ]]; then
+    echo "rgb(100,100,200)"
+  elif [[ "$win_active" == "kitty" ]]; then
+    echo "rgb(200,100,100)"
+  elif [[ "$win_active" == "Spotify" ]]; then
+    echo "rgb(100,150,100)"
+  elif [[ "$win_active" == "firefox" ]]; then
+    echo "rgb(240,155,100)"
+  else
+    echo ""
+  fi
+}
+
 case "$1" in
 "--active-window")
   get_window_active
   ;;
+"--active-window-color")
+  get_active_window_color
+  ;;
 *)
+
   if [[ $1 == +1 && $ws_focused -ge $max_workspace ]]; then
     hyprctl dispatch workspace 1
     exit 1

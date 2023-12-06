@@ -14,7 +14,7 @@
 
 (defwidget arch []
   (box
-    :class "module arch"
+    :class "arch"
     (button
       :onclick "$HOME/.config/hypr/scripts/menu"
       (label
@@ -26,14 +26,16 @@
 )
 
 (defwidget titlebar []
+  
   (revealer
-    :reveal {apptitles != ''}
+    :reveal {active_window != ''}
     :transition "slideright"
     :duration "500ms"
     (label
-      :class "module titlebar txt-low"
+      :style "background-color: ${active_window_color};"
+      :class "titlebar"
       :limit-width "15"
-      :text apptitles
+      :text active_window
     )
   )
 )
@@ -88,7 +90,7 @@
       :space-evenly "false"
       :orientation "h"
       :spacing "10"
-      :class "module clock ${ apptitles != '' ? 'no-radius-right' : '' }"
+      :class "clock ${ active_window != '' ? 'no-radius-right' : '' }"
       (label
         :text " ${clock_time}"
         :class "txt-low"

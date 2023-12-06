@@ -1,0 +1,61 @@
+.wifi-essid {
+  padding-left: 5px;
+  color: $color3;
+}
+
+.bar-right {
+  @extend .module;
+  transition: all 1s;
+  border-radius: 10px 0px 0px 10px;
+}
+
+.scale {
+  margin-right: 6px;
+  * {
+    border-radius: 50%;
+  }
+  trough {
+    min-height: 2px;
+    min-width: 60px;
+    padding-left: 5px;
+    background-color: mix($color1, $background, 75%);
+  }
+
+  highlight {
+    min-width: 3px;
+    background-color: $color2;
+  }
+
+  slider {
+    min-width: 5px;
+    margin: -5px;
+    background-color: $color3;
+  }
+}
+
+.prog-bar {
+  min-height: 2px;
+  padding: 0px;
+  border-radius: 50%;
+  trough {
+    min-height: 2px;
+    min-width: 60px;
+    border-radius: 50%;
+    background-color: mix($color1, $background, 50%);
+  }
+  progress {
+    min-height: 2px;
+    min-width: 4px;
+    border-radius: 50%;
+    background-color: mix($color2, $foreground, 50%);
+  }
+
+  &.battery {
+    trough {
+      min-width: 30px;
+    }
+    progress {
+      background-color: rgb(73, 204, 73);
+    }
+  }
+}
