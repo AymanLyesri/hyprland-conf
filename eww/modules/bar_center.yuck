@@ -32,7 +32,7 @@
     :transition "slideright"
     :duration "500ms"
     (label
-      :style "background-color: ${active_window_color};"
+      :style "background-color: ${active_window_color}"
       :class "titlebar"
       :limit-width "15"
       :text active_window
@@ -40,11 +40,9 @@
   )
 )
 
-
 (defwidget music []
   (revealer
     :reveal {player_active == 1 || player_active == 2}
-    ; TO BE CHANGED
     :transition "slideleft"
     :duration "700ms"
     (eventbox
