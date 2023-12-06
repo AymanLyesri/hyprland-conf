@@ -85,7 +85,7 @@
     :onhover "${EWW_CMD} update time_date=true"
     :onhoverlost "${EWW_CMD} update time_date=false"
     (box
-      :space-evenly "false"
+      :space-evenly false
       :orientation "h"
       :spacing "10"
       :class "clock ${ active_window != '' ? 'no-radius-right' : '' }"
@@ -95,7 +95,7 @@
       )
       (revealer
         :transition "slideright"
-        :duration "350ms"
+        :duration "500ms"
         :reveal time_date
         (label
           :text "${clock_date}"
