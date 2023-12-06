@@ -6,7 +6,6 @@
     :class "bar-right"
     :style "min-height:${bar_height}px"
     (system)
-    ; (clock)
   )
 )
 
@@ -16,8 +15,6 @@
     :space-evenly "false"
     :orientation "h"
     :spacing "10"
-    ; :halign "end"
-    :class "module"
     (Toggles)
     (sep)
     (resources)
@@ -48,7 +45,6 @@
           :duration "350ms"
           (scale
             :class "scale"
-            :style "padding-left: 5px"
             :value brightness_percent
             :orientation "h"
             :max 100
