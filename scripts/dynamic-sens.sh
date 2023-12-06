@@ -2,7 +2,7 @@
 
 # Run hostnamectl and filter output for Chassis information
 chassis_type=$(hostnamectl | grep "Chassis:" | awk '/Chassis/{print $2}')
-sens_file="$HOME/.config/hypr/configs/general.conf"
+sens_file="$HOME/.config/hypr/configs/custom/sensitivity.conf"
 
 if [ $chassis_type == "laptop" ]; then
     new_sensitivity="0.4"
