@@ -1,24 +1,3 @@
-;Time and Date
-(defvar time_date false)
-;Wifi
-(defvar wifi_state false)
-(defvar ESSID_WLAN "online")
-;Volume
-(defvar vol_rev false)
-(defvar VOL_ICON '["󰖁","󰕿","󰖀","󰕾"]')
-(defpoll vol_state :intial 1 :interval "10s" "scripts/volume --get-state")
-;Brightness
-(defvar bright_rev false)
-(defvar bright_icons '["🔅","🔆"]')
-;Music
-(defvar player_active 0)
-(defvar music_art "")
-(defvar music_art_URL "")
-(defvar music_icon "")
-(defvar music_title "")
-(defvar music_title_color "")
-(defvar music_artist "")
-(defvar music_prog 0)
 
 ; Sidebar
 (defpoll image_ratio :interval "5s" "printf '%.1f' $(identify -format '%[fx:h/w]' waifu/img.jpg)")
@@ -34,14 +13,40 @@
 (defvar waifu_art "waifu/img.jpg")
 (defvar is_nsfw false)
 
-(deflisten script_workspace "scripts/workspaces")
 
-(defpoll active_window :interval "2s" "scripts/workspaces --active-window")
-(defpoll active_window_color :interval "2s" "scripts/workspaces --active-window-color")
+; left bar
+(deflisten script_workspace "scripts/workspaces.sh")
+
+; center bar
+(defpoll active_window :interval "0.5s" "scripts/workspaces --active-window")
+(defpoll active_window_color :interval "0.5s" "scripts/workspaces --active-window-color")
 (defpoll clock_time :interval "10s" "date '+\%H:\%M'")
 (defpoll clock_date :interval "10s" "date '+\%a, \%d \%b'")
 (defpoll vol_percent :interval "5s" "scripts/volume --get")
 (defpoll brightness_percent :interval "5s" "scripts/brightness")
 (defpoll music_updater :interval "2s" "scripts/music --update")
+(defvar time_date false)
 
+; Music
+(defvar player_active 0)
+(defvar music_art "")
+(defvar music_art_URL "")
+(defvar music_icon "")
+(defvar music_title "")
+(defvar music_title_color "")
+(defvar music_artist "")
+(defvar music_prog 0)
+
+; right bar
+; Wifi
+(defvar wifi_state false)
+(defpoll ESSID_WLAN :interval "5s" "nmcli -t -f name connection show --active | head -n 1")
+; Volume
+(defvar vol_rev false)
+(defvar VOL_ICON '["󰖁","󰕿","󰖀","󰕾"]')
+(defpoll vol_state :intial 1 :interval "10s" "scripts/volume --get-state")
+; Brightness
+(defvar bright_rev false)
+
+; global bar
 (defpoll bar_height :interval "3s" "scripts/empty_workspace")
