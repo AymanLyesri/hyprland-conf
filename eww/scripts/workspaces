@@ -17,6 +17,18 @@ workspace() {
   echo -n "(box :class 'ws' :style 'min-height:${workspace_height}' :spacing 5 :space-evenly 'false'"
 
   for i in $(seq 1 $max_workspace); do
+
+    if [[ $i == 1 ]]; then
+      if [[ $ws_focused == $i ]]; then
+        echo -n "(button :class 'ws-btn-focused first-button' :style '$button_style'  :onclick 'hyprctl dispatch workspace $i' (label :text '卍')) "
+      elif [[ $(echo "$ws_active" | grep "ID $i" | awk '{print $3}') == $i ]]; then
+        echo -n "(button :class 'ws-btn-active first-button' :style '$button_style' :onclick 'hyprctl dispatch workspace $i' (label :text '${ic[$i]}')) "
+      else
+        echo -n "(button :class 'ws-btn first-button' :style '$button_style' :onclick 'hyprctl dispatch workspace $i' (label :text '${ic[$i]}')) "
+      fi
+      continue
+    fi
+
     if [[ $ws_focused == $i ]]; then
       echo -n "(button :class 'ws-btn-focused' :style '$button_style'  :onclick 'hyprctl dispatch workspace $i' (label :text '卍')) "
     elif [[ $(echo "$ws_active" | grep "ID $i" | awk '{print $3}') == $i ]]; then

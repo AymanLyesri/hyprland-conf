@@ -37,16 +37,18 @@
   font-weight: bolder;
   transition: all 0.5s;
   button {
+    @extend .module;
     border-radius: 100%;
     padding: 0px;
     margin: 0px;
     transition: all 1s;
-    background-color: mix(
-      mix($color0, $color1, $weight: 50%),
-      $background,
-      $weight: 50%
-    );
     color: $background;
+
+    &.first-button {
+      border: none;
+      border-radius: 0px 10px 10px 0px;
+    }
+
     &.ws-btn {
       border-top: 11 solid;
       border-bottom: 11 solid;
@@ -70,7 +72,6 @@
     &.ws-btn-focused {
       color: $foreground;
       background-color: mix($color2, $background, $weight: 66%);
-      border-radius: 50%;
       border-top: 2 solid;
       border-bottom: 2 solid;
     }
