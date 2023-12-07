@@ -18,8 +18,8 @@
 (deflisten script_workspace "scripts/workspaces.sh")
 
 ; center bar
-(defpoll active_window :interval "0.5s" "scripts/workspaces --active-window")
-(defpoll active_window_color :interval "0.5s" "scripts/workspaces --active-window-color")
+(defpoll active_window :interval "0.5s" "scripts/workspaces.sh --active-window")
+(defpoll active_window_color :interval "0.5s" "scripts/workspaces.sh --active-window-color")
 (defpoll clock_time :interval "10s" "date '+\%H:\%M'")
 (defpoll clock_date :interval "10s" "date '+\%a, \%d \%b'")
 (defpoll vol_percent :interval "5s" "scripts/volume --get")
