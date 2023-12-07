@@ -97,8 +97,9 @@
         :duration "500ms"
         :reveal time_date
         (label
-          :text "${clock_date}"
+          :text "| ${clock_date}"
           :class "txt-low"
+          :style "margin-right: 10px;"
         )
       )
     )

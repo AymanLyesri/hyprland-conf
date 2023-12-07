@@ -54,9 +54,9 @@ get_active_window_color() {
   if [[ "$win_active" == "Code" ]]; then
     echo "background-color: rgb(100,100,200); color: rgb(255,255,255);"
   elif [[ "$win_active" == "kitty" ]]; then
-    echo "background-color: rgb(200,100,100); color: rgb(255,255,255);"
+    echo "background-color: rgb(240,75,75); color: rgb(255,255,255);"
   elif [[ "$win_active" == "Spotify" ]]; then
-    echo "background-color: rgb(100,150,100); color: rgb(255,255,255);"
+    echo "background-color: rgb(100,200,100); color: rgb(0,0,0);"
   elif [[ "$win_active" == "firefox" ]]; then
     echo "background-color: rgb(240,155,100); color: rgb(255,255,255);"
   elif [[ "$win_active" == "Rofi" ]]; then
