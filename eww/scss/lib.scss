@@ -4,8 +4,7 @@
 //   min-height: 0px;
 // }
 
-$background: mix(mix($color0, $color1, 50%), $background, 50%);
-$transparent-background: mix($background, $foreground, 50%);
+$background: mix(mix($color0, $color1, 50%), $background, 25%);
 
 .module {
   background-color: rgba($background, 0.8);
@@ -23,11 +22,11 @@ $transparent-background: mix($background, $foreground, 50%);
 .icon {
   margin: 0px 5px;
   font-size: 12;
-  color: mix($foreground, $background, $weight: 75%);
+  font-weight: bolder;
 }
 
 .sep {
-  font-size: 5;
+  font-size: 7;
   font-weight: bolder;
   color: $foreground;
 }

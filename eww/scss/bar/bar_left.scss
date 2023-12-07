@@ -44,6 +44,11 @@
     transition: all 1s;
     color: $background;
 
+    & label {
+      font-size: 1em;
+      color: $foreground;
+    }
+
     &.first-button {
       border: none;
       border-radius: 0px 10px 10px 0px;
@@ -54,29 +59,24 @@
       border-bottom: 11 solid;
       label {
         font-size: 0.2em;
-        color: rgb(255, 255, 255);
       }
       &:hover label {
-        font-size: 0.75em;
+        font-size: 1em;
         transition-delay: 500ms;
       }
     }
     &.ws-btn-active {
       border-top: 6 solid;
       border-bottom: 6 solid;
-      label {
-        color: aliceblue;
-        font-size: 0.75em;
-      }
     }
     &.ws-btn-focused {
       color: $foreground;
-      background-color: mix($color2, $background, $weight: 66%);
+      background-color: mix($color2, $background, 66%);
       border-top: 2 solid;
       border-bottom: 2 solid;
     }
     &:hover {
-      background-color: $color1;
+      background-color: $color2;
       border-top: 1 solid;
       border-bottom: 1 solid;
       label {

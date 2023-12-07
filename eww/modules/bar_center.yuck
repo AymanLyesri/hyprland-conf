@@ -90,7 +90,6 @@
       :class "clock ${ active_window != '' ? 'no-radius-right' : '' }"
       (label
         :text " ${clock_time}"
-        :class "txt-low"
       )
       (revealer
         :transition "slideright"
@@ -98,7 +97,6 @@
         :reveal time_date
         (label
           :text "| ${clock_date}"
-          :class "txt-low"
           :style "margin-right: 10px;"
         )
       )
