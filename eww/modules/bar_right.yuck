@@ -143,7 +143,7 @@
         :text "󰍛"
       )
       (revealer
-        :reveal {EWW_BATTERY}
+        :reveal {EWW_BATTERY.BAT1.capacity>0}
         :transition "slideright"
         :space-evenly false
         :valign "center"
