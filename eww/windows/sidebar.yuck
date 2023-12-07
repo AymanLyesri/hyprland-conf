@@ -160,7 +160,7 @@
         :text "  Culture"
       )
       (label
-        :class "sidebar-subtitle txt-low"
+        :class "sidebar-subtitle"
         :halign "end"
         :text "Dayumn those waifus !"
       )
