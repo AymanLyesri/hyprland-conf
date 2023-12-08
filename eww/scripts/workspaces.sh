@@ -52,19 +52,32 @@ get_window_active() {
 
 get_active_window_color() {
   win_active=$(get_window_active)
-  if [[ "$win_active" == "Code" ]]; then
+  case $win_active in
+  "Code")
     echo "background-color: rgb(100,100,200); color: rgb(255,255,255);"
-  elif [[ "$win_active" == "kitty" ]]; then
+    ;;
+  "kitty")
     echo "background-color: rgb(240,75,75); color: rgb(255,255,255);"
-  elif [[ "$win_active" == "Spotify" ]]; then
+    ;;
+  "Spotify")
     echo "background-color: rgb(100,200,100); color: rgb(0,0,0);"
-  elif [[ "$win_active" == "firefox" ]]; then
+    ;;
+  "firefox")
     echo "background-color: rgb(240,155,100); color: rgb(255,255,255);"
-  elif [[ "$win_active" == "Rofi" ]]; then
+    ;;
+  "Rofi")
     echo "background-color: rgb(255,255,255); color: rgb(0,0,0);"
-  else
+    ;;
+  "Rofi")
+    echo "background-color: rgb(255,255,255); color: rgb(0,0,0);"
+    ;;
+  "dotnet")
+    echo "background-color: rgb(255,0,200); color: rgb(255,255,255);"
+    ;;
+  *)
     echo ""
-  fi
+    ;;
+  esac
 }
 
 case "$1" in
