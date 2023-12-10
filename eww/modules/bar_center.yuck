@@ -45,7 +45,7 @@
     :transition "slideleft"
     :duration "700ms"
     (eventbox
-      :onclick "/home/ayman/.config/hypr/eww/scripts/music --play-pause"
+      :onclick "$HOME/.config/hypr/eww/scripts/music --play-pause"
       (box
         :class "music"
         :hexpand "true"

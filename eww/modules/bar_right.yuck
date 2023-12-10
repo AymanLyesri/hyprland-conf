@@ -80,7 +80,6 @@
       )
     )
     (sep)
-    ; Wifi (nm-connection-editor)
     (eventbox
       :onhover "${EWW_CMD} update wifi_state=true"
       :onhoverlost "${EWW_CMD} update wifi_state=false"
@@ -111,7 +110,7 @@
   (eventbox
     :onclick "hyprctl dispatch workspace 3"
     (box
-      :space-evenly false :spacing 10
+      :space-evenly false
       :orientation "h"
       :valign "center"
       
@@ -140,6 +139,7 @@
       )
       (label
         :class "icon"
+        :style "font-size: 15;"
         :text "󰍛"
       )
       (revealer
