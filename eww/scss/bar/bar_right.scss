@@ -1,12 +1,12 @@
-.wifi-essid {
-  padding-left: 5px;
-  color: $color3;
-}
-
 .bar-right {
   @extend .module;
   transition: all 1s;
-  border-radius: 10px 0px 0px 10px;
+  border-radius: 10px;
+}
+
+.wifi-essid {
+  padding-left: 5px;
+  color: $color3;
 }
 
 .scale {

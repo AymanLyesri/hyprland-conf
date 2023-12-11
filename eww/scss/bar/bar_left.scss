@@ -1,87 +1,144 @@
-@keyframes eye-blink {
-  0% {
-    border-bottom: 6 solid;
-    border-top: 6 solid;
-  }
-  10% {
-    border-bottom: 11 solid;
-    border-top: 11 solid;
-  }
-  20% {
-    border-bottom: 6 solid;
-    border-top: 6 solid;
-  }
-  100% {
-    border-bottom: 6 solid;
-    border-top: 6 solid;
-  }
-}
-
-@keyframes eye-blink-label {
-  0% {
-    font-size: 0.75em;
-  }
-  10% {
-    font-size: 0.2em;
-  }
-  20% {
-    font-size: 0.75em;
-  }
-  100% {
-    font-size: 0.75em;
-  }
-}
-
-.ws {
-  font-size: 12;
-  font-weight: bolder;
-  transition: all 0.5s;
+.workspaces {
   button {
     @extend .module;
-    border-radius: 100%;
-    padding: 0px;
-    margin: 0px;
-    transition: all 1s;
-    color: $background;
+    margin-right: 5px;
+    ////////////////////////////
+    border-radius: 50px;
+    padding-right: 10px;
+    padding-left: 10px;
+    transition: all 0.5s;
 
-    & label {
-      font-size: 1em;
+    &.focused {
+      border-radius: 10px;
+      padding-right: 20px;
+      padding-left: 20px;
       color: $foreground;
+      background-color: mix(mix($color0, $color1, 50%), $background, 69%);
+      animation: workspace-focus 0.5s ease;
     }
-
-    &.first-button {
-      border: none;
-      border-radius: 0px 10px 10px 0px;
+    &.unfocused {
+      animation: workspace-unfocus 0.5s ease;
     }
-
-    &.ws-btn {
-      border-top: 11 solid;
-      border-bottom: 11 solid;
-      label {
-        font-size: 0.2em;
-      }
-      &:hover label {
-        font-size: 1em;
-        transition-delay: 500ms;
-      }
-    }
-    &.ws-btn-active {
-      border-top: 6 solid;
-      border-bottom: 6 solid;
-    }
-    &.ws-btn-focused {
+    &.same-focused {
+      border-radius: 10px;
+      padding-right: 20px;
+      padding-left: 20px;
       color: $foreground;
-      background-color: mix($color2, $background, 66%);
-      border-top: 2 solid;
-      border-bottom: 2 solid;
-    }
-    &:hover {
-      background-color: $color2;
-      border-top: 1 solid;
-      border-bottom: 1 solid;
-      label {
-        color: $background;
-      }
+      background-color: mix(mix($color0, $color1, 50%), $background, 100%);
     }
   }
 }
+
+@keyframes workspace-focus {
+  0% {
+    padding-right: 10px;
+    padding-left: 10px;
+    border-radius: 50px;
+  }
+  100% {
+    padding-right: 20px;
+    padding-left: 20px;
+    border-radius: 10px;
+  }
+}
+
+@keyframes workspace-unfocus {
+  0% {
+    padding-right: 20px;
+    padding-left: 20px;
+    border-radius: 10px;
+  }
+  100% {
+    padding-right: 10px;
+    padding-left: 10px;
+    border-radius: 50px;
+  }
+}
+
+// @keyframes eye-blink {
+//   0% {
+//     border-bottom: 6 solid;
+//     border-top: 6 solid;
+//   }
+//   10% {
+//     border-bottom: 11 solid;
+//     border-top: 11 solid;
+//   }
+//   20% {
+//     border-bottom: 6 solid;
+//     border-top: 6 solid;
+//   }
+//   100% {
+//     border-bottom: 6 solid;
+//     border-top: 6 solid;
+//   }
+// }
+
+// @keyframes eye-blink-label {
+//   0% {
+//     font-size: 0.75em;
+//   }
+//   10% {
+//     font-size: 0.2em;
+//   }
+//   20% {
+//     font-size: 0.75em;
+//   }
+//   100% {
+//     font-size: 0.75em;
+//   }
+// }
+
+// .ws {
+//   font-size: 12;
+//   font-weight: bolder;
+//   transition: all 0.5s;
+//   button {
+//     @extend .module;
+//     border-radius: 100%;
+//     padding: 0px;
+//     margin: 0px;
+//     transition: all 1s;
+//     color: $background;
+
+//     & label {
+//       font-size: 1em;
+//       color: $foreground;
+//     }
+
+//     &.first-button {
+//       border: none;
+//       border-radius: 0px 10px 10px 0px;
+//     }
+
+//     &.ws-btn {
+//       border-top: 11 solid;
+//       border-bottom: 11 solid;
+//       label {
+//         font-size: 0.2em;
+//       }
+//       &:hover label {
+//         font-size: 1em;
+//         transition-delay: 500ms;
+//       }
+//     }
+//     &.ws-btn-active {
+//       border-top: 6 solid;
+//       border-bottom: 6 solid;
+//     }
+//     &.ws-btn-focused {
+//       color: $foreground;
+//       background-color: mix($color2, $background, 66%);
+//       border-top: 2 solid;
+//       border-bottom: 2 solid;
+//     }
+//     &:hover {
+//       background-color: $color2;
+//       border-top: 1 solid;
+//       border-bottom: 1 solid;
+//       label {
+//         color: $background;
+//       }
+//     }
+//   }
+// }
