@@ -3,13 +3,36 @@
 (defwidget bar_left []
   (box
     :class "bar-left"
-    (workspace)
+    (workspaces)
   )
 )
 
 (defwidget workspace []
   (literal
     :content script_workspace
+  )
+)
+
+
+(deflisten active_workspaces :initial "[]" "bash scripts/get_active_workspaces.sh")
+(deflisten focused_workspace :initial "" "bash scripts/get_focused_workspace.sh")
+(deflisten unfocused_workspace :initial "" "bash scripts/get_unfocused_workspace.sh")
+
+(defwidget workspaces []
+  (box :class "workspaces"
+    :orientation "h"
+    :space-evenly false
+    :halign "start"
+    ; for values to update
+    (label :text "${focused_workspace}${unfocused_workspace}" :visible false)
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    (for id in active_workspaces
+      (button
+        :class {focused_workspace != unfocused_workspace && focused_workspace == id ? "focused" :
+        focused_workspace == unfocused_workspace && focused_workspace == id ? "same-focused" :
+        unfocused_workspace == id ? "unfocused" :""}
+      :onclick "hyprctl dispatch workspace ${id}" id)
+    )
   )
 )
 
