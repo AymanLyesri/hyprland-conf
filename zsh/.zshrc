@@ -1,19 +1,16 @@
 (cat ~/.cache/wal/sequences &)
 
-# Neofetch
-# NEOFETCH="neofetch --config $HOME/.config/hypr/neofetch/config.conf --ascii $HOME/.config/hypr/neofetch/swastika | lolcat"
-# eval "$NEOFETCH"
-
-# Pfetch
-PFETCH="pfetch | lolcat"
-eval "$PFETCH"
-
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
+
+# Pfetch
+PFETCH="pfetch | lolcat"
+eval "$PFETCH"
+
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f $HOME/.config/hypr/zsh/.p10k.zsh ]] || source $HOME/.config/hypr/zsh/.p10k.zsh
@@ -29,11 +26,6 @@ source /usr/share/zsh/plugins/zsh-sudo/sudo.plugin.zsh
 HISTSIZE=10000                # Maximum events for internal history
 SAVEHIST=10000                # Maximum events in history file
 HISTFILE=~/.cache/zsh/history # History filepath
-
-#Enable color and change prompt
-# setopt PROMPT_SUBST
-# PROMPT="%F{222}⤘%f %F{240}%m%f %F{red}卐%f %F{red}%n%f%F{240} ⮚ %f%F{222}%d%f%F{240} ⮚ %f"
-# PROMPT="%F{red}%m%f %F{red}卐%f %F{red}%n%f%F{240} ⮚ %f%F{yellow}%d%f%F{240} ⮚ %f"
 
 #Zsh Tab Complete
 autoload -U compinit
@@ -52,36 +44,28 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#696969,bold"
 #Zsh Substring History Search
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
-
 # Aliases for neovide
 alias v="nvim"
-
 # Aliases for ls
 alias ls='lsd'
-
 # Aliases for cat
 alias cat='bat'
-
 # Aliase functions
 function code() {
   /bin/code $1 && exit
 }
-function onedrive() {
-  ranger $HOME/OneDrive && exit
-}
 function cpdir {
   pwd | tr -d "\r\n" | wl-copy
 }
-
 # Test Connection
 TEST_CONNECTION="/home/ayman/.config/hypr/scripts/test-connection"
 alias connn=$TEST_CONNECTION
-
 # Aliases for angular
 # source <(ng completion script)
-
 # Aliases for neofetch
 alias n=$NEOFETCH
+# Aliases for logout
+alias logout='hyprctl dispatch exit'
 
 # The fuck
 eval $(thefuck --alias)
