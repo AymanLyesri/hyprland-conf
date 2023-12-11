@@ -74,6 +74,9 @@ get_active_window_color() {
   "dotnet")
     echo "background-color: rgb(255,0,200); color: rgb(255,255,255);"
     ;;
+  "steam")
+    echo "background-color: rgb(0,0,155); color: rgb(255,255,255);"
+    ;;
   *)
     echo ""
     ;;
