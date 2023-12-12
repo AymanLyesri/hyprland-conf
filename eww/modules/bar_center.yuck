@@ -44,14 +44,13 @@
     :reveal {player_active == 1 || player_active == 2}
     :transition "slideleft"
     :duration "700ms"
-    (eventbox
-      :onclick "$HOME/.config/hypr/eww/scripts/music --play-pause"
-      (box
-        :class "music"
-        :hexpand "true"
-        :space-evenly false
-        ; :width 400
-        :style "background-image: linear-gradient(to right, #131313 , rgba(90, 20, 52, 0)), url('${music_art}');"
+    (box
+      :class "music"
+      :hexpand "true"
+      :space-evenly false
+      :style "background-image: linear-gradient(to right, #131313 , rgba(90, 20, 52, 0)), url('${music_art}');"
+      (eventbox
+        :onclick "$HOME/.config/hypr/eww/scripts/music --play-pause"
         (box
           :space-evenly false
           :orientation "h"
@@ -67,12 +66,28 @@
             :text "🡄 ${music_artist}"
           )
         )
-        (revealer
-          :reveal {player_active == 2}
-          (label
-            :class "music-unlabel"
-            :text "${music_updater}" ; updating music vars while render text
-          )
+      )
+      (button
+        :class "previous"
+        :onclick "$HOME/.config/hypr/eww/scripts/music --previous"
+        (label
+          :class "icon"
+          :text "⮜"
+        )
+      )
+      (button
+        :class "next"
+        :onclick "$HOME/.config/hypr/eww/scripts/music --next"
+        (label
+          :class "icon"
+          :text "⮞"
+        )
+      )
+      (revealer
+        :reveal {false}
+        (label
+          :class "music-unlabel"
+          :text "${music_updater}" ; updating music vars while render text
         )
       )
     )
