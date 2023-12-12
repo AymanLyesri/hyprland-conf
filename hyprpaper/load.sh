@@ -10,6 +10,7 @@ default_wallpaper=$($hyprDir/hyprpaper/default.sh)             # get default wal
 
 >$config # clear config
 
+echo "splash = true" >>$config                # set splash screen
 echo "preload = $default_wallpaper" >>$config # set preload wallpaper
 echo "" >>$config                             # add new line
 
