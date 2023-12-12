@@ -6,6 +6,6 @@ random_dir="$HOME/.config/hypr/hyprpaper/random.sh"
 
 # Set the while loop to run forever
 while true; do
-    sleep 3m    # wait 3 minutes
+    sleep 5m    # wait 5 minutes
     $random_dir # run random wallpaper script
 done
