@@ -71,6 +71,7 @@
         :class "previous"
         :onclick "$HOME/.config/hypr/eww/scripts/music --previous"
         (label
+          :style "color:${music_title_color}"
           :class "icon"
           :text "⮜"
         )
@@ -79,6 +80,7 @@
         :class "next"
         :onclick "$HOME/.config/hypr/eww/scripts/music --next"
         (label
+          :style "color:${music_title_color}"
           :class "icon"
           :text "⮞"
         )
