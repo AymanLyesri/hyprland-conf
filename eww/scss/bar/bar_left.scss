@@ -26,6 +26,11 @@
       color: $foreground;
       background-color: mix(mix($color0, $color1, 50%), $background, 100%);
     }
+    ////////////////////////////
+    &:hover {
+      color: $background;
+      background-color: mix(mix($color5, $color6, 50%), $foreground, 69%);
+    }
   }
 }
 
