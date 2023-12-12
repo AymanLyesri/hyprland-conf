@@ -164,13 +164,3 @@
   )
   
 )
-
-
-; (defwidget powerview []
-  ;   (box
-    ;     :class "module"
-    ;     (label
-      ;       :class "icon" :style "padding-right: 2px"
-    ;     :text "󰐥")
-  ;   )
-; )

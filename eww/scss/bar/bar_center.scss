@@ -43,13 +43,11 @@
   .previous,
   .next {
     @extend .module;
+    padding-left: 2px;
+    padding-right: 2px;
     padding-top: 5px;
     &:hover {
-      background-color: mix($color1, $color2, 50%);
-      label {
-        color: $background;
-        text-shadow: $background;
-      }
+      background-color: mix(mix($color1, $color2, 50%), $background, 50%);
     }
   }
 }

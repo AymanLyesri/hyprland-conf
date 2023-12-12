@@ -22,6 +22,7 @@ hyprpaper & # start hyprpaper
 #################################################
 
 source $hyprDir/wal/pywal $default_wallpaper # set wallpaper theme
+source $hyprDir/scripts/dynamic-border.sh    # set border theme
 
 #################################################
 
