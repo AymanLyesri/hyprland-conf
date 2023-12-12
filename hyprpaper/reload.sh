@@ -14,7 +14,7 @@ for pid in $other_pids; do
 done
 
 # killall load.sh & # kill this script
-
+hyprctl hyprpaper unload all
 killall hyprpaper # kill hyprpaper
 
 sleep 1
