@@ -147,10 +147,9 @@
         :transition "slideright"
         :space-evenly false
         :valign "center"
+        :spacing 0
         (box
-          (sep)
           (label
-            :class "icon"
             :text "⚡"
           )
           (progress

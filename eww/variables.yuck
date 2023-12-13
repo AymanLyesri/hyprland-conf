@@ -37,6 +37,10 @@
 (defvar music_artist "")
 (defvar music_prog 0)
 
+; Bandwidth usage (in KB/s)
+(defpoll bandwidth_up :interval "1s" "scripts/bandwidth.sh --up")
+(defpoll bandwidth_down :interval "5s" "iftop -t | grep 'Total receive rate:' | awk '{print $4}'")
+
 ; right bar
 ; Wifi
 (defvar wifi_state false)

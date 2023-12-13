@@ -35,4 +35,4 @@ done
 
 #################################################
 
-source $hyprDir/hyprpaper/auto.sh & # start auto wallpaper script
+# source $hyprDir/hyprpaper/auto.sh & # start auto wallpaper script

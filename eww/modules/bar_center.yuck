@@ -1,16 +1,28 @@
 (defwidget bar_center []
   (box
     :space-evenly false
+    :spacing 5
     :halign "center"
     :class "bar-center"
     :style "min-height:${bar_height}px"
     (music)
+    (bandwidth)
     (arch)
     (clock)
     (titlebar)
   )
 )
 
+(defwidget bandwidth []
+  (box
+    :space-evenly false
+    :halign "center"
+    :class "bandwidth"
+    :style "min-height:${bar_height}px"
+    (label
+    :text "⇡${bandwidth_up} ⇣${bandwidth_down}")
+  )
+)
 
 (defwidget arch []
   (box
