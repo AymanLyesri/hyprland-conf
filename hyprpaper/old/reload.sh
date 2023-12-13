@@ -15,7 +15,6 @@ done
 
 # killall load.sh & # kill this script
 hyprctl hyprpaper unload all
-killall load.sh   # kill load.sh
 killall hyprpaper # kill hyprpaper
 
 sleep 1

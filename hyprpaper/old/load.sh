@@ -27,4 +27,12 @@ source $hyprDir/scripts/dynamic-border.sh    # set border theme
 
 #################################################
 
+for wallpaper in $( # loop through wallpapers
+    find $hyprDir/wallpapers/normal -type f
+); do
+    hyprctl hyprpaper preload $wallpaper # preload wallpaper
+done
+
+#################################################
+
 # source $hyprDir/hyprpaper/auto.sh & # start auto wallpaper script
