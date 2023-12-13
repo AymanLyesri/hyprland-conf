@@ -2,10 +2,14 @@
   transition: all 1s;
 }
 
+.bandwidth {
+  @extend .module;
+  border-radius: 10px;
+}
+
 .arch {
   @extend .module;
   padding: 0px;
-  margin: 0px 5px;
   border-radius: 10px;
   & button {
     transition: all 0.5s;
@@ -80,7 +84,6 @@
 .titlebar {
   @extend .module;
   border-radius: 10px;
-  margin-left: 5px;
   label {
     transition: all 1s;
   }
