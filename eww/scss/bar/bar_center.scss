@@ -3,8 +3,13 @@
 }
 
 .bandwidth {
-  @extend .module;
-  border-radius: 10px;
+  padding: 0px;
+  label {
+    @extend .module;
+    padding: 0px;
+    border-radius: 10px;
+  }
+  // color: mix($color2, $background, 75%);
 }
 
 .arch {
