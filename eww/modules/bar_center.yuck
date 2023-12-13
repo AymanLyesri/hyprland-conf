@@ -6,10 +6,10 @@
     :class "bar-center"
     :style "min-height:${bar_height}px"
     (music)
-    (bandwidth)
     (arch)
     (clock)
     (titlebar)
+    (bandwidth)
   )
 )
 
@@ -18,9 +18,17 @@
     :space-evenly false
     :halign "center"
     :class "bandwidth"
-    :style "min-height:${bar_height}px"
+    :style "min-height:${bar_height}px;"
+    :spacing 5
     (label
-    :text "⇡${bandwidth_up} ⇣${bandwidth_down}")
+      :style "${bandwidth[1] < 100 ? 'min-width: 30px;' : 'min-width: 50px;'}"
+      :text "⇣${bandwidth[1]}"
+    )
+    (label
+      :style "${bandwidth[0] < 100 ? 'min-width: 30px;' : 'min-width: 50px;'}"
+      :text "⇡${bandwidth[0]}"
+    )
+    
   )
 )
 

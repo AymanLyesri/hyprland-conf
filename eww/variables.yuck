@@ -15,7 +15,10 @@
 
 
 ; left bar
-(deflisten script_workspace "scripts/workspaces.sh")
+; (deflisten script_workspace "scripts/workspaces.sh")
+(deflisten active_workspaces :initial "[]" "bash scripts/get_active_workspaces.sh")
+(deflisten focused_workspace :initial "" "bash scripts/get_focused_workspace.sh")
+(deflisten unfocused_workspace :initial "" "bash scripts/get_unfocused_workspace.sh")
 
 ; center bar
 (defpoll active_window :interval "0.5s" "scripts/workspaces.sh --active-window")
@@ -38,8 +41,7 @@
 (defvar music_prog 0)
 
 ; Bandwidth usage (in KB/s)
-(defpoll bandwidth_up :interval "1s" "scripts/bandwidth.sh --up")
-(defpoll bandwidth_down :interval "5s" "iftop -t | grep 'Total receive rate:' | awk '{print $4}'")
+(deflisten bandwidth :intial "[]" "scripts/bandwidth.sh --up")
 
 ; right bar
 ; Wifi

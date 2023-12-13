@@ -7,16 +7,6 @@
   )
 )
 
-; (defwidget workspace []
-  ;   (literal
-    ;     :content script_workspace
-  ;   )
-; )
-
-(deflisten active_workspaces :initial "[]" "bash scripts/get_active_workspaces.sh")
-(deflisten focused_workspace :initial "" "bash scripts/get_focused_workspace.sh")
-(deflisten unfocused_workspace :initial "" "bash scripts/get_unfocused_workspace.sh")
-
 (defwidget workspaces []
   (box :class "workspaces"
     :orientation "h"
