@@ -4,13 +4,9 @@ monitors=$(hyprctl monitors | grep Monitor | awk '{print $2}')                # 
 hyprdir=$HOME/.config/hypr                                                    # hypr directory
 ##########################################
 
-hyprctl hyprpaper preload $random # preload wallpaper
-
 for monitor in $monitors; do                       # loop through monitors
     hyprctl hyprpaper wallpaper "$monitor,$random" # set wallpaper
 done
-
-hyprctl hyprpaper unload $random # preload wallpaper
 
 ##########################################
 
