@@ -4,6 +4,7 @@
 
 .bandwidth {
   padding: 0px;
+  min-width: 100px;
   label {
     @extend .module;
     padding: 0px;
