@@ -77,7 +77,7 @@
       :space-evenly false
       :style "background-image: linear-gradient(to right, #131313 , rgba(90, 20, 52, 0)), url('${music_art}');"
       (eventbox
-        :onclick "./bar/scripts/music --play-pause"
+        :onclick "./bar/scripts/music.sh --play-pause"
         (box
           :space-evenly false
           :orientation "h"
