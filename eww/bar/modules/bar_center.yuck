@@ -56,14 +56,13 @@
 
 (defwidget titlebar []
   (revealer
-    :reveal {active_window != ''}
+    :reveal {active_window[0] != 'null'}
     :transition "slideright"
     :duration "500ms"
     (label
-      :style active_window_color
+      :style {active_window[1]}
       :class "titlebar"
-      :limit-width "15"
-      :text active_window
+      :text {active_window[0]}
     )
   )
 )
@@ -79,7 +78,7 @@
       :space-evenly false
       :style "background-image: linear-gradient(to right, #131313 , rgba(90, 20, 52, 0)), url('${music_art}');"
       (eventbox
-        :onclick "$HOME/.config/hypr/eww/scripts/music --play-pause"
+        :onclick "./bar/scripts/music --play-pause"
         (box
           :space-evenly false
           :orientation "h"
@@ -98,7 +97,7 @@
       )
       (button
         :class "previous"
-        :onclick "$HOME/.config/hypr/eww/scripts/music --previous"
+        :onclick "$./bar/scripts/music --previous"
         (label
           :style "color:${music_title_color}"
           :class "icon"
@@ -107,7 +106,7 @@
       )
       (button
         :class "next"
-        :onclick "$HOME/.config/hypr/eww/scripts/music --next"
+        :onclick "./bar/scripts/music --next"
         (label
           :style "color:${music_title_color}"
           :class "icon"

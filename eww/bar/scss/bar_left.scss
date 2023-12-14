@@ -2,14 +2,18 @@
   button {
     @extend .module;
     margin-right: 5px;
+    transition: all 0.5s;
+    border-radius: 10px;
     ////////////////////////////
-    border-radius: 50px;
     padding-right: 10px;
     padding-left: 10px;
-    transition: all 0.5s;
-
+    label {
+      font-size: 13px;
+      font-weight: normal;
+      min-width: 25px;
+    }
+    ////////////////////////////
     &.focused {
-      border-radius: 10px;
       padding-right: 20px;
       padding-left: 20px;
       color: $foreground;
@@ -20,7 +24,6 @@
       animation: workspace-unfocus 0.5s ease;
     }
     &.same-focused {
-      border-radius: 10px;
       padding-right: 20px;
       padding-left: 20px;
       color: $foreground;
@@ -44,12 +47,10 @@
   0% {
     padding-right: 10px;
     padding-left: 10px;
-    border-radius: 50px;
   }
   100% {
     padding-right: 20px;
     padding-left: 20px;
-    border-radius: 10px;
   }
 }
 
@@ -57,12 +58,10 @@
   0% {
     padding-right: 20px;
     padding-left: 20px;
-    border-radius: 10px;
   }
   100% {
     padding-right: 10px;
     padding-left: 10px;
-    border-radius: 50px;
   }
 }
 

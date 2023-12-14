@@ -16,16 +16,18 @@
     (label :text "${focused_workspace}${unfocused_workspace}" :visible false)
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     (box
+      :space-evenly false
       (for id in active_workspaces
         (button
           :class {focused_workspace != unfocused_workspace && focused_workspace == id ? "focused" :
           focused_workspace == unfocused_workspace && focused_workspace == id ? "same-focused" :
           unfocused_workspace == id ? "unfocused" :""}
-          :onclick "hyprctl dispatch workspace ${id}" {
-          id == 1 ? "" :
-          id == 2 ? "" :
-          id== 5 ? "": id
-          }
+          :onclick "hyprctl dispatch workspace ${id}"
+          
+          (label :text {
+            id < 5 ? workspaces[id]: id
+            }
+          )
           
         )
       )
@@ -37,7 +39,7 @@
       :duration "500ms"
       (button
         :class "special"
-      :onclick "hyprctl dispatch workspace special" 69)
+      :onclick "hyprctl dispatch togglespecialworkspace" 69)
     )
   )
 )

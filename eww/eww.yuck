@@ -1,14 +1,14 @@
 ; Some utils for common use
-(include "./lib.yuck")
+(include "./bar/lib.yuck")
 
 ; Variables
-(include "./variables.yuck")
+(include "./bar/variables.yuck")
 
 ; Bar modules
-(include "./modules/bar_left.yuck")
-(include "./modules/bar_center.yuck")
-(include "./modules/bar_right.yuck")
+(include "./bar/modules/bar_left.yuck")
+(include "./bar/modules/bar_center.yuck")
+(include "./bar/modules/bar_right.yuck")
 
 ; Dashboard
-(include "./windows/bar.yuck")
-(include "./windows/sidebar.yuck")
+(include "./bar/windows/bar.yuck")
+; (include "./side_bar_L/eww.yuck")

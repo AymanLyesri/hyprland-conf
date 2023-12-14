@@ -1,10 +1,11 @@
 @import "/home/ayman/.cache/wal/colors.scss";
-@import "scss/lib.scss";
-@import "scss/bar/bar_left.scss";
-@import "scss/bar/bar_center.scss";
-@import "scss/bar/bar_right.scss";
-@import "scss/bar/bar.scss";
-@import "scss/sidebar.scss";
+@import "bar/scss/lib.scss";
+@import "bar/scss/bar_left.scss";
+@import "bar/scss/bar_center.scss";
+@import "bar/scss/bar_right.scss";
+@import "bar/scss/bar.scss";
+
+// @import "side_bar_L/eww.scss";
 
 * {
   all: unset;
