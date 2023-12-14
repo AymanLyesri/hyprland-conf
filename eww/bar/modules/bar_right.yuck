@@ -23,7 +23,7 @@
 
 (defwidget Toggles []
   (box ; Quick Toggles
-    :space-evenly false :spacing 7
+    :space-evenly false :spacing 5
     
     (eventbox ; Brightness
       :onhover "${EWW_CMD} update bright_rev=true"
