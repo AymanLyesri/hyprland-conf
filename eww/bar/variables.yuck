@@ -18,10 +18,10 @@
 (defpoll clock_date :interval "10s" "date '+\%a, \%d \%b'")
 (defpoll vol_percent :interval "5s" "./bar/scripts/volume --get")
 (defpoll brightness_percent :interval "5s" "./bar/scripts/brightness")
-(defpoll music_updater :interval "2s" "./bar/scripts/music --update")
 (defvar time_date false)
 
 ; Music
+(defpoll music_updater :interval "2s" "./bar/scripts/music.sh --update")
 (defvar player_active 0)
 (defvar music_art "")
 (defvar music_art_URL "")
@@ -46,4 +46,4 @@
 (defvar bright_rev false)
 
 ; global bar
-(defpoll bar_height :interval "3s" "./bar/scripts/empty_workspace")
+(defpoll bar_height :interval "1s" "./bar/scripts/empty_workspace")

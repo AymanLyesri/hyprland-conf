@@ -1,5 +1,5 @@
 .bar-center {
-  transition: all 1s;
+  transition: all 0.5s;
 }
 
 .bandwidth {
@@ -10,7 +10,6 @@
     padding: 0px;
     border-radius: 10px;
   }
-  // color: mix($color2, $background, 75%);
 }
 
 .arch {
@@ -39,44 +38,57 @@
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-
   padding-right: 0px;
 
-  .previous {
-    margin-left: 5px;
-    border-radius: 10px 0px 0px 10px;
-  }
-  .next {
-    border-radius: 0px 10px 10px 0px;
+  .music-cover {
+    border-radius: 25;
   }
 
-  .previous,
-  .next {
-    @extend .module;
-    padding-left: 2px;
-    padding-right: 2px;
-    padding-top: 5px;
-    &:hover {
-      background-color: mix(mix($color1, $color2, 50%), $background, 50%);
+  .music-label {
+    color: $color3;
+    margin: 0px;
+    text-shadow: 2px 2px 1px #000000;
+
+    &.title {
+      font-size: 12;
+    }
+
+    &.artist {
+      font-size: 10;
     }
   }
-}
 
-.music-cover {
-  border-radius: 25;
-}
+  // &:hover {                                    WIP
+  //   .music-controls {
+  //     box-shadow: -15px 0 5px 3px rgb(255, 255, 255);
+  //   }
+  // }
 
-.music-label {
-  color: $color3;
-  margin: 0px;
-  text-shadow: 2px 2px 2px black;
+  .music-controls {
+    padding: 0px;
+    margin: 0px;
+    margin-left: 15px;
+    border-radius: 0px 10px 10px 0px;
+    box-shadow: -15px 0 5px 3px black;
+    background-color: black;
 
-  &.title {
-    font-size: 12;
-  }
+    * {
+      transition: all 0.5s;
+    }
 
-  &.artist {
-    font-size: 10;
+    .previous,
+    .next {
+      color: $color3;
+      padding: 0px;
+      margin: 0px;
+      padding-top: 5px;
+      &:hover {
+        background-color: mix(mix($color1, $color2, 50%), $background, 50%);
+      }
+    }
+    .next {
+      border-radius: 0px 10px 10px 0px;
+    }
   }
 }
 
@@ -92,6 +104,6 @@
   border-radius: 10px;
   padding: 0px;
   label {
-    transition: all 1s;
+    transition: all 0.5s;
   }
 }
