@@ -21,7 +21,13 @@
           :class {focused_workspace != unfocused_workspace && focused_workspace == id ? "focused" :
           focused_workspace == unfocused_workspace && focused_workspace == id ? "same-focused" :
           unfocused_workspace == id ? "unfocused" :""}
-        :onclick "hyprctl dispatch workspace ${id}" id)
+          :onclick "hyprctl dispatch workspace ${id}" {
+          id == 1 ? "" :
+          id == 2 ? "" :
+          id== 5 ? "": id
+          }
+          
+        )
       )
     )
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
