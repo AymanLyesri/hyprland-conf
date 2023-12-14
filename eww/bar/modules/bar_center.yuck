@@ -18,7 +18,6 @@
     :space-evenly false
     :halign "center"
     :class "bandwidth"
-    :style "min-height:${bar_height}px;"
     :spacing 5
     (revealer
       :reveal {bandwidth[0] != 0}
@@ -95,22 +94,26 @@
           )
         )
       )
-      (button
-        :class "previous"
-        :onclick "$./bar/scripts/music --previous"
-        (label
+      (box
+        :space-evenly false
+        :class "music-controls"
+        (button
+          :class "previous"
           :style "color:${music_title_color}"
-          :class "icon"
-          :text "⮜"
+          :onclick "$./bar/scripts/music.sh --previous"
+          (label
+            :class "icon"
+            :text "⮜"
+          )
         )
-      )
-      (button
-        :class "next"
-        :onclick "./bar/scripts/music --next"
-        (label
+        (button
+          :class "next"
           :style "color:${music_title_color}"
-          :class "icon"
-          :text "⮞"
+          :onclick "./bar/scripts/music.sh --next"
+          (label
+            :class "icon"
+            :text "⮞"
+          )
         )
       )
       (revealer

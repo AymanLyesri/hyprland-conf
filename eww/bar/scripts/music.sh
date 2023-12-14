@@ -39,6 +39,8 @@ getMusicProgress() {
 
 getMusicArt() {
 
+    media="$HOME/.config/hypr/eww/bar/media"
+
     playerStatus=$(playerctl -l --no-messages)
 
     # Firefox
@@ -54,19 +56,12 @@ getMusicArt() {
         art_url=$(playerctl metadata mpris:artUrl)
         og_url=$(${EWW} get music_art_URL)
         if [ "$og_url" != "$art_url" ]; then #check if the same image as previous one
-            curl $art_url >media/spotify.jpg
+            curl $art_url >$media/spotify.jpg
             ${EWW} update music_art_URL=$art_url
         fi
-        echo "media/spotify.jpg"
+        echo "$media/spotify.jpg"
         return
-    # else
-    #     # curl $(playerctl metadata mpris:artUrl) > spotify.jpg
-    #     echo $(playerctl metadata mpris:artUrl)
-    #     return
     fi
-
-    #Fallback
-    echo "$HOME/.config/eww/assets/music/default_art.jpg"
 }
 
 getMusicPlayerIcon() {
@@ -101,7 +96,7 @@ noPlayerMode() {
 }
 
 playerMode() {
-    ${EWW} update player_active=2
+    ${EWW} update player_active=$1
     ${EWW} update music_art="$(getMusicArt)"
     ${EWW} update music_icon="$(getMusicPlayerIcon)"
     ${EWW} update music_title="$(getMusicTitle)"
@@ -114,8 +109,8 @@ update() {
     playerState=$(isPlayerActive)
     if [[ $playerState != 0 ]]; then
         playerMode $playerState
-    # else
-    #     noPlayerMode
+    else
+        noPlayerMode
     fi
 }
 
