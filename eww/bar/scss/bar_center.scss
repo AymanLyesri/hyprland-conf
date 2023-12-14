@@ -89,6 +89,7 @@
 .titlebar {
   @extend .module;
   border-radius: 10px;
+  padding: 0px;
   label {
     transition: all 1s;
   }

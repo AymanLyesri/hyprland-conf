@@ -1,0 +1,422 @@
+*{
+	all: unset;
+	font-family: feather;
+	font-family: JetBrainsMono NF;
+}
+
+
+/** tooltip!! **/
+tooltip.background {
+    background-color: #0f0f17;
+    font-size: 18;
+    border-radius: 10px;
+    color: #bfc9db;
+}
+
+tooltip label {
+    margin: 6px;
+}
+
+/** time **/
+.hour_class {
+    color: #bec8da;
+    font-size: 42px;
+    font-weight: bold;
+    margin: 15px 0px 0px 10px;
+}
+
+.minute_class {
+    color: #bec8da;
+    font-size: 42px;
+    margin: 15px 10px 0px 20px;
+}
+
+.mer_class {
+    color: #767c87;
+    font-size: 22px;
+    margin: 15px 0px 0px 0px;
+}
+
+
+.day_class {
+    color: #767c88;
+    font-size: 30px;
+    margin: 0px 0px 10px 10px;
+}
+
+.month_class {
+    color: #767c88;
+    font-size: 30px;
+    margin: 0px 10px 10px 10px;
+}
+
+.year_class {
+    color: #767c88;
+    font-size: 30px;
+    margin: 0px 20px 10px 10px;
+}
+
+
+.time_sep_class {
+    color: #bec8da;
+    font-size: 18px;
+    margin: 0px 0px 0px 0px;
+}
+
+.day_class_n {
+    color: #767c88;
+    font-size: 18px;
+    margin: 0px 0px 5px 10px;
+}
+
+.month_class_n {
+    color: #767c88;
+    font-size: 18px;
+    margin: 0px 0px 5px 0px;
+}
+
+
+
+
+
+.sep {
+    background-color: #bfc9db;
+    border-radius: 8px;
+}
+
+.profile_picture {
+	background-image: url('images/profile.png');
+	background-size: 180px;
+	background-position: 50% 35%;
+	min-height: 180px;
+	min-width: 180px;
+	margin: 0px 0px 0px 0px;
+	border-radius: 10px 0px 50px 0px;
+}
+
+.profile_greeting {
+	color: #b5e8e0;
+	font-size : 18px;
+	font-weight : normal;
+	margin : 0px 0px 0px 10px;
+}
+
+.profile_username {
+	color: #a1bdce;
+	font-size : 36px;
+	font-weight : bold;
+	margin : -15px 0px 0px 0px;
+}
+
+
+.bg {
+    background-color: #0f0f17;
+    border-radius: 0px;
+}
+
+.bg_alt {
+    background-color: #13141c;
+    border-radius: 16px;
+}
+.close_btn {
+    font-size: 44px;
+    color: #767c88;
+    margin: 0px 0px 0px 10px;
+}
+.exit_btn {
+    font-size: 56px;
+    color: #d78787;
+}
+.close_bg {
+    background-color: #13141c;
+    border-radius: 0px 20px 0px 40px;
+}
+.win {
+    background-color: #13141c;
+    border-radius: 18px;
+}
+
+
+
+.cc_cc {
+    font-size: 28;
+    margin: 32px;
+}
+
+.sys_icon_bat, .sys_icon_mem, .sys_icon_cpu{
+    font-size: 24;
+    margin: 20px 0px 0px 0px;
+}
+.sys_win {
+    background-color: #14141c;
+    border-radius: 18px;
+}
+.sys_cpu {
+  color: #bfc9db;
+    background-color: #0f0f17;
+  border-radius: 10px;
+}
+.sys_bat {
+  color: #bfc9db;
+    background-color: #0f0f17;
+  border-radius: 10px;
+}
+.sys_mem {
+  color: #bfc9db;
+    background-color: #0f0f17;
+  border-radius: 10px;
+}
+.sys_icon_bat {
+    color: #bfc9db;
+}
+.sys_icon_cpu {
+    color: #bfc9db;
+}
+.sys_icon_mem {
+    color: #bfc9db;
+}
+.sys_bat_box {
+	border-radius: 16px;
+    margin: 30px 0px 10px 50px;
+  }
+.sys_cpu_box {
+	border-radius: 16px;
+    margin: 30px 50px 10px 50px;
+  }
+.sys_mem_box {
+	border-radius: 16px;
+    margin: 30px 50px 15px 0px;
+  }
+
+
+.storage_bar scale trough highlight {
+	all: unset;
+    background-image: linear-gradient(to top, #91ab7a 30%, #afbea2 50%, #ccefad 100% *50);
+	border-radius: 24px;
+}
+.bright_bar scale trough highlight {
+	all: unset;
+    background-image: linear-gradient(to top, #e0b089 30%, #e4c9af 50%, #ebd0b7 100% *50);
+	border-radius: 24px;
+}
+.volume_bar scale trough highlight {
+	all: unset;
+    background-color: #bfc9db;
+	border-radius: 24px;
+}
+.mic_bar scale trough highlight {
+	all: unset;
+    background-color: #bfc9db;
+	border-radius: 24px;
+}
+scale trough {
+	all: unset;
+	background-color: #232232;
+	border-radius: 24px;
+	min-height: 130px;
+	min-width: 14px;
+	margin : 10px 0px 0px 0px;
+}
+
+.vol_icon, .brg_icon, .stor_icon, .mic_icon {
+    font-size: 26;
+}
+.vol_icon {
+    color: #bfc9db;
+}
+.mic_icon {
+    color: #bfc9db;
+}
+.brg_icon {
+    color: #e4c9af;
+}
+.stor_icon {
+    color: #afbea2;
+}
+
+.fetch_img {
+	background-size: cover;	
+	background-position: center;
+	min-height: 140px;
+	min-width: 100px;
+	margin: 13px;
+	border-radius: 16px;
+}
+
+
+.fetch_text_2 , .fetch_text_3 {
+    font-size: 20px;
+	font-weight : normal;
+	margin : 0px 35px 0px 0px;
+}
+
+.fetch_text_1 {
+    font-size: 20px;
+	font-weight : normal;
+	margin : 20px 35px 0px 0px;
+}
+.fetch_icon_2 , .fetch_icon_3 {
+    font-size: 24px;
+	font-weight : bold;
+	margin : 0px 0px 0px 35px;
+}
+.fetch_icon_1 {
+    font-size: 24px;
+	font-weight : bold;
+	margin : 20px 0px 0px 35px;
+}
+.fetch_sep_1 {
+    font-size: 24px;
+	font-weight : bold;
+    color: #95939f;
+	margin : 20px 0px 0px 0px;
+}
+.fetch_sep {
+    font-size: 24px;
+	font-weight : bold;
+    color: #95939f;
+	margin : 0px 0px 0px 0px;
+}
+.fetch_icon_1 {
+    color: #d7beda;
+}
+.fetch_text_1 {
+    color: #d7beda;
+}
+
+.fetch_icon_2 {
+    color: #e4c9af;
+}
+.fetch_text_2 {
+    color: #e4c9af;
+}
+
+.fetch_icon_3 {
+    color: #d78787;
+}
+.fetch_text_3 {
+    color: #d78787;
+}
+
+
+
+.msc_bg {
+	background-size: cover;	
+	background-position: center;
+    background-image: url("images/minimal.jpg");
+	min-height: 140px;
+	min-width: 140px;
+	margin: 0px;
+	border-radius: 16px;
+}
+
+.song {
+    font-size: 24px;
+	font-weight : bold;
+    color: #bfc9db;
+	margin : 10px 0px 0px 15px;
+}
+.song_artist {
+    font-size: 18px;
+	font-weight : bold;
+    color: #bfc9db;
+	margin : 0px 0px 0px 15px;
+}
+
+
+.song_btn_prev, .song_btn_next, .song_btn_loop {
+    font-size: 30px;
+    font-weight: normal;
+    color: #bfc9db;
+	margin : 4px 20px 0px 20px;
+}
+.song_btn_play {
+    font-weight: normal;
+    font-size: 34px;
+    color: #bfc9db;
+	margin : 4px 20px 0px 20px;
+}
+
+.msc_ctl_bg {
+    background-color: #13141c;
+	border-radius: 12px;
+}
+
+
+.song_prog scale trough highlight {
+	all: unset;
+    background-color: #bfc9db;
+	border-radius: 8px;
+}
+.song_prog scale trough {
+	all: unset;
+	background-color: #232232;
+	border-radius: 8px;
+	min-height: 5px;
+	min-width: 220px;
+	margin : 15px;
+}
+.music_prog_bg {
+    background-color: #13141c;
+    border-radius: 8px;
+}
+
+
+.sus_tray {
+    background-color: #14141c;
+    border-radius: 8px;
+}
+.wifi_but {
+    border-radius: 18px 10px 18px 10px;
+    padding: 15px;
+    font-size: 32px;
+    margin: 15px;
+}
+
+.notif_but {
+    border-radius: 18px 10px 18px 10px;
+    padding: 15px;
+    font-size: 32px;
+    margin: 15px;
+}
+
+
+.vol_but {
+    border-radius: 18px 10px 18px 10px;
+    padding: 15px;
+    font-size: 32px;
+    margin: 15px;
+}
+
+.log_but {
+    border-radius: 18px 10px 18px 10px;
+    padding: 15px;
+    font-size: 32px;
+    background-color: #0f0f17;
+    color: #bbc5d7;
+    margin: 15px;
+}
+
+.bright_box {
+    border-radius: 10px;
+    background-color: #14141c;
+}
+
+.bright scale trough highlight {
+	all: unset;
+    background-color: #bfc9db;
+	border-radius: 8px 20px 2px 8px;
+}
+.bright scale trough {
+	all: unset;
+	background-color: #232232;
+	border-radius: 8px;
+	min-height: 10px;
+	min-width: 450px;
+	margin : 15px;
+}
+.br_icon {
+    font-size: 38;
+    color: #bfc9db;
+    margin: 0px 0px 0px 20px;
+}
