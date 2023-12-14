@@ -15,12 +15,23 @@
     ; for values to update
     (label :text "${focused_workspace}${unfocused_workspace}" :visible false)
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    (for id in active_workspaces
+    (box
+      (for id in active_workspaces
+        (button
+          :class {focused_workspace != unfocused_workspace && focused_workspace == id ? "focused" :
+          focused_workspace == unfocused_workspace && focused_workspace == id ? "same-focused" :
+          unfocused_workspace == id ? "unfocused" :""}
+        :onclick "hyprctl dispatch workspace ${id}" id)
+      )
+    )
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    (revealer
+      :reveal {special_workspace != ""}
+      :transition "slideright"
+      :duration "500ms"
       (button
-        :class {focused_workspace != unfocused_workspace && focused_workspace == id ? "focused" :
-        focused_workspace == unfocused_workspace && focused_workspace == id ? "same-focused" :
-        unfocused_workspace == id ? "unfocused" :""}
-      :onclick "hyprctl dispatch workspace ${id}" id)
+        :class "special"
+      :onclick "hyprctl dispatch workspace special" 69)
     )
   )
 )

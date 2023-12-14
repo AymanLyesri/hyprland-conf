@@ -16,9 +16,10 @@
 
 ; left bar
 ; (deflisten script_workspace "scripts/workspaces.sh")
-(deflisten active_workspaces :initial "[]" "bash scripts/get_active_workspaces.sh")
-(deflisten focused_workspace :initial "" "bash scripts/get_focused_workspace.sh")
-(deflisten unfocused_workspace :initial "" "bash scripts/get_unfocused_workspace.sh")
+(deflisten active_workspaces :initial "[]" "scripts/get_active_workspaces.sh")
+(deflisten focused_workspace :initial "" "scripts/get_focused_workspace.sh")
+(deflisten unfocused_workspace :initial "" "scripts/get_unfocused_workspace.sh")
+(deflisten special_workspace "scripts/get_special_workspace.sh")
 
 ; center bar
 (defpoll active_window :interval "0.5s" "scripts/workspaces.sh --active-window")

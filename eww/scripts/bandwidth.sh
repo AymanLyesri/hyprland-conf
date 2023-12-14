@@ -2,12 +2,15 @@
 
 # This script is used to show the bandwidth usage of a given interface
 
+# Get the network interface associated with Ethernet (enp)
+enp_interface=$(ip -o link show | awk '/^[0-9]+: enp/{print $2}' | cut -d':' -f1)
+
 # Network interface name
 interface="enp8s0" # Change this to your actual interface name
 
 # Function to extract bytes from ip command output
 get_bytes() {
-    ip -s link show "$interface" | awk '/'"$1"':/{getline; print $1}'
+    ip -s link show "$enp_interface" | awk '/'"$1"':/{getline; print $1}'
 }
 
 # Get initial values
