@@ -31,6 +31,12 @@
       color: $background;
       background-color: mix(mix($color5, $color6, 50%), $foreground, 69%);
     }
+    ////////////////////////////
+    &.special {
+      margin-left: 25px;
+      color: $background;
+      background-color: mix(mix($color5, $color6, 50%), $foreground, 69%);
+    }
   }
 }
 
