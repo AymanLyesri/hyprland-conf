@@ -1,0 +1,4 @@
+// Backgreound color
+$background: mix(mix($color0, $color1, 50%), black, 50%);
+// Foreground color
+$foreground: mix(mix($color0, $color1, 50%), white, 35%);

@@ -1,10 +1,7 @@
-// Backgreound color
-$background: mix(mix($color0, $color1, 50%), white, 50%);
-// Foreground color
-$foreground: mix(mix($color0, $color1, 50%), black, 35%);
+@import "theme.scss";
 
 .module {
-  background-color: rgba($background, 0.8);
+  background-color: $background;
   color: $foreground;
   font-size: 11;
   font-weight: bolder;
