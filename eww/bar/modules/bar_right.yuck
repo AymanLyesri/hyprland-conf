@@ -4,8 +4,21 @@
     :orientation "h"
     :halign "end"
     :class "bar-right"
+    :spacing 5
     :style "min-height:${bar_height}px"
+    (theme)
     (system)
+  )
+)
+
+(defwidget theme []
+  (box
+    :space-evenly false
+    :class "theme"
+    (button :onclick "$HOME/.config/hypr/eww/bar/scripts/light_dark.sh ${theme_command_arguments[theme_id]}"
+      :class "icon"
+      {THEME_ICON[theme_id]}
+    )
   )
 )
 
@@ -13,7 +26,8 @@
   (box
     :space-evenly "false"
     :orientation "h"
-    :spacing "10"
+    :class "system"
+    :spacing 10
     (Toggles)
     (sep)
     (resources)
@@ -123,10 +137,14 @@
             :valign "center"
             :value {EWW_CPU.avg}
           )
-          (progress
-            :class "prog-bar battery"
-            :valign "center"
-            :value {EWW_BATTERY.BAT1.capacity}
+          (revealer
+            :transition "slidedown"
+            :reveal {EWW_BATTERY.BAT1>0}
+            (progress
+              :class "prog-bar battery"
+              :valign "center"
+              :value {EWW_BATTERY.BAT1.capacity}
+            )
           )
           (progress
             :flipped true

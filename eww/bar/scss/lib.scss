@@ -1,4 +1,7 @@
-$background: mix(mix($color0, $color1, 50%), $background, 25%);
+// Backgreound color
+$background: mix(mix($color0, $color1, 50%), white, 50%);
+// Foreground color
+$foreground: mix(mix($color0, $color1, 50%), black, 35%);
 
 .module {
   background-color: rgba($background, 0.8);
@@ -7,10 +10,6 @@ $background: mix(mix($color0, $color1, 50%), $background, 25%);
   font-weight: bolder;
   padding: 0px 10px;
   transition: all 0.5s;
-}
-
-.txt-low {
-  color: mix($foreground, $background, $weight: 75%);
 }
 
 .icon {
