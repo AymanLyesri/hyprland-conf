@@ -35,13 +35,19 @@
 (deflisten bandwidth :intial "[]" "./bar/scripts/bandwidth.sh --up")
 
 ; right bar
+(defpoll theme_id :interval "5h" "./bar/scripts/light_dark.sh default")
+(defvar THEME_ICON '["☾","☀"]')
+(defvar theme_command_arguments '["light","dark"]') ; opposite to switch to when clicked
+
 ; Wifi
 (defvar wifi_state false)
 (defpoll ESSID_WLAN :interval "5s" "nmcli -t -f name connection show --active | head -n 1")
+
 ; Volume
 (defvar vol_rev false)
 (defvar VOL_ICON '["󰖁","󰕿","󰖀","󰕾"]')
 (defpoll vol_state :intial 1 :interval "10s" "./bar/scripts/volume --get-state")
+
 ; Brightness
 (defvar bright_rev false)
 

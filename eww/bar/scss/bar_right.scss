@@ -1,4 +1,17 @@
 .bar-right {
+  transition: all 0.5s;
+}
+
+.theme {
+  @extend .module;
+  transition: all 0.5s;
+  border-radius: 10px;
+  button {
+    font-size: 15px;
+  }
+}
+
+.system {
   @extend .module;
   transition: all 0.5s;
   border-radius: 10px;
