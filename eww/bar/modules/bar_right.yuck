@@ -106,57 +106,41 @@
 )
 
 (defwidget resources []
-  (eventbox
-    :onclick "hyprctl dispatch workspace 3"
-    (box
-      :space-evenly false
-      :orientation "h"
-      :valign "center"
-      (box ; Resources
-        :space-evenly false :spacing 5
-        :orientation "v"
+  (box
+    (eventbox
+      :onclick "hyprctl dispatch workspace 5"
+      (box
+        :space-evenly false
+        :orientation "h"
         :valign "center"
-        (progress
-          :flipped true
-          :class "prog-bar"
+        (box
+          :space-evenly false :spacing 5
+          :orientation "v"
           :valign "center"
-          :value {EWW_CPU.avg}
+          (progress
+            :flipped true
+            :class "prog-bar"
+            :valign "center"
+            :value {EWW_CPU.avg}
+          )
+          (progress
+            :class "prog-bar battery"
+            :valign "center"
+            :value {EWW_BATTERY.BAT1.capacity}
+          )
+          (progress
+            :flipped true
+            :class "prog-bar"
+            :valign "center"
+            :value {EWW_RAM.used_mem_perc}
+          )
         )
-        (progress
-          :class "prog-bar battery"
-          :valign "center"
-          :value {EWW_BATTERY.BAT1.capacity}
-        )
-        (progress
-          :flipped true
-          :class "prog-bar"
-          :valign "center"
-          :value {EWW_RAM.used_mem_perc}
+        (label
+          :class "icon"
+          :style "font-size: 15;"
+          :text "󰍛"
         )
       )
-      (label
-        :class "icon"
-        :style "font-size: 15;"
-        :text "󰍛"
-      )
-      ; (revealer
-        ;   :reveal {EWW_BATTERY.BAT1.capacity>0}
-        ;   :transition "slideright"
-        ;   :space-evenly false
-        ;   :valign "center"
-        ;   :spacing 0
-        ;   (box
-          ;     (label
-            ;       :text "⚡"
-          ;     )
-          ;     (progress
-            ;       :class "prog-bar battery"
-            ;       :valign "center"
-            ;       :value {EWW_BATTERY.BAT1.capacity}
-          ;     )
-        ;   )
-      ; )
     )
   )
-  
 )
