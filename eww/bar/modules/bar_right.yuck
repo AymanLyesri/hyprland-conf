@@ -9,7 +9,6 @@
   )
 )
 
-
 (defwidget system []
   (box
     :space-evenly "false"
@@ -113,28 +112,26 @@
       :space-evenly false
       :orientation "h"
       :valign "center"
-      
       (box ; Resources
         :space-evenly false :spacing 5
         :orientation "v"
         :valign "center"
-        (box ; CPU
-          :space-evenly false :orientation "h" :spacing 5
-          (progress
-            :flipped true
-            :class "prog-bar"
-            :valign "center"
-            :value {EWW_CPU.avg}
-          )
+        (progress
+          :flipped true
+          :class "prog-bar"
+          :valign "center"
+          :value {EWW_CPU.avg}
         )
-        (box ; RAM
-          :space-evenly false :orientation "h" :spacing 5
-          (progress
-            :flipped true
-            :class "prog-bar"
-            :valign "center"
-            :value {EWW_RAM.used_mem_perc}
-          )
+        (progress
+          :class "prog-bar battery"
+          :valign "center"
+          :value {EWW_BATTERY.BAT1.capacity}
+        )
+        (progress
+          :flipped true
+          :class "prog-bar"
+          :valign "center"
+          :value {EWW_RAM.used_mem_perc}
         )
       )
       (label
@@ -142,23 +139,23 @@
         :style "font-size: 15;"
         :text "󰍛"
       )
-      (revealer
-        :reveal {EWW_BATTERY.BAT1.capacity>0}
-        :transition "slideright"
-        :space-evenly false
-        :valign "center"
-        :spacing 0
-        (box
-          (label
-            :text "⚡"
-          )
-          (progress
-            :class "prog-bar battery"
-            :valign "center"
-            :value {EWW_BATTERY.BAT1.capacity}
-          )
-        )
-      )
+      ; (revealer
+        ;   :reveal {EWW_BATTERY.BAT1.capacity>0}
+        ;   :transition "slideright"
+        ;   :space-evenly false
+        ;   :valign "center"
+        ;   :spacing 0
+        ;   (box
+          ;     (label
+            ;       :text "⚡"
+          ;     )
+          ;     (progress
+            ;       :class "prog-bar battery"
+            ;       :valign "center"
+            ;       :value {EWW_BATTERY.BAT1.capacity}
+          ;     )
+        ;   )
+      ; )
     )
   )
   
