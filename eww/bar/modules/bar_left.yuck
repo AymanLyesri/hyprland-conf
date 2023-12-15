@@ -24,12 +24,10 @@
           focused_workspace == unfocused_workspace && focused_workspace == id ? "same-focused" :
           unfocused_workspace == id ? "unfocused" :""}
           :onclick "hyprctl dispatch workspace ${id}"
-          
           (label :text {
             id < 5 ? workspaces[id]: id
             }
           )
-          
         )
       )
     )
@@ -44,4 +42,3 @@
     )
   )
 )
-

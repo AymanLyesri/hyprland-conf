@@ -46,14 +46,9 @@
   progress {
     min-height: 2px;
     min-width: 4px;
-    border-radius: 50%;
     background-color: mix($color2, $foreground, 50%);
   }
-
   &.battery {
-    trough {
-      min-width: 30px;
-    }
     progress {
       background-color: rgb(73, 204, 73);
     }
