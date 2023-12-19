@@ -3,7 +3,7 @@
 (defwidget bar_left []
   (box
     :class "bar-left"
-    :style "min-height:${bar_height}px"
+    ; :style "min-height:${bar_height}px"
     (workspaces)
   )
 )
