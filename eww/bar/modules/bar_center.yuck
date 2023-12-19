@@ -4,7 +4,7 @@
     :spacing 5
     :halign "center"
     :class "bar-center"
-    :style "min-height:${bar_height}px"
+    ; :style "min-height:${bar_height}px"
     (music)
     (arch)
     (clock)
