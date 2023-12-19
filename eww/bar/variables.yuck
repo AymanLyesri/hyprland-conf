@@ -46,7 +46,7 @@
 ; Volume
 (defvar vol_rev false)
 (defvar VOL_ICON '["󰖁","󰕿","󰖀","󰕾"]')
-(defpoll vol_state :intial 1 :interval "10s" "./bar/scripts/volume --get-state")
+(defpoll vol_state :intial 1 :interval "1s" "./bar/scripts/volume --get-state")
 
 ; Brightness
 (defvar bright_rev false)
