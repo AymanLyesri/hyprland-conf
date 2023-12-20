@@ -32,7 +32,7 @@
 (defvar music_prog 0)
 
 ; Bandwidth usage (in KB/s)
-(deflisten bandwidth :intial "[]" "./bar/scripts/bandwidth.sh --up")
+(deflisten bandwidth :intial "[]" "bash ./bar/scripts/bandwidth.sh")
 
 ; right bar
 (defpoll theme_id :interval "5h" "./bar/scripts/light_dark.sh default")
@@ -52,5 +52,5 @@
 (defvar bright_rev false)
 
 ; global bar
-(defpoll bar_height :interval "1s" "./bar/scripts/empty_workspace")
+; (defpoll bar_height :interval "1s" "./bar/scripts/empty_workspace")
 (defpoll bar_margin :interval "1s" "bash ./bar/scripts/dynamic_margin.sh")
