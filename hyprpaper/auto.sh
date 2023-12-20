@@ -1,11 +1,27 @@
 #!/bin/bash
-# This script is used to automatically run random wallpapers
+hyprDir=$HOME/.config/hypr
+config=$hyprDir/hyprpaper/config/defaults.conf
+
+previous_workspace_id=0
 
 # Set the directory of the random wallpaper script
-random_dir="$HOME/.config/hypr/hyprpaper/random.sh"
+change_wallpaper(){
+    workspace_id=$(hyprctl monitors | grep active | awk '{print $3}')
+    if [ "$workspace_id" != "$previous_workspace_id" ]; then
+        echo $workspace_id
+        wallpaper=$(grep "^w-$workspace_id=" $config | cut -d= -f2)
+        echo "$wallpaper"
+        
+        source $hyprDir/hyprpaper/w.sh "$wallpaper"         # set wallpaper
+    fi
+    previous_workspace_id=$workspace_id
+}
 
-# Set the while loop to run forever
-while true; do
-    sleep 10m   # wait 5 minutes
-    $random_dir # run random wallpaper script
+change_wallpaper
+
+socat -u UNIX-CONNECT:/tmp/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock - | while read -r line; do
+    change_wallpaper
 done
+
+
+

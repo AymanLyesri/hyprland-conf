@@ -2,4 +2,4 @@
 
 random=$1
 
-wal --backend colorz -e --saturate 0.5 -i "$random" # set wallpaper theme
+wal -c -n --backend colorz -e --saturate 0.5 -i "$random" # set wallpaper theme
