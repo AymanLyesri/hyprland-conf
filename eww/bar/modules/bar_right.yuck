@@ -5,7 +5,6 @@
     :halign "end"
     :class "bar-right"
     :spacing 5
-    ; :style "min-height:${bar_height}px"
     (theme)
     (system)
   )
