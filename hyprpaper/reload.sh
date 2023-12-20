@@ -12,10 +12,7 @@ done
 
 #############################################
 
-hyprctl hyprpaper unload all
 killall load.sh   # kill load.sh
 killall hyprpaper # kill hyprpaper
 
-sleep 1
-
-source $HOME/.config/hypr/hyprpaper/load.sh
+source $HOME/.config/hypr/hyprpaper/load.sh & # start load.sh
