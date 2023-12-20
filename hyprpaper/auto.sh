@@ -8,7 +8,8 @@ change_wallpaper() {
     workspace_id=$(hyprctl monitors | grep active | awk '{print $3}') # get workspace id
     if [ "$workspace_id" != "$previous_workspace_id" ]; then          # if workspace id changed
         wallpaper=$(grep "^w-$workspace_id=" $config | cut -d= -f2)   # get wallpaper from config
-        source $hyprDir/hyprpaper/w.sh "$wallpaper" &                 # set wallpaper
+        sleep 0.5s
+        source $hyprDir/hyprpaper/w.sh "$wallpaper" & # set wallpaper
     fi
     previous_workspace_id=$workspace_id # update previous workspace id
 }
