@@ -139,7 +139,7 @@
           )
           (revealer
             :transition "slidedown"
-            :reveal {EWW_BATTERY.BAT1>0}
+            :reveal {EWW_BATTERY.BAT1.capacity>0}
             (progress
               :class "prog-bar battery"
               :valign "center"

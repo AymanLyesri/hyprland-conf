@@ -3,7 +3,6 @@
 (defwidget bar_left []
   (box
     :class "bar-left"
-    ; :style "min-height:${bar_height}px"
     (workspaces)
   )
 )
@@ -38,7 +37,7 @@
       :duration "500ms"
       (button
         :class "special"
-      :onclick "hyprctl dispatch togglespecialworkspace" 69)
+      :onclick "hyprctl dispatch togglespecialworkspace" "★")
     )
   )
 )
