@@ -5,9 +5,6 @@
 # Get the network interface associated with Ethernet (enp)
 enp_interface=$(ip -o link show up | grep 'state UP' | awk '{print $2}' | sed 's/://')
 
-# Network interface name
-# enp_interface="lo" # Change this to your actual interface name
-
 # Function to extract bytes from ip command output
 get_bytes() {
     ip -s link show "$enp_interface" | awk '/'"$1"':/{getline; print $1}'
