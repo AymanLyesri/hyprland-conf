@@ -14,7 +14,7 @@
     :orientation "h"
     :spacing 0
     :space-evenly false
-    :style "margin-top:${bar_margin}px;padding-right:${bar_margin}px;padding-left:${bar_margin}px;"
+    :style "margin-top:${bar_margin*10 +10}px;padding-right:${bar_margin*300 +5}px;padding-left:${bar_margin*300 +5}px;"
     (bar_left)
     (bar_center)
     (bar_right)
