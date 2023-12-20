@@ -21,4 +21,4 @@ killall hyprpaper # kill hyprpaper
 sleep 1
 
 # run load.sh
-source $HOME/.config/hypr/hyprpaper/load.sh &
+source $HOME/.config/hypr/hyprpaper/load.sh
