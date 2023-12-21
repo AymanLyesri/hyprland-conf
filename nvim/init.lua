@@ -1,22 +1,33 @@
-package.path = "/home/ayman/.config/hypr/nvim/plugins.lua"
-require('plugins')
+local packer = require('packer').startup(function()
+    use {
+        'kyazdani42/nvim-tree.lua',
+        requires = 'kyazdani42/nvim-web-devicons'
+    }
+    use {
+        'hrsh7th/nvim-cmp',
+        requires = {
+            'hrsh7th/cmp-buffer',   -- To suggest from the buffer
+            'hrsh7th/cmp-nvim-lsp', -- For LSP-based suggestions
+            'hrsh7th/cmp-path',     -- For file path suggestions
+            -- Add more sources as per your requirements
+        }
+    }
 
--- local lfs = require('lfs')
-
--- -- Directory containing the Lua files
--- local dir = "/home/ayman/.config/hypr/nvim/"
-
--- -- Iterate over all files in the directory
--- for file in lfs.dir(dir) do
---     -- If the file is a Lua filelua-filesystem
---     if file:match(".lua$") then
---         -- Add the directory and file to the package path
---         package.path = package.path .. ";" .. dir .. file
---         -- Require the file without the .lua extension
---         require(file:sub(1, -5))
---     end
--- end
-
+    -- Add other plugins here as needed
+    -- For example:
+    -- use 'tpope/vim-surround'
+    -- use 'preservim/nerdtree'
+    -- use 'tpope/vim-commentary'
+    -- use 'vim-airline/vim-airline'
+    -- use 'lifepillar/pgsql.vim'
+    -- use 'ap/vim-css-color'
+    -- use 'rafi/awesome-vim-colorschemes'
+    -- use 'neoclide/coc.nvim'
+    -- use 'ryanoasis/vim-devicons'
+    -- use 'tc50cal/vim-terminal'
+    -- use 'preservim/tagbar'
+    -- use 'terryma/vim-multiple-cursors'
+end)
 
 -- Set line numbers and relative line numbers
 vim.opt.number = true
