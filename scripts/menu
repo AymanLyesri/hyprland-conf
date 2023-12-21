@@ -7,3 +7,11 @@ if [[ ! $(pidof rofi) ]]; then
 else
 	killall rofi
 fi
+
+# STYLE="$HOME/.config/hypr/wofi/style.css"
+
+# if [[ ! $(pidof wofi) ]]; then
+# 	wofi --show run --style $STYLE
+# else
+# 	killall wofi
+# fi
