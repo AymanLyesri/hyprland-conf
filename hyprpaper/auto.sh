@@ -10,8 +10,8 @@ change_wallpaper() {
         wallpaper=$(grep "^w-$workspace_id=" $config | cut -d= -f2)   # get wallpaper from config
         sleep 0.75s
         source $hyprDir/hyprpaper/w.sh "$wallpaper" & # set wallpaper
+        previous_workspace_id=$workspace_id           # update previous workspace id
     fi
-    previous_workspace_id=$workspace_id # update previous workspace id
 }
 
 change_wallpaper
