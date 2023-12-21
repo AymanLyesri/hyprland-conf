@@ -11,8 +11,8 @@ done
 
 ##########################################
 
-# sleep 1 && source $hyprdir/wal/pywal "$wallpaper"      # set wallpaper theme # wait for wallpaper to load
-# sleep 1 && source $hyprdir/scripts/dynamic-border.sh & # set border theme
-# source $hyprdir/scripts/eww_reset &         # reset eww
+$hyprdir/wal/pywal "$wallpaper"      # set wallpaper theme # wait for wallpaper to load
+$hyprdir/scripts/dynamic-border.sh & # set border theme
+# source $hyprdir/scripts/eww_reset &  # reset eww
 
 ##########################################
