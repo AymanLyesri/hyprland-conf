@@ -19,14 +19,13 @@
       :space-evenly false
       (for id in active_workspaces
         (button
-          :class {focused_workspace != unfocused_workspace && focused_workspace == id ? "focused" :
+          :class {
+          focused_workspace != unfocused_workspace && focused_workspace == id ? "focused" :
           focused_workspace == unfocused_workspace && focused_workspace == id ? "same-focused" :
-          unfocused_workspace == id ? "unfocused" :""}
+          unfocused_workspace == id ? "unfocused" :""
+          }
           :onclick "hyprctl dispatch workspace ${id}"
-          (label :text {
-            id <= 5 ? workspaces[id]: id
-            }
-          )
+          { id <= 5 ? workspaces[id]: id }
         )
       )
     )

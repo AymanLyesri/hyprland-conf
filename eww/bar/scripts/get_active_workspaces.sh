@@ -1,13 +1,11 @@
 #!/bin/bash
 
-# ic=(0 一 二 三 四 五 六 七 八 九 〇)
-
 get_active() {
     workspace_ids=()
     while IFS= read -r line; do
         workspace_ids+=("$line")
     done < <(hyprctl workspaces | grep "ID " | awk '$3 >= 0 {print $3}' | sort -n)
-    
+
     echo -n "["
     for ((i = 0; i < ${#workspace_ids[@]}; i++)); do
         echo -n "${workspace_ids[i]}"
