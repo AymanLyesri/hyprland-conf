@@ -2,16 +2,16 @@
   button {
     @extend .module;
     margin-right: 5px;
-    transition: all 0.5s;
+    transition: all 0.3s;
     border-radius: 10px;
     ////////////////////////////
-    padding-right: 10px;
-    padding-left: 10px;
+    padding-right: 5px;
+    padding-left: 5px;
     label {
-      margin-right: 3px;
-      margin-left: 0;
+      margin: 0px;
+      padding: 0px;
       font-size: 13px;
-      min-width: 25px;
+      min-width: 30px;
     }
     ////////////////////////////
     &.focused {
@@ -19,10 +19,10 @@
       padding-left: 20px;
       color: $foreground;
       background-color: mix(mix($color0, $color1, 50%), $background, 69%);
-      animation: workspace-focus 0.5s ease;
+      animation: workspace-focus 0.3s ease;
     }
     &.unfocused {
-      animation: workspace-unfocus 0.5s ease;
+      animation: workspace-unfocus 0.3s ease;
     }
     &.same-focused {
       padding-right: 20px;
@@ -37,11 +37,13 @@
     }
     ////////////////////////////
     &.special {
-      font-weight: bolder;
-      font-size: 15px;
-      margin-left: 20px;
       color: $background;
       background-color: mix(mix($color5, $color6, 50%), $foreground, 69%);
+      font-weight: bolder;
+      font-size: 15px;
+      padding: 3px;
+      margin-left: 10px;
+      border-radius: 100%;
       label {
         margin-right: 0px;
         margin-left: 0px;
@@ -52,8 +54,8 @@
 
 @keyframes workspace-focus {
   0% {
-    padding-right: 10px;
-    padding-left: 10px;
+    padding-right: 5px;
+    padding-left: 5px;
   }
   100% {
     padding-right: 20px;
@@ -67,7 +69,7 @@
     padding-left: 20px;
   }
   100% {
-    padding-right: 10px;
-    padding-left: 10px;
+    padding-right: 5px;
+    padding-left: 5px;
   }
 }

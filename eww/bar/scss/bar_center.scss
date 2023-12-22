@@ -40,6 +40,13 @@
   background-size: cover;
   padding-right: 0px;
 
+  .progress {
+    margin: 0;
+    label {
+      padding: 6px;
+    }
+  }
+
   .music-cover {
     border-radius: 25;
   }
@@ -57,17 +64,10 @@
       font-size: 10;
     }
   }
-
-  // &:hover {                                    WIP
-  //   .music-controls {
-  //     box-shadow: -15px 0 5px 3px rgb(255, 255, 255);
-  //   }
-  // }
-
   .music-controls {
     padding: 0px;
     margin: 0px;
-    margin-left: 15px;
+    margin-left: 5px;
     border-radius: 0px 10px 10px 0px;
     box-shadow: -15px 0 5px 10px black;
     background-color: black;
