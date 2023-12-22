@@ -5,6 +5,10 @@ wallpaper=$1                                                   # wallpaper
 
 ##########################################
 
+sleep 0.25s # wait for wallpaper to load
+
+##########################################
+
 for monitor in $monitors; do                          # loop through monitors
     hyprctl hyprpaper wallpaper "$monitor,$wallpaper" # set wallpaper
 done
