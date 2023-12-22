@@ -81,11 +81,26 @@
         (box
           :space-evenly false
           :orientation "h"
+          :spacing 2
+          (circular-progress
+            :value {music_prog}
+            :class "progress"
+            :style "color:${music_title_color}"
+            :thickness 1
+            :clockwise true
+            :start-at 30
+            (label
+              :halign "center"
+              :valign "center"
+              :width 20
+              :height 20
+            :text {music_icon} )
+          )
           (label ; Title
             :class "music-label title"
             :style "color:${music_title_color}"
             :limit-width "25"
-            :text "${music_icon}  ${music_title}"
+            :text "${music_title}"
           )
           (label ; Author
             :style "color:${music_title_color}"

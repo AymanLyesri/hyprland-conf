@@ -25,7 +25,10 @@
           unfocused_workspace == id ? "unfocused" :""
           }
           :onclick "hyprctl dispatch workspace ${id}"
-          { id <= 5 ? workspaces[id]: id }
+          (label
+            :halign "center"
+            :valign "center"
+          :text { id <= 5 ? workspaces[id]: id })
         )
       )
     )

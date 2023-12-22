@@ -26,7 +26,7 @@
     :space-evenly "false"
     :orientation "h"
     :class "system"
-    :spacing 10
+    :spacing 3
     (Toggles)
     (sep)
     (resources)
@@ -35,8 +35,7 @@
 
 (defwidget Toggles []
   (box ; Quick Toggles
-    :space-evenly false :spacing 5
-    
+    :space-evenly false :spacing 0
     (eventbox ; Brightness
       :onhover "${EWW_CMD} update bright_rev=true"
       :onhoverlost "${EWW_CMD} update bright_rev=false"
@@ -97,8 +96,6 @@
       :onhoverlost "${EWW_CMD} update wifi_state=false"
       :onclick "kitty nmtui &"
       (box
-        :vexpand "false"
-        :hexpand "false"
         :space-evenly "false" :spacing 2
         (label
           :class "icon"
@@ -120,44 +117,45 @@
 
 (defwidget resources []
   (box
+    :space-evenly false ;this is here to remove spacing for the battery
     (eventbox
       :onclick "hyprctl dispatch workspace 5"
       (box
         :space-evenly false
+        :spacing 5
         :orientation "h"
         :valign "center"
-        (box
-          :space-evenly false :spacing 5
-          :orientation "v"
-          :valign "center"
-          (progress
-            :flipped true
-            :class "prog-bar"
-            :valign "center"
-            :value {EWW_CPU.avg}
-          )
-          (revealer
-            :transition "slidedown"
-            :reveal {EWW_BATTERY.BAT1.capacity>0}
-            (progress
-              :class "prog-bar battery"
-              :valign "center"
-              :value {EWW_BATTERY.BAT1.capacity}
-            )
-          )
-          (progress
-            :flipped true
-            :class "prog-bar"
-            :valign "center"
-            :value {EWW_RAM.used_mem_perc}
-          )
+        :class "resources"
+        (circular-progress
+          :class "cpu"
+          :value {EWW_CPU.avg}
+          :thickness 2
+          :clockwise true
+          :start-at 30
+          (label :text "C")
         )
-        (label
-          :class "icon"
-          :style "font-size: 15;"
-          :text "󰍛"
+        (circular-progress
+          :class "ram"
+          :value {EWW_RAM.used_mem_perc}
+          :thickness 2
+          :clockwise true
+          :start-at 30
+          (label :text "M")
         )
+      )
+    )
+    (revealer
+      :transition "slideright"
+      :reveal {EWW_BATTERY.BAT1.capacity>0}
+      (circular-progress
+        :value {EWW_BATTERY.BAT1.capacity}
+        :class "battery"
+        :thickness 1
+        :clockwise true
+        :start-at 30
+        (label :text {EWW_BATTERY.BAT1.capacity})
       )
     )
   )
 )
+

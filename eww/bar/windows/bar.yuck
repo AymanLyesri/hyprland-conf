@@ -1,7 +1,7 @@
 (defwindow bar
   :monitor 0
   :geometry (geometry
-    :width "100%"
+    :width "75%"
   :anchor "top center")
   :stacking "fg"
   :exclusive true
@@ -14,7 +14,7 @@
     :orientation "h"
     :spacing 0
     :space-evenly false
-    :style "margin-top:${bar_margin*10 +5}px;padding-right:${bar_margin*300 +5}px;padding-left:${bar_margin*300 +5}px;"
+    :style "margin-top:${bar_margin*20 +5}px;padding-right:${bar_margin*100}px;padding-left:${bar_margin*100}px;"
     (bar_left)
     (bar_center)
     (bar_right)
