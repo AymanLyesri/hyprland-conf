@@ -3,6 +3,10 @@ random=$(find /home/ayman/.config/hypr/wallpapers/normal -type f | shuf -n 1) # 
 hyprDir=/home/ayman/.config/hypr
 config=$hyprDir/hyprpaper/config/defaults.conf
 
+####
+
+killall "w.sh"
+
 #############################################
 
 workspace_id=$(hyprctl monitors | grep active | awk '{print $3}') # get workspace id
