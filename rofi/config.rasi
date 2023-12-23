@@ -19,9 +19,12 @@ configuration{
 * {
     font:bold;
     margin: 2px;
+    background-color: rgba(0, 0, 0, 0);
 }
 
 window {
+    border-radius: 10px;
+
     width: 50%;
 }
 

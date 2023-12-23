@@ -3,7 +3,7 @@ monitors=$(hyprctl monitors | grep Monitor | awk '{print $2}') # get monitors
 hyprdir=$HOME/.config/hypr                                     # hypr directory
 wallpaper=$1                                                   # wallpaper
 
-##########################################
+####################################1######
 
 sleep 0.25s # wait for wallpaper to load
 
