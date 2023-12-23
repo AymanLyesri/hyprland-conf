@@ -6,9 +6,9 @@
 ; (defpoll quote :interval "5h" "python ./bar/scripts/quotes.py 60 | sed -e 's/.\{20\}/&\n/g'")
 
 ; left bar
-(deflisten active_workspaces :initial "[]" "./bar/scripts/get_active_workspaces.sh")
-(deflisten focused_workspace :initial "" "./bar/scripts/get_focused_workspace.sh")
-(deflisten unfocused_workspace :initial "" "./bar/scripts/get_unfocused_workspace.sh")
+(deflisten active_workspaces :intial "[]" "./bar/scripts/get_active_workspaces.sh")
+(deflisten focused_workspace "./bar/scripts/get_focused_workspace.sh")
+(deflisten unfocused_workspace "./bar/scripts/get_unfocused_workspace.sh")
 (deflisten special_workspace "./bar/scripts/get_special_workspace.sh")
 (defvar workspaces '["NULL","","","","",""]')
 
@@ -32,7 +32,7 @@
 (defvar music_prog 0)
 
 ; Bandwidth usage (in KB/s)
-(deflisten bandwidth :intial "[]" "bash ./bar/scripts/bandwidth.sh")
+(deflisten bandwidth :intial "[]" "./bar/scripts/bandwidth.sh")
 
 ; right bar
 (defpoll theme_id :interval "5h" "./bar/scripts/light_dark.sh default")

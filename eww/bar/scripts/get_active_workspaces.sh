@@ -1,5 +1,7 @@
 #!/bin/bash
 
+old_workspaces=()
+
 get_active() {
     workspace_ids=()
     while IFS= read -r line; do
@@ -17,5 +19,8 @@ get_active() {
 }
 get_active
 socat -u UNIX-CONNECT:/tmp/hypr/"$HYPRLAND_INSTANCE_SIGNATURE"/.socket2.sock - | while read -r event; do
-    get_active
+    if [ "$old_workspaces" != "$(get_active)" ]; then
+        old_workspaces=$(get_active)
+        get_active
+    fi
 done

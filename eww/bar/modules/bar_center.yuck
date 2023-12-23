@@ -23,7 +23,7 @@
       :transition "slideright"
       :duration "500ms"
       (label
-        :style "${bandwidth[0] < 100 ? 'min-width: 30px;' : 'min-width: 50px;'}"
+        :style  "min-width: ${bandwidth[0] < 100 ? 30 : bandwidth[0] < 1000 ? 40 : 50 }px"
         :text "⇡${bandwidth[0]}"
       )
     )
@@ -32,7 +32,7 @@
       :transition "slideright"
       :duration "500ms"
       (label
-        :style "${bandwidth[1] < 100 ? 'min-width: 30px;' : 'min-width: 50px;'}"
+        :style "min-width: ${bandwidth[1] < 100 ? 30 : bandwidth[1] < 1000 ? 40 : 50 }px"
         :text "⇣${bandwidth[1]}"
       )
     )

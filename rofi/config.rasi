@@ -1,14 +1,14 @@
 configuration{
     modi: "run,drun,window";
     show-icons: true;
-    terminal: "foot";
-    drun-display-format: " ➣ {name}";
-    // location: 0;
+    terminal: "kitty";
+    drun-display-format: "➣ {name}";
+    location: 0;
     disable-history: false;
     hide-scrollbar: true;
-    display-drun: " 卐 ⤏ ";
-    // display-run: "   Run ";
-    // display-window: " 﩯  Window";
+    display-drun: "Run";
+    display-run: "Run";
+    display-window: "Window";
     display-Network: " 󰤨  Network";
     // sidebar-mode: true;
 }
@@ -19,12 +19,17 @@ configuration{
 * {
     font:bold;
     margin: 2px;
-    background-color: rgba(0, 0, 0, 0);
+
 }
 
 window {
-    border-radius: 10px;
-
+    border-radius: 100px;
+    background-color: rgba(0, 0, 0, 0);
     width: 50%;
+}
+
+entry, element, element-text, element-icon {
+    border-radius: 100px;
+    background-color: rgba(0, 0, 0, 0);
 }
 
