@@ -1,4 +1,5 @@
 .bar-center {
+  @extend .txt;
   transition: all 0.5s;
 }
 
@@ -71,11 +72,9 @@
     border-radius: 0px 10px 10px 0px;
     box-shadow: -15px 0 5px 10px black;
     background-color: black;
-
     * {
       transition: all 0.5s;
     }
-
     .previous,
     .next {
       color: $color3;
