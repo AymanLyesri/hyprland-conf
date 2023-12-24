@@ -1,6 +1,9 @@
+$gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
+
 .workspaces {
   button {
     @extend .module;
+    @extend .txt;
     margin-right: 5px;
     transition: all 0.3s;
     border-radius: 10px;
@@ -18,7 +21,7 @@
       padding-right: 20px;
       padding-left: 20px;
       color: $foreground;
-      background-color: mix(mix($color0, $color1, 50%), $background, 69%);
+      background-image: linear-gradient(to bottom right, $gradient-Colors);
       animation: workspace-focus 0.3s ease;
     }
     &.unfocused {
@@ -28,7 +31,7 @@
       padding-right: 20px;
       padding-left: 20px;
       color: $foreground;
-      background-color: mix(mix($color0, $color1, 50%), $background, 100%);
+      background-image: linear-gradient(to bottom right, $gradient-Colors);
     }
     ////////////////////////////
     &:hover {
@@ -36,9 +39,15 @@
       background-color: mix(mix($color5, $color6, 50%), $foreground, 69%);
     }
     ////////////////////////////
+    $special: mix(mix($color5, $color6, 50%), $foreground, 69%);
     &.special {
       color: $background;
-      background-color: mix(mix($color5, $color6, 50%), $foreground, 69%);
+      background-image: linear-gradient(
+        to bottom right,
+        rgba($special, 0.5),
+        rgba($special, 1),
+        rgba($special, 0.5)
+      );
       font-weight: bolder;
       font-size: 15px;
       padding: 3px;
@@ -70,5 +79,14 @@
   100% {
     padding-right: 0px;
     padding-left: 0px;
+  }
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%; // Start position
+  }
+  100% {
+    background-position: 100% 50%; // End position
   }
 }
