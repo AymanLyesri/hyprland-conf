@@ -132,7 +132,7 @@
           :thickness 2
           :clockwise true
           :start-at 30
-          (label :text "C")
+          (label :text " ")
         )
         (circular-progress
           :class "ram"
@@ -140,7 +140,7 @@
           :thickness 2
           :clockwise true
           :start-at 30
-          (label :text "M")
+          (label :text " ")
         )
       )
     )

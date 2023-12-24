@@ -1,4 +1,4 @@
 (defwidget sep []
-    (label
-      :text " "
-    :class "sep"))
+  (label
+    :text " "
+  :class "sep"))
