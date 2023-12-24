@@ -14,22 +14,33 @@ configuration{
 }
 
 /* Dark theme. */
-@import "~/.cache/wal/colors-rofi-dark"
+//@import "~/.cache/wal/colors-rofi-dark"
 
 * {
     font:bold;
     margin: 2px;
-
+    text-color: #ffffff;
+    background-color: rgba(0, 0, 0, 0);
 }
+
 
 window {
-    border-radius: 100px;
     background-color: rgba(0, 0, 0, 0);
-    width: 50%;
+    text-color: #ffffff;
 }
 
-entry, element, element-text, element-icon {
-    border-radius: 100px;
-    background-color: rgba(0, 0, 0, 0);
+prompt {
+    padding: 5px;
+    text-color: white;
 }
 
+entry {
+    padding: 5px;
+    text-color: white;
+}
+
+element-text, element-icon, element normal normal, element normal urgent, element normal active, element urgent normal, element urgent urgent, element urgent active, element active normal, element active urgent, element active active, element alternate normal, element alternate urgent, element alternate active, element urgent alternate{
+    border-radius: 100px;
+    background-color: rgba(0, 0, 0, 0);
+    text-color: #ffffff;
+}
