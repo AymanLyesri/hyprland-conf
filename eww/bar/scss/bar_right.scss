@@ -80,19 +80,18 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
 .resources {
   border-radius: 10px;
   padding: 5px;
-  background-size: 200% auto;
-  background-image: linear-gradient(to bottom right, $gradient-Colors);
+  background-size: 200% 200%;
+  background-image: linear-gradient(-45deg, $gradient-Colors);
   color: $foreground;
 
-  animation: gradientAnimation 1s infinite ease;
+  animation: gradientAnimation 10s ease-in-out infinite;
 
   label {
-    font-size: 13;
-    padding: 0px;
+    font-size: 10;
+    padding: 3px;
     margin: 0px;
     @extend .txt;
   }
-
   .cpu {
     color: mix(orange, $foreground, 70%);
   }
@@ -106,9 +105,15 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
 
 @keyframes gradientAnimation {
   0% {
-    background-position: 0% 50%; // Start position
+    background-position: 0% 0%;
+  }
+  25% {
+    background-position: 50% 100%;
+  }
+  50% {
+    background-position: 100% 50%;
   }
   100% {
-    background-position: 100% 50%; // End position
+    background-position: 0% 0%;
   }
 }
