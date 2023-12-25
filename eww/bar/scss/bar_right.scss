@@ -21,6 +21,7 @@
   @extend .module;
   transition: all 0.5s;
   border-radius: 10px;
+  padding: 0px;
 }
 
 .wifi-essid {
@@ -75,9 +76,20 @@
 }
 
 .resources {
-  // margin: 0;
+  border-radius: 10px;
+  padding: 5px;
+  background-image: linear-gradient(
+    to right,
+    mix($color1, $background, 69%),
+    mix($color2, $background, 69%),
+    mix($color3, $background, 69%)
+  );
+  color: $foreground;
+
   label {
-    padding: 4px;
+    font-size: 13;
+    padding: 0px;
+    margin: 0px;
   }
 
   // .cpu {
@@ -90,4 +102,8 @@
   //     color: $color2;
   //   }
   // }
+}
+
+.battery {
+  color: mix(green, $foreground, 50%);
 }
