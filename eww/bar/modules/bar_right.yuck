@@ -94,7 +94,7 @@
     (eventbox
       :onhover "${EWW_CMD} update wifi_state=true"
       :onhoverlost "${EWW_CMD} update wifi_state=false"
-      :onclick "kitty nmtui &"
+      :onclick "hyprctl dispatch exec '[float] kitty nmtui'"
       (box
         :space-evenly "false" :spacing 2
         (label
@@ -118,6 +118,8 @@
 (defwidget resources []
   (box
     :space-evenly false ;this is here to remove spacing for the battery
+    :class "resources"
+    :spacing 5
     (eventbox
       :onclick "hyprctl dispatch workspace 5"
       (box
@@ -125,14 +127,14 @@
         :spacing 5
         :orientation "h"
         :valign "center"
-        :class "resources"
+        :class "cpu"
         (circular-progress
           :class "cpu"
           :value {EWW_CPU.avg}
           :thickness 2
           :clockwise true
           :start-at 30
-          (label :text " ")
+          (label :text "・")
         )
         (circular-progress
           :class "ram"
@@ -140,7 +142,7 @@
           :thickness 2
           :clockwise true
           :start-at 30
-          (label :text " ")
+          (label :text "・")
         )
       )
     )
@@ -150,10 +152,10 @@
       (circular-progress
         :value {EWW_BATTERY.BAT1.capacity}
         :class "battery"
-        :thickness 1
+        :thickness 2
         :clockwise true
         :start-at 30
-        (label :text {EWW_BATTERY.BAT1.capacity})
+        (label :text "・")
       )
     )
   )
