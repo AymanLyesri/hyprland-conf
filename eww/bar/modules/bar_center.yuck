@@ -2,18 +2,26 @@
   (box
     :space-evenly false
     :spacing 5
-    :halign "center"
     :class "bar-center"
     (music)
+    
+    (titlebar)
+    (bandwidth)
+  )
+)
+
+(defwidget center []
+  (box
+    :class "center"
     (revealer
-      :reveal {player_active == 0 && player_active == 2}
+      :reveal {player_active == 1 || player_active == 2}
       :transition "slideleft"
       :duration "500ms"
       (arch)
     )
     (clock)
     (revealer
-      :reveal {player_active != 0 && player_active != 2}
+      :reveal {player_active != 1 && player_active != 2}
       :transition "slideleft"
       :duration "500ms"
       (arch)
@@ -62,6 +70,8 @@
     )
   )
 )
+
+
 
 (defwidget titlebar []
   (revealer

@@ -103,7 +103,7 @@
         (revealer
           :transition "slideright"
           :reveal wifi_state
-          :duration "350ms"
+          :duration "1s"
           (label
             :class "wifi-essid"
             :text ESSID_WLAN
@@ -130,7 +130,7 @@
         (circular-progress
           :class "cpu"
           :value {EWW_CPU.avg}
-          :thickness 5
+          :thickness 3
           :clockwise true
           :start-at 30
           (label :text "・")
@@ -138,7 +138,7 @@
         (circular-progress
           :class "ram"
           :value {EWW_RAM.used_mem_perc}
-          :thickness 5
+          :thickness 3
           :clockwise true
           :start-at 30
           (label :text "・")
@@ -151,7 +151,7 @@
       (circular-progress
         :value {EWW_BATTERY.BAT1.capacity}
         :class "battery"
-        :thickness 5
+        :thickness 3
         :clockwise true
         :start-at 30
         (label :text "・")
