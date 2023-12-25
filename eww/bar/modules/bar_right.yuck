@@ -28,7 +28,6 @@
     :class "system"
     :spacing 3
     (Toggles)
-    (sep)
     (resources)
   )
 )
@@ -131,7 +130,7 @@
         (circular-progress
           :class "cpu"
           :value {EWW_CPU.avg}
-          :thickness 2
+          :thickness 5
           :clockwise true
           :start-at 30
           (label :text "・")
@@ -139,7 +138,7 @@
         (circular-progress
           :class "ram"
           :value {EWW_RAM.used_mem_perc}
-          :thickness 2
+          :thickness 5
           :clockwise true
           :start-at 30
           (label :text "・")
@@ -152,7 +151,7 @@
       (circular-progress
         :value {EWW_BATTERY.BAT1.capacity}
         :class "battery"
-        :thickness 2
+        :thickness 5
         :clockwise true
         :start-at 30
         (label :text "・")

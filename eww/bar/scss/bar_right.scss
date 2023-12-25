@@ -75,35 +75,28 @@
   }
 }
 
+$gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
+
 .resources {
   border-radius: 10px;
   padding: 5px;
-  background-image: linear-gradient(
-    to right,
-    mix($color1, $background, 69%),
-    mix($color2, $background, 69%),
-    mix($color3, $background, 69%)
-  );
+  background-image: linear-gradient(to bottom right, $gradient-Colors);
   color: $foreground;
 
   label {
     font-size: 13;
     padding: 0px;
     margin: 0px;
+    @extend .txt;
   }
 
-  // .cpu {
-  //   label {
-  //     color: $color1;
-  //   }
-  // }
-  // .ram {
-  //   label {
-  //     color: $color2;
-  //   }
-  // }
-}
-
-.battery {
-  color: mix(green, $foreground, 50%);
+  .cpu {
+    color: mix(orange, $foreground, 70%);
+  }
+  .ram {
+    color: mix(purple, $foreground, 70%);
+  }
+  .battery {
+    color: mix(green, $foreground, 70%);
+  }
 }

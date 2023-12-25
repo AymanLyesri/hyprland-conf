@@ -21,7 +21,7 @@ $foreground: mix(mix($color0, $color1, 50%), $foreground, 25%);
 }
 
 .sep {
-  font-size: 5;
+  font-size: 10;
   font-weight: bolder;
   color: $foreground;
 }
