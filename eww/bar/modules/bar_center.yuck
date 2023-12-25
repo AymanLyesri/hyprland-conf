@@ -4,7 +4,7 @@
     :spacing 5
     :class "bar-center"
     (music)
-    
+    (center)
     (titlebar)
     (bandwidth)
   )
@@ -12,22 +12,27 @@
 
 (defwidget center []
   (box
+    :space-evenly false
     :class "center"
     (revealer
       :reveal {player_active == 1 || player_active == 2}
       :transition "slideleft"
       :duration "500ms"
-      (arch)
+      (box
+        :style "margin-right: 5px;"
+        (arch)
+      )
     )
     (clock)
     (revealer
       :reveal {player_active != 1 && player_active != 2}
       :transition "slideleft"
       :duration "500ms"
-      (arch)
+      (box
+        :style "margin-left: 5px;"
+        (arch)
+      )
     )
-    (titlebar)
-    (bandwidth)
   )
 )
 
