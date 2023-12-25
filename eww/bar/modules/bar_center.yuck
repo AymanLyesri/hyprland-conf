@@ -5,8 +5,19 @@
     :halign "center"
     :class "bar-center"
     (music)
-    (arch)
+    (revealer
+      :reveal {player_active == 0 && player_active == 2}
+      :transition "slideleft"
+      :duration "500ms"
+      (arch)
+    )
     (clock)
+    (revealer
+      :reveal {player_active != 0 && player_active != 2}
+      :transition "slideleft"
+      :duration "500ms"
+      (arch)
+    )
     (titlebar)
     (bandwidth)
   )
@@ -152,7 +163,7 @@
       :spacing "10"
       :class "clock ${ active_window != '' ? 'no-radius-right' : '' }"
       (label
-        :text " ${clock_time}"
+        :text "${clock_time}"
       )
       (revealer
         :transition "slideright"
