@@ -1,5 +1,18 @@
-# hyprland-conf
-my humble linux config
+# Description
+
+This is a daily driver config that i use in both my laptop and desktop, for coding, gaming, browsing the web etc.
+
+I am constantly adding new features and improvement.
+
+So be sure to gimme ur feedback ♡
+
+# Features
+
+- dynamic wallpapers based on workspaces `hyprpaper + custom scripts`
+- dynamic color theme `pyWal`
+- dynamic eww themes + dark/light modes `pyWal + custom scripts`
+- dynamic sensitivity based on machine type (laptop/desktop) `custom scripts`
+- high quality wallpapers that Quentin Tarantino would love :)
 
 NEW VERSION
 
@@ -12,5 +25,3 @@ NEW VERSION
 old look
 
 ![image](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/b6f06611-716f-411b-bd89-d6a3f0c8f8b5)
-
-
