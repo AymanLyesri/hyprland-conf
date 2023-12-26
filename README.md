@@ -33,7 +33,7 @@ So be sure to gimme ur feedback ♡
 
 ![image](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/322d1923-e9ff-4512-95d8-b94bda55eb4e)
 
-![image](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/e476618e-4e8f-4d1e-bc02-243a0f7df1e0)
+![image](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/5fc94244-3853-47ea-a82f-fe69b75c0689)
 
 old look
 
