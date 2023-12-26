@@ -83,10 +83,10 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
   background-size: 200% 200%;
   background-image: linear-gradient(-45deg, $gradient-Colors);
   color: $foreground;
-
   animation: gradientAnimation 10s ease-in-out infinite;
 
   label {
+    color: black;
     font-size: 10;
     padding: 3px;
     margin: 0px;
