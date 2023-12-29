@@ -5,8 +5,6 @@
 # Get the network interface associated with Ethernet (enp)
 interface=$(ip -o link show up | grep 'state UP' | awk '{print $2}' | sed 's/://' | head -n 1)
 
-echo ${interface[0]}
-
 # Function to extract bytes from ip command output
 get_bytes() {
     ip -s link show ${interface[0]} | awk '/'"$1"':/{getline; print $1}'
@@ -23,8 +21,8 @@ while true; do
     tx_new=$(get_bytes "TX")
 
     # Calculate speed
-    rx_speed=$((($rx_new - $rx_old) / 1024)) # KB per second with two decimal places
-    tx_speed=$((($tx_new - $tx_old) / 1024)) # KB per second with two decimal places
+    rx_speed=$((($rx_new - $rx_old) / 1024)) # KB per second
+    tx_speed=$((($tx_new - $tx_old) / 1024)) # KB per second
 
     # Display results
     echo "[$tx_speed,$rx_speed]"
