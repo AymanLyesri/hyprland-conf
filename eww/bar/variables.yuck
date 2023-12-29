@@ -36,7 +36,7 @@
 
 ; right bar
 (defpoll theme_id :interval "5h" "./bar/scripts/light_dark.sh default")
-(defvar THEME_ICON '["☾","☀"]')
+(defvar THEME_ICON '["✩","☀"]')
 (defvar theme_command_arguments '["light","dark"]') ; opposite to switch to when clicked
 
 ; Bluetooth
