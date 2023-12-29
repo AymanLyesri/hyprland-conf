@@ -39,6 +39,10 @@
 (defvar THEME_ICON '["☾","☀"]')
 (defvar theme_command_arguments '["light","dark"]') ; opposite to switch to when clicked
 
+; Bluetooth
+(defvar bluetooth_state false)
+(defpoll bluetooth_dev :interval "5s" "bluetoothctl show | grep Name | cut -d ' ' -f 2-")
+
 ; Wifi
 (defvar wifi_state false)
 (defpoll ESSID_WLAN :interval "5s" "nmcli -t -f name connection show --active | head -n 1")

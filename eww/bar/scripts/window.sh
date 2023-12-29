@@ -6,7 +6,6 @@ while true; do
 
   win_active=$(hyprctl activewindow | grep -m 1 'initialClass' | awk '{print $2}')
   if [[ ! -z "$win_active" ]]; then
-
     case $win_active in
     "Code")
       background_image="100,100,200"
@@ -41,10 +40,10 @@ while true; do
       color="rgb(255,255,255)"
       ;;
     *)
-      echo ""
+      background_image="255,255,255"
+      color="rgb(0,0,0)"
       ;;
     esac
-
     style="background-image: linear-gradient(to bottom right, rgba($background_image, 0.5), rgba($background_image, 1), rgba($background_image, 0.5)); color:$color; min-width:$(echo $win_active | wc -c | awk '{print $1 * 10}')px;"
     echo "[\"$win_active\",\"$style\"]"
   else
