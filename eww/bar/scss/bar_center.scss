@@ -68,10 +68,7 @@
   .music-controls {
     padding: 0px;
     margin: 0px;
-    margin-left: 5px;
-    border-radius: 0px 10px 10px 0px;
-    box-shadow: -15px 0 5px 10px black;
-    background-color: black;
+    text-shadow: 2px 2px 1px #000000;
     * {
       transition: all 0.5s;
     }
