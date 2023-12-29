@@ -35,6 +35,22 @@
 (defwidget Toggles []
   (box ; Quick Toggles
     :space-evenly false :spacing 0
+    (bluetooth)
+    (sep)
+    (brightness)
+    (sep)
+    (audio)
+    (sep)
+    (internet)
+  )
+)
+
+(defwidget brightness []
+  (box
+    :space-evenly false
+    :orientation "h"
+    :class "brightness"
+    :spacing 3
     (eventbox ; Brightness
       :onhover "${EWW_CMD} update bright_rev=true"
       :onhoverlost "${EWW_CMD} update bright_rev=false"
@@ -61,7 +77,15 @@
         )
       )
     )
-    (sep)
+  )
+)
+
+(defwidget audio []
+  (box
+    :space-evenly false
+    :orientation "h"
+    :class "audio"
+    :spacing 3
     (eventbox ; Volume
       :onhover "${EWW_CMD} update vol_rev=true"
       :onhoverlost "${EWW_CMD} update vol_rev=false"
@@ -89,7 +113,15 @@
         )
       )
     )
-    (sep)
+  )
+)
+
+(defwidget internet []
+  (box
+    :space-evenly false
+    :orientation "h"
+    :class "internet"
+    :spacing 3
     (eventbox
       :onhover "${EWW_CMD} update wifi_state=true"
       :onhoverlost "${EWW_CMD} update wifi_state=false"
@@ -113,6 +145,39 @@
     )
   )
 )
+
+
+(defwidget bluetooth []
+  (box
+    :space-evenly false
+    :orientation "h"
+    :class "bluetooth"
+    :spacing 3
+    (eventbox
+      :onhover "${EWW_CMD} update bluetooth_state=true"
+      :onhoverlost "${EWW_CMD} update bluetooth_state=false"
+      :onclick "hyprctl dispatch exec '[float] blueman-manager'"
+      (box
+        :space-evenly false
+        :spacing 2
+        (label
+          :class "icon"
+          :text ""
+        )
+        (revealer
+          :transition "slideright"
+          :reveal bluetooth_state
+          :duration "1s"
+          (label
+            :class "bluetooth-dev"
+            :text bluetooth_dev
+          )
+        )
+      )
+    )
+  )
+)
+
 
 (defwidget resources []
   (box
