@@ -156,7 +156,7 @@
     (eventbox
       :onhover "${EWW_CMD} update bluetooth_state=true"
       :onhoverlost "${EWW_CMD} update bluetooth_state=false"
-      :onclick "hyprctl dispatch exec '[float] blueman-manager'"
+      :onclick "$HOME/.config/hypr/eww/bar/scripts/bluetooth-gui.sh"
       (box
         :space-evenly false
         :spacing 2
