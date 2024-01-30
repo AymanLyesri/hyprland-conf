@@ -11,4 +11,6 @@ else
 fi
 
 # Use sed to replace the sensitivity value in the file
-sed -i "s/sensitivity=*.*/sensitivity=$new_sensitivity/g" $sens_file
+# sed -i "s/sensitivity=*.*/sensitivity=$new_sensitivity/g" $sens_file
+
+echo -e "general { \n\tsensitivity=$new_sensitivity \n}" >$sens_file
