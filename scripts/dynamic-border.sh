@@ -12,7 +12,9 @@ colors=($(grep -o '#[0-9A-Fa-f]\{6\}' $css_file | sed 's/^#//'))
 new_colors="rgb(${colors[4]}) rgb(${colors[0]}) rgb(${colors[0]}) rgb(${colors[4]}) 270deg"
 
 # Use sed to replace the entire string after '=' with the new string
-sed -i "s/col.active_border = .*/col.active_border = $new_colors/" $hyprland_border_file
+# sed -i "s/col.active_border = .*/col.active_border = $new_colors/" $hyprland_border_file
+
+echo -e "general { \n\tcol.active_border = $new_colors \n}" >$hyprland_border_file
 
 # Use sed to replace the entire string after '=' with the new string
 # sed -i "s/frame_color = .*/frame_color = \"\#${colors[4]}\"/" $dunst_file # Use sed to replace the entire string after '=' with the new string
