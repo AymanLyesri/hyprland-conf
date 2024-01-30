@@ -50,3 +50,4 @@ zsh-autosuggestions
 zsh-history-substring-search
 zsh-syntax-highlighting
 zsh-theme-powerlevel10k
+light
