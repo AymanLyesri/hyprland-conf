@@ -32,15 +32,15 @@ So be sure to gimme ur feedback ♡
 
 # NEW VERSION
 
-![image](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/f8de7f60-575e-4ab3-a03f-59d54879f4f5)
+![1](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/f8de7f60-575e-4ab3-a03f-59d54879f4f5)
 
-![image](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/322d1923-e9ff-4512-95d8-b94bda55eb4e)
+![basic work](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/9d9c5c32-5f4c-47e3-b1eb-c0d861425ad9)
 
-![image](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/5fc94244-3853-47ea-a82f-fe69b75c0689)
+![spotify](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/5fc94244-3853-47ea-a82f-fe69b75c0689)
 
 old look
 
-![image](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/b6f06611-716f-411b-bd89-d6a3f0c8f8b5)
+![old](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/b6f06611-716f-411b-bd89-d6a3f0c8f8b5)
 
 # To Do
 
