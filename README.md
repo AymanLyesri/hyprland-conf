@@ -55,6 +55,9 @@ I removed some redundant packages
 _*To install*_
 
 > [!warning]  
+> certain missing packages need to be installed through a Pacman wrapper E.g. `yay`
+
+> [!warning]
 > certain packages could be missing or added unnecessarily
 
 ```
