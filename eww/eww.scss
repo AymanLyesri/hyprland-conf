@@ -5,7 +5,8 @@
 @import "bar/scss/bar_right.scss";
 @import "bar/scss/bar.scss";
 
-// @import "side_bar_L/eww.scss";
+// for soft reset
+@import "bar/scss/soft_reset.scss";
 
 * {
   all: unset;

@@ -7,7 +7,7 @@ $foreground: mix(mix($color0, $color1, 50%), $foreground, 25%);
 
 .module {
   background-color: rgba($background, 69%);
-  color: $foreground;
+  color: mix($color3, $foreground, 69%);
   font-size: 11;
   font-weight: bolder;
   padding: 0px 10px;
@@ -29,6 +29,5 @@ $foreground: mix(mix($color0, $color1, 50%), $foreground, 25%);
 .txt {
   font-size: 11;
   font-weight: bolder;
-  color: $foreground;
-  text-shadow: $background 0px 0px 5px;
+  text-shadow: black 1px 1px 5px;
 }

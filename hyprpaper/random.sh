@@ -1,11 +1,11 @@
 #!/bin/bash
 random=$(find /home/ayman/.config/hypr/wallpapers/normal -type f | shuf -n 1) # get random wallpaper
-hyprDir=/home/ayman/.config/hypr
-config=$hyprDir/hyprpaper/config/defaults.conf
+hyprDir=/home/ayman/.config/hypr                                              # hypr directory
+config=$hyprDir/hyprpaper/config/defaults.conf                                # config file
 
-####
+#############################################
 
-killall "w.sh"
+killall "w.sh" # kill w.sh
 
 #############################################
 
