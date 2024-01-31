@@ -1,13 +1,8 @@
-base
-base-devel
 bat
 bc
 bpytop
-dolphin
 dunst
-efibootmgr
 git
-grub
 gst-plugin-pipewire
 gtk4
 htop
@@ -25,13 +20,6 @@ p7zip
 pamixer
 pavucontrol
 pipewire
-pipewire-alsa
-pipewire-jack
-pipewire-pulse
-python-pywal
-python-setuptools
-qt5-wayland
-qt6-wayland
 rofi
 sddm
 smartmontools
