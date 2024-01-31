@@ -20,7 +20,6 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
     &.focused {
       padding-right: 20px;
       padding-left: 20px;
-      color: $foreground;
       background-image: linear-gradient(to bottom right, $gradient-Colors);
       animation: workspace-focus 0.3s ease;
     }
@@ -30,7 +29,7 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
     &.same-focused {
       padding-right: 20px;
       padding-left: 20px;
-      color: $foreground;
+
       background-image: linear-gradient(to bottom right, $gradient-Colors);
     }
     ////////////////////////////
