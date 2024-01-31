@@ -67,7 +67,7 @@
             :value brightness_percent
             :orientation "h"
             :max 100
-            :min 0
+            :min 5
             :onchange "light -S {}"
           )
         )
