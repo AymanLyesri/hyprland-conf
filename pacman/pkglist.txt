@@ -1,6 +1,7 @@
 bat
+ranger
 bc
-bpytop
+btop
 dunst
 git
 gst-plugin-pipewire
