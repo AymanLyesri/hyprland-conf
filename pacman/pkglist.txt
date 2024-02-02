@@ -1,5 +1,4 @@
 bat
-ranger
 bc
 btop
 dunst
@@ -21,7 +20,9 @@ p7zip
 pamixer
 pavucontrol
 pipewire
+playerctl
 rofi
+ranger
 sddm
 smartmontools
 socat
