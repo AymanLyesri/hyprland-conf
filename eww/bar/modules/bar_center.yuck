@@ -118,6 +118,7 @@
               :valign "center"
               :width 20
               :height 20
+              :class "icon"
             :text {music_icon} )
           )
           (label ; Title
@@ -129,7 +130,7 @@
           (label ; Author
             :style "color:${music_title_color}"
             :class "music-label artist"
-            :text "🡄 ${music_artist}"
+            :text "󰭓${music_artist}"
           )
         )
       )
