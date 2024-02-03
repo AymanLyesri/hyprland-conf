@@ -67,16 +67,12 @@
   .music-controls {
     padding: 0px;
     margin: 0px;
-    text-shadow: 2px 2px 1px #000000;
     * {
       transition: all 0.5s;
     }
     .previous,
     .next {
       color: $color3;
-      padding: 0px;
-      margin: 0px;
-      padding-top: 5px;
       &:hover {
         background-color: mix(mix($color1, $color2, 50%), $background, 50%);
       }

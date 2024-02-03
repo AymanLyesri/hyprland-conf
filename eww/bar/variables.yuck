@@ -10,7 +10,7 @@
 (deflisten focused_workspace "./bar/scripts/get_focused_workspace.sh")
 (deflisten unfocused_workspace "./bar/scripts/get_unfocused_workspace.sh")
 (deflisten special_workspace "./bar/scripts/get_special_workspace.sh")
-(defvar workspaces '["NULL","","","","",""]')
+(defvar workspaces '["NULL","","","","","","󰙯"]')
 
 ; center bar
 (deflisten active_window :initial "[]" "./bar/scripts/window.sh")
@@ -49,7 +49,7 @@
 
 ; Volume
 (defvar vol_rev false)
-(defvar VOL_ICON '["󰖁","󰕿","󰖀","󰕾"]')
+(defvar VOL_ICON '["󰸈","","","󰕾"]')
 (defpoll vol_state :intial 1 :interval "1s" "./bar/scripts/volume --get-state")
 
 ; Brightness

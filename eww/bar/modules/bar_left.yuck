@@ -29,7 +29,7 @@
             :class "icon"
             :halign "center"
             :valign "center"
-          :text { id <= 5 ? workspaces[id]: id })
+          :text { id != "NULL" ? workspaces[id]: id })
         )
       )
     )
