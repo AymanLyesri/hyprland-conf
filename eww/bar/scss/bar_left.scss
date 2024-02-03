@@ -4,8 +4,10 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
   button {
     @extend .module;
     margin-right: 5px;
+    // margin-left: 5px;
     transition: all 0.3s;
     border-radius: 10px;
+    // box-shadow: 10px 0px 10px 1px rgba(0, 0, 0, 0.514);
     ////////////////////////////
     padding-right: 5px;
     padding-left: 5px;
@@ -15,6 +17,7 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
       padding-left: 20px;
       background-image: linear-gradient(to bottom right, $gradient-Colors);
       animation: workspace-focus 0.3s ease;
+      text-shadow: black 1px 1px 5px;
     }
     &.unfocused {
       animation: workspace-unfocus 0.3s ease;
@@ -22,7 +25,7 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
     &.same-focused {
       padding-right: 20px;
       padding-left: 20px;
-
+      text-shadow: black 1px 1px 5px;
       background-image: linear-gradient(to bottom right, $gradient-Colors);
     }
     ////////////////////////////
@@ -43,6 +46,7 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
       font-weight: bolder;
       padding: 3px;
       margin-left: 10px;
+      margin-right: 40px;
       label {
         margin-right: 0px;
         margin-left: 0px;
