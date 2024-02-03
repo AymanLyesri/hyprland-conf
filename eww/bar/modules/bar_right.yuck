@@ -16,6 +16,7 @@
     :class "theme"
     (button :onclick "$HOME/.config/hypr/eww/bar/scripts/light_dark.sh ${theme_command_arguments[theme_id]}"
       :class "icon"
+      :style "font-size: 14;"
       {THEME_ICON[theme_id]}
     )
   )
@@ -73,7 +74,7 @@
         )
         (button
           :class "icon" :style "font-size: 20;"
-          "☼"
+          ""
         )
       )
     )
@@ -130,7 +131,7 @@
         :space-evenly "false" :spacing 2
         (label
           :class "icon"
-          :text ""
+          :text "󰖩"
         )
         (revealer
           :transition "slideright"
@@ -163,7 +164,7 @@
         (label
           :class "icon"
           :style "font-size: 11;"
-          :text ""
+          :text "󰂯"
         )
         (revealer
           :transition "slideright"
@@ -184,7 +185,6 @@
   (box
     :space-evenly false ;this is here to remove spacing for the battery
     :class "resources"
-    :spacing 5
     (eventbox
       :onclick "hyprctl dispatch workspace 5"
       (box
@@ -192,22 +192,21 @@
         :spacing 5
         :orientation "h"
         :valign "center"
-        :class "cpu"
         (circular-progress
           :class "cpu"
           :value {EWW_CPU.avg}
-          :thickness 3
+          :thickness 7
           :clockwise true
           :start-at 30
-          (label :text "・")
+          (label :text "")
         )
         (circular-progress
           :class "ram"
           :value {EWW_RAM.used_mem_perc}
-          :thickness 3
+          :thickness 7
           :clockwise true
           :start-at 30
-          (label :text "・")
+          (label :text "")
         )
       )
     )
@@ -217,10 +216,10 @@
       (circular-progress
         :value {EWW_BATTERY.BAT1.capacity}
         :class "battery"
-        :thickness 3
+        :thickness 7
         :clockwise true
         :start-at 30
-        (label :text "・")
+        (label :text "")
       )
     )
   )

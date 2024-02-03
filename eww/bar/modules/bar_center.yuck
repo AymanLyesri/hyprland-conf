@@ -48,7 +48,7 @@
       :duration "500ms"
       (label
         :style  "min-width: ${bandwidth[0] < 100 ? 30 : bandwidth[0] < 1000 ? 40 : 50 }px"
-        :text "⇡${bandwidth[0]}"
+        :text "${bandwidth[0] < 100 ? '󰄿' : '󰶼' }${bandwidth[0]}"
       )
     )
     (revealer
@@ -57,7 +57,7 @@
       :duration "500ms"
       (label
         :style "min-width: ${bandwidth[1] < 100 ? 30 : bandwidth[1] < 1000 ? 40 : 50 }px"
-        :text "⇣${bandwidth[1]}"
+        :text "${bandwidth[1] < 100 ? '󰄼' : '󰶹' }${bandwidth[1]}"
       )
     )
   )
@@ -117,9 +117,8 @@
             (label
               :halign "center"
               :valign "center"
-              :width 10
-              :height 10
               :class "icon"
+              :style "font-size: 14px;"
             :text {music_icon} )
           )
           (label ; Title
@@ -140,10 +139,11 @@
         :class "music-controls"
         (button
           :class "previous"
-          :style "color:${music_title_color}"
+          :style "color:${music_title_color};"
           :onclick "$./bar/scripts/music.sh --previous"
           (label
             :class "icon"
+            :style "font-size: 14px;"
             :text ""
           )
         )
@@ -153,6 +153,7 @@
           :onclick "./bar/scripts/music.sh --next"
           (label
             :class "icon"
+            :style "font-size: 14px;"
             :text ""
           )
         )
