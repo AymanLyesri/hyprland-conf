@@ -3,19 +3,12 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
 .workspaces {
   button {
     @extend .module;
-    @extend .txt;
     margin-right: 5px;
     transition: all 0.3s;
     border-radius: 10px;
     ////////////////////////////
-    padding-right: 0px;
-    padding-left: 0px;
-    label {
-      margin: 0px;
-      padding: 0px;
-      font-size: 13px;
-      min-width: 30px;
-    }
+    padding-right: 5px;
+    padding-left: 5px;
     ////////////////////////////
     &.focused {
       padding-right: 20px;
@@ -48,7 +41,6 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
         rgba($special, 0.5)
       );
       font-weight: bolder;
-      font-size: 15px;
       padding: 3px;
       margin-left: 10px;
       label {

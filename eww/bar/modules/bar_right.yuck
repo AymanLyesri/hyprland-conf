@@ -162,6 +162,7 @@
         :spacing 2
         (label
           :class "icon"
+          :style "font-size: 11;"
           :text ""
         )
         (revealer
