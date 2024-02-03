@@ -17,22 +17,21 @@ So be sure to gimme ur feedback ♡
 # Features
 
 - dynamic wallpapers based on workspaces `hyprpaper + custom scripts`
-- dynamic color theme [pyWal]("https://github.com/dylanaraps/pywal")
+- dynamic color theme [pyWal](https://github.com/dylanaraps/pywal)
 - dynamic eww
-  - color themes [pyWal]("https://github.com/dylanaraps/pywal")
+  - color themes [pyWal](https://github.com/dylanaraps/pywal)
   - dark/light modes `custom scripts`
   - bandwidth speed `custom scripts`
   - media player `custom scripts`
-- dynamic window border [pyWal]("https://github.com/dylanaraps/pywal") `+ custom scripts`
+- dynamic window border [pyWal](https://github.com/dylanaraps/pywal) `+ custom scripts`
 - dynamic sensitivity based on machine type (laptop/desktop) `custom scripts`
-- high quality wallpapers that Quentin Tarantino would love :) `mainly from` [danboruu]("https://danbooru.donmai.us")
+- high quality wallpapers that Quentin Tarantino would love :) `mainly from` [danboruu](https://danbooru.donmai.us)
 
 > [!important]  
 > ⊽ MORE INFO DOWN BELOW ⊽
 
 # NEW VERSION
 
-https://github.com/wez/evremap
 ![1](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/f8de7f60-575e-4ab3-a03f-59d54879f4f5)
 
 ![basic work](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/9d9c5c32-5f4c-47e3-b1eb-c0d861425ad9)
@@ -76,4 +75,4 @@ pacman -S - < pkglist.txt
 
 - I am using dvorak so things may not work smoothly for u qwerty users.
 
-- I've rebinded all the num-pad button to work as number buttons using [evremap]("https://github.com/wez/evremap"), my laptop keyboard is broken :/
+- I've rebinded all the num-pad button to work as number buttons using [evremap](https://github.com/wez/evremap), my laptop keyboard is broken :/
