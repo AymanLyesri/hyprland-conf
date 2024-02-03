@@ -26,6 +26,7 @@
           }
           :onclick "hyprctl dispatch workspace ${id}"
           (label
+            :class "icon"
             :halign "center"
             :valign "center"
           :text { id <= 5 ? workspaces[id]: id })
@@ -38,7 +39,7 @@
       :transition "slideright"
       :duration "500ms"
       (button
-        :class "special"
+        :class "special icon"
       :onclick "hyprctl dispatch togglespecialworkspace" "★")
     )
   )

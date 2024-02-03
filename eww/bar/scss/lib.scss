@@ -12,12 +12,12 @@ $foreground: mix(mix($color0, $color1, 50%), $foreground, 25%);
   font-weight: bolder;
   padding: 0px 10px;
   transition: all 0.5s;
-  border: 1px solid mix($background, $color1, $weight: 0.5);
+  border: 1px solid mix($background, $color1, 25%);
 }
 
 .icon {
   margin: 0px 5px;
-  font-size: 13;
+  font-size: 20;
   font-weight: normal;
 }
 
