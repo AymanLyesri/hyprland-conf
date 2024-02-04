@@ -16,7 +16,7 @@ So be sure to gimme ur feedback ♡
 
 # Features
 
-- dynamic wallpapers based on workspaces `hyprpaper + custom scripts`
+- dynamic wallpapers based on workspaces [hyprpaper](https://github.com/hyprwm/hyprpaper) `+ custom scripts`
 - dynamic color theme [pyWal](https://github.com/dylanaraps/pywal)
 - dynamic eww
   - color themes [pyWal](https://github.com/dylanaraps/pywal)
@@ -25,12 +25,15 @@ So be sure to gimme ur feedback ♡
   - media player `custom scripts`
 - dynamic window border [pyWal](https://github.com/dylanaraps/pywal) `+ custom scripts`
 - dynamic sensitivity based on machine type (laptop/desktop) `custom scripts`
-- high quality wallpapers that Quentin Tarantino would love :) `mainly from` [danboruu](https://danbooru.donmai.us)
+- dynamic and customizable shaders `saturation & retro`
+- high quality wallpapers that Quentin Tarantino would love :) mainly from [danboruu](https://danbooru.donmai.us)
 
 > [!important]  
 > ⊽ MORE INFO DOWN BELOW ⊽
 
 # NEW VERSION
+
+![gif](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbGZzN3pnajVmZHVxMWJweDVjN3J2enlocW91ODRhZ3N6NGpjdW83dCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/nM9nOv0R2cn3xLqY7U/giphy-downsized-large.gif)
 
 ![1](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/f8de7f60-575e-4ab3-a03f-59d54879f4f5)
 
