@@ -9,7 +9,6 @@
 
 # Include hyprland config
 !.config/hypr/
-
 # Include rofi config
 !.config/rofi/
 # Include kitty config
@@ -18,6 +17,8 @@
 !.config/ranger/
 # include btop config
 !.config/btop/
+# include eww config
+!.config/eww/
 
 # include zsh config
 !.zshrc
