@@ -1,0 +1,17 @@
+# Ignore all files
+*
+
+!.gitignore
+!README.md
+
+# Include hyprland config
+!.config/hypr/
+# Include rofi config
+!.config/rofi/
+# Include kitty config
+!.config/kitty/
+# include ranger config
+!.config/ranger/
+# include zsh config
+!.zshrc
+!.p10k.zsh
