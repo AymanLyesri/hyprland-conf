@@ -1,0 +1,8 @@
+
+2024/02/05 (10:47:35) | ===> btop++ v.1.3.0
+2024/02/05 (10:47:35) | INFO: Logger set to DEBUG
+2024/02/05 (10:47:35) | DEBUG: Using locale en_US.UTF-8
+2024/02/05 (10:47:35) | INFO: Running on /dev/pts/0
+2024/02/05 (10:47:35) | INFO: Failed to load libnvidia-ml.so, NVIDIA GPUs will not be detected: libnvidia-ml.so.1: cannot open shared object file: No such file or directory
+2024/02/05 (10:47:35) | INFO: Failed to load librocm_smi64.so, AMD GPUs will not be detected: librocm_smi64.so.1.0: cannot open shared object file: No such file or directory
+2024/02/05 (10:47:35) | DEBUG: Shared::init() : Initialized.

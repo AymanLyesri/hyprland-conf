@@ -16,6 +16,9 @@
 !.config/kitty/
 # include ranger config
 !.config/ranger/
+# include btop config
+!.config/btop/
+
 # include zsh config
 !.zshrc
 !.p10k.zsh

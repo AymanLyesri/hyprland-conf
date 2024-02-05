@@ -29,6 +29,7 @@ pipewire
 playerctl
 python-pywal
 python-setuptools
+pfetch
 rofi
 ranger
 sddm
@@ -49,5 +50,7 @@ zsh-autosuggestions
 zsh-history-substring-search
 zsh-syntax-highlighting
 zsh-theme-powerlevel10k
+zsh-directory-history
+zsh-sudo-git
 light
 linux-wifi-hotspot
