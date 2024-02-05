@@ -157,7 +157,7 @@
     (eventbox
       :onhover "${EWW_CMD} update bluetooth_state=true"
       :onhoverlost "${EWW_CMD} update bluetooth_state=false"
-      :onclick "$HOME/.config/hypr/eww/bar/scripts/bluetooth-gui.sh"
+      :onclick "bar/scripts/bluetooth-gui.sh"
       (box
         :space-evenly false
         :spacing 2

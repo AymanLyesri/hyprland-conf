@@ -2,6 +2,7 @@ bat
 bc
 btop
 bluez
+bluez-utils 
 blueman
 colorz
 dunst
