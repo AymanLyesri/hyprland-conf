@@ -1,0 +1,17 @@
+#!/bin/bash
+
+CONFIG="$HOME/.config/hypr/rofi/config"
+
+if [[ ! $(pidof rofi) ]]; then
+	rofi -show combi -modes combi -combi-modes "window,drun,run" --conf ${CONFIG}
+else
+	killall rofi
+fi
+
+# STYLE="$HOME/.config/hypr/wofi/style.css"
+
+# if [[ ! $(pidof wofi) ]]; then
+# 	wofi --show run --style $STYLE
+# else
+# 	killall wofi
+# fi

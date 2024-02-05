@@ -1,22 +1,21 @@
 # Ignore all files
-*
+/*
 
 !.gitignore
 !README.md
 
-!.config/*
+!.config/
+.config/*
 
 # Include hyprland config
-!.config/hypr/*
+!.config/hypr/
+
 # Include rofi config
-!.config/rofi/*
+!.config/rofi/
 # Include kitty config
-!.config/kitty/*
+!.config/kitty/
 # include ranger config
 !.config/ranger/
 # include zsh config
 !.zshrc
 !.p10k.zsh
-
-# Include nvim config
-!Downloads
