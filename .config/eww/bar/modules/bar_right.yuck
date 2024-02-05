@@ -14,9 +14,9 @@
   (box
     :space-evenly false
     :class "theme"
-    (button :onclick "$HOME/.config/hypr/eww/bar/scripts/light_dark.sh ${theme_command_arguments[theme_id]}"
+    (button :onclick "bar/scripts/light_dark.sh ${theme_command_arguments[theme_id]}"
       :class "icon"
-      :style "font-size: 14;"
+      :style "font-size: 14"
       {THEME_ICON[theme_id]}
     )
   )

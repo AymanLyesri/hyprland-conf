@@ -42,6 +42,7 @@ vim
 wget
 wireless_tools
 wireplumber
+webcord
 wofi
 xdg-desktop-portal-hyprland
 xdg-utils

@@ -1,7 +1,8 @@
 #! /bin/bash
 # requires eww, playerctl, bc, curl
 
-EWW='eww --config /home/ayman/.config/hypr/eww'
+# EWW='eww --config /home/ayman/.config/hypr/eww'
+EWW='eww'
 
 isPlayerActive() {
     status=$(playerctl status --no-messages)

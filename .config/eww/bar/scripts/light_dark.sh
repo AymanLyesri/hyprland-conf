@@ -1,7 +1,7 @@
 #!/bin/bash
 
-lib_file=$HOME/.config/hypr/eww/bar/scss/theme.scss
-config_file=$HOME/.config/hypr/eww/bar/config/theme.conf
+lib_file=bar/scss/theme.scss
+config_file=bar/config/theme.conf
 
 theme=('black' 'white')
 
