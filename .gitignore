@@ -4,6 +4,8 @@
 !.gitignore
 !README.md
 
+!.config/
+
 # Include hyprland config
 !.config/hypr/
 # Include rofi config
@@ -15,3 +17,6 @@
 # include zsh config
 !.zshrc
 !.p10k.zsh
+
+# Include nvim config
+!Downloads
