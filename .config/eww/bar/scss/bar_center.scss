@@ -34,17 +34,18 @@
 
 .music {
   @extend .module;
-  border: none;
-  border-radius: 10px;
+  border-radius: 100px 50px 50px 100px;
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
   padding-right: 0px;
+  padding-left: 0px;
 
   .progress {
     margin: 0;
+    padding: 0;
     label {
-      padding: 6px;
+      padding: 1px;
     }
   }
 
@@ -65,6 +66,7 @@
     }
   }
   .music-controls {
+    border-radius: 10px;
     padding: 0px;
     margin: 0px;
     * {

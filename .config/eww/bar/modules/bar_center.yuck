@@ -44,8 +44,8 @@
     :spacing 5
     (revealer
       :reveal {bandwidth[0] != 0}
-      :transition "slideright"
-      :duration "500ms"
+      :transition "crossfade"
+      :duration "10s"
       (label
         :style  "min-width: ${bandwidth[0] < 100 ? 30 : bandwidth[0] < 1000 ? 40 : 50 }px"
         :text "${bandwidth[0] < 100 ? '󰄿' : '󰶼' }${bandwidth[0]}"
@@ -53,8 +53,8 @@
     )
     (revealer
       :reveal {bandwidth[1] != 0}
-      :transition "slideright"
-      :duration "500ms"
+      :transition "crossfade"
+      :duration "10s"
       (label
         :style "min-width: ${bandwidth[1] < 100 ? 30 : bandwidth[1] < 1000 ? 40 : 50 }px"
         :text "${bandwidth[1] < 100 ? '󰄼' : '󰶹' }${bandwidth[1]}"
@@ -111,14 +111,14 @@
             :value {music_prog}
             :class "progress"
             :style "color:${music_title_color}"
-            :thickness 1
+            :thickness 5
             :clockwise true
-            :start-at 30
+            :start-at 75
             (label
               :halign "center"
               :valign "center"
               :class "icon"
-              :style "font-size: 14px;"
+              :style "font-size: 25px;"
             :text {music_icon} )
           )
           (label ; Title

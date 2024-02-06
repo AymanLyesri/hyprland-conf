@@ -40,7 +40,7 @@ getMusicProgress() {
 
 getMusicArt() {
 
-    media="$HOME/.config/hypr/eww/bar/media"
+    media="$HOME/.config/eww/bar/media"
 
     playerStatus=$(playerctl -l --no-messages)
 
