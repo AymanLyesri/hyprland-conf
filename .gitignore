@@ -19,6 +19,10 @@
 !.config/btop/
 # include eww config
 !.config/eww/
+# include dunst config
+!.config/dunst/
+# include nvim config
+!.config/nvim/
 
 # include zsh config
 !.zshrc
