@@ -24,6 +24,9 @@
 # include nvim config
 !.config/nvim/
 
+# wallpapers
+!.wallpapers/
+
 # include zsh config
 !.zshrc
 !.p10k.zsh
