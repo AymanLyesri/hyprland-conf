@@ -1,8 +1,0 @@
-#!/bin/bash
-
-# Get current brightness
-if [ $(light -G 2>/dev/null) ]; then
-    echo $(light -G 2>/dev/null)
-else
-    echo 1.0
-fi
