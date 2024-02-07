@@ -1,2 +1,32 @@
-hyprpaper.conf
-configs/custom
+# Ignore all files
+/*
+
+!.gitignore
+!README.md
+
+!.config/
+.config/*
+
+# Include hyprland config
+!.config/hypr/
+# Include rofi config
+!.config/rofi/
+# Include kitty config
+!.config/kitty/
+# include ranger config
+!.config/ranger/
+# include btop config
+!.config/btop/
+# include eww config
+!.config/eww/
+# include dunst config
+!.config/dunst/
+# include nvim config
+!.config/nvim/
+
+# wallpapers
+!wallpapers/
+
+# include zsh config
+!.zshrc
+!.p10k.zsh

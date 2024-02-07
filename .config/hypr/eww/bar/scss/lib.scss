@@ -1,0 +1,34 @@
+@import "theme.scss";
+
+// Background color
+$background: mix(mix($color0, $color1, 50%), $background, 25%);
+// Foreground color
+$foreground: mix(mix($color0, $color1, 50%), $foreground, 25%);
+
+.module {
+  background-color: rgba($background, 69%);
+  color: mix($color3, $foreground, 69%);
+  font-size: 11;
+  font-weight: bolder;
+  padding: 0px 10px;
+  transition: all 0.5s;
+  // border: 1px solid rgba($foreground, 0.5);
+}
+
+.icon {
+  margin: 0px 5px;
+  font-size: 20;
+  font-weight: normal;
+}
+
+.sep {
+  font-size: 10;
+  font-weight: bolder;
+  color: $foreground;
+}
+
+.txt {
+  font-size: 11;
+  font-weight: bolder;
+  text-shadow: black 1px 1px 5px;
+}

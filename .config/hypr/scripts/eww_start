@@ -1,0 +1,5 @@
+#!/bin/bash
+
+eww open bar
+
+# eww --config $HOME/.config/hypr/eww open sidebar
