@@ -30,5 +30,5 @@ while true; do
     # Update old values
     rx_old=$rx_new
     tx_old=$tx_new
-    sleep 1
+    sleep 2
 done

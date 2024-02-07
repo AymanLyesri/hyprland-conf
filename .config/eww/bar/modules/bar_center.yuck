@@ -70,7 +70,7 @@
       :onclick "$HOME/.config/hypr/scripts/menu"
       (label
         :class "icon"
-        :style "color:rgba(200, 200, 255, 1); font-size: 14px;"
+        :style "color:rgba(200, 200, 255, 1); font-size: 15px;"
         :text "󰣇"
       )
     )

@@ -44,14 +44,6 @@ getMusicArt() {
 
     playerStatus=$(playerctl -l --no-messages)
 
-    # Firefox
-    if [ "${playerStatus:0:7}" == "firefox" ]; then
-        path="$HOME/.mozilla/firefox/firefox-mpris/"
-        image="$(ls $path)"
-        echo "$path$image"
-        return
-    fi
-
     # Spotify
     if [ "$playerStatus" == "spotify" ]; then
         art_url=$(playerctl metadata mpris:artUrl)
@@ -61,6 +53,14 @@ getMusicArt() {
             ${EWW} update music_art_URL=$art_url
         fi
         echo "$media/spotify.jpg"
+        return
+    fi
+
+    # Firefox
+    if [ "${playerStatus:0:7}" == "firefox" ]; then
+        path="$HOME/.mozilla/firefox/firefox-mpris/"
+        image="$(ls $path)"
+        echo "$path$image"
         return
     fi
 }
