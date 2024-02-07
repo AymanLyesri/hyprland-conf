@@ -1,0 +1,86 @@
+$gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
+
+.workspaces {
+  button {
+    @extend .module;
+    margin-right: 5px;
+    // margin-left: 5px;
+    transition: all 0.3s;
+    border-radius: 10px;
+    // box-shadow: 10px 0px 10px 1px rgba(0, 0, 0, 0.514);
+    ////////////////////////////
+    padding-right: 5px;
+    padding-left: 5px;
+    ////////////////////////////
+    &.focused {
+      padding-right: 20px;
+      padding-left: 20px;
+      background-image: linear-gradient(to bottom right, $gradient-Colors);
+      animation: workspace-focus 0.3s ease;
+      text-shadow: black 1px 1px 5px;
+    }
+    &.unfocused {
+      animation: workspace-unfocus 0.3s ease;
+    }
+    &.same-focused {
+      padding-right: 20px;
+      padding-left: 20px;
+      text-shadow: black 1px 1px 5px;
+      background-image: linear-gradient(to bottom right, $gradient-Colors);
+    }
+    ////////////////////////////
+    &:hover {
+      color: $background;
+      background-color: mix(mix($color5, $color6, 50%), $foreground, 69%);
+    }
+    ////////////////////////////
+    $special: mix(mix($color5, $color6, 50%), $foreground, 69%);
+    &.special {
+      color: $background;
+      background-image: linear-gradient(
+        to bottom right,
+        rgba($special, 0.5),
+        rgba($special, 1),
+        rgba($special, 0.5)
+      );
+      font-weight: bolder;
+      margin-left: 10px;
+      margin-right: 40px;
+      label {
+        margin-right: 0px;
+        margin-left: 0px;
+      }
+    }
+  }
+}
+
+@keyframes workspace-focus {
+  0% {
+    padding-right: 0px;
+    padding-left: 0px;
+  }
+  100% {
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+}
+
+@keyframes workspace-unfocus {
+  0% {
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+  100% {
+    padding-right: 0px;
+    padding-left: 0px;
+  }
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%; // Start position
+  }
+  100% {
+    background-position: 100% 50%; // End position
+  }
+}

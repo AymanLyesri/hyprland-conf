@@ -1,0 +1,6 @@
+.env
+*.jpg
+
+media/*
+scss/theme.scss
+config/*

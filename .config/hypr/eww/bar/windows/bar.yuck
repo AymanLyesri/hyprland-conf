@@ -1,0 +1,20 @@
+(defwindow bar
+  :monitor 0
+  :geometry (geometry
+    :width "90%"
+  :anchor "top center")
+  :stacking "fg"
+  :exclusive true
+  (bar_layout)
+)
+
+(defwidget bar_layout []
+  (centerbox
+    :class "bar"
+    :orientation "h"
+    :style "margin-top:${bar_margin*20+5}px;padding-right:${bar_margin*100}px;padding-left:${bar_margin*100}px;"
+    (bar_left)
+    (bar_center)
+    (bar_right)
+  )
+)
