@@ -3,10 +3,14 @@
 old_workspaces=()
 
 get_active() {
+
     workspace_ids=()
     while IFS= read -r line; do
-        workspace_ids+=("$line")
-    done < <(hyprctl workspaces | grep "ID " | awk '$3 >= 0 {print $3}' | sort -n)
+        id=$(echo "$line" | awk '{print $3}')
+        if [[ $id =~ ^[0-9]+$ ]]; then
+            workspace_ids+=("$id")
+        fi
+    done < <(hyprctl workspaces | sort -n)
 
     echo -n "["
     for ((i = 0; i < ${#workspace_ids[@]}; i++)); do
