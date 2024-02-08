@@ -1,12 +1,14 @@
 local neotree = require('plugins.neotree')
 
+print(neotree)
+
 require('packer').startup(function()
     use { 'wbthomason/packer.nvim', config = {
         -- Add auto-update settings
         auto_update = true
         },
     }
-    use {neotree}
+    use {require('plugins.neotree')}
     use {
         'nvim-lualine/lualine.nvim',
         requires = { 'nvim-tree/nvim-web-devicons', opt = true }
@@ -114,7 +116,7 @@ vim.g.neovide_padding_right = 0
 vim.g.neovide_padding_left = 0
 
 -- Automatically update Packer plugins when Neovim starts
-vim.cmd [[autocmd VimEnter * PackerSync]]
+-- vim.cmd [[autocmd VimEnter * PackerSync]]
 
 
 -- vim.g.neovide_transparency = 0.69
