@@ -12,6 +12,10 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 
+-- set space as the leader key
+vim.g.mapleader = " "
+
+
 require("core.options")
 require("core.keymaps")
 require("core.plugins")
