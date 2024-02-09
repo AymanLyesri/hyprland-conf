@@ -13,9 +13,11 @@ vim.api.nvim_set_keymap('n', '<C-w>i', '<C-w>k', { noremap = true })
 vim.api.nvim_set_keymap('n', '<C-w>o', '<C-w>l', { noremap = true })
 
 -- Reload nvim configuration
-vim.api.nvim_set_keymap('n', '<Leader>r', ':source $MYVIMRC<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<Leader>r', ':source %<CR>', { noremap = true, silent = true })
 
-
+-- Map Esc to :q
+vim.api.nvim_set_keymap('n', '<Esc>', ':q<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-Esc>', ':wq<CR>', { noremap = true, silent = true })
 -- terminal mappings
 vim.api.nvim_set_keymap('n', '<Leader>t', ':ToggleTerm size=50 direction=float name=term<CR>',
     { noremap = true, silent = true })
