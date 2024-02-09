@@ -2,7 +2,7 @@
 
 random=$1
 
-wal --backend colorz -e -n -i "$random" # set wallpaper theme
+wal -e -n -i "$random" # set wallpaper theme
 
 #   -h, --help            show this help message and exit
 #   -a "alpha"            Set terminal background transparency. *Only

@@ -1,0 +1,1 @@
+require("lsp-format").setup {}

@@ -118,7 +118,7 @@
               :halign "center"
               :valign "center"
               :class "icon"
-              :style "font-size: 25px;"
+              :style "font-size: 20px;"
             :text {music_icon} )
           )
           (label ; Title
