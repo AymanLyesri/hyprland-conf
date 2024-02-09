@@ -19,6 +19,7 @@ kitty
 libpulse
 lolcat
 lsd
+lazygit
 nano
 navi
 network-manager-applet
