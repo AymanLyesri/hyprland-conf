@@ -3,6 +3,7 @@ local plugins = {
     'andweeb/presence.nvim',
     --ui
     'nvim-lualine/lualine.nvim',
+    { 'akinsho/bufferline.nvim',             version = "*", dependencies = 'nvim-tree/nvim-web-devicons' },
     'navarasu/onedark.nvim',
     {
         'nvim-telescope/telescope.nvim',
@@ -42,7 +43,7 @@ local plugins = {
     "rafamadriz/friendly-snippets",
     "github/copilot.vim",
     "m4xshen/autoclose.nvim",
-    { 'akinsho/toggleterm.nvim',             version = "*", config = true },
+    { 'akinsho/toggleterm.nvim', version = "*", config = true },
     {
         "folke/which-key.nvim",
         event = "VeryLazy",
