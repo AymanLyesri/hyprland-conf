@@ -45,7 +45,7 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#696969,bold"
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 # Aliases for neovide
-alias v="nvim"
+# alias v="neovide"
 # Aliases for ls
 alias ls='lsd'
 # Aliases for cat
@@ -53,6 +53,10 @@ alias cat='bat'
 # Aliase functions
 function code() {
   /bin/code $1 && exit
+}
+function v()
+{
+  /bin/neovide $1 && exit  
 }
 function cpdir {
   pwd | tr -d "\r\n" | wl-copy
