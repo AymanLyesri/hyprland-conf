@@ -1,4 +1,5 @@
 --ui
+require("core.plugin_config.bufferline")
 require("core.plugin_config.lualine")
 require("core.plugin_config.neotree")
 require("core.plugin_config.onedark")
