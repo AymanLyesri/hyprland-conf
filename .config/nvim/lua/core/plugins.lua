@@ -1,4 +1,10 @@
 local plugins = {
+    {
+        "iamcco/markdown-preview.nvim",
+        cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+        ft = { "markdown" },
+        build = function() vim.fn["mkdp#util#install"]() end,
+    },
     "nvim-tree/nvim-web-devicons",
     'andweeb/presence.nvim',
     --ui
@@ -24,6 +30,13 @@ local plugins = {
             --   If not available, we use `mini` as the fallback
             "rcarriga/nvim-notify",
         }
+    },
+    {
+        'goolord/alpha-nvim',
+        dependencies = { 'nvim-tree/nvim-web-devicons' },
+        config = function()
+            require 'alpha'.setup(require 'alpha.themes.startify'.config)
+        end
     },
     --highlight
     'nvim-treesitter/nvim-treesitter',
