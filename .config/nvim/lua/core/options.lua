@@ -10,6 +10,9 @@ vim.opt.shiftwidth = 4
 -- Use spaces instead of tabs for indentation
 vim.opt.expandtab = true
 
+-- Link clipboard to system clipboard
+vim.opt.clipboard = "unnamedplus"
+
 -- Set italics for certain keywords
 --vim.highlight.create('ColorColumn', { ctermbg = 0, guibg = lightgrey }, false)
 -- Apply italic styling to comments
@@ -29,5 +32,5 @@ vim.opt.encoding = "UTF-8"
 --vim.g.neovide_padding_bottom = 0
 --vim.g.neovide_padding_right = 0
 --vim.g.neovide_padding_left = 0
-vim.g.neovide_transparency = 0.69
+vim.g.neovide_transparency = 0.80
 vim.o.guifont = "Hack Nerd Font Mono:h14"

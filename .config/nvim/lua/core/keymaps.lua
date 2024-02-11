@@ -21,12 +21,15 @@ vim.api.nvim_set_keymap('i', '<C-s>', '<Esc>:w<CR>', { noremap = true, silent = 
 vim.api.nvim_set_keymap('n', '<C-Tab>', ':bnext<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<C-S-Tab>', ':bprevious<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Leader>bd', ':BufferLinePickClose<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<Leader>ba', ':BufferLineCloseOthers<CR>', { noremap = true, silent = true })
 
 -- Map Esc to Quit and Save & Quit
 vim.api.nvim_set_keymap('n', '<Esc>', ':close <CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<C-Esc>', ':wq<CR>', { noremap = true, silent = true })
---vim.api.nvim_set_keymap('n', '<Leader>Esc', ':wq<CR>', { noremap = true, silent = true })
 
 -- terminal mappings
 vim.api.nvim_set_keymap('n', '<Leader>t', ':ToggleTerm size=50 direction=float name=term<CR>',
     { noremap = true, silent = true })
+
+-- Markdown Preview
+vim.api.nvim_set_keymap('n', '<Leader>mdp', ':MarkdownPreviewToggle<CR>', { noremap = true, silent = true })
