@@ -12,6 +12,7 @@ eww
 git
 gst-plugin-pipewire
 gtk4
+gnome-themes-extra 
 htop
 hyprpaper
 iwd
@@ -34,6 +35,7 @@ python-setuptools
 pfetch
 rofi
 ranger
+rclone
 sddm
 smartmontools
 spotify-launcher

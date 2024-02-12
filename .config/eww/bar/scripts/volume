@@ -22,7 +22,7 @@ get_icon() {
     echo 2
   elif [[ $volume > 0 ]]; then
     echo 1
-  fi
+fi
 }
 
 set_icon() {
