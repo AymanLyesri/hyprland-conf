@@ -1,17 +1,18 @@
-require("mason-lspconfig").setup({
-    ensure_installed = { "lua_ls", "tsserver" }
+local mlsp = require("mason-lspconfig")
+mlsp.setup({
+    ensure_installed = { "lua_ls", "tsserver", "bashls" }
 })
 --auto completion
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-require("lspconfig").lua_ls.setup {
-    on_attach = require("lsp-format").on_attach,
-    capabilities = capabilities
-}
-
-require("lspconfig").tsserver.setup {
-    on_attach = require("lsp-format").on_attach,
-    capabilities = capabilities
+--for automating lsp setup_handlers
+mlsp.setup_handlers {
+    function(server)
+        require('lspconfig')[server].setup {
+            on_attach = require("lsp-format").on_attach,
+            capabilities = capabilities
+        }
+    end
 }
 
 vim.diagnostic.config({

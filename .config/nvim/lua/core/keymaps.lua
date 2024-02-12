@@ -33,3 +33,6 @@ vim.api.nvim_set_keymap('n', '<Leader>t', ':ToggleTerm size=50 direction=float n
 
 -- Markdown Preview
 vim.api.nvim_set_keymap('n', '<Leader>mdp', ':MarkdownPreviewToggle<CR>', { noremap = true, silent = true })
+
+-- Mason
+vim.api.nvim_set_keymap('n', '<Leader>mm', ':Mason<CR>', { noremap = true, silent = true })
