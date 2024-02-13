@@ -16,6 +16,7 @@ require("core.plugin_config.indentline")
 require("core.plugin_config.cmp")
 require("core.plugin_config.autoclose")
 require("core.plugin_config.format")
+--require("core.plugin_config.html-css")
 
 --auto diagnostics
 require("core.plugin_config.mason")

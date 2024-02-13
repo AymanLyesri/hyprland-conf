@@ -13,7 +13,7 @@ vim.api.nvim_set_keymap('n', '<Leader>r', ':source %<CR>', { noremap = true, sil
 -- Telescope mapping
 vim.api.nvim_set_keymap('n', '<Leader>ff', ':Telescope find_files<CR>', { noremap = true, silent = true })
 
--- Save thth
+-- Save
 vim.api.nvim_set_keymap('n', '<C-s>', ':w<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('i', '<C-s>', '<Esc>:w<CR>', { noremap = true, silent = true })
 
