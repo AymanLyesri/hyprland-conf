@@ -20,14 +20,9 @@ local plugins = {
         "folke/noice.nvim",
         event = "VeryLazy",
         opts = {
-            -- add any options here
         },
         dependencies = {
-            -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
             "MunifTanjim/nui.nvim",
-            -- OPTIONAL:
-            --   `nvim-notify` is only needed, if you want to use the notification view.
-            --   If not available, we use `mini` as the fallback
             "rcarriga/nvim-notify",
         }
     },
@@ -49,13 +44,44 @@ local plugins = {
 
     --completion
     "lukas-reineke/lsp-format.nvim",
-    "hrsh7th/nvim-cmp",
+    {
+        "hrsh7th/nvim-cmp",
+        opts = {
+            sources = {
+                {
+                    name = "html-css",
+                    option = {
+                        enable_on = {
+                            "html"
+                        },                                           -- set the file types you want the plugin to work on
+                        file_extensions = { "css", "sass", "less" }, -- set the local filetypes from which you want to derive classes
+                        style_sheets = {
+                            -- example of remote styles, only css no js for now
+                            "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css",
+                            "https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css",
+                        }
+                    },
+                },
+            },
+        },
+    },
     "hrsh7th/cmp-nvim-lsp",
     "L3MON4D3/LuaSnip",
     "saadparwaiz1/cmp_luasnip",
     "rafamadriz/friendly-snippets",
     "github/copilot.vim",
     "m4xshen/autoclose.nvim",
+    {
+        "Jezda1337/nvim-html-css",
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter",
+            "nvim-lua/plenary.nvim"
+        },
+        --config = function()
+        --    require("html-css"):setup()
+        --end
+    },
+
     { 'akinsho/toggleterm.nvim', version = "*", config = true },
     {
         "folke/which-key.nvim",
