@@ -14,7 +14,6 @@ vim.opt.expandtab = true
 vim.opt.clipboard = "unnamedplus"
 
 -- Set italics for certain keywords
---vim.highlight.create('ColorColumn', { ctermbg = 0, guibg = lightgrey }, false)
 -- Apply italic styling to comments
 vim.cmd [[highlight Comment cterm=italic gui=italic]]
 vim.cmd [[highlight Type cterm=italic gui=italic]]
@@ -28,9 +27,5 @@ vim.cmd [[highlight Number cterm=italic gui=italic]]
 vim.opt.encoding = "UTF-8"
 
 -- Neovide settings
---vim.g.neovide_padding_top = 0
---vim.g.neovide_padding_bottom = 0
---vim.g.neovide_padding_right = 0
---vim.g.neovide_padding_left = 0
 vim.g.neovide_transparency = 0.80
 vim.o.guifont = "Hack Nerd Font Mono:h14"
