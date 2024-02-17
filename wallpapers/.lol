@@ -6,4 +6,4 @@
 
 
 
- -rating:explicit ratio:<9/15 ~feet ~barefoot
+ -rating:explicit ratio:<=9/14 ~feet ~barefoot
