@@ -5,7 +5,7 @@ wallpaper=$1                                                   # wallpaper
 
 ####################################1######
 
-# sleep 0.25s # wait for wallpaper to load # not needed cause ssd
+sleep 0.25s # wait for wallpaper to load
 
 ##########################################
 
@@ -15,8 +15,8 @@ done
 
 ##########################################
 
-#sleep 1s
-$hyprdir/wal/pywal "$wallpaper"    # set wallpaper theme # wait for wallpaper to load
+sleep 0.5s
+$hyprdir/wal/pywal "$wallpaper" # set wallpaper theme # wait for wallpaper to load
 
 sleep 1s
 $hyprdir/scripts/dynamic-border.sh # set border theme
