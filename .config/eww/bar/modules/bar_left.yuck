@@ -33,15 +33,10 @@
           )
         )
       )
+      
     )
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    (revealer
-      :reveal {special_workspace != ""}
-      :transition "slideright"
-      :duration "500ms"
-      (button
-        :class "special icon"
-      :onclick "hyprctl dispatch togglespecialworkspace" "★")
-    )
+    (button
+      :class "special icon"
+    :onclick "hyprctl dispatch togglespecialworkspace" "★")
   )
 )

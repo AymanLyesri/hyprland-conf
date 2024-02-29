@@ -3,17 +3,16 @@
 # This script is used to show the bandwidth usage of a given interface
 
 # Get the network interface associated with Ethernet (enp)
-interface=$(ip -o link show up | grep 'state UP' | awk '{print $2}' | sed 's/://' | head -n 1)
+interface=$(ip -o link show up | awk '/state UP/ && /enp/{print substr($2, 1, length($2)-1); exit}')
 
 # Function to extract bytes from ip command output
 get_bytes() {
-    ip -s link show ${interface[0]} | awk '/'"$1"':/{getline; print $1}'
+    ip -s link show $interface | awk -v target="$1" '$0 ~ target {getline; print $1}'
 }
 
 # Get initial values
 rx_old=$(get_bytes "RX")
 tx_old=$(get_bytes "TX")
-sleep 1
 
 while true; do
     # Get new values
@@ -30,5 +29,5 @@ while true; do
     # Update old values
     rx_old=$rx_new
     tx_old=$tx_new
-    sleep 2
+    sleep 3
 done
