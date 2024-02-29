@@ -78,42 +78,24 @@
 $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
 
 .resources {
-  padding: 0px 5px;
+  padding-left: 10px;
+  padding-right: 5px;
   border-radius: 10px;
-  background-size: 200% 200%;
-  background-image: linear-gradient(-45deg, $gradient-Colors);
-  color: $foreground;
-  animation: gradientAnimation 10s ease-in-out infinite;
-
+  background-color: rgba($background, 100%);
   label {
     @extend .icon;
     color: rgb(0, 0, 0);
-    font-size: 30;
+    font-size: 25;
     margin: 0px;
   }
   .cpu {
-    color: mix(orange, $foreground, 30%);
+    color: orange;
   }
   .ram {
-    color: mix(purple, $foreground, 90%);
+    color: rgb(69, 69, 255);
   }
   .battery {
     margin-left: 5px;
-    color: mix(green, $foreground, 50%);
-  }
-}
-
-@keyframes gradientAnimation {
-  0% {
-    background-position: 0% 0%;
-  }
-  25% {
-    background-position: 50% 100%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 0%;
+    color: green;
   }
 }

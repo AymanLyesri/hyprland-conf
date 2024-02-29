@@ -75,12 +75,3 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
     padding-left: 0px;
   }
 }
-
-@keyframes gradientAnimation {
-  0% {
-    background-position: 0% 50%; // Start position
-  }
-  100% {
-    background-position: 100% 50%; // End position
-  }
-}
