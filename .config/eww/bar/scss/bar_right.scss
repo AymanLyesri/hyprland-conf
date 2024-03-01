@@ -81,7 +81,7 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
   padding-left: 10px;
   padding-right: 5px;
   border-radius: 10px;
-  background-color: rgba($background, 100%);
+  background-color: rgba($background, 30%);
   label {
     @extend .icon;
     color: rgb(0, 0, 0);
