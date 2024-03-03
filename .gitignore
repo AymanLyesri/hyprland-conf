@@ -27,6 +27,8 @@
 !.config/aria2/
 # include pipwire config
 !.config/pipewire/
+# include gtk settings config
+!.config/gtk-3.0/
 
 # wallpapers
 !wallpapers/
