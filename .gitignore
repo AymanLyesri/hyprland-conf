@@ -23,6 +23,10 @@
 !.config/dunst/
 # include nvim config
 !.config/nvim/
+# include aria2c config
+!.config/aria2/
+# include pipwire config
+!.config/pipewire/
 
 # wallpapers
 !wallpapers/
