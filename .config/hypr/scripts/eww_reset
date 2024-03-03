@@ -1,7 +1,0 @@
-#!/bin/bash
-
-scripts="$HOME/.config/hypr/scripts"
-
-killall eww
-
-source ${scripts}/eww_start
