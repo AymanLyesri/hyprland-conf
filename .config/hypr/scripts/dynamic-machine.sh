@@ -3,28 +3,28 @@
 # Run hostnamectl and filter output for Chassis information
 chassis_type=$(hostnamectl | grep "Chassis:" | awk '/Chassis/{print $2}')
 
-sens_file="$HOME/.config/hypr/configs/custom/sensitivity.conf"
-gap_file="$HOME/.config/hypr/configs/custom/gaps.conf"
-border_size_file="$HOME/.config/hypr/configs/custom/border_size.conf"
-blur_file="$HOME/.config/hypr/configs/custom/blur.conf"
+sens_file="$HOME/.config/hypr/configs/custom/sensitivity.conf"        # Path to the sensitivity file
+gap_file="$HOME/.config/hypr/configs/custom/gaps.conf"                # Path to the gaps file
+border_size_file="$HOME/.config/hypr/configs/custom/border_size.conf" # Path to the border size file
+blur_file="$HOME/.config/hypr/configs/custom/blur.conf"               # Path to the blur file
 
 if [ $chassis_type == "laptop" ]; then
-    sensitivity="0.4"
-    gaps_in="5"
-    gaps_out="10"
-    border_size="2"
-    size="6"
-    passes="1"
+    sensitivity="0.4" # Sensitivity for the touchpad
+    gaps_in="5"       # Inner Gaps for the windows
+    gaps_out="10"     # Outer Gaps for the windows
+    border_size="1"   # Border size for the windows
+    size="6"          # Size of the blur
+    passes="1"        # Number of passes for the blur
 else
-    sensitivity="0.2"
-    gaps_in="7"
-    gaps_out="15"
-    border_size="3"
-    size="1"
-    passes="4"
+    sensitivity="0.2" # Sensitivity for the mouse
+    gaps_in="7"       # Inner Gaps for the windows
+    gaps_out="14"     # Outer Gaps for the windows
+    border_size="2"   # Border size for the windows
+    size="2"          # Size of the blur
+    passes="4"        # Number of passes for the blur
 fi
 
-echo -e "general { \n\tsensitivity=$sensitivity \n}" >$sens_file
-echo -e "general { \n\tgaps_in=$gaps_in \n\tgaps_out=$gaps_out \n}" >$gap_file
-echo -e "general { \n\tborder_size=$border_size \n}" >$border_size_file
-echo -e "decoration { \n\tblur { \n\t\tsize=$size \n\t\tpasses=$passes \n\t} \n}" >$blur_file
+echo -e "general { \n\tsensitivity=$sensitivity \n}" >$sens_file                              # Write the sensitivity to the file
+echo -e "general { \n\tgaps_in=$gaps_in \n\tgaps_out=$gaps_out \n}" >$gap_file                # Write the gaps to the file
+echo -e "general { \n\tborder_size=$border_size \n}" >$border_size_file                       # Write the border size to the file
+echo -e "decoration { \n\tblur { \n\t\tsize=$size \n\t\tpasses=$passes \n\t} \n}" >$blur_file # Write the blur to the file
