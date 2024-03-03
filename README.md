@@ -16,23 +16,23 @@ So be sure to gimme ur feedback ♡ (anything u could think of)
 
 # Features
 
-- dynamic wallpapers based on workspaces: [hyprpaper](https://github.com/hyprwm/hyprpaper) `+ custom scripts`
+- dynamic wallpapers based on workspaces: `custom scripts` & [hyprpaper](https://github.com/hyprwm/hyprpaper)
 - screenshot all active workspaces into one image: `custom scripts`
-- dynamic color theme: [pyWal](https://github.com/dylanaraps/pywal)
+- dynamic color theme: `custom scripts` & [pyWal](https://github.com/dylanaraps/pywal)
 - dynamic eww
   - color themes: [pyWal](https://github.com/dylanaraps/pywal)
   - dark/light modes: `custom scripts`
   - bandwidth speed: `custom scripts`
   - media player: `custom scripts`
-  - essential stuff
-- dynamic window border: [pyWal](https://github.com/dylanaraps/pywal) `+ custom scripts`
+  - etc
+- dynamic window border: `custom scripts` & [pyWal](https://github.com/dylanaraps/pywal)
 - dynamic configuration based on machine type (laptop/desktop)
   - blur: `custom scripts`
   - sensitivity: `custom scripts`
   - gaps: `custom scripts`
   - border size: `custom scripts`
 - dynamic and customizable shaders: `saturation & retro`
-- high quality wallpapers that Quentin Tarantino would love :) mainly from [danboruu](https://danbooru.donmai.us) and sometimes [yandere](https://yande.re)
+- high quality wallpapers that Quentin Tarantino would love :) mainly from [danboruu](https://danbooru.donmai.us) and sometimes [yandere](https://yande.re).
 
 > [!important]  
 > ⊽ MORE INFO DOWN BELOW ⊽
@@ -53,12 +53,12 @@ old look
 
 # Current Workflow
 
-| W1  | W2                                                    | W3  | w4                                   | W5                                           | W6                              | W7                                                                     | W8  | W9  | W10   |
-| --- | ----------------------------------------------------- | --- | ------------------------------------ | -------------------------------------------- | ------------------------------- | ---------------------------------------------------------------------- | --- | --- | ----- |
-| --- | [Firefox](https://www.mozilla.org/en-US/firefox/new/) | --- | [Spotify](https://open.spotify.com/) | [Btop](https://github.com/aristocratos/btop) | [Discord](https://discord.com/) | [Steam](https://store.steampowered.com/)/[Lutris](https://lutris.net/) | --- | --- | Games |
+| W1  | W2                                                  | W3  | w4                                                  | W5                                           | W6                                                  | W7                                                                            | W8  | W9  | W10   |
+| --- | --------------------------------------------------- | --- | --------------------------------------------------- | -------------------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------------- | --- | --- | ----- |
+| --- | [Firefox](https://wiki.archlinux.org/title/firefox) | --- | [Spotify](https://wiki.archlinux.org/title/spotify) | [Btop](https://github.com/aristocratos/btop) | [Discord](https://wiki.archlinux.org/title/Discord) | [Steam](https://wiki.archlinux.org/title/steam)/[Lutris](https://lutris.net/) | --- | --- | Games |
 
-- W`id`: workspace with corresponded id
-- `---`: anything goes here
+- W`id`: workspace with corresponded id.
+- `---`: anything goes here.
 
 # To Do
 
@@ -70,8 +70,9 @@ old look
 
 # Package list and how it works
 
-it was generated using `pacman -Qqen > .config/hypr/pacman/pkglist.txt`.
-I removed some redundant packages
+it was generated using `pacman -Qqen > .config/hypr/pacman/pkglist.txt`
+
+I removed some redundant packages.
 
 _*To install*_
 
@@ -88,9 +89,10 @@ pacman -S - < .config/hypr/pacman/pkglist.txt
 
 # Tips
 
+- when installing the config for the first time its recommended that u reboot the machine.
 - all the key binds are stored in `configs/keybinds.conf`
 - to change wallpaper configuration just go to the desired workspace and change it, it will save automatically.
-- Some config files needs to be linked to there appropriate locations using `ln`, be sure to read its [documentation](https://man7.org/linux/man-pages/man1/ln.1.html)
+- Some config files needs to be linked to there appropriate locations using `ln`, be sure to read its [documentation](https://man7.org/linux/man-pages/man1/ln.1.html).
 
 # Lil things to know about
 
