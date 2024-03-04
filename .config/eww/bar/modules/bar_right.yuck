@@ -35,7 +35,7 @@
 
 (defwidget Toggles []
   (box ; Quick Toggles
-    :space-evenly false :spacing 15
+    :space-evenly false :spacing 14
     (bluetooth)
     (brightness)
     (audio)
@@ -155,14 +155,13 @@
         )
         (label
           :class "icon"
-          :text "󰖩"
+          :style "font-size: 15;"
+          :text ""
         )
-        
       )
     )
   )
 )
-
 
 (defwidget bluetooth []
   (box
@@ -198,7 +197,7 @@
           (label
             :class "icon"
             :style "font-size: 11;"
-            :text {bluetooth_dev!="" ? "Connected" : "Disconnected"}
+            :text {bluetooth_dev!="" ? "C/N" : "D/C"}
           )
         )
       )
@@ -221,7 +220,7 @@
         (circular-progress
           :class "cpu"
           :value {EWW_CPU.avg}
-          :thickness 7
+          :thickness 5
           :clockwise true
           :start-at 30
           (label :text "")
@@ -229,7 +228,7 @@
         (circular-progress
           :class "ram"
           :value {EWW_RAM.used_mem_perc}
-          :thickness 7
+          :thickness 5
           :clockwise true
           :start-at 30
           (label :text "")
@@ -243,7 +242,7 @@
       (circular-progress
         :value {EWW_BATTERY.BAT1.capacity}
         :class "battery"
-        :thickness 7
+        :thickness 5
         :clockwise true
         :start-at 30
         (label :text "")

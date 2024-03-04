@@ -1,23 +1,22 @@
 @import "theme.scss";
 
 // Background color
-$background: mix(mix($color0, $color1, 50%), $background, 25%);
+$background: $background;
 // Foreground color
-$foreground: mix(mix($color0, $color1, 50%), $foreground, 25%);
+$foreground: $foreground;
 
 .module {
   background-color: rgba($background, 69%);
-  color: mix($color3, $foreground, 69%);
+  color: $foreground;
   font-size: 11;
   font-weight: bolder;
   padding: 0px 10px;
   transition: all 0.5s;
-  // border: 1px solid rgba($foreground, 0.5);
 }
 
 .icon {
   margin: 0px 5px;
-  font-size: 15;
+  font-size: 12;
   font-weight: normal;
 }
 

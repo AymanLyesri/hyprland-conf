@@ -118,13 +118,13 @@
               :halign "center"
               :valign "center"
               :class "icon"
-              :style "font-size: 20px;"
+              :style "font-size: 15px;"
             :text {music_icon} )
           )
           (label ; Title
             :class "music-label title"
             :style "color:${music_title_color}"
-            :limit-width "25"
+            :limit-width "20"
             :text "${music_title}"
           )
           (label ; Author
