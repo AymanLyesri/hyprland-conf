@@ -4,7 +4,7 @@
     :orientation "h"
     :halign "end"
     :class "bar-right"
-    :spacing 5
+    :spacing 3
     (theme)
     (system)
   )
@@ -27,7 +27,7 @@
     :space-evenly "false"
     :orientation "h"
     :class "system"
-    :spacing 3
+    :spacing 1
     (Toggles)
     (resources)
   )
@@ -35,13 +35,10 @@
 
 (defwidget Toggles []
   (box ; Quick Toggles
-    :space-evenly false :spacing 0
+    :space-evenly false :spacing 15
     (bluetooth)
-    (sep)
     (brightness)
-    (sep)
     (audio)
-    (sep)
     (internet)
   )
 )
@@ -75,6 +72,15 @@
         (button
           :class "icon" :style "font-size: 20;"
           ""
+        )
+        (revealer
+          :transition "slideright"
+          :reveal {!bright_rev}
+          :duration "350ms"
+          (label
+            :class "bright-percent"
+            :text "${brightness_percent}%"
+          )
         )
       )
     )
@@ -112,6 +118,15 @@
           :class "icon" :style "font-size: 18;"
           :text {VOL_ICON[vol_state]}
         )
+        (revealer
+          :transition "slideright"
+          :reveal {!vol_rev}
+          :duration "350ms"
+          (label
+            :class "vol-percent"
+            :text "${vol_percent}%"
+          )
+        )
       )
     )
   )
@@ -129,10 +144,6 @@
       :onclick "hyprctl dispatch exec '[float] kitty nmtui'"
       (box
         :space-evenly "false" :spacing 2
-        (label
-          :class "icon"
-          :text "󰖩"
-        )
         (revealer
           :transition "slideright"
           :reveal wifi_state
@@ -142,6 +153,11 @@
             :text ESSID_WLAN
           )
         )
+        (label
+          :class "icon"
+          :text "󰖩"
+        )
+        
       )
     )
   )
@@ -153,19 +169,14 @@
     :space-evenly false
     :orientation "h"
     :class "bluetooth"
-    :spacing 3
+    :spacing 0
     (eventbox
       :onhover "${EWW_CMD} update bluetooth_state=true"
       :onhoverlost "${EWW_CMD} update bluetooth_state=false"
       :onclick "bar/scripts/bluetooth-gui.sh"
       (box
         :space-evenly false
-        :spacing 2
-        (label
-          :class "icon"
-          :style "font-size: 11;"
-          :text "󰂯"
-        )
+        :spacing 0
         (revealer
           :transition "slideright"
           :reveal bluetooth_state
@@ -173,6 +184,21 @@
           (label
             :class "bluetooth-dev"
             :text bluetooth_dev
+          )
+        )
+        (label
+          :class "icon"
+          :style "font-size: 11;"
+          :text "󰂯"
+        )
+        (revealer
+          :transition "slideright"
+          :reveal {!bluetooth_state}
+          :duration "1s"
+          (label
+            :class "icon"
+            :style "font-size: 11;"
+            :text {bluetooth_dev!="" ? "Connected" : "Disconnected"}
           )
         )
       )
@@ -213,6 +239,7 @@
     (revealer
       :transition "slideright"
       :reveal {EWW_BATTERY.BAT1.capacity>0}
+      :style {EWW_BATTERY.BAT1.capacity>20 ? "color:rgb(69, 255, 69)" : "color:rgb(255, 0, 0)"}
       (circular-progress
         :value {EWW_BATTERY.BAT1.capacity}
         :class "battery"

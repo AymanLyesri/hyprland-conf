@@ -41,7 +41,7 @@
 
 ; Bluetooth
 (defvar bluetooth_state false)
-(defpoll bluetooth_dev :interval "5s" "bluetoothctl show | grep Name | cut -d ' ' -f 2-")
+(defpoll bluetooth_dev :interval "5s" "bluetoothctl info | grep Name | cut -d ' ' -f 2-")
 
 ; Wifi
 (defvar wifi_state false)
@@ -56,5 +56,4 @@
 (defvar bright_rev false)
 
 ; global bar
-; (defpoll bar_height :interval "1s" "./bar/scripts/empty_workspace")
 (defpoll bar_margin :interval "2s" "bash ./bar/scripts/dynamic_margin.sh")

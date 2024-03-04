@@ -29,14 +29,30 @@
   }
 }
 
+.bluetooth {
+  color: rgb(0, 130, 252);
+}
+
+.brightness {
+  color: rgb(200, 200, 100);
+}
+
+.audio {
+  color: rgb(255, 255, 255);
+}
+
+.internet {
+  color: rgb(0, 200, 255);
+}
+
 .scale {
-  margin-right: 6px;
+  margin: 0px 5px;
   * {
     border-radius: 50%;
   }
   trough {
     min-height: 2px;
-    min-width: 60px;
+    min-width: 69px;
     padding-left: 5px;
     background-color: mix($color4, $background, 50%);
   }
@@ -68,11 +84,6 @@
     min-width: 4px;
     background-color: mix($color2, $foreground, 50%);
   }
-  &.battery {
-    progress {
-      background-color: rgb(73, 204, 73);
-    }
-  }
 }
 
 $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
@@ -96,6 +107,5 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
   }
   .battery {
     margin-left: 5px;
-    color: green;
   }
 }
