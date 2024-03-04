@@ -17,6 +17,7 @@
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     (box
       :space-evenly false
+      :spacing 5
       (for id in active_workspaces
         (button
           :class {
