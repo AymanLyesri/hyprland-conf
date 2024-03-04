@@ -2,31 +2,40 @@ configuration{
     modi: "run,drun,window";
     show-icons: true;
     terminal: "kitty";
-    drun-display-format: "➣ {name}";
-    location: 0;
+    drun-display-format: "{name}";
     disable-history: false;
     hide-scrollbar: true;
-    display-drun: "Run";
-    display-run: "Run";
-    display-window: "Window";
-    display-Network: " 󰤨  Network";
-    // sidebar-mode: true;
+    display-drun: "";
+    display-run: "";
+    display-window: "";
+    display-Network: "󰤨";
 }
 
 /* Dark theme. */
-//@import "~/.cache/wal/colors-rofi-dark"
-
 * {
-    font:bold;
-    margin: 2px;
+    font:"JetBrainsMono Nerd Font 10";
     text-color: #ffffff;
     background-color: rgba(0, 0, 0, 0);
 }
 
-
 window {
-    background-color: rgba(0, 0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.69);
     text-color: #ffffff;
+    padding: 10px;
+}
+
+listview {
+    lines: 10;
+    columns: 2;
+    fixed-height: 0;
+    spacing:      15px;
+    padding:      2px 0px 0px ;
+}
+
+message {
+    border:       2px 0px 0px ;
+    // border-color: @separatorcolor;
+    padding:      1px ;
 }
 
 prompt {
@@ -40,7 +49,8 @@ entry {
 }
 
 element-text, element-icon, element normal normal, element normal urgent, element normal active, element urgent normal, element urgent urgent, element urgent active, element active normal, element active urgent, element active active, element alternate normal, element alternate urgent, element alternate active, element urgent alternate{
-    border-radius: 100px;
+    // border-radius: 100px;
+    // margin: 5px;
     background-color: rgba(0, 0, 0, 0);
     text-color: #ffffff;
 }
