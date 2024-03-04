@@ -29,20 +29,25 @@
   }
 }
 
+@mixin generate-styles($color) {
+  color: $color;
+  highlight,
+  slider {
+    background-color: $color;
+  }
+}
+
 .bluetooth {
-  color: rgb(0, 130, 252);
+  @include generate-styles(mix(rgb(0, 130, 252), $foreground, 69%));
 }
-
 .brightness {
-  color: rgb(200, 200, 100);
+  @include generate-styles(mix(rgb(200, 200, 100), $foreground, 69%));
 }
-
 .audio {
-  color: rgb(255, 255, 255);
+  @include generate-styles(mix(rgb(255, 255, 255), $foreground, 69%));
 }
-
 .internet {
-  color: rgb(0, 200, 255);
+  @include generate-styles(mix(rgb(0, 200, 255), $foreground, 69%));
 }
 
 .scale {
@@ -54,18 +59,17 @@
     min-height: 2px;
     min-width: 69px;
     padding-left: 5px;
-    background-color: mix($color4, $background, 50%);
   }
 
   highlight {
     min-width: 3px;
-    background-color: $color5;
+    // background-color: $color5;
   }
 
   slider {
     min-width: 5px;
     margin: -5px;
-    background-color: $color6;
+    // background-color: $color6;
   }
 }
 
@@ -85,8 +89,6 @@
     background-color: mix($color2, $foreground, 50%);
   }
 }
-
-$gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
 
 .resources {
   padding-left: 10px;
