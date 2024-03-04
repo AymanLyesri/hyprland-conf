@@ -20,7 +20,7 @@
   & button {
     transition: all 0.5s;
     border-radius: 10px;
-    padding: 5px;
+    padding: 0px 5px;
     &:hover {
       background-color: mix($color1, $color2, 50%);
       label {
@@ -42,8 +42,8 @@
   text-shadow: 1px 1px 1px #000000;
 
   .progress {
-    margin: 0;
-    padding: 0;
+    margin: 0px;
+    padding: 0px;
     label {
       padding: 1px;
     }

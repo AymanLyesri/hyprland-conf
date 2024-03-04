@@ -3,11 +3,8 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
 .workspaces {
   button {
     @extend .module;
-    margin-right: 5px;
-    // margin-left: 5px;
     transition: all 0.3s;
     border-radius: 10px;
-    // box-shadow: 10px 0px 10px 1px rgba(0, 0, 0, 0.514);
     ////////////////////////////
     padding-right: 5px;
     padding-left: 5px;
