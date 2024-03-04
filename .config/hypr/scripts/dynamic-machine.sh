@@ -13,8 +13,8 @@ if [ $chassis_type == "laptop" ]; then
     gaps_in="5"       # Inner Gaps for the windows
     gaps_out="10"     # Outer Gaps for the windows
     border_size="1"   # Border size for the windows
-    size="6"          # Size of the blur
-    passes="1"        # Number of passes for the blur
+    size="4"          # Size of the blur
+    passes="2"        # Number of passes for the blur
 else
     sensitivity="0.2" # Sensitivity for the mouse
     gaps_in="7"       # Inner Gaps for the windows

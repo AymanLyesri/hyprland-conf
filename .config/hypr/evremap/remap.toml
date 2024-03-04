@@ -40,4 +40,7 @@ output = ["KEY_8"]
 input = ["KEY_KP9"]
 output = ["KEY_9"]
 
+[[remap]]
+input = ["KEY_RIGHTALT"]
+output = ["KEY_F11"]
 
