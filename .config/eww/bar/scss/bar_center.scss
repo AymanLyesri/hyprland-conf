@@ -5,9 +5,11 @@
 
 .bandwidth {
   padding: 0px;
-  min-width: 100px;
+  // min-width: 100px;
+
   label {
     @extend .module;
+    font-size: 10px;
     padding: 0px;
     border-radius: 10px;
   }
@@ -87,7 +89,7 @@
 .clock {
   @extend .module;
   margin: 0px;
-  padding-right: 0px;
+  padding: 0px 5px;
   border-radius: 10px;
 }
 
