@@ -124,7 +124,7 @@ sort = yes
 
 ### Text ###
 
-font = Monospace 8
+font = JetBrains Mono 10
 
 # The spacing between lines.  If the height is smaller than the
 # font height, it will get raised to the font height.
@@ -315,14 +315,14 @@ per_monitor_dpi = false
 # Otherwise the "#" and following would be interpreted as a comment.
 background = "#222222"
 foreground = "#888888"
-timeout = 10
+timeout = 5
 # Icon for notifications with low urgency, uncomment to enable
 #default_icon = /path/to/icon
 
 [urgency_normal]
 background = "#00000033"
 foreground = "#ffffff"
-timeout = 10
+timeout = 5
 # Icon for notifications with normal urgency, uncomment to enable
 #default_icon = /path/to/icon
 
@@ -330,7 +330,7 @@ timeout = 10
 background = "#900000"
 foreground = "#ffffff"
 frame_color = "#747faa"
-timeout = 0
+timeout = 5
 # Icon for notifications with critical urgency, uncomment to enable
 #default_icon = /path/to/icon
 

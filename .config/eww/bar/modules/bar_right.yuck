@@ -5,8 +5,21 @@
     :halign "end"
     :class "bar-right"
     :spacing 3
-    (theme)
+    ; (theme)
     (system)
+  )
+)
+
+
+(defwidget system []
+  (box
+    :space-evenly "false"
+    :orientation "h"
+    :class "system"
+    :spacing 1
+    (theme)
+    (Toggles)
+    (resources)
   )
 )
 
@@ -19,17 +32,6 @@
       :style "font-size: 14"
       {THEME_ICON[theme_id]}
     )
-  )
-)
-
-(defwidget system []
-  (box
-    :space-evenly "false"
-    :orientation "h"
-    :class "system"
-    :spacing 1
-    (Toggles)
-    (resources)
   )
 )
 
