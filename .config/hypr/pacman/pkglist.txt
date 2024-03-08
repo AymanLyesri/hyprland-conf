@@ -36,6 +36,7 @@ pfetch
 rofi
 ranger
 rclone
+radeontop
 sddm
 smartmontools
 spotify-launcher
