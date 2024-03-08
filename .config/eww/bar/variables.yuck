@@ -57,3 +57,7 @@
 
 ; global bar
 (defpoll bar_margin :interval "2s" "bash ./bar/scripts/dynamic_margin.sh")
+
+; Gpu stats
+(defvar gpu_stats false)
+(defpoll gpu :intial "[]" :interval "1s" "./bar/scripts/gpu.sh")

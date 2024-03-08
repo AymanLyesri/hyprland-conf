@@ -235,12 +235,26 @@
           :start-at 30
           (label :text "")
         )
+        (eventbox
+          :onhover "${EWW_CMD} update gpu_stats=true"
+          ; :onhoverlost "${EWW_CMD} update gpu_stats=false"
+          (circular-progress
+            :class "gpu-usage"
+            :value {gpu[0]}
+            :thickness 5
+            :clockwise true
+            :start-at 30
+            (label :text "")
+          )
+        )
       )
     )
+    
     (revealer
       :transition "slideright"
       :reveal {EWW_BATTERY.BAT1.capacity>0}
       :style {EWW_BATTERY.BAT1.capacity>20 ? "color:rgb(69, 255, 69)" : "color:rgb(255, 0, 0)"}
+      
       (circular-progress
         :value {EWW_BATTERY.BAT1.capacity}
         :class "battery"
@@ -249,7 +263,35 @@
         :start-at 30
         (label :text "")
       )
+      
     )
+    (gpu)
+  )
+)
+
+(defwidget gpu []
+  (eventbox
+    ; :onhover "${EWW_CMD} update gpu_stats=true"
+    :onhoverlost "${EWW_CMD} update gpu_stats=false"
+    (revealer
+      :transition "slideright"
+      :reveal {gpu_stats}
+      :space-evenly false
+      :class "gpu"
+      (box
+        :space-evenly false
+        (circular-progress
+          :class "vram"
+          :value {gpu[11]}
+          :thickness 5
+          :clockwise true
+          :start-at 25
+          (label :text "V")
+        )
+      )
+    )
+    
+    
   )
 )
 
