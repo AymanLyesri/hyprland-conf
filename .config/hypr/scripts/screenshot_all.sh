@@ -24,10 +24,13 @@ mkdir -p "$ScreenshotsDir"
 # take screenshots
 for id in "${workspace_ids[@]}"; do
     hyprctl dispatch workspace "$id"
-    sleep 1.5
+    sleep 2
     file="$ScreenshotsDir/$(date +'%s_grim.png')"
     $HOME/.config/hypr/scripts/screenshot.sh --now "$file" && screenshots+=("$file")
 done
 
+# Reorder the screenshots array to append the first screenshot as the last one
+screenshots=("${screenshots[@]:1}" "${screenshots[0]}")
+
 # merge screenshots
-convert -append ${screenshots[@]} $ScreenshotsDir/$(date +'%s_grim_result.png')
+convert -append ${screenshots[@]} $ScreenshotsDir/$(date +'%s_grim_result.jpg')
