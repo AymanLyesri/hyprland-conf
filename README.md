@@ -35,21 +35,7 @@ So be sure to gimme ur feedback ♡ (anything u could think of)
 - high quality wallpapers that Quentin Tarantino would love :) mainly from [danboruu](https://danbooru.donmai.us) and sometimes [yandere](https://yande.re).
 
 > [!important]  
-> ⊽ MORE INFO DOWN BELOW ⊽
-
-# NEW VERSION
-
-![gif](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbGZzN3pnajVmZHVxMWJweDVjN3J2enlocW91ODRhZ3N6NGpjdW83dCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/nM9nOv0R2cn3xLqY7U/giphy-downsized-large.gif)
-
-![1](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/f8de7f60-575e-4ab3-a03f-59d54879f4f5)
-
-![basic work](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/9d9c5c32-5f4c-47e3-b1eb-c0d861425ad9)
-
-![spotify](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/5fc94244-3853-47ea-a82f-fe69b75c0689)
-
-old look
-
-![old](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/b6f06611-716f-411b-bd89-d6a3f0c8f8b5)
+> ⊽ SCREEN SHOTS DOWN BELLOW ⊽
 
 # Current Workflow
 
@@ -99,3 +85,8 @@ pacman -S - < .config/hypr/pacman/pkglist.txt
 - I am using dvorak so things may not work smoothly for u qwerty users.
 
 - I've rebinded all the num-pad button to work as number buttons using [evremap](https://github.com/wez/evremap), my laptop keyboard is broken :/
+
+# Screen shot all
+
+![1710006927_grim_result](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/c84884a7-ce5b-4363-a2fb-8a6ccebc05c5)
+
