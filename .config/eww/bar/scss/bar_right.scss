@@ -114,10 +114,18 @@
   .gpu-usage {
     color: rgb(255, 69, 69);
   }
-}
 
-.gpu {
-  padding: 0px;
-  margin: 0px;
-  color: white;
+  .gpu {
+    padding: 0px;
+    margin: 0px;
+    // color: white;
+    .vram {
+      color: rgb(255, 255, 255);
+      label {
+        margin: 5px;
+        color: rgb(255, 255, 255);
+        font-size: 15;
+      }
+    }
+  }
 }
