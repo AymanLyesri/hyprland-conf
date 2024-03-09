@@ -66,7 +66,7 @@
             :class "scale"
             :value brightness_percent
             :orientation "h"
-            :max 100
+            :max 101
             :min 5
             :onchange "light -S {}"
           )
@@ -111,7 +111,7 @@
             :class "scale"
             :value "${vol_percent}"
             :orientation "h"
-            :max 100
+            :max 101
             :min 0
             :onchange "pamixer --set-volume {} && scripts/volume --icon"
           )
@@ -277,16 +277,17 @@
       :transition "slideright"
       :reveal {gpu_stats}
       :space-evenly false
-      :class "gpu"
       (box
+        :class "gpu"
         :space-evenly false
         (circular-progress
           :class "vram"
           :value {gpu[11]}
-          :thickness 5
+          :thickness 1
           :clockwise true
           :start-at 25
-          (label :text "V")
+          (label
+          :text "")
         )
       )
     )
