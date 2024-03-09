@@ -34,10 +34,10 @@ So be sure to gimme ur feedback ♡ (anything u could think of)
 - dynamic and customizable shaders: `saturation & retro`
 - high quality wallpapers that Quentin Tarantino would love :) mainly from [danboruu](https://danbooru.donmai.us) and sometimes [yandere](https://yande.re).
 
-> [!important]  
-> ⊽ SCREEN SHOTS DOWN BELLOW ⊽
-
 # Current Workflow
+
+> [!important]  
+> ⊽ SCREENSHOTS DOWN BELLOW ⊽
 
 | W1  | W2                                                  | W3  | w4                                                  | W5                                           | W6                                                  | W7                                                                            | W8  | W9  | W10   |
 | --- | --------------------------------------------------- | --- | --------------------------------------------------- | -------------------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------------- | --- | --- | ----- |
@@ -48,9 +48,10 @@ So be sure to gimme ur feedback ♡ (anything u could think of)
 
 # To Do
 
+-
 - list essential packages for easy download `WIP`
-- improve more! polish more! `INDEFINITELY`
 - list all key-binds with ez readability `WIP`
+- improve more! polish more! `INDEFINITELY`
 
 # [KeyBinds](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/configs/keybinds.conf)
 
@@ -76,7 +77,6 @@ pacman -S - < .config/hypr/pacman/pkglist.txt
 # Tips
 
 - when installing the config for the first time its recommended that u reboot the machine.
-- all the key binds are stored in `configs/keybinds.conf`
 - to change wallpaper configuration just go to the desired workspace and change it, it will save automatically.
 - Some config files needs to be linked to there appropriate locations using `ln`, be sure to read its [documentation](https://man7.org/linux/man-pages/man1/ln.1.html).
 
@@ -86,7 +86,8 @@ pacman -S - < .config/hypr/pacman/pkglist.txt
 
 - I've rebinded all the num-pad button to work as number buttons using [evremap](https://github.com/wez/evremap), my laptop keyboard is broken :/
 
-# Screen shot all
+- I've included my personal mobile wallpapers that i use on my android phone with the help of [Wallpaper Changer](https://play.google.com/store/apps/details?id=de.j4velin.wallpaperChanger&pcampaignid=web_share)
+
+# Screenshot all workspaces
 
 ![1710006927_grim_result](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/c84884a7-ce5b-4363-a2fb-8a6ccebc05c5)
-
