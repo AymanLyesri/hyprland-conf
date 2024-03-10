@@ -8,6 +8,8 @@ gap_file="$HOME/.config/hypr/configs/custom/gaps.conf"                # Path to 
 border_size_file="$HOME/.config/hypr/configs/custom/border_size.conf" # Path to the border size file
 blur_file="$HOME/.config/hypr/configs/custom/blur.conf"               # Path to the blur file
 
+touch -c $sens_file $gap_file $border_size_file $blur_file # Create the files if they don't exist
+
 if [ $chassis_type == "laptop" ]; then
     sensitivity="0.4" # Sensitivity for the touchpad
     gaps_in="5"       # Inner Gaps for the windows
