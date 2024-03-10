@@ -43,21 +43,21 @@
     :class "bandwidth"
     :spacing 5
     (revealer
-      :reveal {bandwidth[0] != 0}
-      :transition "crossfade"
-      :duration "10s"
-      (label
-        :style  "min-width: ${bandwidth[0] < 100 ? 25 : bandwidth[0] < 1000 ? 30 : 50 }px"
-        :text "${bandwidth[0] < 100 ? '󰄿' : '󰶼' }${bandwidth[0]}"
-      )
-    )
-    (revealer
       :reveal {bandwidth[1] != 0}
       :transition "crossfade"
       :duration "10s"
       (label
         :style "min-width: ${bandwidth[1] < 100 ? 25 : bandwidth[1] < 1000 ? 30 : 50 }px"
-        :text "${bandwidth[1] < 100 ? '󰄼' : '󰶹' }${bandwidth[1]}"
+        :text "${bandwidth[1]}"
+      )
+    )
+    (revealer
+      :reveal {bandwidth[0] != 0}
+      :transition "crossfade"
+      :duration "10s"
+      (label
+        :style  "min-width: ${bandwidth[0] < 100 ? 25 : bandwidth[0] < 1000 ? 30 : 50 }px"
+        :text "${bandwidth[0]}"
       )
     )
   )

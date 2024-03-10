@@ -105,7 +105,7 @@
   .cpu {
     color: orange;
   }
-  .ram {
+  .ram-usage {
     color: rgb(69, 69, 255);
   }
   .battery {
@@ -113,6 +113,16 @@
   }
   .gpu-usage {
     color: rgb(255, 69, 69);
+  }
+
+  .ram {
+    padding: 0px;
+    margin: 0px;
+    label {
+      margin: 5px;
+      color: rgb(69, 69, 255);
+      font-size: 15;
+    }
   }
 
   .gpu {
