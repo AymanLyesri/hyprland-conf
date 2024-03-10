@@ -19,6 +19,5 @@ sleep 0.5s
 $hyprdir/wal/pywal "$wallpaper" # set wallpaper theme # wait for wallpaper to load
 
 $hyprdir/scripts/dynamic-border.sh # set border theme
-# sleep 10s && echo ' ' >$hyprdir/eww/bar/scss/soft_reset.scss # reset eww bar
 
 ##########################################
