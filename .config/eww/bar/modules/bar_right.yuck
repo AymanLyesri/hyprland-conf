@@ -228,24 +228,51 @@
           (label :text "")
         )
         (circular-progress
-          :class "ram"
+          :class "ram-usage"
           :value {EWW_RAM.used_mem_perc}
           :thickness 5
           :clockwise true
           :start-at 30
           (label :text "")
         )
+        ; (eventbox
+          ;   :onhover "${EWW_CMD} update mem_stats=true"
+          ;   :onhoverlost "${EWW_CMD} update mem_stats=false"
+          ;   (box
+            ;     :space-evenly false
+            ;     :spacing 0
+            
+            ;     (revealer
+              ;       :transition "slideright"
+              ;       :reveal {mem_stats}
+              ;       :space-evenly false
+              ;       (ram)
+            ;     )
+          ;   )
+          
+        ; )
         (eventbox
           :onhover "${EWW_CMD} update gpu_stats=true"
-          ; :onhoverlost "${EWW_CMD} update gpu_stats=false"
-          (circular-progress
-            :class "gpu-usage"
-            :value {gpu[0]}
-            :thickness 5
-            :clockwise true
-            :start-at 30
-            (label :text "")
+          :onhoverlost "${EWW_CMD} update gpu_stats=false"
+          (box
+            :space-evenly false
+            :spacing 0
+            (circular-progress
+              :class "gpu-usage"
+              :value {gpu[0]}
+              :thickness 5
+              :clockwise true
+              :start-at 30
+              (label :text "")
+            )
+            (revealer
+              :transition "slideright"
+              :reveal {gpu_stats}
+              :space-evenly false
+              (gpu)
+            )
           )
+          
         )
       )
     )
@@ -265,34 +292,45 @@
       )
       
     )
-    (gpu)
+    
+    
   )
 )
 
+; (defwidget ram []
+  ;   (box
+    ;     :class "ram"
+    ;     :space-evenly false
+    ;     (label
+      ;       :text {EWW_RAM.used_mem/ (1024 * 1024) }
+    ;     )
+  ;   )
+  
+; )
+
 (defwidget gpu []
-  (eventbox
-    ; :onhover "${EWW_CMD} update gpu_stats=true"
-    :onhoverlost "${EWW_CMD} update gpu_stats=false"
-    (revealer
-      :transition "slideright"
-      :reveal {gpu_stats}
-      :space-evenly false
-      (box
-        :class "gpu"
-        :space-evenly false
-        (circular-progress
-          :class "vram"
-          :value {gpu[11]}
-          :thickness 1
-          :clockwise true
-          :start-at 25
-          (label
-          :text "")
-        )
-      )
+  (box
+    :class "gpu"
+    :space-evenly false
+    (circular-progress
+      :class "vram"
+      :value {gpu[0]}
+      :thickness 1
+      :clockwise true
+      :start-at 25
+      (label
+      :text "󰍛")
     )
-    
-    
+    (circular-progress
+      :class "vram"
+      :value {gpu[11]}
+      :thickness 1
+      :clockwise true
+      :start-at 25
+      (label
+      :text "")
+    )
   )
+  
 )
 
