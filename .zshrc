@@ -81,10 +81,10 @@ eval "$(navi widget zsh)"
 
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
 
-export HADOOP_HOME=/etc/hadoop
-export PATH=$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH
-export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
-export HADOOP_HDFS_HOME=$HADOOP_HOME
-export HADOOP_MAPRED_HOME=$HADOOP_HOME
-export YARN_HOME=$HADOOP_HOME
-export HADOOP_COMMON_HOME=$HADOOP_HOME
+# export HADOOP_HOME=/etc/hadoop
+# export PATH=$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH
+# export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+# export HADOOP_HDFS_HOME=$HADOOP_HOME
+# export HADOOP_MAPRED_HOME=$HADOOP_HOME
+# export YARN_HOME=$HADOOP_HOME
+# export HADOOP_COMMON_HOME=$HADOOP_HOME
