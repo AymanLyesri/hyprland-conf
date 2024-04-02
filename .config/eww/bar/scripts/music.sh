@@ -48,7 +48,7 @@ getMusicArt() {
     if [ "$playerStatus" == "spotify" ]; then
         art_url=$(playerctl metadata mpris:artUrl)
         og_url=$(${EWW} get music_art_URL)
-        if [ "$og_url" != "$art_url" ]; then #check if the same image as previous one
+        if [[ "$og_url" != "" && "$og_url" != "$art_url" ]]; then #check if the same image as previous one
             curl $art_url >$media/spotify.jpg
             ${EWW} update music_art_URL=$art_url
         fi
