@@ -99,7 +99,7 @@
       :class "music"
       :hexpand "true"
       :space-evenly false
-      :style "background-image: linear-gradient(to right, #131313 , rgba(90, 20, 52, 0)), url('${music_art}');"
+      :style "background-image: linear-gradient(to right, #000000 , rgba(0, 0, 0, 0)), url('${music_art}');"
       (eventbox
         :onclick "./bar/scripts/music.sh --play-pause"
         :onrightclick "hyprctl dispatch workspace 4"
@@ -111,7 +111,7 @@
             :value {music_prog}
             :class "progress"
             :style "color:${music_title_color}"
-            :thickness 5
+            :thickness 2
             :clockwise true
             :start-at 75
             (label
@@ -124,12 +124,13 @@
           (label ; Title
             :class "music-label title"
             :style "color:${music_title_color}"
-            :limit-width "20"
+            :limit-width 20
             :text "${music_title}"
           )
           (label ; Author
             :style "color:${music_title_color}"
             :class "music-label artist"
+            :limit-width 10
             :text "󰭓${music_artist}"
           )
         )

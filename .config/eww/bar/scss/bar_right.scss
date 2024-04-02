@@ -38,8 +38,11 @@
   }
 }
 
-.bluetooth {
+.bluetooth-connected {
   @include generate-styles(mix(rgb(0, 130, 252), $foreground, 69%));
+}
+.bluetooth-disconnected {
+  @include generate-styles(mix(rgb(139, 139, 139), $foreground, 69%));
 }
 .brightness {
   @include generate-styles(mix(rgb(200, 200, 100), $foreground, 69%));

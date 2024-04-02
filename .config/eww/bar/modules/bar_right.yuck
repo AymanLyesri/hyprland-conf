@@ -37,7 +37,7 @@
 
 (defwidget Toggles []
   (box ; Quick Toggles
-    :space-evenly false :spacing 14
+    :space-evenly false :spacing 10
     (bluetooth)
     (brightness)
     (audio)
@@ -169,22 +169,22 @@
   (box
     :space-evenly false
     :orientation "h"
-    :class "bluetooth"
+    :class {bluetooth_state=="" ? "bluetooth-disconnected" : "bluetooth-connected"}
     :spacing 0
     (eventbox
-      :onhover "${EWW_CMD} update bluetooth_state=true"
-      :onhoverlost "${EWW_CMD} update bluetooth_state=false"
+      :onhover "${EWW_CMD} update bluetooth_hover=true"
+      :onhoverlost "${EWW_CMD} update bluetooth_hover=false"
       :onclick "bar/scripts/bluetooth-gui.sh"
       (box
         :space-evenly false
         :spacing 0
         (revealer
           :transition "slideright"
-          :reveal bluetooth_state
+          :reveal bluetooth_hover
           :duration "1s"
           (label
             :class "bluetooth-dev"
-            :text bluetooth_dev
+            :text bluetooth_state
           )
         )
         (label
@@ -194,12 +194,12 @@
         )
         (revealer
           :transition "slideright"
-          :reveal {!bluetooth_state}
+          :reveal {!bluetooth_hover}
           :duration "1s"
           (label
             :class "icon"
             :style "font-size: 11;"
-            :text {bluetooth_dev!="" ? "C/N" : "D/C"}
+            :text {bluetooth_state=="" ? "DC" : "Conn"}
           )
         )
       )
@@ -222,7 +222,7 @@
         (circular-progress
           :class "cpu"
           :value {EWW_CPU.avg}
-          :thickness 5
+          :thickness 3
           :clockwise true
           :start-at 30
           (label :text "")
@@ -230,46 +230,34 @@
         (circular-progress
           :class "ram-usage"
           :value {EWW_RAM.used_mem_perc}
-          :thickness 5
+          :thickness 3
           :clockwise true
           :start-at 30
           (label :text "")
         )
-        ; (eventbox
-          ;   :onhover "${EWW_CMD} update mem_stats=true"
-          ;   :onhoverlost "${EWW_CMD} update mem_stats=false"
-          ;   (box
-            ;     :space-evenly false
-            ;     :spacing 0
-            
-            ;     (revealer
-              ;       :transition "slideright"
-              ;       :reveal {mem_stats}
-              ;       :space-evenly false
-              ;       (ram)
-            ;     )
-          ;   )
-          
-        ; )
-        (eventbox
-          :onhover "${EWW_CMD} update gpu_stats=true"
-          :onhoverlost "${EWW_CMD} update gpu_stats=false"
-          (box
-            :space-evenly false
-            :spacing 0
-            (circular-progress
-              :class "gpu-usage"
-              :value {gpu[0]}
-              :thickness 5
-              :clockwise true
-              :start-at 30
-              (label :text "")
-            )
-            (revealer
-              :transition "slideright"
-              :reveal {gpu_stats}
+        (revealer
+          :transition "slideright"
+          :reveal {gpu[0]>0}
+          (eventbox
+            :onhover "${EWW_CMD} update gpu_stats=true"
+            :onhoverlost "${EWW_CMD} update gpu_stats=false"
+            (box
               :space-evenly false
-              (gpu)
+              :spacing 0
+              (circular-progress
+                :class "gpu-usage"
+                :value {gpu[0]}
+                :thickness 3
+                :clockwise true
+                :start-at 30
+                (label :text "")
+              )
+              (revealer
+                :transition "slideright"
+                :reveal {gpu_stats}
+                :space-evenly false
+                (gpu)
+              )
             )
           )
           
@@ -285,7 +273,7 @@
       (circular-progress
         :value {EWW_BATTERY.BAT1.capacity}
         :class "battery"
-        :thickness 5
+        :thickness 3
         :clockwise true
         :start-at 30
         (label :text "")
@@ -296,17 +284,6 @@
     
   )
 )
-
-; (defwidget ram []
-  ;   (box
-    ;     :class "ram"
-    ;     :space-evenly false
-    ;     (label
-      ;       :text {EWW_RAM.used_mem/ (1024 * 1024) }
-    ;     )
-  ;   )
-  
-; )
 
 (defwidget gpu []
   (box

@@ -17,7 +17,6 @@
 (defpoll clock_time :interval "10s" "date '+\%H:\%M'")
 (defpoll clock_date :interval "10s" "date '+\%a, \%d \%b'")
 (defpoll vol_percent :interval "5s" "./bar/scripts/volume --get")
-(defpoll brightness_percent :interval "5s" "./bar/scripts/brightness")
 (defvar time_date false)
 
 ; Music
@@ -40,8 +39,8 @@
 (defvar theme_command_arguments '["light","dark"]') ; opposite to switch to when clicked
 
 ; Bluetooth
-(defvar bluetooth_state false)
-(defpoll bluetooth_dev :interval "5s" "bluetoothctl info | grep Name | cut -d ' ' -f 2-")
+(defvar bluetooth_hover false)
+(defpoll bluetooth_state :interval "5s" "bluetoothctl info | grep Name | cut -d ' ' -f 2-")
 
 ; Wifi
 (defvar wifi_state false)
@@ -54,6 +53,7 @@
 
 ; Brightness
 (defvar bright_rev false)
+(defpoll brightness_percent :interval "5s" "./bar/scripts/brightness.sh")
 
 ; global bar
 (defpoll bar_margin :interval "2s" "bash ./bar/scripts/dynamic_margin.sh")
