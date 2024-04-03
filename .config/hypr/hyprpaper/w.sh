@@ -18,6 +18,6 @@ done
 sleep 0.5s
 $hyprdir/wal/pywal "$wallpaper" # set wallpaper theme # wait for wallpaper to load
 
-$hyprdir/scripts/dynamic-border.sh # set border theme
+# $hyprdir/scripts/dynamic-border.sh # set border theme
 
 ##########################################

@@ -30,7 +30,7 @@ for id in "${workspace_ids[@]}"; do
 done
 
 # Reorder the screenshots array to append the first screenshot as the last one
-screenshots=("${screenshots[@]:1}" "${screenshots[0]}")
+# screenshots=("${screenshots[@]:1}" "${screenshots[0]}")
 
 # merge screenshots
 convert -append ${screenshots[@]} $ScreenshotsDir/$(date +'%s_grim_result.jpg')
