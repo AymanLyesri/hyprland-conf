@@ -42,6 +42,13 @@
     (brightness)
     (audio)
     (internet)
+    ; (tray)
+  )
+)
+
+(defwidget tray[]
+  (box
+    (systray :pack-direction "ttb")
   )
 )
 

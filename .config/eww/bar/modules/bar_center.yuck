@@ -3,12 +3,72 @@
     :space-evenly false
     :spacing 5
     :class "bar-center"
-    (music)
+    (eventbox
+      :onhover "${EWW_CMD} open media_player"
+      (music)
+    )
     (center)
     (titlebar)
     (bandwidth)
   )
 )
+
+
+(defwidget music []
+  (revealer
+    :reveal {player_active == 1 || player_active == 2}
+    :transition "slideleft"
+    :duration "700ms"
+    (box
+      :class "music"
+      :hexpand "true"
+      :space-evenly false
+      :style "background-image: linear-gradient(to right, #000000 , rgba(0, 0, 0, 0)), url('${music_art}');"
+      (eventbox
+        :onrightclick "hyprctl dispatch workspace 4"
+        (box
+          :space-evenly false
+          :orientation "h"
+          :spacing 2
+          (circular-progress
+            :value {music_prog}
+            :class "progress"
+            :style "color:${music_title_color}"
+            :thickness 2
+            :clockwise true
+            :start-at 75
+            (label
+              :halign "center"
+              :valign "center"
+              :class "icon"
+              :style "font-size: 15px;"
+            :text {music_icon} )
+          )
+          (label ; Title
+            :class "music-label title"
+            :style "color:${music_title_color}"
+            :limit-width 20
+            :text "${music_title}"
+          )
+          (label ; Author
+            :style "color:${music_title_color}"
+            :class "music-label artist"
+            :limit-width 10
+            :text "󰭓${music_artist}"
+          )
+        )
+      )
+      (revealer
+        :reveal {false}
+        (label
+          :class "music-unlabel"
+          :text "${music_updater}" ; updating music vars while render text
+        )
+      )
+    )
+  )
+)
+
 
 (defwidget center []
   (box
@@ -86,86 +146,6 @@
       :style {active_window[1]}
       :class "titlebar"
       :text {active_window[0]}
-    )
-  )
-)
-
-(defwidget music []
-  (revealer
-    :reveal {player_active == 1 || player_active == 2}
-    :transition "slideleft"
-    :duration "700ms"
-    (box
-      :class "music"
-      :hexpand "true"
-      :space-evenly false
-      :style "background-image: linear-gradient(to right, #000000 , rgba(0, 0, 0, 0)), url('${music_art}');"
-      (eventbox
-        :onclick "./bar/scripts/music.sh --play-pause"
-        :onrightclick "hyprctl dispatch workspace 4"
-        (box
-          :space-evenly false
-          :orientation "h"
-          :spacing 2
-          (circular-progress
-            :value {music_prog}
-            :class "progress"
-            :style "color:${music_title_color}"
-            :thickness 2
-            :clockwise true
-            :start-at 75
-            (label
-              :halign "center"
-              :valign "center"
-              :class "icon"
-              :style "font-size: 15px;"
-            :text {music_icon} )
-          )
-          (label ; Title
-            :class "music-label title"
-            :style "color:${music_title_color}"
-            :limit-width 20
-            :text "${music_title}"
-          )
-          (label ; Author
-            :style "color:${music_title_color}"
-            :class "music-label artist"
-            :limit-width 10
-            :text "󰭓${music_artist}"
-          )
-        )
-      )
-      (box
-        :space-evenly false
-        :class "music-controls"
-        (button
-          :class "previous"
-          :style "color:${music_title_color};"
-          :onclick "$./bar/scripts/music.sh --previous"
-          (label
-            :class "icon"
-            :style "font-size: 14px;"
-            :text ""
-          )
-        )
-        (button
-          :class "next"
-          :style "color:${music_title_color}"
-          :onclick "./bar/scripts/music.sh --next"
-          (label
-            :class "icon"
-            :style "font-size: 14px;"
-            :text ""
-          )
-        )
-      )
-      (revealer
-        :reveal {false}
-        (label
-          :class "music-unlabel"
-          :text "${music_updater}" ; updating music vars while render text
-        )
-      )
     )
   )
 )
