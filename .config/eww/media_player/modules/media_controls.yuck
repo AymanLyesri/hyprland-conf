@@ -1,0 +1,22 @@
+(defwidget media_controls[]
+  
+  (centerbox
+    :class "music-controls"
+    
+    (custom_button :script "./bar/scripts/music.sh --next" :symbol "")
+    (custom_button :script "./bar/scripts/music.sh --play-pause" :symbol "")
+    (custom_button :script "./bar/scripts/music.sh --next" :symbol "")
+  )
+)
+
+(defwidget custom_button[script symbol]
+  (button
+    :style "color:${music_title_color}"
+    :onclick script
+    (label
+      :class "icon"
+      :style "font-size: 14px;"
+      :text symbol
+    )
+  )
+)
