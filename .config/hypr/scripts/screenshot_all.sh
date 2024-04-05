@@ -14,7 +14,7 @@ while IFS= read -r line; do
     if [[ $id =~ ^[0-9]+$ ]]; then
         workspace_ids+=("$id")
     fi
-done < <(hyprctl workspaces | sort -n)
+done < <(hyprctl workspaces | grep '^workspace ID' | sort -n)
 
 hyprctl dispatch workspace 11
 
@@ -29,8 +29,8 @@ for id in "${workspace_ids[@]}"; do
     $HOME/.config/hypr/scripts/screenshot.sh --now "$file" && screenshots+=("$file")
 done
 
-# Reorder the screenshots array to append the first screenshot as the last one
-# screenshots=("${screenshots[@]:1}" "${screenshots[0]}")
+# Reorder the screenshots array to append the first screenshot (0) as the last one (10)
+screenshots=("${screenshots[@]:1}" "${screenshots[0]}")
 
 # merge screenshots
 convert -append ${screenshots[@]} $ScreenshotsDir/$(date +'%s_grim_result.jpg')
