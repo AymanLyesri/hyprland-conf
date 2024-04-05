@@ -1,6 +1,6 @@
 .media-player {
   @extend .module;
-  padding-top: 400px;
+  padding-top: 200px;
   border-radius: 10px;
   background-repeat: no-repeat;
   background-position: center;
@@ -34,6 +34,6 @@
     min-width: 5px;
     margin: -5px;
     border-radius: 99px;
-    background-color: rgb(99, 255, 107);
+    background-color: rgb(192, 192, 192);
   }
 }

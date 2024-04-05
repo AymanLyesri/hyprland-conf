@@ -7,6 +7,7 @@
       :max 100
       :min 0
       :value {music_prog}
+      :style "color:${music_title_color}"
       :onchange "bar/scripts/music.sh --set-pos {}"
     )
   )
