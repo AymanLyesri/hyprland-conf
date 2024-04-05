@@ -23,6 +23,7 @@
     :hexpand false
     :vexpand false
     :style "background-image: linear-gradient( rgba(0, 0, 0, 0), #000000), url('${music_art}');"
+    (media_info)
     (media_controls)
     (media_progress)
   )

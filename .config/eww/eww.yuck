@@ -12,12 +12,13 @@
 ; Dashboard
 (include "./bar/windows/bar.yuck")
 
-
+;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; Variables
 (include "./media_player/variables.yuck")
 
 ; Bar modules
+(include "./media_player/modules/media_info.yuck")
 (include "./media_player/modules/media_controls.yuck")
 (include "./media_player/modules/media_progress.yuck")
 

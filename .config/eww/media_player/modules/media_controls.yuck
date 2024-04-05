@@ -1,8 +1,7 @@
 (defwidget media_controls[]
   
   (centerbox
-    :class "music-controls"
-    
+    :class "media-controls"
     (custom_button :script "./bar/scripts/music.sh --next" :symbol "")
     (custom_button :script "./bar/scripts/music.sh --play-pause" :symbol "")
     (custom_button :script "./bar/scripts/music.sh --next" :symbol "")
