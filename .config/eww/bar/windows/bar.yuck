@@ -1,7 +1,7 @@
 (defwindow bar
   :monitor 0
   :geometry (geometry
-    :width "90%"
+    :width "85%"
   :anchor "top center")
   :stacking "fg"
   :exclusive true
@@ -10,6 +10,7 @@
 
 (defwidget bar_layout []
   (centerbox
+    :space-evenly false
     :class "bar"
     :orientation "h"
     :style "margin-top:${bar_margin*20+5}px;padding-right:${bar_margin*100}px;padding-left:${bar_margin*100}px;"

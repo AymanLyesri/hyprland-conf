@@ -1,0 +1,40 @@
+(defwindow notification_bar
+  :monitor 0
+  :geometry (geometry
+    ; :x      "0"
+    ; :y      "10px"
+    :width "2px"
+    :height "100%"
+  :anchor "center right")
+  :stacking "fg"
+  :exclusive true
+  (notification_bar_layout)
+)
+
+(defwidget notification_bar_layout[]
+  (eventbox
+    :onhover "${EWW_CMD} update notification_bar=true"
+    :onhoverlost "${EWW_CMD} update notification_bar=false"
+    (revealer
+      :transition "slideleft"
+      :reveal notification_bar
+      :duration "200ms"
+      (box
+        :class "notification-bar"
+        :space-evenly false
+        :orientation "v"
+        (label :class "header" :text "Notifications")
+        (for notification in notification_history
+          (box
+            ; :style { notification_bar ? "margin-top:10px" : "margin-top:20px" }
+            :class "notification ${ notification_bar ? 'focused' : 'unfocused' }"
+            :orientation "v"
+            (label :limit-width 20 :text {notification[0]})
+            (label :limit-width 20 :text {notification[1]})
+            (button :onclick "firefox --search '${notification[0]} ${notification[1]}'" "Search")
+          )
+        )
+      )
+    )
+  )
+)

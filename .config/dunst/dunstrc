@@ -227,14 +227,14 @@ max_icon_size = 128
 sticky_history = yes
 
 # Maximum amount of notifications kept in history
-history_length = 20
+history_length = 100
 
 ### Misc/Advanced ###
 
 # dmenu path.
-dmenu = /usr/bin/dmenu -p dunst:
+dmenu = /usr/bin/dmenu - p dunst:
 
-# Browser for opening urls in context menu.
+    # Browser for opening urls in context menu.
 browser = /usr/bin/xdg-open
 
 # Always run rule-defined scripts, even if the notification is suppressed
@@ -244,7 +244,10 @@ always_run_script = true
 title = Dunst
 
 # Define the class of the windows spawned by dunst
+
+
 class = Dunst
+
 
 # Define the corner radius of the notification window
 # in pixel size. If the radius is 0, you have no rounded
@@ -269,7 +272,7 @@ ignore_dbusclose = false
 # Set this to true to use X11 output on Wayland.
 force_xwayland = false
 
-### Legacy
+# Legacy
 
 # Use the Xinerama extension instead of RandR for multi-monitor support.
 # This setting is provided for compatibility with older nVidia drivers that
@@ -281,7 +284,7 @@ force_xwayland = false
 # layout changes.
 force_xinerama = false
 
-### mouse
+# mouse
 
 # Defines list of actions for each mouse event
 # Possible values are:
@@ -317,14 +320,14 @@ background = "#222222"
 foreground = "#888888"
 timeout = 5
 # Icon for notifications with low urgency, uncomment to enable
-#default_icon = /path/to/icon
+# default_icon = /path/to/icon
 
 [urgency_normal]
 background = "#00000033"
 foreground = "#ffffff"
 timeout = 5
 # Icon for notifications with normal urgency, uncomment to enable
-#default_icon = /path/to/icon
+# default_icon = /path/to/icon
 
 [urgency_critical]
 background = "#900000"
@@ -332,7 +335,7 @@ foreground = "#ffffff"
 frame_color = "#747faa"
 timeout = 5
 # Icon for notifications with critical urgency, uncomment to enable
-#default_icon = /path/to/icon
+# default_icon = /path/to/icon
 
 # Every section that isn't one of the above is interpreted as a rules to
 # override settings for certain messages.
@@ -387,13 +390,13 @@ timeout = 5
 
 # Disable the transient hint so that idle_threshold cannot be bypassed from the
 # client
-#[transient_disable]
+# [transient_disable]
 #    match_transient = yes
 #    set_transient = no
 #
 # Make the handling of transient notifications more strict by making them not
 # be placed in history.
-#[transient_history_ignore]
+# [transient_history_ignore]
 #    match_transient = yes
 #    history_ignore = yes
 
@@ -403,59 +406,57 @@ timeout = 5
 #        If the notification is already drawn, it won't get undrawn.
 # pushback: same as delay, but when switching into fullscreen, the notification will get
 #           withdrawn from screen again and will get delayed like a new notification
-#[fullscreen_delay_everything]
+# [fullscreen_delay_everything]
 #    fullscreen = delay
-#[fullscreen_show_critical]
+# [fullscreen_show_critical]
 #    msg_urgency = critical
 #    fullscreen = show
 
-#[espeak]
+# [espeak]
 #    summary = "*"
 #    script = dunst_espeak.sh
 
-#[script-test]
+# [script-test]
 #    summary = "*script*"
 #    script = dunst_test.sh
 
-#[ignore]
+# [ignore]
 #    # This notification will not be displayed
 #    summary = "foobar"
 #    skip_display = true
 
-#[history-ignore]
+# [history-ignore]
 #    # This notification will not be saved in history
 #    summary = "foobar"
 #    history_ignore = yes
 
-#[skip-display]
+# [skip-display]
 #    # This notification will not be displayed, but will be included in the history
 #    summary = "foobar"
 #    skip_display = yes
 
-#[signed_on]
+# [signed_on]
 #    appname = Pidgin
 #    summary = "*signed on*"
 #    urgency = low
 #
-#[signed_off]
+# [signed_off]
 #    appname = Pidgin
 #    summary = *signed off*
 #    urgency = low
 #
-#[says]
+# [says]
 #    appname = Pidgin
 #    summary = *says*
 #    urgency = critical
 #
-#[twitter]
+# [twitter]
 #    appname = Pidgin
 #    summary = *twitter.com*
 #    urgency = normal
 #
-#[stack-volumes]
+# [stack-volumes]
 #    appname = "some_volume_notifiers"
 #    set_stack_tag = "volume"
 #
 # vim: ft=cfg
-
-
