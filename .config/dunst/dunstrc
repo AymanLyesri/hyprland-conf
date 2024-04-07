@@ -460,3 +460,7 @@ timeout = 5
 #    set_stack_tag = "volume"
 #
 # vim: ft=cfg
+
+[play_sound]
+summary = "*"
+script = /home/ayman/.config/dunst/alert.sh

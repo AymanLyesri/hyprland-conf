@@ -52,6 +52,7 @@ wofi
 xdg-desktop-portal-hyprland
 xdg-utils
 zsh
+zsh-auto-notify 
 zsh-autosuggestions
 zsh-history-substring-search
 zsh-syntax-highlighting
