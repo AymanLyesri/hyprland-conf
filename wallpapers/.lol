@@ -17,6 +17,6 @@
 
 
 
-sort:score -rating:explicit highres -1boy {feet ~ barefoot ~ socks} width:>=1900 height:<=1300
+sort:score -rating:explicit -1boy {feet ~ barefoot ~ socks} width:>=1900 height:<=1300
 
-sort:score -rating:explicit highres -1boy width:>=1900 height:<=1300
+sort:score -rating:explicit -1boy width:>=1900 height:<=1300
