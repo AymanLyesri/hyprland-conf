@@ -1,7 +1,7 @@
 (defwindow notification_bar
   :monitor 0
   :geometry (geometry
-    ; :x      "0"
+    :x      "-1px"
     ; :y      "10px"
     :width "2px"
     :height "100%"
