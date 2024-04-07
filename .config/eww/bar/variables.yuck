@@ -67,3 +67,6 @@
 
 ; Memory stats
 (defvar mem_stats false)
+
+; ; Notification Bar
+; (defvar notification_bar false)

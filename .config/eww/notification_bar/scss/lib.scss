@@ -1,0 +1,41 @@
+.notification-bar {
+  @extend .module;
+  background-color: unset;
+  background-image: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.3),
+    rgba(0, 0, 0, 0.9)
+  );
+  margin: 0;
+  // padding: 0;
+
+  .header {
+    @extend .module;
+  }
+}
+
+.notification {
+  @extend .secondary-module;
+  margin-top: 10px;
+  border: 1px rgb(153, 170, 181, 69%) solid;
+  border-radius: 10px;
+  transition: all 1s;
+
+  &.focused {
+    // background-color: rgba(35, 39, 42, 0.3);
+  }
+
+  &.unfocused {
+    background-color: rgb(0, 0, 0);
+    color: white;
+    border-color: white;
+  }
+
+  button {
+    min-width: 0px;
+    transition: all 0.5s;
+    &:hover {
+      background-color: #575757;
+    }
+  }
+}

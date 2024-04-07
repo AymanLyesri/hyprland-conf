@@ -1,0 +1,5 @@
+; Secondary bar visibility
+(defvar notification_bar false)
+
+; Notification History
+(defpoll notification_history :interval "2s" "dunstctl history | jq -r '[.data[][] | [.body.data, .summary.data, .appname.data]]'")

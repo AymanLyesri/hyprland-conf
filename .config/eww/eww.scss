@@ -4,7 +4,10 @@
 @import "bar/scss/bar_center.scss";
 @import "bar/scss/bar_right.scss";
 @import "bar/scss/bar.scss";
+
 @import "media_player/scss/lib.scss";
+
+@import "notification_bar/scss/lib.scss";
 
 * {
   all: unset;
