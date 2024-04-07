@@ -21,6 +21,7 @@ source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring
 source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 source /usr/share/zsh/plugins/zsh-directory-history/zsh-directory-history.zsh
 source /usr/share/zsh/plugins/zsh-sudo/sudo.plugin.zsh
+source /usr/share/zsh/plugins/zsh-auto-notify/auto-notify.plugin.zsh 
 
 #History
 HISTSIZE=10000                # Maximum events for internal history
