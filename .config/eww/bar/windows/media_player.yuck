@@ -1,0 +1,19 @@
+(defwindow media_player
+  ;   :stacking "fg"
+  
+  :geometry (geometry
+    :anchor "top left"
+  )
+  :windowtype "dock"
+  :monitor 0
+  :exclusive false
+  :x      "10%"
+  :y      "100px"
+  (media_player_layout)
+)
+
+(defwidget media_player_layout[]
+  (box
+    (label :text "hhhhhhhhhhh")
+  )
+)
