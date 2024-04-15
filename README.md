@@ -10,20 +10,22 @@ So be sure to gimme ur feedback ♡ (anything u could think of)
 
 - More productivity
 - More responsiveness
-- More wallpapers
+- More [Wallpapers](https://github.com/AymanLyesri/hyprland-conf/tree/master/wallpapers)
 - More animations
 - More colors
 
 # Features
 
 - dynamic wallpapers based on workspaces: `custom scripts` & [hyprpaper](https://github.com/hyprwm/hyprpaper)
-- screenshot all active workspaces into one image: `custom scripts`
+- screenshot all active workspaces into one image: `custom script`
 - dynamic color theme: `custom scripts` & [pyWal](https://github.com/dylanaraps/pywal)
-- dynamic eww
+- dynamic eww widgets
+  - main bar
+  - notification panel `right of the screen`
+  - media player: `custom scripts`
   - color themes: [pyWal](https://github.com/dylanaraps/pywal)
   - dark/light modes: `custom scripts`
   - bandwidth speed: `custom scripts`
-  - media player: `custom scripts`
   - etc
 - dynamic window border: `custom scripts` & [pyWal](https://github.com/dylanaraps/pywal)
 - dynamic configuration based on machine type (laptop/desktop)
@@ -31,8 +33,8 @@ So be sure to gimme ur feedback ♡ (anything u could think of)
   - sensitivity: `custom scripts`
   - gaps: `custom scripts`
   - border size: `custom scripts`
-- dynamic and customizable shaders: `saturation & retro`
-- high quality wallpapers that Quentin Tarantino would love :) mainly from [danboruu](https://danbooru.donmai.us) and sometimes [yandere](https://yande.re).
+- customizable shaders: `saturation & retro`
+- high quality wallpapers that Quentin Tarantino would love :) mainly from [danboruu](https://danbooru.donmai.us) and sometimes [yandere](https://yande.re) & [gelboruu](https://gelbooru.com).
 
 # Current Workflow
 
@@ -45,10 +47,11 @@ So be sure to gimme ur feedback ♡ (anything u could think of)
 
 - W`id`: workspace with corresponded id.
 - `---`: anything goes here.
+- `name`: `name` will open automatically in the appropriate workspace
 
 # To Do
 
--
+- add tutorial for each part of the dot-files `WIP`
 - list essential packages for easy download `WIP`
 - list all key-binds with ez readability `WIP`
 - improve more! polish more! `INDEFINITELY`
@@ -57,11 +60,15 @@ So be sure to gimme ur feedback ♡ (anything u could think of)
 
 # Package list and how it works
 
-it was generated using `pacman -Qqen > .config/hypr/pacman/pkglist.txt`
+**To generate**
 
-I removed some redundant packages.
+```bash
+cd $HOME
+pacman -Qqen > .config/hypr/pacman/pkglist.txt
+# I removed some redundant packages.
+```
 
-_*To install*_
+**To install**
 
 > [!warning]  
 > Certain packages need to be installed through a Pacman wrapper E.g. [yay](https://github.com/Jguer/yay)
@@ -69,7 +76,7 @@ _*To install*_
 > [!warning]
 > Certain packages could be missing or added unnecessarily
 
-```
+```bash
 cd $HOME
 pacman -S - < .config/hypr/pacman/pkglist.txt
 ```
@@ -77,8 +84,12 @@ pacman -S - < .config/hypr/pacman/pkglist.txt
 # Tips
 
 - when installing the config for the first time its recommended that u reboot the machine.
-- to change wallpaper configuration just go to the desired workspace and change it, it will save automatically.
-- Some config files needs to be linked to there appropriate locations using `ln`, be sure to read its [documentation](https://man7.org/linux/man-pages/man1/ln.1.html).
+
+```bash
+reboot # This will reboot the system without a warning
+```
+
+- to change wallpaper configuration just go to the desired workspace and change it using appropriate `keybind`, it will save automatically.
 
 # Lil things to know about
 
