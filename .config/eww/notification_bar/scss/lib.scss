@@ -1,11 +1,11 @@
 .notification-bar {
   @extend .module;
-  background-color: unset;
-  background-image: linear-gradient(
-    to right,
-    rgba(0, 0, 0, 0.3),
-    rgba(0, 0, 0, 0.9)
-  );
+  // background-color: unset;
+  // background-image: linear-gradient(
+  //   to right,
+  //   rgba(0, 0, 0, 0.3),
+  //   rgba(0, 0, 0, 0.9)
+  // );
   margin: 0;
   // padding: 0;
 
@@ -17,7 +17,7 @@
 .notification {
   @extend .secondary-module;
   margin-top: 10px;
-  border: 1px rgb(153, 170, 181, 80%) solid;
+  border: 1px rgba(80, 80, 80, 0.9) solid;
   border-radius: 10px;
   transition: all 1s;
 
