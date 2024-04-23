@@ -1,9 +1,7 @@
 #!/bin/bash
 
-CONFIG="$HOME/.config/hypr/rofi/config"
-
 if [[ ! $(pidof rofi) ]]; then
-	rofi -show combi -modes combi -combi-modes "window,drun,run" --conf ${CONFIG}
+	rofi -show combi -modes combi -combi-modes "window,drun,run"
 else
 	killall rofi
 fi
