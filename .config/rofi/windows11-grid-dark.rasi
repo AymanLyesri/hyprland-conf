@@ -1,16 +1,3 @@
-configuration{
-    modi: "run,drun,window";
-    show-icons: true;
-    terminal: "kitty";
-    drun-display-format: "{name}";
-    disable-history: false;
-    hide-scrollbar: true;
-    display-drun: "";
-    display-run: "";
-    display-window: "";
-    display-Network: "󰤨";
-}
-
 * {
   font: "Roboto 10";
 
@@ -36,10 +23,10 @@ element-icon, element-text, scrollbar {
 }
 
 window {
-  location : north;
+  location : south;
   width    : 600px;
   height   : 600px;
-  y-offset : 40px;
+  y-offset : -4px;
 
   background-color : @bg1;
   border-radius    : 8px;
@@ -82,14 +69,15 @@ textbox {
 }
 
 listview {
-  columns       : 2;
+  columns       : 6;
   spacing       : 8px;
   fixed-height  : true;
   fixed-columns : true;
 }
 
 element {
-  spacing       : 1em;
+  orientation   : vertical;
+  spacing       : 4px;
   padding       : 8px;
   border-radius : 2px;
 }
@@ -111,9 +99,10 @@ element selected urgent {
 }
 
 element-icon {
-  size: 1.5em;
+  size: 2em;
 }
 
 element-text {
-  text-color: inherit;
+  text-color       : inherit;
+  horizontal-align : 0.5;
 }

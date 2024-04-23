@@ -1,26 +1,13 @@
-configuration{
-    modi: "run,drun,window";
-    show-icons: true;
-    terminal: "kitty";
-    drun-display-format: "{name}";
-    disable-history: false;
-    hide-scrollbar: true;
-    display-drun: "";
-    display-run: "";
-    display-window: "";
-    display-Network: "󰤨";
-}
-
 * {
   font: "Roboto 10";
 
-  bg0    : #1f1f1f80;
-  bg1    : #202020bf;
-  bg2    : #2c2c2c;
-  bg3    : #393939bf;
-  fg0    : #ffffff;
-  fg1    : #cecece;
-  accent : #60cdff;
+  bg0    : #ffffff80;
+  bg1    : #f9f9f9bf;
+  bg2    : #f7f7f7;
+  bg3    : #fefefebf;
+  fg0    : #1a1a1a;
+  fg1    : #5f5f5f;
+  accent : #005fb8;
   urgent : @accent;
 
   background-color : transparent;
@@ -36,10 +23,10 @@ element-icon, element-text, scrollbar {
 }
 
 window {
-  location : north;
+  location : south;
   width    : 600px;
   height   : 600px;
-  y-offset : 40px;
+  y-offset : -4px;
 
   background-color : @bg1;
   border-radius    : 8px;
