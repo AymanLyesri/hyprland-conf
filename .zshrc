@@ -84,6 +84,9 @@ eval $(thefuck --alias)
 # navi
 eval "$(navi widget zsh)"
 
+# Waifu Chat Bot and Assistant
+alias waifu='cd $HOME/python_chat_bot && source activate.sh && python main.py'
+
 
 
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
