@@ -8,7 +8,7 @@ while true; do
     battery_percentage=${battery_percentage%\%}
 
     # Check if battery level is less than or equal to 25%
-    if [ "$battery_percentage" -le 25 ]; then
+    if [ $battery_percentage -le 25 ] && [ $battery_percentage -ne 0 ]; then
         # Send alert notification every 1 second until charging
         while true; do
             # Send alert notification
