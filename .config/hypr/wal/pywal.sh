@@ -1,4 +1,5 @@
 #!/bin/bash
+killall wal # kill pywal.sh
 
 random=$1
 
