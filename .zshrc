@@ -50,7 +50,7 @@ bindkey '^[[B' history-substring-search-down
 # Aliases for ls
 alias ls='lsd'
 # Aliases for cat
-alias cat='bat'
+#alias cat='bat'
 # Aliase functions
 function code() {
   /bin/code $1 && exit
@@ -85,8 +85,7 @@ eval $(thefuck --alias)
 eval "$(navi widget zsh)"
 
 # Waifu Chat Bot and Assistant
-alias waifu='cd $HOME/python_chat_bot && source activate.sh && python main.py'
-
+alias waifu='source $HOME/linux-chat-bot/main.sh "$(pwd)"'
 
 
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
