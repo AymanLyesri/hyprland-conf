@@ -20,8 +20,8 @@ while true; do
     tx_new=$(get_bytes "TX")
 
     # Calculate speed
-    rx_speed=$((($rx_new - $rx_old) / 1024)) # KB per second
-    tx_speed=$((($tx_new - $tx_old) / 1024)) # KB per second
+    rx_speed=$((($rx_new - $rx_old) / 1024 / 3)) # KB per second
+    tx_speed=$((($tx_new - $tx_old) / 1024))     # KB per second
 
     # Display results
     echo "[$tx_speed,$rx_speed]"
