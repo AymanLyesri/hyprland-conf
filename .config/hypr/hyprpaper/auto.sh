@@ -11,6 +11,7 @@ change_wallpaper() {
         killall "w.sh" # kill previous wallpaper script
 
         wallpaper=$(grep "^w-$workspace_id=" $config | cut -d= -f2) # get wallpaper from config
+        echo "Wallpaper: $wallpaper"
 
         if [ "$wallpaper" ]; then
             $hyprDir/hyprpaper/w.sh "$wallpaper" & # set wallpaper
@@ -21,6 +22,6 @@ change_wallpaper() {
 
 change_wallpaper
 
-socat -u UNIX-CONNECT:/tmp/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock - | while read -r line; do
+socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do
     change_wallpaper
 done
