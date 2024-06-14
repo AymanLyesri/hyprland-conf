@@ -1,7 +1,8 @@
 #!/bin/bash
 
 if [[ ! $(pidof rofi) ]]; then
-	rofi -show combi -modes combi -combi-modes "window,drun,run"
+	# rofi -show combi -modes combi -combi-modes "window,drun,run"
+	/home/ayman/.config/rofi/launchers/type-7/launcher.sh
 else
 	killall rofi
 fi
