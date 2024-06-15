@@ -19,7 +19,7 @@ get_active() {
     echo "]"
 }
 get_active
-socat -u UNIX-CONNECT:/tmp/hypr/"$HYPRLAND_INSTANCE_SIGNATURE"/.socket2.sock - | while read -r event; do
+socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do
     if [ "$old_workspaces" != "$(get_active)" ]; then
         old_workspaces=$(get_active)
         get_active

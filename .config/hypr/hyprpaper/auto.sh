@@ -11,7 +11,6 @@ change_wallpaper() {
         killall "w.sh" # kill previous wallpaper script
 
         wallpaper=$(grep "^w-$workspace_id=" $config | cut -d= -f2) # get wallpaper from config
-        echo "Wallpaper: $wallpaper"
 
         if [ "$wallpaper" ]; then
             $hyprDir/hyprpaper/w.sh "$wallpaper" & # set wallpaper
