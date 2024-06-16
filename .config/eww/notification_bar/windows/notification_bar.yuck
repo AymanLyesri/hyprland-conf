@@ -1,9 +1,9 @@
 (defwindow notification_bar
   :monitor 0
   :geometry (geometry
-    :x      "-1px"
+    :x      "0px"
     ; :y      "10px"
-    :width "2px"
+    :width "1px"
     :height "100%"
   :anchor "center right")
   :stacking "fg"

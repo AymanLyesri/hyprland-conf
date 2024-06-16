@@ -3,7 +3,7 @@
   :geometry (geometry
     :width "85%"
   :anchor "top center")
-  :stacking "fg"
+  :stacking "overlay"
   :exclusive true
   (bar_layout)
 )
