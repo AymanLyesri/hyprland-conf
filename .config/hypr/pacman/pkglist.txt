@@ -51,6 +51,7 @@ webcord
 wofi
 xdg-desktop-portal-hyprland
 xdg-utils
+xava
 zsh
 zsh-auto-notify 
 zsh-autosuggestions
