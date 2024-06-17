@@ -1,0 +1,16 @@
+.notifications {
+  min-height: 0px;
+  background-color: transparent;
+}
+
+.notif {
+  @extend .module;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  border-width: 2;
+}
+
+.notif image {
+  padding-right: 10px;
+}

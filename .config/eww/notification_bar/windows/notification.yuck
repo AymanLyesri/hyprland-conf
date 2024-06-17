@@ -1,0 +1,24 @@
+
+
+(defwindow notifications
+  :monitor 0
+  :geometry (geometry :x "20px"
+    :y "20px"
+  :anchor "top right")
+  :stacking "overlay"
+  
+  (box :orientation 'v'
+    (for notification in notifs
+      (button :class 'notif'
+        (box :orientation 'h' :space-evenly false
+          (image :image-width 80 :image-height 80 :path {notification[0]})
+          (box :orientation 'v'
+            (label :width 100 :wrap true :text {notification[1]})
+            (label :width 100 :wrap true :text {notification[2]})
+          )
+        )
+      )
+    )
+  )
+  
+)
