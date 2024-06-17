@@ -13,8 +13,9 @@ change_wallpaper() {
         wallpaper=$(grep "^w-$workspace_id=" $config | cut -d= -f2) # get wallpaper from config
 
         if [ "$wallpaper" ]; then
-            $hyprDir/hyprpaper/w.sh "$wallpaper" & # set wallpaper
-            previous_workspace_id=$workspace_id    # update previous workspace id
+            echo $wallpaper >$hyprDir/hyprpaper/config/current.conf # save current wallpaper
+            $hyprDir/hyprpaper/w.sh "$wallpaper" &                  # set wallpaper
+            previous_workspace_id=$workspace_id                     # update previous workspace id
         fi
     fi
 }

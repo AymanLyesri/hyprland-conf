@@ -3,3 +3,5 @@
 media/*
 scss/theme.scss
 config/*
+
+json/history.json
