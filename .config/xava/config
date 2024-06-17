@@ -272,7 +272,7 @@ alignment = 'bottom'
 #  - Under Windows 'default' uses your system accent color
 #  - And on any other 'default' is just black and cyan (the default colorscheme)
 background = black
-foreground = white
+foreground = black
 
 # This adjusts the opacity of the bars (must have transparency for it to work)
 foreground_opacity = 0.69
