@@ -7,14 +7,14 @@
   :anchor "top right")
   :stacking "overlay"
   
-  (box :orientation 'v'
+  (box :orientation 'v' :style "padding-right:${bar_margin*100+100}px"
     (for notification in notifs
       (button :class 'notif'
         (box :orientation 'h' :space-evenly false
           (image :image-width 80 :image-height 80 :path {notification[0]})
           (box :orientation 'v'
-            (label :width 100 :wrap true :text {notification[1]})
-            (label :width 100 :wrap true :text {notification[2]})
+            (label :width 300 :wrap true :text {notification[1]})
+            (label :width 300 :wrap true :text {notification[2]})
           )
         )
       )
