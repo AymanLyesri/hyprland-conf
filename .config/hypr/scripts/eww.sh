@@ -1,4 +1,4 @@
-eww open notification_bar && eww open bar
+eww open bar && eww open notification_bar && eww open notifications
 
 sleep 1
 

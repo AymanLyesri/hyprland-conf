@@ -2,14 +2,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; Variables
-(include "./notification_bar/variables.yuck")
-
-; Dashboard
-(include "./notification_bar/windows/notification_bar.yuck")
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (include "./bar/lib.yuck")
 
 ; Variables
@@ -35,5 +27,17 @@
 
 ; Dashboard
 (include "./media_player/windows/media_player.yuck")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Variables
+(include "./notification_bar/variables.yuck")
+
+; Dashboard
+(include "./notification_bar/windows/notification_bar.yuck")
+
+; Notifications
+(include "./notification_bar/windows/notification.yuck")
+
 
 
