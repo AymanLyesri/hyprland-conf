@@ -1,4 +1,6 @@
-(cat ~/.cache/wal/sequences &)
+# (cat ~/.cache/wal/sequences &)
+(nohup $HOME/.config/hypr/theme/scripts/wal-theme.sh > /dev/null 2>&1 &) # set wallpaper theme
+export QT_QPA_PLATFORMTHEME=qt5ct
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
