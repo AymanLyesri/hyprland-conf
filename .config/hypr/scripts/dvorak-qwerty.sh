@@ -17,12 +17,12 @@ function replace_comma_with_dvorak {
 # Check if 'kb_variant=dvorak,' exists, if yes, replace with 'kb_variant=,'
 if grep -q 'kb_variant=dvorak,' "$file"; then
     replace_dvorak_with_comma "$file"
-    dunstify -t 2000 -r 2593 "Keyboard => QWERTY"
+    notify-send "Keyboard => QWERTY"
 
 # Check if 'kb_variant=,' exists, if yes, replace with 'kb_variant=dvorak,'
 elif grep -q 'kb_variant=,dvorak' "$file"; then
     replace_comma_with_dvorak "$file"
-    dunstify -t 2000 -r 2593 "Keyboard => DVORAK"
+    notify-send "Keyboard => DVORAK"
 
 else
     echo "No 'kb_variant=dvorak,' or 'kb_variant=,' found in $file"

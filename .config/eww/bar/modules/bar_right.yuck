@@ -27,10 +27,10 @@
   (box
     :space-evenly false
     :class "theme"
-    (button :onclick "bar/scripts/light_dark.sh ${theme_command_arguments[theme_id]}"
+    (button :onclick "$HOME/.config/hypr/theme/scripts/switch-global-theme.sh &"
       :class "icon"
       :style "font-size: 14"
-      {THEME_ICON[theme_id]}
+      THEME_ICON
     )
   )
 )
