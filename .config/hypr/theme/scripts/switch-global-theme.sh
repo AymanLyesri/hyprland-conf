@@ -4,6 +4,8 @@ hyprDir=$HOME/.config/hypr
 
 $hyprDir/theme/scripts/system-theme.sh switch
 
+$hyprDir/theme/scripts/wal-theme.sh &
+
 $hyprDir/theme/scripts/rofi-theme.sh &
 
 $hyprDir/theme/scripts/xava-theme.sh &

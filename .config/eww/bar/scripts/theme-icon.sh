@@ -2,7 +2,7 @@
 
 hyprDir=$HOME/.config/hypr
 
-icons=("✩" "☀")
+icons=("" "")
 
 current_theme=$(bash $hyprDir/theme/scripts/system-theme.sh get)
 

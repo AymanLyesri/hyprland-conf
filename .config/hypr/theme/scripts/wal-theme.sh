@@ -1,9 +1,34 @@
 #!/bin/bash
+
+hyprDir=$HOME/.config/hypr
+current_wallpaper=$(cat $hyprDir/hyprpaper/config/current.conf)
+
+icons=("" "")
+current_theme=$(bash $hyprDir/theme/scripts/system-theme.sh get)
+
+# check if $1 is provided
+if [ $1 ]; then
+    current_wallpaper=$1
+fi
+
 killall wal # kill pywal.sh
 
-random=$1
+if [ "$current_theme" = "dark" ]; then
 
-wal -e -n -i "$random" # set wallpaper theme
+    wal -e -n -i $current_wallpaper
+
+elif [ "$current_theme" = "light" ]; then
+
+    wal -e -n -i $current_wallpaper -l
+
+fi
+
+#!/bin/bash
+# killall wal # kill pywal.sh
+
+# random=$1
+
+# wal -e -n -i "$random" # set wallpaper theme
 
 #   -h, --help            show this help message and exit
 #   -a "alpha"            Set terminal background transparency. *Only
