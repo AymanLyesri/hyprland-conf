@@ -22,9 +22,9 @@ configuration {
 /*****----- Global Properties -----*****/
 * {
     font:                        "JetBrains Mono Nerd Font 10";
-    background:                  #101010;
-    background-alt:              #252525;
-    foreground:                  #FFFFFF;
+    background: #f2f2f2;
+    background-alt: #e0e0e0;
+    foreground: #000000;
     selected:                    #505050;
     active:                      #909090;
     urgent:                      #707070;

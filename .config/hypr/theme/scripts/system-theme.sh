@@ -4,6 +4,10 @@ hyprDir=$HOME/.config/hypr
 
 theme_conf=$hyprDir/theme/theme.conf
 
+if [ ! -f $theme_conf ]; then
+    echo "theme=dark" >$theme_conf
+fi
+
 #check for $1
 
 if [ -z $1 ]; then
