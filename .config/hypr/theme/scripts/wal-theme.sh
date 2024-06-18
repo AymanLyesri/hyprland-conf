@@ -15,11 +15,11 @@ killall wal # kill pywal.sh
 
 if [ "$current_theme" = "dark" ]; then
 
-    wal -e -n -i $current_wallpaper
+    wal -e -n -i $current_wallpaper &
 
 elif [ "$current_theme" = "light" ]; then
 
-    wal -e -n -i $current_wallpaper -l
+    wal -e -n -i $current_wallpaper -l &
 
 fi
 
