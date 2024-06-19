@@ -31,6 +31,8 @@
 !.config/gtk-3.0/
 # include xava config
 !.config/xava/
+# include ags
+!.config/ags/
 
 # wallpapers
 !wallpapers/
