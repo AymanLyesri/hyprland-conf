@@ -1,0 +1,46 @@
+@import "/home/ayman/.cache/wal/colors.scss";
+@import "lib.scss";
+@import "bar/bar_left.scss";
+@import "bar/bar_middle.scss";
+
+// Use the variables in the styles
+window.bar {
+  // margin-left: 1000px;
+  transition: all 1s;
+}
+
+// button {
+//   min-width: 0px;
+//   padding-top: 0px;
+//   padding-bottom: 0px;
+//   background: black;
+// }
+
+// button:active {
+//   background-color: $secondary;
+// }
+
+// button:hover {
+//   border-bottom: 3px solid $foreground;
+// }
+
+// label {
+//   font-weight: bold;
+// }
+
+// .workspaces button.focused {
+//   border-bottom: 3px solid $secondary;
+// }
+
+// .client-title {
+//   color: $secondary;
+// }
+
+// .notification {
+//   color: yellow;
+// }
+
+// levelbar block,
+// highlight {
+//   min-height: 10px;
+// }

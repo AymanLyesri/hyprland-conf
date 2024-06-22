@@ -1,0 +1,29 @@
+.media {
+  @extend .module;
+  //   padding: 0px 5px;
+  //   border-radius: 100px;
+
+  * {
+    all: unset;
+  }
+
+  .media-trigger {
+    all: unset;
+  }
+}
+
+.clock {
+  @extend .module;
+}
+
+.bandwidth {
+  //   padding: 0px;
+  // min-width: 100px;
+  @extend .module;
+
+  label {
+    font-size: 10px;
+    // padding: 0px;
+    border-radius: 10px;
+  }
+}
