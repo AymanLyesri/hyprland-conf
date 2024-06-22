@@ -44,6 +44,7 @@ Utils.monitorFile(
   () => refreshCss()
 )
 
+App.addIcons(`${App.configDir}/assets`)
 App.config({
   style: css,
   windows: [

@@ -1,7 +1,7 @@
 // Define the theme variables
 $background: $color0; // Example background color
-$foreground: $color2; // Example foreground color
-$secondary: $color3; // Example selected background color
+$foreground: $color3; // Example foreground color
+$secondary: $color4; // Example selected background color
 
 .module {
   background: rgba($color0, 80%);
@@ -11,6 +11,19 @@ $secondary: $color3; // Example selected background color
   font-weight: bolder;
   padding: 0px 10px;
   transition: all 0.5s;
+  &.button {
+    @extend .module;
+    transition: all 0.3s;
+    border-radius: 10px;
+    ////////////////////////////
+    padding-right: 5px;
+    padding-left: 5px;
+    ////////////////////////////
+    &:hover {
+      color: $background;
+      background-color: mix(mix($color5, $color6, 50%), $foreground, 69%);
+    }
+  }
 }
 
 button {

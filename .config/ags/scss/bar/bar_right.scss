@@ -1,0 +1,40 @@
+.theme {
+  @extend .module;
+}
+
+.volume {
+  @extend .module;
+  min-width: 10px;
+
+  .slider {
+    margin: 0px;
+    padding: 0px;
+    min-width: 10px;
+    * {
+      border-radius: 50%;
+    }
+    trough {
+      min-height: 2px;
+      min-width: 69px;
+      padding-left: 5px;
+    }
+
+    highlight {
+      min-width: 3px;
+      background-color: $color4;
+    }
+
+    slider {
+      min-width: 10px;
+      margin: -10px;
+      background-color: $color1;
+      color: $color7;
+    }
+  }
+}
+
+.system-tray {
+  button {
+    @extend .module;
+  }
+}

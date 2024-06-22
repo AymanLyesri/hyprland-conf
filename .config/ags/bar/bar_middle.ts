@@ -34,6 +34,21 @@ function Media()
         }),
     })
 
+    /** @param {import('types/service/mpris').MprisPlayer} player */
+    const Player = player => Widget.Button({
+        onClicked: () => player.playPause(),
+        child: Widget.Label().hook(player, label =>
+        {
+            const { track_artists, track_title } = player;
+            label.label = `${track_artists.join(', ')} - ${track_title}`;
+        }),
+    })
+
+    const players = Widget.Box({
+        children: mpris.bind('players').as(p => p.map(Player))
+    })
+
+
     const media = Widget.Button({
         on_primary_click: () => mpris.getPlayer("")?.playPause(),
         on_scroll_up: () => mpris.getPlayer("")?.next(),
@@ -45,10 +60,10 @@ function Media()
         revealChild: false,
         transitionDuration: 1000,
         transition: 'slide_right',
-        child: media,
+        child: players,
         // setup: self => self.poll(2000, () =>
         // {
-        //   self.reveal_child = !self.reveal_child;
+        //     self.reveal_child = !self.reveal_child;
         // }),
     });
 
@@ -64,6 +79,9 @@ function Media()
         children: [trigger, revealer]
     })
 }
+
+// const mpris = await Service.import('mpris')
+
 
 
 

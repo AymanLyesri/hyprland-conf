@@ -8,6 +8,31 @@ const systemtray = await Service.import("systemtray");
 // so to make a reuseable widget, make it a function
 // then you can simply instantiate one by calling it
 
+function Theme()
+{
+
+    function icon()
+    {
+        const theme: any = Utils.exec(['bash', '-c', '/home/ayman/.config/hypr/theme/scripts/system-theme.sh get'])
+
+        return theme as string == "dark" ? "" : ""
+    }
+
+    return Widget.Button({
+        on_clicked: async (self) =>
+        {
+            Utils.subprocess(['bash', '-c', '$HOME/.config/hypr/theme/scripts/switch-global-theme.sh'])
+            await new Promise(resolve => setTimeout(resolve, 500)); // Sleep for 2 seconds
+            self.child.label = icon()
+        },
+        child: Widget.Label({
+            label: icon(),
+        }),
+        class_name: "theme button",
+    })
+
+}
+
 function Volume()
 {
     const icons = {
@@ -30,29 +55,24 @@ function Volume()
     }
 
     const icon = Widget.Icon({
-        icon: Utils.watch(getIcon(), audio.speaker, getIcon),
-    });
+        icon: Utils.watch(getIcon(), audio.speaker, getIcon)
 
-    const slider = Widget.Revealer({
-        revealChild: false,
-        transitionDuration: 1000,
-        transition: 'slide_down',
-        child:
-            Widget.Slider({
-                hexpand: true,
-                draw_value: false,
-                on_change: ({ value }) => (audio.speaker.volume = value),
-                setup: (self) =>
-                    self.hook(audio.speaker, () =>
-                    {
-                        self.value = audio.speaker.volume || 0;
-                    }),
+    })
+
+    const slider = Widget.Slider({
+        hexpand: true,
+        draw_value: false,
+        class_name: "slider",
+        on_change: ({ value }) => (audio.speaker.volume = value),
+        setup: (self) =>
+            self.hook(audio.speaker, () =>
+            {
+                self.value = audio.speaker.volume || 0;
             }),
-    });
+    })
 
     return Widget.Box({
         class_name: "volume",
-        css: "min-width: 180px",
         children: [icon, slider],
     });
 }
@@ -87,12 +107,14 @@ function SysTray()
                 on_primary_click: (_, event) => item.activate(event),
                 on_secondary_click: (_, event) => item.openMenu(event),
                 tooltip_markup: item.bind("tooltip_markup"),
+                class_name: "button"
             })
         )
     );
 
     return Widget.Box({
         children: items,
+        class_name: "system-tray",
     });
 }
 
@@ -102,6 +124,10 @@ export function Right()
     return Widget.Box({
         hpack: "end",
         spacing: 8,
-        children: [Volume(), BatteryLabel(), SysTray()],
+        children: [
+            Theme(),
+            Volume(),
+            // BatteryLabel(),
+            SysTray()],
     });
 }
