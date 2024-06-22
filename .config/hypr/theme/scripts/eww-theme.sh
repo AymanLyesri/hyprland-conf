@@ -25,4 +25,4 @@ elif [ "$current_theme" = "light" ]; then
 fi
 
 # Refresh layout blur for notification bar
-bash $HOME/.config/eww/custom-layer.sh
+# bash $HOME/.config/eww/custom-layer.sh
