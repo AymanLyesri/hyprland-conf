@@ -12,36 +12,33 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
     &.focused {
       padding: 0px 20px;
       background-image: linear-gradient(to bottom right, $gradient-Colors);
-      animation: workspace-focus 0.3s ease;
+      // animation: workspace-focus 0.3s ease;
       text-shadow: black 1px 1px 5px;
     }
-    // &.unfocused {
-    //   background-image: linear-gradient(to bottom right, $gradient-Colors);
-    //   animation: workspace-unfocus 0.3s ease;
-    // }
-    // &.same-focused {
-    //   padding-right: 20px;
-    //   padding-left: 20px;
-    //   text-shadow: black 1px 1px 5px;
-    //   background-image: linear-gradient(to bottom right, $gradient-Colors);
-    // }
+    &.same-focused {
+      padding-right: 20px;
+      padding-left: 20px;
+      text-shadow: black 1px 1px 5px;
+      transition: all 0s;
+      background-image: linear-gradient(to bottom right, $gradient-Colors);
+    }
     ////////////////////////////
     &:hover {
       color: $background;
       background-color: mix(mix($color5, $color6, 50%), $foreground, 69%);
     }
     ////////////////////////////
-    $special: mix(mix($color5, $color6, 50%), $foreground, 69%);
-    &.special {
-      color: $background;
-      background-image: linear-gradient(
-        to bottom right,
-        rgba($special, 0.5),
-        rgba($special, 1),
-        rgba($special, 0.5)
-      );
-      font-weight: bolder;
-    }
+    // $special: mix(mix($color5, $color6, 50%), $foreground, 69%);
+    // &.special {
+    //   color: $background;
+    //   background-image: linear-gradient(
+    //     to bottom right,
+    //     rgba($special, 0.5),
+    //     rgba($special, 1),
+    //     rgba($special, 0.5)
+    //   );
+    //   font-weight: bolder;
+    // }
   }
 }
 

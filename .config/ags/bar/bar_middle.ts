@@ -89,7 +89,6 @@ function Media()
         inverted: false,
         startAt: 0.75,
         child: Widget.Label({
-            class_name: "icon",
             label: playerToIcon(mpris.players[0].name),
         }),
         setup: self =>
@@ -205,6 +204,6 @@ export function Center()
 {
     return Widget.Box({
         spacing: 5,
-        children: [Media(), Clock(), Bandwidth(), Notification()],
+        children: [Media(), Clock(), Bandwidth()],
     });
 }

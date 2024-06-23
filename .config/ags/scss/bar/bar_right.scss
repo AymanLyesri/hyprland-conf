@@ -1,5 +1,8 @@
 .theme {
   @extend .module;
+  label {
+    font-size: larger;
+  }
 }
 
 .volume {
