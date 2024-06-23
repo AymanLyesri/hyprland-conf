@@ -1,7 +1,7 @@
 .media {
   @extend .module;
-  //   padding: 0px 5px;
-  //   border-radius: 100px;
+  background-size: cover;
+  background-position: center;
 
   * {
     all: unset;
@@ -10,10 +10,26 @@
   .media-trigger {
     all: unset;
   }
+
+  .progress {
+    min-width: 15px; /* its size is min(min-height, min-width) */
+    min-height: 1px;
+    font-size: 1px; /* to set its thickness set font-size on it */
+    margin: 0px; /* you can set margin on it */
+    padding: 0px;
+    // background-color: #131313; /* set its bg color */
+    // color: aqua; /* set its fg color */
+    .icon {
+      font-size: 10px;
+    }
+  }
 }
 
 .clock {
   @extend .module;
+  * {
+    all: unset;
+  }
 }
 
 .bandwidth {
