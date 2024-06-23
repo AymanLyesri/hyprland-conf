@@ -1,6 +1,7 @@
 import { Left } from "bar/bar_left";
 import { Center } from "bar/bar_middle";
 import { Right } from "bar/bar_right";
+import { NotificationPopups } from "notifications";
 import { bar_margins } from "variables";
 
 function Bar(monitor = 0)
@@ -44,16 +45,17 @@ Utils.monitorFile(
   () => refreshCss()
 )
 
+refreshCss()
+
 App.addIcons(`${App.configDir}/assets`)
 App.config({
   style: css,
   windows: [
     Bar(),
-
+    NotificationPopups(),
     // you can call it, for each monitor
     // Bar(0),
     // Bar(1)
   ],
 });
 
-export { };

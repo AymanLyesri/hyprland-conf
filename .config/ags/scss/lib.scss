@@ -3,6 +3,10 @@ $background: $color0; // Example background color
 $foreground: $color3; // Example foreground color
 $secondary: $color4; // Example selected background color
 
+* {
+  font-family: "JetBrainsMono NFM";
+}
+
 .module {
   background: rgba($color0, 80%);
   color: rgba($color7, 80%);
