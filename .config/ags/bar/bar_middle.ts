@@ -45,41 +45,9 @@ function Media()
         }).join('');
     }
 
-    function playerToBackground(name)
-    {
-        let color = "";
-        switch (name) {
-            case "spotify":
-                color = "#1ED760";
-                break;
-            case "VLC media player":
-                color = "#FF5722";
-                break;
-            case "YouTube":
-                color = "#FF0000";
-                break;
-            case "Brave Browser":
-                color = "#FF5722";
-                break;
-            case "Audacious":
-                color = "#FF5722";
-                break;
-            case "Rhythmbox":
-                color = "#FF5722";
-                break;
-            case "Chromium":
-                color = "#FF5722";
-                break;
-            case "Firefox":
-                color = "#FF5722";
-                break;
-            default:
-                color = "#FF5722";
-                break;
-        }
-        return color;
-    }
-    const label: string = Widget.Label({
+
+
+    const label = Widget.Label({
         label: Utils.watch(`${mpris.players[0].track_artists.join(", ")} - ${mpris.players[0].track_title}`, mpris, "changed", () =>
         {
             if (mpris.players[0]) {
@@ -93,52 +61,82 @@ function Media()
 
 
     const media = Widget.Button({
-        on_primary_click: () => mpris.getPlayer("")?.playPause(),
-        on_scroll_up: () => mpris.getPlayer("")?.next(),
-        on_scroll_down: () => mpris.getPlayer("")?.previous(),
+        on_primary_click: () => mpris.players[0].playPause(),
+        on_scroll_up: () => mpris.players[0].next(),
+        on_scroll_down: () => mpris.players[0].previous(),
         child: label,
     })
 
-    let player = mpris.getPlayer("")
+    function playerToIcon(name)
+    {
+        let icons = {
+            spotify: "󰓇",
+            VLC: "󰓈",
+            YouTube: "󰓉",
+            Brave: "󰓊",
+            Audacious: "󰓋",
+            Rhythmbox: "󰓌",
+            Chromium: "󰓍",
+            Firefox: "󰈹",
+        }
+
+        return icons[name]
+    }
 
     const progress = Widget.CircularProgress({
-        rounded: false,
+        class_name: "progress",
+        rounded: true,
         inverted: false,
         startAt: 0.75,
-        // value: mpris.getPlayer("").bind('').as(p => p / 100),
-        child: Widget.Icon({
-            icon: "media-playback-start-symbolic",
+        child: Widget.Label({
+            class_name: "icon",
+            label: playerToIcon(mpris.players[0].name),
         }),
         setup: self =>
         {
             function update()
             {
-                const value = player?.position / player?.length
+                const value = mpris.players[0].position / mpris.players[0].length
                 self.value = value > 0 ? value : 0
             }
-            self.hook(player, update)
+            self.hook(mpris.players[0], update)
             // self.hook(player, update, "position")
             self.poll(1000, update)
         },
     })
 
-    // const revealer = Widget.Revealer({
-    //     revealChild: false,
-    //     transitionDuration: 1000,
-    //     transition: 'slide_right',
-    //     child: media,
-    //     // setup: self => self.poll(2000, () =>
-    //     // {
-    //     //     self.reveal_child = !self.reveal_child;
-    //     // }),
-    // });
+
+
+    function playerToColor(name)
+    {
+        let colors = {
+            spotify: "#1ED760",
+            VLC: "#FF5722",
+            YouTube: "#FF0000",
+            Brave: "#FF5722",
+            Audacious: "#FF5722",
+            Rhythmbox: "#FF5722",
+            Chromium: "#FF5722",
+            Firefox: "#FF5722",
+        }
+
+        return colors[name]
+    }
+
+    function getPlayerInfo()
+    {
+        return `
+            color: ${playerToColor(mpris.players[0].name)};
+            background-image:  linear-gradient(to right, #000000 , rgba(0, 0, 0, 0.5)), url('${mpris.players[0].track_cover_url}');
+            `
+    }
 
     return Widget.Box({
         class_name: "media",
-        children: [media],
-        css: `background: ${playerToBackground(mpris.getPlayer("")?.name)};
-        color: ${getComplementaryColor(playerToBackground(mpris.getPlayer("")?.name))}
-        `,
+        spacing: 5,
+        children: [progress, media],
+        css: Utils.watch(getPlayerInfo(), mpris, "changed", () => getPlayerInfo())
+
     })
 }
 
@@ -149,14 +147,35 @@ function Media()
 
 function Clock()
 {
-    const date = Variable("", {
-        poll: [1000, 'date "+%H:%M:%S %b %e."'],
+    const date_less = Variable("", {
+        poll: [1000, 'date "+%H:%M"'],
+    });
+    const date_more = Variable("", {
+        poll: [1000, 'date "+:%S %b %e."'],
     });
 
-    return Widget.Label({
-        class_name: "clock",
-        label: date.bind(),
+    const revealer = Widget.Revealer({
+        revealChild: false,
+        transitionDuration: 1000,
+        transition: 'slide_right',
+        child: Widget.Label({
+            label: date_more.bind(),
+        }),
     });
+
+    const trigger = Widget.Button({
+        on_hover: () => revealer.reveal_child = true,
+        on_hover_lost: () => revealer.reveal_child = false,
+        child: Widget.Label({
+            label: date_less.bind(),
+        })
+    });
+
+    return Widget.Box({
+        class_name: "clock",
+        children: [trigger, revealer],
+    })
+
 }
 
 
