@@ -3,7 +3,6 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
 .workspaces {
   button {
     @extend .module;
-    transition: all 0.3s;
     border-radius: 10px;
     ////////////////////////////
     padding-right: 5px;
@@ -19,7 +18,8 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
       padding-right: 20px;
       padding-left: 20px;
       text-shadow: black 1px 1px 5px;
-      transition: all 0s;
+      //no transition for margin
+      transition: all 0.5s, padding 0s;
       background-image: linear-gradient(to bottom right, $gradient-Colors);
     }
     ////////////////////////////

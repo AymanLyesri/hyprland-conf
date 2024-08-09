@@ -5,11 +5,14 @@ $secondary: $color4; // Example selected background color
 
 * {
   font-family: "JetBrainsMono NFM";
+  transition: all 0.5s;
 }
 
 .module {
   background: rgba($color0, 80%);
   color: rgba($color7, 80%);
+  border: none;
+  box-shadow: none;
   border-radius: 10px;
   font-size: 11;
   font-weight: bolder;

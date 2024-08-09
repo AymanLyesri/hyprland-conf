@@ -1,6 +1,8 @@
 bat
 bc
 btop
+bun-bin
+sassc
 bluez
 bluez-utils 
 blueman
