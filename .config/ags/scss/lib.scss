@@ -9,6 +9,8 @@ $secondary: $color4; // Example selected background color
 }
 
 .module {
+  // margin: 10px 0px;
+  min-height: 5px;
   background: rgba($color0, 80%);
   color: rgba($color7, 80%);
   border: none;

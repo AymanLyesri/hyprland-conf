@@ -5,33 +5,56 @@
   }
 }
 
-.volume {
+.brightness,
+.volume,
+.battery {
+  label {
+    font-size: 1.5em;
+    margin: 0px 10px;
+    // padding: 0px;
+  }
+  button {
+    all: unset;
+    @extend .module;
+  }
   @extend .module;
-  min-width: 10px;
 
   .slider {
-    margin: 0px;
+    margin: 0px 5px;
     padding: 0px;
-    min-width: 10px;
+    min-width: 100px;
     * {
-      border-radius: 50%;
+      // border-radius: 50%;
     }
+
     trough {
       min-height: 2px;
       min-width: 69px;
-      padding-left: 5px;
+      // padding-left: 5px;
+      border-radius: 10px;
     }
 
     highlight {
-      min-width: 3px;
+      min-width: 10px;
       background-color: $color4;
     }
 
     slider {
+      min-height: 1px;
       min-width: 10px;
-      margin: -10px;
+      margin: -6px;
       background-color: $color1;
       color: $color7;
+    }
+
+    &:hover {
+      highlight {
+        background-color: mix($color4, #000000, 50%);
+      }
+      slider {
+        background-color: mix($color2, #000000, 50%);
+        color: mix($color2, #000000, 50%);
+      }
     }
   }
 }

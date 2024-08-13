@@ -1,7 +1,19 @@
+import brightness from "brightness";
 
 const audio = await Service.import("audio");
 const battery = await Service.import("battery");
 const systemtray = await Service.import("systemtray");
+
+function Slider(trigger, revealer)
+{
+    return Widget.Slider({
+        class_name: "slider",
+        hexpand: true,
+        draw_value: false,
+        on_change: self => brightness.screen_value = self.value,
+        value: brightness.bind('screen-value'),
+    });
+}
 
 
 // widgets can be only assigned as a child in one container
@@ -32,6 +44,62 @@ function Theme()
     })
 
 }
+
+
+function Brightness()
+{
+
+
+    const slider = Widget.Slider({
+        class_name: "slider",
+        hexpand: true,
+        draw_value: false,
+        on_change: self => brightness.screen_value = self.value,
+        value: brightness.bind('screen-value'),
+    });
+
+    const label = Widget.Label({
+        class_name: "label",
+
+        label: "󰃞",
+        // brightness.bind('screen-value').as(v => `${Math.round(v * 100)}%`),
+    });
+
+    const revealer = Widget.Revealer({
+        revealChild: false,
+        transitionDuration: 1000,
+        transition: 'slide_right',
+        child: slider,
+    });
+
+    const eventBox = Widget.EventBox({
+        class_name: "brightness button",
+        vexpand: false,
+        hexpand: false,
+        on_hover: async (self) =>
+        {
+            revealer.reveal_child = true
+            await new Promise(resolve => setTimeout(resolve, 5000));
+            revealer.reveal_child = false
+        },
+        on_hover_lost: async () =>
+        {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            revealer.reveal_child = false
+        },
+        child: Widget.Box({
+            children: [label, revealer],
+        }),
+    });
+
+    eventBox.connect('leave-notify-event', (_, event) =>
+    {
+        // this works :)
+    });
+
+    return eventBox;
+}
+
 
 function Volume()
 {
@@ -71,9 +139,26 @@ function Volume()
             }),
     })
 
+    const revealer = Widget.Revealer({
+        revealChild: false,
+        transitionDuration: 1000,
+        transition: 'slide_right',
+        child: slider,
+    });
+
+    const trigger = Widget.Button({
+        on_hover: () => revealer.reveal_child = true,
+        on_hover_lost: async () =>
+        {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            revealer.reveal_child = false
+        },
+        child: icon,
+    });
+
     return Widget.Box({
         class_name: "volume",
-        children: [icon, slider],
+        children: [trigger, revealer],
     });
 }
 
@@ -84,17 +169,31 @@ function BatteryLabel()
         .bind("percent")
         .as((p) => `battery-level-${Math.floor(p / 10) * 10}-symbolic`);
 
+    const revealer = Widget.Revealer({
+        revealChild: false,
+        transitionDuration: 1000,
+        transition: 'slide_right',
+        child: Widget.LevelBar({
+            widthRequest: 69,
+            vpack: "center",
+            value,
+        }),
+    });
+
+    const trigger = Widget.Button({
+        on_hover: () => revealer.reveal_child = true,
+        on_hover_lost: async () =>
+        {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            revealer.reveal_child = false
+        },
+        child: Widget.Icon({ icon }),
+    });
+
     return Widget.Box({
-        class_name: "battery",
         visible: battery.bind("available"),
-        children: [
-            Widget.Icon({ icon }),
-            Widget.LevelBar({
-                widthRequest: 140,
-                vpack: "center",
-                value,
-            }),
-        ],
+        class_name: "battery",
+        children: [trigger, revealer],
     });
 }
 
@@ -126,8 +225,9 @@ export function Right()
         spacing: 8,
         children: [
             Theme(),
+            Brightness(),
             Volume(),
-            // BatteryLabel(),
+            BatteryLabel(),
             SysTray()],
     });
 }

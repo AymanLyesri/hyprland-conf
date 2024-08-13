@@ -164,7 +164,11 @@ function Clock()
 
     const trigger = Widget.Button({
         on_hover: () => revealer.reveal_child = true,
-        on_hover_lost: () => revealer.reveal_child = false,
+        on_hover_lost: async () =>
+        {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            revealer.reveal_child = false
+        },
         child: Widget.Label({
             label: date_less.bind(),
         })
