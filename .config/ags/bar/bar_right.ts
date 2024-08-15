@@ -4,15 +4,34 @@ const audio = await Service.import("audio");
 const battery = await Service.import("battery");
 const systemtray = await Service.import("systemtray");
 
-function Slider(trigger, revealer)
+function custom_revealer(trigger, slider)
 {
-    return Widget.Slider({
-        class_name: "slider",
-        hexpand: true,
-        draw_value: false,
-        on_change: self => brightness.screen_value = self.value,
-        value: brightness.bind('screen-value'),
+    const revealer = Widget.Revealer({
+        revealChild: false,
+        transitionDuration: 1000,
+        transition: 'slide_right',
+        child: slider,
     });
+
+    const eventBox = Widget.EventBox({
+        class_name: "button custom-slider",
+        on_hover: async (self) =>
+        {
+            revealer.reveal_child = true
+            await new Promise(resolve => setTimeout(resolve, 5000));
+            revealer.reveal_child = false
+        },
+        on_hover_lost: async () =>
+        {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            revealer.reveal_child = false
+        },
+        child: Widget.Box({
+            children: [trigger, revealer],
+        }),
+    });
+
+    return eventBox;
 }
 
 
@@ -48,8 +67,6 @@ function Theme()
 
 function Brightness()
 {
-
-
     const slider = Widget.Slider({
         class_name: "slider",
         hexpand: true,
@@ -60,44 +77,11 @@ function Brightness()
 
     const label = Widget.Label({
         class_name: "label",
-
         label: "󰃞",
         // brightness.bind('screen-value').as(v => `${Math.round(v * 100)}%`),
     });
 
-    const revealer = Widget.Revealer({
-        revealChild: false,
-        transitionDuration: 1000,
-        transition: 'slide_right',
-        child: slider,
-    });
-
-    const eventBox = Widget.EventBox({
-        class_name: "brightness button",
-        vexpand: false,
-        hexpand: false,
-        on_hover: async (self) =>
-        {
-            revealer.reveal_child = true
-            await new Promise(resolve => setTimeout(resolve, 5000));
-            revealer.reveal_child = false
-        },
-        on_hover_lost: async () =>
-        {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            revealer.reveal_child = false
-        },
-        child: Widget.Box({
-            children: [label, revealer],
-        }),
-    });
-
-    eventBox.connect('leave-notify-event', (_, event) =>
-    {
-        // this works :)
-    });
-
-    return eventBox;
+    return custom_revealer(label, slider);
 }
 
 
@@ -123,6 +107,7 @@ function Volume()
     }
 
     const icon = Widget.Icon({
+        class_name: "icon",
         icon: Utils.watch(getIcon(), audio.speaker, getIcon)
 
     })
@@ -139,62 +124,29 @@ function Volume()
             }),
     })
 
-    const revealer = Widget.Revealer({
-        revealChild: false,
-        transitionDuration: 1000,
-        transition: 'slide_right',
-        child: slider,
-    });
-
-    const trigger = Widget.Button({
-        on_hover: () => revealer.reveal_child = true,
-        on_hover_lost: async () =>
-        {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            revealer.reveal_child = false
-        },
-        child: icon,
-    });
-
-    return Widget.Box({
-        class_name: "volume",
-        children: [trigger, revealer],
-    });
+    return custom_revealer(icon, slider);
 }
 
 function BatteryLabel()
 {
     const value = battery.bind("percent").as((p) => (p > 0 ? p / 100 : 0));
-    const icon = battery
+    const battery_icon = battery
         .bind("percent")
         .as((p) => `battery-level-${Math.floor(p / 10) * 10}-symbolic`);
 
-    const revealer = Widget.Revealer({
-        revealChild: false,
-        transitionDuration: 1000,
-        transition: 'slide_right',
-        child: Widget.LevelBar({
-            widthRequest: 69,
-            vpack: "center",
-            value,
-        }),
+    const icon = Widget.Icon({
+        icon: battery_icon,
+        class_name: "icon",
     });
 
-    const trigger = Widget.Button({
-        on_hover: () => revealer.reveal_child = true,
-        on_hover_lost: async () =>
-        {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            revealer.reveal_child = false
-        },
-        child: Widget.Icon({ icon }),
+    const slider = Widget.LevelBar({
+        class_name: "slider",
+        widthRequest: 69,
+        vpack: "center",
+        value,
     });
 
-    return Widget.Box({
-        visible: battery.bind("available"),
-        class_name: "battery",
-        children: [trigger, revealer],
-    });
+    return custom_revealer(icon, slider);
 }
 
 function SysTray()

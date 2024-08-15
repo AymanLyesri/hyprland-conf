@@ -11,15 +11,16 @@ $secondary: $color4; // Example selected background color
 .module {
   // margin: 10px 0px;
   min-height: 5px;
-  background: rgba($color0, 80%);
+  background: mix(rgba($color0, 80%), rgba($color2, 80%), 80%);
   color: rgba($color7, 80%);
   border: none;
   box-shadow: none;
   border-radius: 10px;
   font-size: 11;
-  font-weight: bolder;
+  font-weight: 600;
   padding: 0px 10px;
   transition: all 0.5s;
+
   &.button {
     @extend .module;
     transition: all 0.3s;
@@ -29,8 +30,10 @@ $secondary: $color4; // Example selected background color
     padding-left: 5px;
     ////////////////////////////
     &:hover {
-      color: $background;
-      background-color: mix(mix($color5, $color6, 50%), $foreground, 69%);
+      * {
+        color: $background;
+      }
+      background-color: mix($color13, $foreground, 69%);
     }
   }
 }
@@ -48,11 +51,11 @@ button {
   transition: all 0.5s;
 }
 
-.icon {
-  margin: 0px 5px;
-  font-size: 12;
-  font-weight: normal;
-}
+// .icon {
+//   margin: 0px 5px;
+//   font-size: 12;
+//   font-weight: normal;
+// }
 
 .sep {
   font-size: 10;

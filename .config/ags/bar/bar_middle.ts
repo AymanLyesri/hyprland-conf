@@ -1,6 +1,39 @@
 const mpris = await Service.import("mpris");
 const notifications = await Service.import("notifications");
 
+
+function custom_revealer(trigger, slider)
+{
+    const revealer = Widget.Revealer({
+        revealChild: false,
+        transitionDuration: 1000,
+        transition: 'slide_right',
+        child: slider,
+    });
+
+    const eventBox = Widget.EventBox({
+        class_name: "button custom-revealer",
+        vexpand: false,
+        hexpand: false,
+        on_hover: async (self) =>
+        {
+            revealer.reveal_child = true
+            await new Promise(resolve => setTimeout(resolve, 5000));
+            revealer.reveal_child = false
+        },
+        on_hover_lost: async () =>
+        {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            revealer.reveal_child = false
+        },
+        child: Widget.Box({
+            children: [trigger, revealer],
+        }),
+    });
+
+    return eventBox;
+}
+
 // we don't need dunst or any other notification daemon
 // because the Notifications module is a notification daemon itself
 function Notification()
@@ -45,20 +78,24 @@ function Media()
         }).join('');
     }
 
+    function truncateWithEllipsis(str, limit)
+    {
+        return str.length > limit ? str.slice(0, limit - 2) + "..." : str;
+    }
 
+    const { track_artists, track_title } = mpris.players[0];
+    const title = `${truncateWithEllipsis(track_artists.join(", "), 20)} - ${truncateWithEllipsis(track_title, 20)}`;
 
     const label = Widget.Label({
-        label: Utils.watch(`${mpris.players[0].track_artists.join(", ")} - ${mpris.players[0].track_title}`, mpris, "changed", () =>
+        label: Utils.watch(title, mpris, "changed", () =>
         {
             if (mpris.players[0]) {
-                const { track_artists, track_title } = mpris.players[0];
-                return `${track_artists.join(", ")} - ${track_title}`;
+                return title
             } else {
                 return 'Nothing is playing';
             }
         }),
     })
-
 
     const media = Widget.Button({
         on_primary_click: () => mpris.players[0].playPause(),
@@ -139,11 +176,6 @@ function Media()
     })
 }
 
-// const mpris = await Service.import('mpris')
-
-
-
-
 function Clock()
 {
     const date_less = Variable("", {
@@ -153,35 +185,19 @@ function Clock()
         poll: [1000, 'date "+:%S %b %e."'],
     });
 
-    const revealer = Widget.Revealer({
-        revealChild: false,
-        transitionDuration: 1000,
-        transition: 'slide_right',
-        child: Widget.Label({
-            label: date_more.bind(),
-        }),
-    });
-
-    const trigger = Widget.Button({
-        on_hover: () => revealer.reveal_child = true,
-        on_hover_lost: async () =>
-        {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            revealer.reveal_child = false
-        },
-        child: Widget.Label({
-            label: date_less.bind(),
-        })
-    });
-
-    return Widget.Box({
-        class_name: "clock",
-        children: [trigger, revealer],
+    const revealer = Widget.Label({
+        class_name: "label-left label",
+        css: "color: #ffffff",
+        label: date_more.bind()
+    })
+    const trigger = Widget.Label({
+        class_name: "label-right label",
+        label: date_less.bind()
     })
 
+    return custom_revealer(trigger, revealer);
+
 }
-
-
 
 function Bandwidth()
 {
@@ -203,6 +219,21 @@ function Bandwidth()
         children: [icon, label],
     });
 }
+
+const calendar = Widget.Calendar({
+    showDayNames: true,
+    showDetails: true,
+    showHeading: true,
+    showWeekNumbers: true,
+    detail: (self, y, m, d) =>
+    {
+        return `<span color="white">${y}. ${m}. ${d}.</span>`
+    },
+    onDaySelected: ({ date: [y, m, d] }) =>
+    {
+        print(`${y}. ${m}. ${d}.`)
+    },
+})
 
 export function Center()
 {

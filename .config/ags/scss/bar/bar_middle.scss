@@ -25,11 +25,12 @@
   }
 }
 
-.clock {
-  @extend .module;
-  * {
-    all: unset;
+.custom-revealer {
+  > * {
+    padding: 0px 10px;
   }
+
+  @extend .module;
 }
 
 .bandwidth {

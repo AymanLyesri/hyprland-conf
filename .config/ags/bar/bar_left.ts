@@ -32,11 +32,16 @@ function Workspaces()
     });
 }
 
+function truncateWithEllipsis(str, limit)
+{
+    return str.length > limit ? str.slice(0, limit - 2) + ".." : str;
+}
+
 function ClientTitle()
 {
     return Widget.Label({
         class_name: "client-title",
-        label: hyprland.active.client.bind("title"),
+        label: hyprland.active.client.bind("title").as(title => truncateWithEllipsis(title, 25)),
     });
 }
 

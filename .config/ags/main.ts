@@ -4,6 +4,9 @@ import { Right } from "bar/bar_right";
 import { NotificationPopups } from "notifications";
 import { bar_margins } from "variables";
 
+// required packages
+// gvfs is required for images
+
 function Bar(monitor = 0)
 {
   return Widget.Window({

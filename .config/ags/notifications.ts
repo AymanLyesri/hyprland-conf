@@ -108,7 +108,17 @@ export function NotificationPopups(monitor = 0)
 
     function onDismissed(_, /** @type {number} */ id)
     {
-        list.children.find(n => n.attribute.id === id)?.destroy()
+        const notification = list.children.find(n => n.attribute.id === id)
+
+        notification!.child.css = "min-width: 200px; font-size: 0px; background: transparent; color: transparent; opacity: 0;"
+
+        // console.log("dismissed", id);
+
+        setTimeout(() =>
+        {
+            notification?.destroy()
+        }, 500)
+
     }
 
     list.hook(notifications, onNotified, "notified")

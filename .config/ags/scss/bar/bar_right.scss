@@ -5,22 +5,26 @@
   }
 }
 
-.brightness,
-.volume,
-.battery {
+.custom-slider {
   label {
     font-size: 1.5em;
     margin: 0px 10px;
     // padding: 0px;
+  }
+  .icon {
+    all: unset;
+    margin: 0px 10px;
   }
   button {
     all: unset;
     @extend .module;
   }
   @extend .module;
+  padding: 0px 10px;
 
   .slider {
-    margin: 0px 5px;
+    // margin: 0px 5px;
+    margin-right: 10px;
     padding: 0px;
     min-width: 100px;
     * {
@@ -62,5 +66,14 @@
 .system-tray {
   button {
     @extend .module;
+    border-radius: unset;
+  }
+
+  button:first-child {
+    border-radius: 10px 0px 0px 10px;
+  }
+
+  button:last-child {
+    border-radius: 0px 10px 10px 0px;
   }
 }
