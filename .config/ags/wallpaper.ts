@@ -1,3 +1,4 @@
+import { timeout } from "types/utils/timeout"
 
 export function Wallpapers(monitor = 0)
 {
@@ -18,7 +19,11 @@ export function Wallpapers(monitor = 0)
                 on_primary_click: () =>
                 {
                     Utils.exec(`bash -c "$HOME/.config/hypr/hyprpaper/random.sh ${key}"`)
-                    self.children = get_wallpapers(self)
+                    setTimeout(() =>
+                    {
+                        let new_wallpaper = JSON.parse(Utils.exec(App.configDir + '/scripts/get-wallpapers.sh'))[key - 1]
+                        self.children[key - 1].css = `background-image: url('${new_wallpaper}');`
+                    }, 1000)
                 }
             })
         })
