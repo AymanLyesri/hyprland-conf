@@ -205,7 +205,7 @@ function Bandwidth()
         // listen to an array of [up, down] values
         listen: [App.configDir + '/scripts/bandwidth.sh', out =>
         {
-            return " ↑ " + JSON.parse(out)[0] + " ↓ " + JSON.parse(out)[1];
+            return " ↑" + JSON.parse(out)[0] + " ↓" + JSON.parse(out)[1];
         }],
     });
 

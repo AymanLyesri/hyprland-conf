@@ -66,7 +66,6 @@
 .system-tray {
   button {
     @extend .module;
-    border-radius: unset;
   }
 
   button:first-child {
@@ -75,5 +74,9 @@
 
   button:last-child {
     border-radius: 0px 10px 10px 0px;
+  }
+
+  button:only-child {
+    border-radius: 10px;
   }
 }

@@ -18,7 +18,7 @@ function custom_revealer(trigger, slider)
         on_hover: async (self) =>
         {
             revealer.reveal_child = true
-            await new Promise(resolve => setTimeout(resolve, 5000));
+            await new Promise(resolve => setTimeout(resolve, 10000));
             revealer.reveal_child = false
         },
         on_hover_lost: async () =>

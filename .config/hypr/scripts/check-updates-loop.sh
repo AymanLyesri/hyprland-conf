@@ -3,10 +3,10 @@
 # Function to check for updates
 check_updates() {
     # Sync package databases
-    sudo pacman -Sy
+    # pacman -Sy
 
     # Check for updates without actually performing the upgrade
-    updates=$(pacman -Qu)
+    updates=$(yay -Qu)
 
     if [ -z "$updates" ]; then
         message="Your system is up to date."
