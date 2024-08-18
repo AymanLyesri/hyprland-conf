@@ -104,6 +104,10 @@ reboot # This will reboot the system without a warning
 ![image](https://github.com/user-attachments/assets/13c6efe9-255b-4a00-9436-c73547f7528e)
 ![image](https://github.com/user-attachments/assets/2d8b33ce-28fa-44c0-a9d7-5aaa12bc686a)
 
+# Screenshot all workspaces "NEW"
+
+![1724004552_grim_result](https://github.com/user-attachments/assets/3166118e-3023-4434-985b-23ae02b8aed2)
+
 # Screenshot all workspaces "OLD"
 
 ![1710006927_grim_result](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/c84884a7-ce5b-4363-a2fb-8a6ccebc05c5)
