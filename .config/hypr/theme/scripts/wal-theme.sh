@@ -3,7 +3,6 @@
 hyprDir=$HOME/.config/hypr
 current_wallpaper=$(cat $hyprDir/hyprpaper/config/current.conf)
 
-icons=("" "")
 current_theme=$(bash $hyprDir/theme/scripts/system-theme.sh get)
 
 # check if $1 is provided

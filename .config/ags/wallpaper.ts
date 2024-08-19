@@ -1,3 +1,4 @@
+const hyprland = await Service.import("hyprland");
 import { timeout } from "types/utils/timeout"
 
 export function Wallpapers(monitor = 0)
@@ -5,14 +6,17 @@ export function Wallpapers(monitor = 0)
 
     const get_wallpapers: any = (self) =>
     {
+        const activeId = hyprland.active.workspace.bind("id");
+
         var wallpapers: any[] = JSON.parse(Utils.exec(App.configDir + '/scripts/get-wallpapers.sh'))
         return wallpapers.map((wallpaper, key) =>
         {
             key += 1
+
             return Widget.Button({
                 vpack: "center",
                 css: `background-image: url('${wallpaper}');`,
-                class_name: "workspace-wallpaper",
+                class_name: activeId.as((i) => `${i == key ? "workspace-wallpaper focused" : "workspace-wallpaper"}`),
                 label: `${key}`,
 
                 on_primary_click: () =>
@@ -28,10 +32,10 @@ export function Wallpapers(monitor = 0)
         })
     }
 
-
     const switcher = Widget.Box({
         hexpand: true,
         vexpand: true,
+        class_name: "wallpaper-switcher",
         spacing: 10,
         setup: (self) =>
         {
@@ -51,9 +55,10 @@ export function Wallpapers(monitor = 0)
     return Widget.Window({
         monitor,
         name: `wallpapers`,
-        class_name: "wallpaper-switcher",
+        class_name: "",
         anchor: [],
-        layer: "overlay",
+        // exclusivity: "normal",
+        // layer: "top",
         // margins: [0, 0, 100, 0],
         visible: false,
         child: switcher

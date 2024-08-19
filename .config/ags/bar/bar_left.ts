@@ -41,6 +41,8 @@ function ClientTitle()
 {
     return Widget.Label({
         class_name: "client-title",
+        css: hyprland.active.client.bind("title").as(title => title.length > 0 ? "opacity: 1" : "opacity: 0"),
+        // visible: hyprland.active.client.bind("title").as(title => title.length > 0),
         label: hyprland.active.client.bind("title").as(title => truncateWithEllipsis(title, 25)),
     });
 }

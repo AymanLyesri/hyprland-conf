@@ -115,6 +115,7 @@ function Media()
             Rhythmbox: "󰓌",
             Chromium: "󰓍",
             Firefox: "󰈹",
+            firefox: "󰈹",
         }
 
         return icons[name]
@@ -154,6 +155,7 @@ function Media()
             Rhythmbox: "#FF5722",
             Chromium: "#FF5722",
             Firefox: "#FF5722",
+            firefox: "#FF5722",
         }
 
         return colors[name]

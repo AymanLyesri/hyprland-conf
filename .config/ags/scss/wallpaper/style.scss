@@ -1,6 +1,9 @@
 .wallpaper-switcher {
-  min-width: 0px;
-  min-height: 0px;
+  // min-width: 1000px;
+  min-height: 150px;
+  @extend .module;
+  padding: 10px 10px;
+  border-radius: 100px;
 }
 
 .reload-wallpapers.reload-wallpapers {
@@ -9,6 +12,9 @@
   min-height: 69px;
   min-width: 69px;
   border-radius: 50%;
+
+  font-weight: 800;
+  text-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
 }
 
 .workspace-wallpaper {
@@ -28,6 +34,11 @@
 
   font-weight: 800;
   text-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+
+  &.focused {
+    min-height: 150px;
+    min-width: 150px;
+  }
 
   &:hover {
     min-height: 200px;
