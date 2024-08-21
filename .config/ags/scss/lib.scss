@@ -10,8 +10,8 @@ $secondary: $color4; // Example selected background color
 
 .module {
   // min-height: 0px;
-  background: mix(rgba($color0, 80%), rgba($color2, 80%), 80%);
-  color: rgba($color7, 80%);
+  background: mix(rgba($color0, 50%), rgba($color4, 50%), 69%);
+  color: mix($color15, $color1, 90%);
   border: none;
   box-shadow: none;
   border-radius: 10px;

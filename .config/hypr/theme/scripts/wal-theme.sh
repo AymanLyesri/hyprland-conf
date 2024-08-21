@@ -10,7 +10,7 @@ if [ $1 ]; then
     current_wallpaper=$1
 fi
 
-killall wal # kill pywal.sh
+# killall wal # kill pywal.sh
 
 if [ "$current_theme" = "dark" ]; then
 

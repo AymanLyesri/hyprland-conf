@@ -14,7 +14,7 @@ function Workspaces()
             {
                 return Widget.Button<any>({
                     on_clicked: () => hyprland.messageAsync(id == -99 ? `dispatch togglespecialworkspace` : `dispatch workspace ${id}`),
-                    child: id == -99 ? Widget.Icon({ icon: "view-grid-symbolic" }) : Widget.Label(workspaceToIcon[id]),
+                    child: id < 0 ? Widget.Icon({ icon: "view-grid-symbolic" }) : Widget.Label(workspaceToIcon[id]),
                     class_name: activeId.as((i) =>
                     {
                         let class_name: string = `${i != previousId && i == id ? "focused" : i == previousId && i == id ? "same-focused" : ""}`

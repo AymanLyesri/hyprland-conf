@@ -15,8 +15,8 @@ done
 
 ##########################################
 
-sleep 0.5s
-$hyprdir/theme/scripts/wal-theme.sh "$wallpaper" # set wallpaper theme # wait for wallpaper to load
+# sleep 0.5s                                       # wait for wallpaper to load
+$hyprdir/theme/scripts/wal-theme.sh "$wallpaper" # set wallpaper theme
 
 # $hyprdir/scripts/dynamic-border.sh # set border theme
 

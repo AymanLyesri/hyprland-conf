@@ -21,21 +21,18 @@ fi
 
 #############################################
 
-sed -i "s|w-${workspace_id}=.*|w-${workspace_id}=${random}|" $config # set wallpaper in config
+if [ "$workspace_id" = "$current_workspace" ]; then
+    $hyprDir/hyprpaper/w.sh "$random" & # set wallpaper
+fi
 
 #############################################
 
-if [ "$workspace_id" = "$current_workspace" ]; then
-    old_wallpaper=$(grep "w-${workspace_id}" $config | cut -d'=' -f2)
+old_wallpaper=$(grep "w-${workspace_id}" $config | cut -d'=' -f2)
 
-    hyprctl hyprpaper preload "$random" # preload wallpaper
+hyprctl hyprpaper preload "$random" # preload wallpaper
 
-    sleep 1
+hyprctl hyprpaper unload "$old_wallpaper" # unload old wallpaper
 
-    $hyprDir/hyprpaper/w.sh "$random" & # set wallpaper
+#############################################
 
-    sleep 1
-
-    hyprctl hyprpaper unload "$old_wallpaper" # unload old wallpaper
-
-fi
+sed -i "s|w-${workspace_id}=.*|w-${workspace_id}=${random}|" $config # set wallpaper in config

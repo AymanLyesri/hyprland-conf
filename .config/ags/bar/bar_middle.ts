@@ -1,3 +1,4 @@
+const hyprland = await Service.import("hyprland");
 const mpris = await Service.import("mpris");
 const notifications = await Service.import("notifications");
 
@@ -18,8 +19,6 @@ function custom_revealer(trigger, slider)
         on_hover: async (self) =>
         {
             revealer.reveal_child = true
-            await new Promise(resolve => setTimeout(resolve, 5000));
-            revealer.reveal_child = false
         },
         on_hover_lost: async () =>
         {
@@ -84,25 +83,19 @@ function Media()
     }
 
     const { track_artists, track_title } = mpris.players[0];
-    const title = `${truncateWithEllipsis(track_artists.join(", "), 20)} - ${truncateWithEllipsis(track_title, 20)}`;
+    const title = () => `${truncateWithEllipsis(track_artists.join(", "), 20)} - ${truncateWithEllipsis(track_title, 20)}`;
 
     const label = Widget.Label({
-        label: Utils.watch(title, mpris, "changed", () =>
+        label: Utils.watch(title(), mpris, "changed", () =>
         {
             if (mpris.players[0]) {
-                return title
+                return title()
             } else {
                 return 'Nothing is playing';
             }
         }),
     })
 
-    const media = Widget.Button({
-        on_primary_click: () => mpris.players[0].playPause(),
-        on_scroll_up: () => mpris.players[0].next(),
-        on_scroll_down: () => mpris.players[0].previous(),
-        child: label,
-    })
 
     function playerToIcon(name)
     {
@@ -169,13 +162,40 @@ function Media()
             `
     }
 
-    return Widget.Box({
-        class_name: "media",
-        spacing: 5,
-        children: [progress, media],
-        css: Utils.watch(getPlayerInfo(), mpris, "changed", () => getPlayerInfo())
+    return Widget.EventBox({
+        class_name: "media-event",
+        on_primary_click: () => mpris.players[0].playPause(),
+        on_secondary_click: () => hyprland.messageAsync("dispatch workspace 4"),
+        on_scroll_up: () => mpris.players[0].next(),
+        on_scroll_down: () => mpris.players[0].previous(),
+        child: Widget.Box({
+            class_name: "media",
+            spacing: 5,
+            children: [progress, label],
+            css: Utils.watch(getPlayerInfo(), mpris, "changed", () => getPlayerInfo())
 
+        })
     })
+
+    // return Widget.Overlay({
+    //     class_name: "media-overlay",
+    //     pass_through: true,
+    //     child: Widget.Box({
+    //         class_name: "media",
+    //         spacing: 5,
+    //         children: [progress, label],
+    //         css: Utils.watch(getPlayerInfo(), mpris, "changed", () => getPlayerInfo())
+
+    //     }),
+    //     overlays: [Widget.Box({
+    //         class_name: "media",
+    //         spacing: 5,
+    //         children: [progress, label],
+    //         css: "min-height:100px"
+
+    //     })],
+    //     css: Utils.watch(getPlayerInfo(), mpris, "changed", () => getPlayerInfo())
+    // })
 }
 
 function Clock()

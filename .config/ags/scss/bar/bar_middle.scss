@@ -1,3 +1,9 @@
+// .media-event {
+//   &:hover > * {
+//     min-height: 100px;
+//   }
+// }
+
 .media {
   @extend .module;
   background-size: cover;

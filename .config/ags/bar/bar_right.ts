@@ -18,8 +18,6 @@ function custom_revealer(trigger, slider)
         on_hover: async (self) =>
         {
             revealer.reveal_child = true
-            await new Promise(resolve => setTimeout(resolve, 10000));
-            revealer.reveal_child = false
         },
         on_hover_lost: async () =>
         {
@@ -129,7 +127,7 @@ function Volume()
 
 function BatteryLabel()
 {
-    const value = battery.bind("percent").as((p) => (p > 0 ? p / 100 : 0));
+    const value: any = battery.bind("percent").as((p) => (p > 0 ? p / 100 : 0));
     const battery_icon = battery
         .bind("percent")
         .as((p) => `battery-level-${Math.floor(p / 10) * 10}-symbolic`);
@@ -142,11 +140,11 @@ function BatteryLabel()
     const slider = Widget.LevelBar({
         class_name: "slider",
         widthRequest: 69,
-        vpack: "center",
+
         value,
     });
 
-    return custom_revealer(icon, slider);
+    return value == 0 ? custom_revealer(icon, slider) : null;
 }
 
 function SysTray()
@@ -174,12 +172,12 @@ export function Right()
 {
     return Widget.Box({
         hpack: "end",
-        spacing: 8,
+        spacing: 5,
         children: [
             Theme(),
             Brightness(),
             Volume(),
-            BatteryLabel(),
+            BatteryLabel() as any,
             SysTray()],
     });
 }

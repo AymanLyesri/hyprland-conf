@@ -64,8 +64,9 @@
 }
 
 .system-tray {
-  button {
+  button.button {
     @extend .module;
+    border-radius: 0px;
   }
 
   button:first-child {
