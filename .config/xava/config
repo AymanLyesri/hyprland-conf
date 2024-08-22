@@ -13,7 +13,7 @@
 # 0 = off
 # 1 up to screen refresh rate = visualizer runs at refresh rate divided by this
 # number
-; vsync = 0
+; vsync = 1
 
 # The number of bars. 0 sets it to auto (put as many as you can).
 # Bars' width and space between bars in number of pixels on screen.
@@ -25,8 +25,8 @@
 [window]
 
 # Window width and height (in pixels)
-; width = 1920
-height = 200
+width = 1300
+height = 100
 
 # Fullscreen toggle
 fullscreen = false
@@ -38,7 +38,7 @@ fullscreen = false
 transparency = true
 
 # Keeps the window under any other
-keep_below = false
+; keep_below = true
 
 # This option aligns the window with a certain part of the screen
 # Or if 'hold_size' is enabled, it also aligns the viewport using this rule
@@ -200,9 +200,11 @@ alignment = 'bottom'
 # For wasapi 'source', specify 'loopback' to capture audio from the system or
 # anything else to capture from an input device, such as a microphone.
 #
-# For pipewire, the 'source' parameter is ignored and instead the visualizer is
-# supposed to be configured using an external tool, such as 'pavucontrol' (works
-# on PipeWire too, trust me).
+# For pipewire, it will try connecting to record system audio output (might not work)
+# However, if you set the 'source' parameter manually it will try targetting that
+# specific applications audio output.
+# Example: If you use Supersonic, you'd put source = 'supersonic'
+# To find out your applications name use Helvum or `pw-cli list-objects`
 #
 # You can also specify 'list' as the source to portaudio to list all available
 # audio devices
@@ -271,22 +273,23 @@ alignment = 'bottom'
 #  Xrdb
 #  - Under Windows 'default' uses your system accent color
 #  - And on any other 'default' is just black and cyan (the default colorscheme)
-background = black
-foreground = black
+background = default
+foreground = default
 
 # This adjusts the opacity of the bars (must have transparency for it to work)
-foreground_opacity = 0.69
+foreground_opacity = 0.5
 
 # And this does the same but for the background (under the same condition as above)
-background_opacity = 0.69
+background_opacity = 0.0
 
 # Gradient mode, only hex defined colors are supported, background must also be
 # defined in hex or remain commented out.
 # To enable gradients, just change gradient_count to the number of colors you
 # have specified (0 = disabled)
-; gradient_count = 0
-; gradient_color_1 = '#0099ff'
-; gradient_color_2 = '#ff3399'
+gradient_count = 2
+gradient_color_1 = '#000000'
+gradient_color_2 = '#ffffff'
+
 
 [filter]
 

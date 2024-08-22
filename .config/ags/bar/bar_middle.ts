@@ -140,8 +140,13 @@ function Media()
         return str.length > limit ? str.slice(0, limit - 2) + "..." : str;
     }
 
-    var { track_artists, track_title } = mpris.players[0];
-    var title = () => `${truncateWithEllipsis(track_artists.join(", "), 20)} - ${truncateWithEllipsis(track_title, 20)}`;
+    ;
+
+    var title = () =>
+    {
+        var { track_artists, track_title } = mpris.players[0];
+        return `${truncateWithEllipsis(track_artists.join(", "), 20)} - ${truncateWithEllipsis(track_title, 20)}`
+    };
 
     const label = Widget.Label({
         label: Utils.watch(title(), mpris, "changed", () => title()),

@@ -2,8 +2,8 @@
 
 hyprDir=$HOME/.config/hypr
 current_wallpaper=$(cat $hyprDir/hyprpaper/config/current.conf)
-
 current_theme=$(bash $hyprDir/theme/scripts/system-theme.sh get)
+border_theme_script=$hyprDir/theme/scripts/border-theme.sh
 
 # check if $1 is provided
 if [ $1 ]; then
@@ -21,6 +21,9 @@ elif [ "$current_theme" = "light" ]; then
     wal -e -n -i $current_wallpaper -l &
 
 fi
+
+# Run the border theme script
+# $border_theme_script
 
 #!/bin/bash
 # killall wal # kill pywal.sh
