@@ -13,7 +13,6 @@ fi
 PFETCH="pfetch | lolcat"
 eval "$PFETCH"
 
-
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f $HOME/.p10k.zsh ]] || source $HOME/.p10k.zsh
 
@@ -47,12 +46,18 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#696969,bold"
 #Zsh Substring History Search
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
+
+############################################################
+
 # Aliases for neovide
 # alias v="neovide"
+
 # Aliases for ls
 alias ls='lsd'
+
 # Aliases for cat
-#alias cat='bat'
+alias cat='bat'
+
 # Aliase functions
 function code() {
   /bin/code $1 && exit
@@ -65,12 +70,15 @@ function cpdir {
   pwd | tr -d "\r\n" | wl-copy
 }
 # Test Connection
-TEST_CONNECTION="/home/ayman/.config/hypr/scripts/test-connection"
-alias connn=$TEST_CONNECTION
+TEST_CONNECTION="/home/ayman/.config/hypr/scripts/test-connection.sh"
+alias conn=$TEST_CONNECTION
+
 # Aliases for angular
 # source <(ng completion script)
+
 # Aliases for neofetch
 alias n=$NEOFETCH
+
 # Aliases for logout
 alias logout='hyprctl dispatch exit'
 
@@ -88,7 +96,6 @@ eval "$(navi widget zsh)"
 
 # Waifu Chat Bot and Assistant
 alias waifu='source $HOME/linux-chat-bot/main.sh "$(pwd)"'
-
 
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
 

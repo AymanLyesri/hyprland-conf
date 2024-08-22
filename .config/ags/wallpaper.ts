@@ -27,6 +27,15 @@ export function Wallpapers(monitor = 0)
                         let new_wallpaper = JSON.parse(Utils.exec(App.configDir + '/scripts/get-wallpapers.sh'))[key - 1]
                         self.children[key - 1].css = `background-image: url('${new_wallpaper}');`
                     }, 1000)
+                },
+                on_secondary_click: () =>
+                {
+                    Utils.execAsync(`bash -c "$HOME/.config/hypr/hyprpaper/previous.sh ${key}"`)
+                    setTimeout(() =>
+                    {
+                        let new_wallpaper = JSON.parse(Utils.exec(App.configDir + '/scripts/get-wallpapers.sh'))[key - 1]
+                        self.children[key - 1].css = `background-image: url('${new_wallpaper}');`
+                    }, 1000)
                 }
             })
         })

@@ -48,9 +48,10 @@
   }
 
   &:active {
-    min-height: 300px;
-    min-width: 600px;
+    min-height: 150px;
+    min-width: 300px;
 
     border-radius: 10px;
+    transition: all 0.2s;
   }
 }

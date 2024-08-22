@@ -1,8 +1,8 @@
-// .media-event {
-//   &:hover > * {
-//     min-height: 100px;
-//   }
-// }
+.media-event {
+  &:hover > * {
+    min-width: 300px;
+  }
+}
 
 .media {
   @extend .module;

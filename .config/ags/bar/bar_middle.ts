@@ -77,25 +77,6 @@ function Media()
         }).join('');
     }
 
-    function truncateWithEllipsis(str, limit)
-    {
-        return str.length > limit ? str.slice(0, limit - 2) + "..." : str;
-    }
-
-    const { track_artists, track_title } = mpris.players[0];
-    const title = () => `${truncateWithEllipsis(track_artists.join(", "), 20)} - ${truncateWithEllipsis(track_title, 20)}`;
-
-    const label = Widget.Label({
-        label: Utils.watch(title(), mpris, "changed", () =>
-        {
-            if (mpris.players[0]) {
-                return title()
-            } else {
-                return 'Nothing is playing';
-            }
-        }),
-    })
-
 
     function playerToIcon(name)
     {
@@ -154,13 +135,23 @@ function Media()
         return colors[name]
     }
 
-    function getPlayerInfo()
+    function truncateWithEllipsis(str, limit)
     {
-        return `
+        return str.length > limit ? str.slice(0, limit - 2) + "..." : str;
+    }
+
+    var { track_artists, track_title } = mpris.players[0];
+    var title = () => `${truncateWithEllipsis(track_artists.join(", "), 20)} - ${truncateWithEllipsis(track_title, 20)}`;
+
+    const label = Widget.Label({
+        label: Utils.watch(title(), mpris, "changed", () => title()),
+    })
+
+    var getPlayerCss = () => `
             color: ${playerToColor(mpris.players[0].name)};
             background-image:  linear-gradient(to right, #000000 , rgba(0, 0, 0, 0.5)), url('${mpris.players[0].track_cover_url}');
             `
-    }
+
 
     return Widget.EventBox({
         class_name: "media-event",
@@ -172,7 +163,7 @@ function Media()
             class_name: "media",
             spacing: 5,
             children: [progress, label],
-            css: Utils.watch(getPlayerInfo(), mpris, "changed", () => getPlayerInfo())
+            css: Utils.watch(getPlayerCss(), mpris, "changed", () => getPlayerCss())
 
         })
     })
@@ -184,7 +175,7 @@ function Media()
     //         class_name: "media",
     //         spacing: 5,
     //         children: [progress, label],
-    //         css: Utils.watch(getPlayerInfo(), mpris, "changed", () => getPlayerInfo())
+    //         css: Utils.watch(getPlayerCss(), mpris, "changed", () => getPlayerCss())
 
     //     }),
     //     overlays: [Widget.Box({
@@ -194,7 +185,7 @@ function Media()
     //         css: "min-height:100px"
 
     //     })],
-    //     css: Utils.watch(getPlayerInfo(), mpris, "changed", () => getPlayerInfo())
+    //     css: Utils.watch(getPlayerCss(), mpris, "changed", () => getPlayerCss())
     // })
 }
 

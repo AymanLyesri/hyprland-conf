@@ -1,7 +1,8 @@
 #!/bin/bash
 random=$(find /home/ayman/wallpapers/normal -type f | shuf -n 1) # get random wallpaper
 hyprDir=/home/ayman/.config/hypr                                 # hypr directory
-config=$hyprDir/hyprpaper/config/defaults.conf                   # config file
+current_config=$hyprDir/hyprpaper/config/defaults.conf           # config file
+previous_config=$hyprDir/hyprpaper/config/previous.conf          # previous config file
 
 current_workspace=$(hyprctl monitors | grep active | awk '{print $3}') # get current workspace
 
@@ -21,13 +22,7 @@ fi
 
 #############################################
 
-if [ "$workspace_id" = "$current_workspace" ]; then
-    $hyprDir/hyprpaper/w.sh "$random" & # set wallpaper
-fi
-
-#############################################
-
-old_wallpaper=$(grep "w-${workspace_id}" $config | cut -d'=' -f2)
+old_wallpaper=$(grep "w-${workspace_id}" $current_config | cut -d'=' -f2)
 
 hyprctl hyprpaper preload "$random" # preload wallpaper
 
@@ -35,4 +30,12 @@ hyprctl hyprpaper unload "$old_wallpaper" # unload old wallpaper
 
 #############################################
 
-sed -i "s|w-${workspace_id}=.*|w-${workspace_id}=${random}|" $config # set wallpaper in config
+if [ "$workspace_id" = "$current_workspace" ]; then
+    $hyprDir/hyprpaper/w.sh "$random" & # set wallpaper
+fi
+
+#############################################
+
+sed -i "s|w-${workspace_id}=.*|w-${workspace_id}=${old_wallpaper}|" $previous_config # set wallpaper in previous config
+
+sed -i "s|w-${workspace_id}=.*|w-${workspace_id}=${random}|" $current_config # set wallpaper in config

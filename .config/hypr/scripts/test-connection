@@ -1,8 +1,0 @@
-#!/bin/bash
-
-while true
-do
-    echo 'testing => '
-    ping google.com
-    sleep 1
-done
