@@ -174,10 +174,11 @@ export function Right()
         hpack: "end",
         spacing: 5,
         children: [
+            SysTray(),
             Theme(),
             Brightness(),
             Volume(),
             BatteryLabel() as any,
-            SysTray()],
+        ],
     });
 }

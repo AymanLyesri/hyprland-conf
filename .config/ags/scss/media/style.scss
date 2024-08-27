@@ -1,0 +1,72 @@
+.media-widget {
+  .player-event {
+    // margin: 5px;
+    // padding: 10px;
+    &:hover .img {
+      transition: all 1s;
+      box-shadow: 0px 0px 15px $foreground;
+    }
+  }
+
+  padding: 0px;
+  margin: 0px;
+
+  .player {
+    @extend .module;
+    padding: 10px;
+    min-width: 444px;
+  }
+
+  .player .img {
+    min-width: 100px;
+    min-height: 100px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    margin-right: 10px;
+
+    box-shadow: 0px 0px 6.9px $foreground;
+  }
+
+  .player .title {
+    font-size: 1.1em;
+  }
+
+  .player .artist {
+    margin: 5px 0px;
+    font-size: 1.1em;
+  }
+
+  .player .icon {
+    margin: 0px;
+    margin: 0px;
+  }
+
+  .player scale.position {
+    padding: 0;
+    margin-bottom: 0.3em;
+  }
+
+  .player scale.position trough {
+    min-height: 8px;
+  }
+
+  .player scale.position highlight {
+    background-color: $foreground;
+  }
+
+  .player scale.position slider {
+    all: unset;
+  }
+
+  .player button {
+    @extend .module;
+    min-height: 1em;
+    min-width: 1em;
+    // padding: 0.3em;
+  }
+
+  .player button.play-pause {
+    margin: 0 0.3em;
+  }
+}

@@ -1,6 +1,22 @@
 .media-event {
-  &:hover > * {
-    min-width: 300px;
+  &:hover * {
+    color: $foreground;
+    // color: $background;
+    // .media.media {
+    //   background: black;
+
+    //   border-radius: 10px;
+
+    //   .label {
+    //     border-radius: 0px 10px 10px 0px;
+    //   }
+
+    //   * {
+    //     transition: all 1s;
+    //     // background: $foreground;
+    //     // color: $background;
+    //   }
+    // }
   }
 }
 
@@ -8,14 +24,11 @@
   @extend .module;
   background-size: cover;
   background-position: center;
+  margin: 0px;
+  padding: 0px 10px;
+  border-radius: 10px;
 
-  * {
-    all: unset;
-  }
-
-  .media-trigger {
-    all: unset;
-  }
+  // font-size: 0.5rem;
 
   .progress {
     min-width: 15px; /* its size is min(min-height, min-width) */
@@ -23,8 +36,6 @@
     font-size: 1px; /* to set its thickness set font-size on it */
     margin: 0px; /* you can set margin on it */
     padding: 0px;
-    // background-color: #131313; /* set its bg color */
-    // color: aqua; /* set its fg color */
     label {
       font-size: 15px;
     }

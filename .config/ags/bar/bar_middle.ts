@@ -2,6 +2,8 @@ const hyprland = await Service.import("hyprland");
 const mpris = await Service.import("mpris");
 const notifications = await Service.import("notifications");
 
+import cava from "../widgets/cava";
+
 
 function custom_revealer(trigger, slider)
 {
@@ -116,8 +118,6 @@ function Media()
         },
     })
 
-
-
     function playerToColor(name)
     {
         let colors = {
@@ -135,32 +135,30 @@ function Media()
         return colors[name]
     }
 
-    function truncateWithEllipsis(str, limit)
+    const truncateWithEllipsis = (str, limit) =>
     {
         return str.length > limit ? str.slice(0, limit - 2) + "..." : str;
     }
 
-    ;
-
-    var title = () =>
+    const title = () =>
     {
         var { track_artists, track_title } = mpris.players[0];
         return `${truncateWithEllipsis(track_artists.join(", "), 20)} - ${truncateWithEllipsis(track_title, 20)}`
     };
 
     const label = Widget.Label({
+        class_name: "label",
         label: Utils.watch(title(), mpris, "changed", () => title()),
     })
 
-    var getPlayerCss = () => `
+    const getPlayerCss = () => `
             color: ${playerToColor(mpris.players[0].name)};
             background-image:  linear-gradient(to right, #000000 , rgba(0, 0, 0, 0.5)), url('${mpris.players[0].track_cover_url}');
             `
 
-
     return Widget.EventBox({
         class_name: "media-event",
-        on_primary_click: () => mpris.players[0].playPause(),
+        on_primary_click: () => Utils.execAsync(`ags -t media`),
         on_secondary_click: () => hyprland.messageAsync("dispatch workspace 4"),
         on_scroll_up: () => mpris.players[0].next(),
         on_scroll_down: () => mpris.players[0].previous(),
@@ -172,26 +170,6 @@ function Media()
 
         })
     })
-
-    // return Widget.Overlay({
-    //     class_name: "media-overlay",
-    //     pass_through: true,
-    //     child: Widget.Box({
-    //         class_name: "media",
-    //         spacing: 5,
-    //         children: [progress, label],
-    //         css: Utils.watch(getPlayerCss(), mpris, "changed", () => getPlayerCss())
-
-    //     }),
-    //     overlays: [Widget.Box({
-    //         class_name: "media",
-    //         spacing: 5,
-    //         children: [progress, label],
-    //         css: "min-height:100px"
-
-    //     })],
-    //     css: Utils.watch(getPlayerCss(), mpris, "changed", () => getPlayerCss())
-    // })
 }
 
 function Clock()

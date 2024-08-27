@@ -4,6 +4,7 @@ import { Right } from "bar/bar_right";
 import { NotificationPopups } from "notifications";
 import { bar_margins } from "variables";
 import { Wallpapers } from "wallpaper";
+import { Media } from "widgets/media";
 
 // required packages
 // gvfs is required for images
@@ -58,6 +59,7 @@ App.config({
     Bar(),
     NotificationPopups(),
     Wallpapers(),
+    Media(),
     // you can call it, for each monitor
     // Bar(0),
     // Bar(1)

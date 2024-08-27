@@ -33,6 +33,8 @@
 !.config/xava/
 # include ags
 !.config/ags/
+# include wayvnc config
+!.config/wayvnc/
 
 # wallpapers
 !wallpapers/
