@@ -42,7 +42,7 @@ export function Notification(n)
         max_width_chars: 24,
         truncate: "end",
         wrap: true,
-        label: n.summary + " " + n.app_name,
+        label: n.summary,
         use_markup: true,
     })
 
@@ -77,7 +77,7 @@ export function Notification(n)
         },
         Widget.Box(
             {
-                class_name: `notification ${n.urgency}`,
+                class_name: `notification ${n.urgency} ${n.app_name}`,
                 vertical: true,
             },
             Widget.Box([

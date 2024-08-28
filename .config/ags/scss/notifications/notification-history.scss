@@ -1,12 +1,16 @@
 .notification-history {
   @extend .module;
-  border-radius: 10px 0px 0px 10px;
-  padding: 1rem;
+  background: $background;
+  border-radius: 10px 0px 0px 0px;
+  border: 1px solid $foreground;
+  border-right: 0px;
+  border-bottom: 0px;
+  // padding: 1rem 0rem 0rem 1rem;
+  padding: 0rem;
 }
 .notification-event {
   .notification {
-    margin: 1rem 0rem;
-    padding: 0;
+    margin: 1rem 1rem;
 
     .summary {
       color: $foreground;

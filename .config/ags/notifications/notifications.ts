@@ -7,6 +7,7 @@ export function NotificationPopups(monitor = 0)
 {
     const list = Widget.Box({
         vertical: true,
+        spacing: 10,
         children: notifications.popups.map(Notification),
     })
 
@@ -37,16 +38,18 @@ export function NotificationPopups(monitor = 0)
 
     return Widget.Window({
         monitor,
-        name: `notifications${monitor}`,
+        name: `notifications`,
         class_name: "notification-popups",
         anchor: ["top", "right"],
         layer: "top",
         exclusivity: "normal",
+        margins: [10, 10, 10, 10],
         child: Widget.Box({
             css: "min-width: 2px; min-height: 2px;",
             class_name: "notifications",
             vertical: true,
             child: list,
+            // margin: 10,
 
             /** this is a simple one liner that could be used instead of
                 hooking into the 'notified' and 'dismissed' signals.

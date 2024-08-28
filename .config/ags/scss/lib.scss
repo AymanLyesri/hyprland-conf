@@ -1,7 +1,11 @@
 // Define the theme variables
 $background: $color0; // Example background color
-$foreground: $color3; // Example foreground color
-$secondary: $color4; // Example selected background color
+$foreground: $color15; // Example foreground color
+$secondary: mix($color1, $foreground, 50%); // Example selected background color
+
+$module-background: mix($background, $color4, 69%);
+
+$background: rgba($background, 0.5);
 
 * {
   font-family: "JetBrainsMono NFM";
@@ -9,8 +13,8 @@ $secondary: $color4; // Example selected background color
 }
 
 .module {
-  background: mix($background, $color4, 69%);
-  color: mix($color6, $foreground, 90%);
+  background: $background;
+  color: mix($foreground, $secondary, 50%);
   border: none;
   box-shadow: none;
   border-radius: 10px;

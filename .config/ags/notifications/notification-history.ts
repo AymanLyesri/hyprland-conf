@@ -16,7 +16,7 @@ export function NotificationHistory(monitor = 0)
         exclusivity: "exclusive",
         layer: "overlay",
         margins: [10, 0, 0, 0],
-        visible: notifications.bind("notifications").as(n => n.length > 0),
+        visible: false,
         child: Widget.Scrollable({
             class_name: "notification-history",
             css: 'min-width: 300px; min-height: 200px',

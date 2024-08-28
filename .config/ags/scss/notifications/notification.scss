@@ -1,5 +1,6 @@
-window.notification-popups box.notifications {
-  padding: 0.5em;
+window.notification-popups {
+  padding: 0rem;
+  border-radius: 10px;
 }
 
 .icon {
@@ -26,9 +27,9 @@ window.notification-popups box.notifications {
   min-width: 350px;
   border-radius: 11px;
   padding: 1em;
-  margin: 0.5em;
+  margin: 0rem;
   // border: 1px solid $background;
-  // background-color: $background;
+  background-color: $background;
   animation: background-pop 0.5s ease;
 }
 
@@ -48,8 +49,24 @@ window.notification-popups box.notifications {
   }
 }
 
+.notification.Spotify {
+  background-color: mix(rgba(30, 215, 95, 0.5), $background, 33%);
+}
+
 .notification.critical {
   border: 1px solid rgb(255, 0, 0);
+}
+
+.notification.warning {
+  border: 1px solid rgb(255, 255, 0);
+}
+
+.notification.info {
+  border: 1px solid rgb(0, 0, 255);
+}
+
+.notification.success {
+  border: 1px solid rgb(0, 255, 0);
 }
 
 .title {
@@ -59,7 +76,7 @@ window.notification-popups box.notifications {
 }
 
 .body {
-  // color: $foreground;
+  color: $secondary;
   font-size: 1.2em;
 }
 

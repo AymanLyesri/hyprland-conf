@@ -13,7 +13,7 @@ import { Media } from "widgets/media";
 function Bar(monitor = 0)
 {
   return Widget.Window({
-    name: `bar-${monitor}`, // name has to be unique
+    name: `bar`, // name has to be unique
     class_name: "bar",
     monitor,
     anchor: ["top", "left", "right"],
