@@ -164,6 +164,7 @@ export function Media(monitor = 0)
         name: `media`,
         class_name: "",
         anchor: ["top"],
+        // exclusivity: "exclusive",
         margins: [10, 10],
         visible: false,
         child: Widget.Box({

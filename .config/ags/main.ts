@@ -1,7 +1,8 @@
 import { Left } from "bar/bar_left";
 import { Center } from "bar/bar_middle";
 import { Right } from "bar/bar_right";
-import { NotificationPopups } from "notifications";
+import { NotificationHistory } from "notifications/notification-history";
+import { NotificationPopups } from "notifications/notifications";
 import { bar_margins } from "variables";
 import { Wallpapers } from "wallpaper";
 import { Media } from "widgets/media";
@@ -57,6 +58,7 @@ App.config({
   style: css,
   windows: [
     Bar(),
+    NotificationHistory(),
     NotificationPopups(),
     Wallpapers(),
     Media(),

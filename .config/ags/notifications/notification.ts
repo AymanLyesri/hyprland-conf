@@ -1,5 +1,6 @@
 const notifications = await Service.import("notifications")
 
+
 /** @param {import('resource:///com/github/Aylur/ags/service/notifications.js').Notification} n */
 function NotificationIcon({ app_entry, app_icon, image })
 {
@@ -25,7 +26,7 @@ function NotificationIcon({ app_entry, app_icon, image })
 }
 
 /** @param {import('resource:///com/github/Aylur/ags/service/notifications.js').Notification} n */
-function Notification(n)
+export function Notification(n)
 {
     const icon = Widget.Box({
         vpack: "start",
@@ -41,7 +42,7 @@ function Notification(n)
         max_width_chars: 24,
         truncate: "end",
         wrap: true,
-        label: n.summary,
+        label: n.summary + " " + n.app_name,
         use_markup: true,
     })
 
@@ -90,57 +91,4 @@ function Notification(n)
             actions,
         ),
     )
-}
-
-export function NotificationPopups(monitor = 0)
-{
-    const list = Widget.Box({
-        vertical: true,
-        children: notifications.popups.map(Notification),
-    })
-
-    function onNotified(_, /** @type {number} */ id)
-    {
-        const n = notifications.getNotification(id)
-        if (n)
-            list.children = [Notification(n), ...list.children]
-    }
-
-    function onDismissed(_, /** @type {number} */ id)
-    {
-        const notification = list.children.find(n => n.attribute.id === id)
-
-        notification!.child.css = "min-width: 200px; font-size: 0px; background: transparent; color: transparent; opacity: 0;"
-
-        // console.log("dismissed", id);
-
-        setTimeout(() =>
-        {
-            notification?.destroy()
-        }, 500)
-
-    }
-
-    list.hook(notifications, onNotified, "notified")
-        .hook(notifications, onDismissed, "dismissed")
-
-    return Widget.Window({
-        monitor,
-        name: `notifications${monitor}`,
-        class_name: "notification-popups",
-        anchor: ["top", "right"],
-        child: Widget.Box({
-            css: "min-width: 2px; min-height: 2px;",
-            class_name: "notifications",
-            vertical: true,
-            child: list,
-
-            /** this is a simple one liner that could be used instead of
-                hooking into the 'notified' and 'dismissed' signals.
-                but its not very optimized becuase it will recreate
-                the whole list everytime a notification is added or dismissed */
-            // children: notifications.bind('popups')
-            //     .as(popups => popups.map(Notification))
-        }),
-    })
 }

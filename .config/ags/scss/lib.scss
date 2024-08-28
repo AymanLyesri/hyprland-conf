@@ -9,14 +9,12 @@ $secondary: $color4; // Example selected background color
 }
 
 .module {
-  // min-height: 0px;
-  background: mix(rgba($color0, 50%), rgba($color4, 50%), 69%);
-  color: mix($color15, $color1, 90%);
+  background: mix($background, $color4, 69%);
+  color: mix($color6, $foreground, 90%);
   border: none;
   box-shadow: none;
   border-radius: 10px;
   font-size: 0.69rem;
-  // letter-spacing: 0.1em;
   font-weight: 700;
   text-shadow: none;
   padding: 0px 10px;
@@ -47,26 +45,20 @@ button {
 .secondary-module {
   // background-color: rgba(35, 39, 42, 0.534);
   color: rgba($foreground, 69%);
-  font-size: 10;
+  font-size: 10px;
   font-weight: bolder;
   padding: 0px 5px;
   transition: all 0.5s;
 }
 
-// .icon {
-//   margin: 0px 5px;
-//   font-size: 12;
-//   font-weight: normal;
-// }
-
 .sep {
-  font-size: 10;
+  font-size: 10px;
   font-weight: bolder;
   color: $foreground;
 }
 
 .txt {
-  font-size: 11;
+  font-size: 11px;
   font-weight: bolder;
   text-shadow: black 1px 1px 5px;
 }

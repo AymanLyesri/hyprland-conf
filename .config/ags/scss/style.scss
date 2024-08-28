@@ -4,7 +4,8 @@
 @import "bar/bar_middle.scss";
 @import "bar/bar_right.scss";
 
-@import "notification/style.scss";
+@import "notifications/notification.scss";
+@import "notifications/notification-history.scss";
 
 @import "wallpaper/style.scss";
 
@@ -20,48 +21,3 @@ window {
     padding-bottom: 1px;
   }
 }
-
-// @keyframes fade-in {
-//   from {
-//     opacity: 0;
-//   }
-//   to {
-//     opacity: 1;
-//   }
-// }
-
-// button {
-//   min-width: 0px;
-//   padding-top: 0px;
-//   padding-bottom: 0px;
-//   background: black;
-// }
-
-// button:active {
-//   background-color: $secondary;
-// }
-
-// button:hover {
-//   border-bottom: 3px solid $foreground;
-// }
-
-// label {
-//   font-weight: bold;
-// }
-
-// .workspaces button.focused {
-//   border-bottom: 3px solid $secondary;
-// }
-
-// .client-title {
-//   color: $secondary;
-// }
-
-// .notification {
-//   color: yellow;
-// }
-
-// levelbar block,
-// highlight {
-//   min-height: 10px;
-// }

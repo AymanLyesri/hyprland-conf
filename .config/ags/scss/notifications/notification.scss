@@ -49,7 +49,7 @@ window.notification-popups box.notifications {
 }
 
 .notification.critical {
-  border: 1px solid lightcoral;
+  border: 1px solid rgb(255, 0, 0);
 }
 
 .title {
@@ -59,7 +59,7 @@ window.notification-popups box.notifications {
 }
 
 .body {
-  color: $foreground;
+  // color: $foreground;
   font-size: 1.2em;
 }
 
