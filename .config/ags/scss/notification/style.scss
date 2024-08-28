@@ -55,10 +55,12 @@ window.notification-popups box.notifications {
 .title {
   color: $foreground;
   font-size: 1.4em;
+  font-weight: 900;
 }
 
 .body {
   color: $foreground;
+  font-size: 1.2em;
 }
 
 .actions .action-button {
