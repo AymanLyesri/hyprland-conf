@@ -1,7 +1,7 @@
 // Define the theme variables
 $background: $color0; // Example background color
 $foreground: $color15; // Example foreground color
-$secondary: mix($color1, $foreground, 50%); // Example selected background color
+$secondary: $color1; // Example selected background color
 
 $module-background: mix($background, $color4, 69%);
 
@@ -18,8 +18,8 @@ $background: rgba($background, 0.5);
   border: none;
   box-shadow: none;
   border-radius: 10px;
-  font-size: 0.69rem;
-  font-weight: 700;
+  font-size: 0.8rem;
+  font-weight: 900;
   text-shadow: none;
   padding: 0px 10px;
   margin: 0px;

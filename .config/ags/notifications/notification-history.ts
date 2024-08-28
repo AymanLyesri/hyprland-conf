@@ -10,7 +10,7 @@ export function NotificationHistory(monitor = 0)
 {
     return Widget.Window({
         monitor,
-        name: `notification_history`,
+        name: `notification-history`,
         class_name: "",
         anchor: ["top", "right", "bottom"],
         exclusivity: "exclusive",

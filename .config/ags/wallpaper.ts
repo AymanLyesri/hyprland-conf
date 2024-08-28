@@ -63,7 +63,7 @@ export function Wallpapers(monitor = 0)
 
     return Widget.Window({
         monitor,
-        name: `wallpapers`,
+        name: `wallpaper-switcher`,
         class_name: "",
         anchor: [],
         // exclusivity: "normal",

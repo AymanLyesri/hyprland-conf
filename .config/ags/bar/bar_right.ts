@@ -4,6 +4,15 @@ const audio = await Service.import("audio");
 const battery = await Service.import("battery");
 const systemtray = await Service.import("systemtray");
 
+function Notifications()
+{
+    return Widget.Button({
+        on_clicked: () => Utils.execAsync("ags -t notification-history"),
+        label: "",
+        class_name: "module button",
+    });
+}
+
 function custom_revealer(trigger, slider)
 {
     const revealer = Widget.Revealer({
@@ -174,6 +183,7 @@ export function Right()
         hpack: "end",
         spacing: 5,
         children: [
+            Notifications(),
             SysTray(),
             Theme(),
             Brightness(),

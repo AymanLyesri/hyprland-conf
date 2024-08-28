@@ -49,26 +49,6 @@ window.notification-popups {
   }
 }
 
-.notification.Spotify {
-  background-color: mix(rgba(30, 215, 95, 0.5), $background, 33%);
-}
-
-.notification.critical {
-  border: 1px solid rgb(255, 0, 0);
-}
-
-.notification.warning {
-  border: 1px solid rgb(255, 255, 0);
-}
-
-.notification.info {
-  border: 1px solid rgb(0, 0, 255);
-}
-
-.notification.success {
-  border: 1px solid rgb(0, 255, 0);
-}
-
 .title {
   color: $foreground;
   font-size: 1.4em;
@@ -91,4 +71,24 @@ window.notification-popups {
 
 .actions .action-button:last-child {
   margin-right: 0;
+}
+
+.notification.Spotify {
+  background-color: mix(rgba(30, 215, 95, 0.5), $background, 33%);
+}
+
+.notification.critical {
+  border: 1px solid rgb(255, 0, 0);
+}
+
+.notification.warning {
+  border: 1px solid rgb(255, 255, 0);
+}
+
+.notification.info {
+  border: 1px solid rgb(0, 0, 255);
+}
+
+.notification.success {
+  border: 1px solid rgb(0, 255, 0);
 }
