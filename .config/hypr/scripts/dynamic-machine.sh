@@ -29,4 +29,4 @@ fi
 # echo -e "general { \n\tsensitivity=$sensitivity \n}" >$sens_file                              # Write the sensitivity to the file
 echo -e "general { \n\tgaps_in=$gaps_in \n\tgaps_out=$gaps_out \n}" >$gap_file                # Write the gaps to the file
 echo -e "decoration { \n\tblur { \n\t\tsize=$size \n\t\tpasses=$passes \n\t} \n}" >$blur_file # Write the blur to the file
-echo -e "general { \n\tborder_size=$border_size \n}" >$border_size_file                       # Write the border size to the file
+# echo -e "general { \n\tborder_size=$border_size \n}" >$border_size_file                       # Write the border size to the file

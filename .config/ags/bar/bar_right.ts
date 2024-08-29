@@ -13,7 +13,7 @@ function Notifications()
     });
 }
 
-function custom_revealer(trigger, slider)
+function custom_revealer(trigger, slider, on_primary_click = () => { })
 {
     const revealer = Widget.Revealer({
         revealChild: false,
@@ -33,6 +33,7 @@ function custom_revealer(trigger, slider)
             await new Promise(resolve => setTimeout(resolve, 2000));
             revealer.reveal_child = false
         },
+        on_primary_click: on_primary_click,
         child: Widget.Box({
             children: [trigger, revealer],
         }),
@@ -131,7 +132,7 @@ function Volume()
             }),
     })
 
-    return custom_revealer(icon, slider);
+    return custom_revealer(icon, slider, () => Utils.execAsync(`pavucontrol`));
 }
 
 function BatteryLabel()

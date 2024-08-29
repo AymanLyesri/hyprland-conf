@@ -35,6 +35,8 @@
 !.config/ags/
 # include wayvnc config
 !.config/wayvnc/
+# include cursor themes
+!.icons/
 
 # wallpapers
 !wallpapers/
