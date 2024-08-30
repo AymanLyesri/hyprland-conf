@@ -6,10 +6,12 @@
   border-right: 0px;
   border-bottom: 0px;
   padding: 0rem;
+  min-width: 300px;
 }
 .notification-event {
   .notification {
-    margin: 1rem 1rem;
+    margin: 0.5rem 1rem;
+    min-width: 0px;
 
     .summary {
       color: $foreground;

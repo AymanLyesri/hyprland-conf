@@ -22,15 +22,12 @@ export function NotificationPopups(monitor = 0)
     {
         const notification = list.children.find(n => n.attribute.id === id)
 
-        notification!.child.css = "min-width: 200px; font-size: 0px; background: transparent; color: transparent; opacity: 0;"
-
-        // console.log("dismissed", id);
+        notification!.child.css = "min-width: 200px; background: transparent; opacity: 0;"
 
         setTimeout(() =>
         {
             notification?.destroy()
         }, 500)
-
     }
 
     list.hook(notifications, onNotified, "notified")

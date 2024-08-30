@@ -16,12 +16,14 @@ export function NotificationHistory(monitor = 0)
         exclusivity: "exclusive",
         layer: "overlay",
         margins: [10, 0, 0, 0],
-        visible: false,
+        visible: true,
         child: Widget.Scrollable({
             class_name: "notification-history",
-            css: 'min-width: 300px; min-height: 200px',
+            hscroll: 'never',
             child: Widget.Box({
                 vertical: true,
+                // hexpand: false,
+                hpack: "start",
                 children:
                     notifications.bind("notifications").as(n =>
                     {
@@ -41,7 +43,7 @@ export function NotificationHistory(monitor = 0)
                             return Widget.EventBox(
                                 {
                                     class_name: "notification-event",
-                                    on_primary_click: () => Utils.execAsync(`wl-copy ${notification.body}`),
+                                    on_primary_click: () => Utils.execAsync(`wl-copy "${notification.body}"`),
                                 },
                                 Notification(notification)
                             );
