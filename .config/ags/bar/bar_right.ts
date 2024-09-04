@@ -57,18 +57,23 @@ function Theme()
         return theme as string == "dark" ? "" : ""
     }
 
-    return Widget.Button({
-        on_clicked: async (self) =>
-        {
-            Utils.subprocess(['bash', '-c', '$HOME/.config/hypr/theme/scripts/switch-global-theme.sh'])
-            await new Promise(resolve => setTimeout(resolve, 500)); // Sleep for 2 seconds
-            self.child.label = icon()
-        },
-        child: Widget.Label({
-            label: icon(),
-        }),
-        class_name: "theme button",
+    return Widget.Switch({
+        class_name: "switch",
+        onActivate: (state) => { Utils.execAsync(['bash', '-c', '$HOME/.config/hypr/theme/scripts/switch-global-theme.sh']) },
     })
+
+    // return Widget.Button({
+    //     on_clicked: async (self) =>
+    //     {
+    //         Utils.subprocess(['bash', '-c', '$HOME/.config/hypr/theme/scripts/switch-global-theme.sh'])
+    //         await new Promise(resolve => setTimeout(resolve, 500)); // Sleep for 2 seconds
+    //         self.child.label = icon()
+    //     },
+    //     child: Widget.Label({
+    //         label: icon(),
+    //     }),
+    //     class_name: "theme button",
+    // })
 
 }
 

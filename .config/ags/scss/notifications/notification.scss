@@ -79,14 +79,15 @@ window.notification-popups {
   border: 1px solid rgb(255, 0, 0);
 }
 
-.notification.warning {
-  border: 1px solid rgb(255, 255, 0);
+.notification.normal {
+  // border: 1px solid rgb(255, 255, 0);
 }
 
-.notification.info {
-  border: 1px solid rgb(0, 0, 255);
+.notification.low {
+  border: 1px solid rgb(0, 255, 100);
+  // border: 1px solid rgb(0, 0, 255);
 }
 
-.notification.success {
-  border: 1px solid rgb(0, 255, 0);
-}
+// .notification.success {
+//   border: 1px solid rgb(0, 255, 0);
+// }

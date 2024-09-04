@@ -2,7 +2,9 @@
 
 hyprDir=$HOME/.config/hypr
 
-$hyprDir/theme/scripts/system-theme.sh switch
+# check for $1 if its there and do a command
+
+$hyprDir/theme/scripts/system-theme.sh switch $1
 
 $hyprDir/theme/scripts/wal-theme.sh &
 

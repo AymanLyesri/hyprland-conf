@@ -46,7 +46,7 @@
     slider {
       min-height: 1px;
       min-width: 10px;
-      margin: -6px;
+      margin: -5px;
       background-color: $color1;
       color: $color7;
     }
@@ -60,6 +60,20 @@
         color: mix($color2, #000000, 50%);
       }
     }
+  }
+}
+
+.switch {
+  @extend .module;
+  margin: 0px;
+  padding: 0px;
+  // min-width: 100px;
+  slider {
+    min-height: 1px;
+    min-width: 15px;
+    margin: 4px;
+    background: $secondary;
+    // color: $foreground;
   }
 }
 

@@ -23,12 +23,25 @@ if [ $1 == "get" ]; then
 elif
     [ $1 == "switch" ]
 then
-    if [ "$current_theme" == "dark" ]; then
-        sed -i 's/^theme=dark$/theme=light/' "$theme_conf"
-    elif [ "$current_theme" == "light" ]; then
+    if [ -z $2 ]; then
+        echo "No argument provided: dark or light"
+        if [ "$current_theme" == "dark" ]; then
+            sed -i 's/^theme=dark$/theme=light/' "$theme_conf"
+        elif [ "$current_theme" == "light" ]; then
+            sed -i 's/^theme=light$/theme=dark/' "$theme_conf"
+        else
+            echo "Current theme is neither 'dark' nor 'light'."
+        fi
+        exit 0
+    fi
+
+    if [ $2 == "dark" ]; then
         sed -i 's/^theme=light$/theme=dark/' "$theme_conf"
+    elif [ $2 == "light" ]; then
+        sed -i 's/^theme=dark$/theme=light/' "$theme_conf"
     else
-        echo "Current theme is neither 'dark' nor 'light'."
+        echo "Invalid argument"
+        exit 1
     fi
     exit 0
 else
