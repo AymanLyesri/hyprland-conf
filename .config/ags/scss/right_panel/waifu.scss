@@ -1,0 +1,36 @@
+.waifu {
+  //   @extend .module;
+  margin: 10px;
+  padding: 0px;
+
+  // .image:hover > * {
+  //   // min-width: 500px;
+  //   // min-width: 690px;
+  //   min-height: 500px;
+  //   transition: min-height 0.5s ease 1s;
+  //   // transition: min-width 0.5s ease 3s;
+  // }
+
+  .image > * {
+    min-width: unset;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    min-height: 250px;
+    border-radius: 10px;
+  }
+
+  .button {
+    @extend .module;
+    margin-top: 5px;
+    border-radius: 0px;
+
+    &:first-child {
+      border-radius: 10px 0px 0px 10px;
+    }
+
+    &:last-child {
+      border-radius: 0px 10px 10px 0px;
+    }
+  }
+}

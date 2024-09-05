@@ -7,7 +7,7 @@ const systemtray = await Service.import("systemtray");
 function Notifications()
 {
     return Widget.Button({
-        on_clicked: () => Utils.execAsync("ags -t notification-history"),
+        on_clicked: () => Utils.execAsync("ags -t right-panel"),
         label: "",
         class_name: "module button",
     });

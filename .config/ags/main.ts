@@ -1,11 +1,11 @@
 import { Left } from "bar/bar_left";
 import { Center } from "bar/bar_middle";
 import { Right } from "bar/bar_right";
-import { NotificationHistory } from "notifications/notification-history";
-import { NotificationPopups } from "notifications/notifications";
+import { NotificationPopups } from "right_panel/notifications";
+import { RightPanel } from "right_panel/right_panel";
 import { bar_margins } from "variables";
-import { Wallpapers } from "wallpaper";
 import { Media } from "widgets/media";
+import { Wallpapers } from "widgets/wallpaper";
 
 // required packages
 // gvfs is required for images
@@ -19,6 +19,7 @@ function Bar(monitor = 0)
     anchor: ["top", "left", "right"],
     exclusivity: "exclusive",
     margins: bar_margins,// [top, right, bottom, left]
+    layer: "overlay",
 
     child: Widget.CenterBox({
       start_widget: Left(),
@@ -58,7 +59,7 @@ App.config({
   style: css,
   windows: [
     Bar(),
-    NotificationHistory(),
+    RightPanel(),
     NotificationPopups(),
     Wallpapers(),
     Media(),

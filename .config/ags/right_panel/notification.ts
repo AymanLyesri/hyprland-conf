@@ -50,6 +50,7 @@ export function Notification(n)
         class_name: "body",
         hexpand: true,
         use_markup: true,
+        truncate: "end",
         xalign: 0,
         justification: "left",
         label: n.body,

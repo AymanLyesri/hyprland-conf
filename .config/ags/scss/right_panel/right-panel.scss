@@ -1,7 +1,7 @@
-.notification-history {
+.right-panel {
   @extend .module;
   background: $background;
-  border-radius: 10px 0px 0px 0px;
+  border-radius: 0px;
   border: 1px solid $secondary;
   border-right: 0px;
   border-bottom: 0px;
@@ -10,7 +10,7 @@
 }
 .notification-event {
   .notification {
-    margin: 0.5rem 1rem;
+    margin: 5px 10px;
     min-width: 0px;
 
     .summary {

@@ -73,6 +73,7 @@ window.notification-popups {
 
 .notification.Spotify {
   background-color: mix(rgba(30, 215, 95, 0.5), $background, 33%);
+  border: 1px solid rgb(30, 215, 95);
 }
 
 .notification.critical {
@@ -84,7 +85,7 @@ window.notification-popups {
 }
 
 .notification.low {
-  border: 1px solid rgb(0, 255, 100);
+  // border: 1px solid rgb(255, 255, 0);
   // border: 1px solid rgb(0, 0, 255);
 }
 
