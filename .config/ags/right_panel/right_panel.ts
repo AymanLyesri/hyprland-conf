@@ -1,5 +1,6 @@
 import { Waifu } from "widgets/waifu";
 import { Notification } from "./notification";
+import { Resources } from "widgets/resources";
 
 const notifications = await Service.import("notifications")
 notifications.popupTimeout = 3000;
@@ -41,7 +42,7 @@ function Panel()
     return Widget.Box({
         class_name: "right-panel",
         vertical: true,
-        children: [Waifu(), Widget.Scrollable({
+        children: [Waifu(), Resources(), Widget.Scrollable({
             class_name: "notification-history",
             hscroll: 'never',
             vexpand: true,
@@ -60,9 +61,9 @@ export function RightPanel(monitor = 0)
         class_name: "",
         anchor: ["right", "top", "bottom"],
         exclusivity: "exclusive",
-        layer: "top",
+        layer: "bottom",
         // margins: [10, 0, 0, 0],
-        visible: false,
+        visible: true,
         child: Panel(),
     })
 }

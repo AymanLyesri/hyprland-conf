@@ -1,6 +1,6 @@
 .waifu {
   //   @extend .module;
-  margin: 10px;
+  margin: 5px 10px;
   padding: 0px;
 
   // .image:hover > * {
@@ -20,17 +20,22 @@
     border-radius: 10px;
   }
 
-  .button {
-    @extend .module;
-    margin-top: 5px;
-    border-radius: 0px;
+  .actions {
+    margin: 5px;
 
-    &:first-child {
-      border-radius: 10px 0px 0px 10px;
-    }
+    .button {
+      @extend .module;
+      border-radius: 0px;
+      min-height: 0px;
+      min-width: 0px;
 
-    &:last-child {
-      border-radius: 0px 10px 10px 0px;
+      &:first-child {
+        border-radius: 10px 0px 0px 10px;
+      }
+
+      &:last-child {
+        border-radius: 0px 10px 10px 0px;
+      }
     }
   }
 }

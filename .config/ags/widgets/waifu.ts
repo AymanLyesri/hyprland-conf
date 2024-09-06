@@ -2,15 +2,17 @@ import { Waifu } from "../interfaces/waifu.interface";
 
 var image = App.configDir + "/assets/images/waifu.jpg"
 var imageDetails = Variable<Waifu>(JSON.parse(Utils.readFile(`${App.configDir}/assets/images/waifu.json`)))
+var previousImageDetails = JSON.parse(Utils.readFile(`${App.configDir}/assets/images/previous.json`))
 
 
 function Image()
 {
-    // RandomImage()
+    // GetImageFromApi()
     return Widget.EventBox({
         class_name: "image",
         on_primary_click: () => Utils.execAsync(`firefox https://danbooru.donmai.us/posts/${imageDetails.value.id}`),
         child: Widget.Box({
+            child: Actions(),
             css: imageDetails.bind().as(imageDetails =>
             {
                 return `
@@ -23,13 +25,14 @@ function Image()
 }
 
 // Fetch random posts from Danbooru API
-function RandomImage()
+function GetImageFromApi(id = "")
 {
-    Utils.execAsync(`${App.configDir}/scripts/get-waifu.sh`).then((output) =>
+    Utils.execAsync(`${App.configDir}/scripts/get-waifu.sh ${id}`).then((output) =>
     {
         // image.value = ''
         // image.value = App.configDir + "/assets/images/waifu.jpg"
         imageDetails.value = JSON.parse(Utils.readFile(`${App.configDir}/assets/images/waifu.json`))
+        previousImageDetails = JSON.parse(Utils.readFile(`${App.configDir}/assets/images/previous.json`))
         print(imageDetails.value.id)
     }).catch((error) => print(error))
 }
@@ -39,25 +42,28 @@ function Actions()
     return Widget.Box({
         class_name: "actions",
         hexpand: true,
+        vexpand: false,
+        // hpack: "center",
+        vpack: "end",
         children: [
             Widget.Button({
                 label: "Undo",
                 hexpand: true,
                 class_name: "button",
 
-                on_clicked: () => Utils.execAsync(`wl-copy "I'm here to keep you company!"`),
+                on_clicked: () => GetImageFromApi(previousImageDetails.id),
             }),
             Widget.Button({
                 label: "Random",
                 hexpand: true,
                 class_name: "button",
-                on_clicked: async () => RandomImage(),
+                on_clicked: async () => GetImageFromApi(),
             }),
             Widget.Button({
                 label: "Copy",
                 hexpand: true,
                 class_name: "button",
-                on_clicked: () => Utils.execAsync(`wl-copy "I'm here to keep you company!"`),
+                on_clicked: () => Utils.execAsync(`cat ${App.configDir}/assets/images/waifu.jpg | wl-copy --type image/jpeg`),
             }),
         ],
     })
@@ -73,8 +79,7 @@ export function Waifu()
                 class_name: "waifu",
             },
             Image(),
-            Actions(),
-        ),
 
+        ),
     })
 }

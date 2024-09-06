@@ -19,7 +19,7 @@ function Bar(monitor = 0)
     anchor: ["top", "left", "right"],
     exclusivity: "exclusive",
     margins: bar_margins,// [top, right, bottom, left]
-    layer: "overlay",
+    layer: "top",
 
     child: Widget.CenterBox({
       start_widget: Left(),

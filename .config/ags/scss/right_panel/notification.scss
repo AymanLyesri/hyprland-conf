@@ -25,7 +25,7 @@ window.notification-popups {
 .notification {
   @extend .module;
   min-width: 400px;
-  border-radius: 10px;
+  border-radius: 1rem;
   padding: 1em;
   margin: 0rem;
   // border: 1px solid $background;
