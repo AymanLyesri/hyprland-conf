@@ -2,7 +2,7 @@ const hyprland = await Service.import("hyprland");
 const mpris = await Service.import("mpris");
 const notifications = await Service.import("notifications");
 
-import cava from "../widgets/cava";
+import { mediaVisibility } from "variables";
 
 
 function custom_revealer(trigger, slider)
@@ -162,6 +162,7 @@ function Media()
         on_secondary_click: () => hyprland.messageAsync("dispatch workspace 4"),
         on_scroll_up: () => mpris.players[0].next(),
         on_scroll_down: () => mpris.players[0].previous(),
+        on_hover: () => mediaVisibility.value = true,
         child: Widget.Box({
             class_name: "media",
             spacing: 5,

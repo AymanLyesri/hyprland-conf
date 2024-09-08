@@ -8,6 +8,27 @@
   padding: 0rem;
   min-width: 300px;
 }
+
+.options {
+  margin: 5px 10px;
+
+  .button {
+    @extend .module;
+    padding: 5px 0px;
+    border-radius: 0px;
+    min-height: 0px;
+    min-width: 0px;
+
+    &:first-child {
+      border-radius: 10px 0px 0px 10px;
+    }
+
+    &:last-child {
+      border-radius: 0px 10px 10px 0px;
+    }
+  }
+}
+
 .notification-event {
   .notification {
     margin: 5px 10px;

@@ -11,5 +11,5 @@ wl-paste --watch bash -c '
   sanitized_content=$(echo "$clipboard_content" | tr "\n" " ")
   
   # Send a single notification with the sanitized content
-  notify-send "Clipboard Content" "$sanitized_content"
+  notify-send "Clipboard" "$sanitized_content"
 '

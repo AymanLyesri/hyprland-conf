@@ -9,9 +9,6 @@ export var bar_margins = hyprland.active.client.bind("title").as((title) =>
     return [top, sides, bottom, sides] // top right bottom left
 })
 
-// export var margins = () =>
-// {
-//     let margin = 0
-//     margin = hyprland.active.client.bind("title") ? margin = 10 : margin = 0
-//     return margin
-// }
+export const mediaVisibility = Variable(false)
+
+export const rightPanelVisibility = Variable(false)

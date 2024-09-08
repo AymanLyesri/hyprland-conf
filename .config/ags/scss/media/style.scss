@@ -1,15 +1,7 @@
 .media-widget {
-  .player-event {
-    // margin: 5px;
-    // padding: 10px;
-    // &:hover .img {
-    //   transition: all 1s;
-    //   box-shadow: 0px 0px 15px $foreground;
-    // }
-  }
-
-  padding: 0px;
-  margin: 0px;
+  all: unset;
+  margin: 1px;
+  padding: 1px;
 
   .player {
     @extend .module;
@@ -27,7 +19,7 @@
     border-radius: 10px;
     margin-right: 10px;
 
-    box-shadow: 0px 0px 5px $secondary;
+    box-shadow: 0px 0px 5px $foreground;
   }
 
   .player .title {

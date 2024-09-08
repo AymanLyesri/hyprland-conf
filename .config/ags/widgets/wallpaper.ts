@@ -1,5 +1,4 @@
 const hyprland = await Service.import("hyprland");
-import { timeout } from "types/utils/timeout"
 
 export function Wallpapers(monitor = 0)
 {

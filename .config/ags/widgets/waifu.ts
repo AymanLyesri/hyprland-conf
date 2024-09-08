@@ -1,8 +1,18 @@
 import { Waifu } from "../interfaces/waifu.interface";
-
 var image = App.configDir + "/assets/images/waifu.jpg"
-var imageDetails = Variable<Waifu>(JSON.parse(Utils.readFile(`${App.configDir}/assets/images/waifu.json`)))
-var previousImageDetails = JSON.parse(Utils.readFile(`${App.configDir}/assets/images/previous.json`))
+
+function readJSONFile(filePath: string): any
+{
+    try {
+        const data = Utils.readFile(filePath);
+        return data.trim() ? JSON.parse(data) : null;
+    } catch (e) {
+        console.error('Error:', e);
+        return null;
+    }
+}
+var imageDetails = Variable<Waifu>(readJSONFile(`${App.configDir}/assets/images/waifu.json`))
+var previousImageDetails = readJSONFile(`${App.configDir}/assets/images/previous.json`)
 
 
 function Image()
@@ -27,10 +37,9 @@ function Image()
 // Fetch random posts from Danbooru API
 function GetImageFromApi(id = "")
 {
-    Utils.execAsync(`${App.configDir}/scripts/get-waifu.sh ${id}`).then((output) =>
+    Utils.execAsync(`python ${App.configDir}/scripts/get-waifu.py ${id}`).then((output) =>
     {
-        // image.value = ''
-        // image.value = App.configDir + "/assets/images/waifu.jpg"
+        Utils.execAsync(`notify-send "Waifu" "${output}"`)
         imageDetails.value = JSON.parse(Utils.readFile(`${App.configDir}/assets/images/waifu.json`))
         previousImageDetails = JSON.parse(Utils.readFile(`${App.configDir}/assets/images/previous.json`))
         print(imageDetails.value.id)

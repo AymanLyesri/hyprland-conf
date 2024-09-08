@@ -64,7 +64,7 @@ function code() {
 }
 function v()
 {
-  /bin/neovide $1 && exit  
+  /bin/neovide --fork $1 && exit 
 }
 function cpdir {
   pwd | tr -d "\r\n" | wl-copy

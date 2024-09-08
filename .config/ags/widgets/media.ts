@@ -1,3 +1,5 @@
+import { mediaVisibility } from "variables"
+
 const mpris = await Service.import("mpris")
 const players = mpris.bind("players")
 
@@ -162,19 +164,23 @@ export function Media(monitor = 0)
     return Widget.Window({
         monitor,
         name: `media`,
-        class_name: "",
         anchor: ["top"],
         // exclusivity: "exclusive",
         margins: [10, 10],
-        visible: false,
+        visible: mediaVisibility.bind(),
+
         child: Widget.Box({
             class_name: "media-widget",
-            vertical: true,
-            hexpand: true,
-            spacing: 10,
-            visible: players.as(p => p.length > 0),
-            children: players.as(p => p.map(Player)),
-        })
+            child: Widget.EventBox({
+                on_hover_lost: () => mediaVisibility.value = false,
+                child: Widget.Box({
+                    vertical: true,
+                    spacing: 10,
+                    // visible: players.as(p => p.length > 0),
+                    children: players.as(p => p.map(Player)),
+                })
+            }),
+        }),
     })
 }
 
