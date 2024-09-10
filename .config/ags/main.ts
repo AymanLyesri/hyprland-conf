@@ -3,10 +3,12 @@ import { Center } from "bar/bar_middle";
 import { Right } from "bar/bar_right";
 import { NotificationPopups } from "right_panel/notifications";
 import { RightPanel } from "right_panel/right_panel";
-import { bar_margins } from "variables";
+import { appLauncherVisibility, bar_margin } from "variables";
 import { AppLauncher } from "widgets/app-launcher";
 import { Media } from "widgets/media";
 import { Wallpapers } from "widgets/wallpaper";
+
+appLauncherVisibility.value = false;
 
 // required packages
 // gvfs is required for images
@@ -19,7 +21,7 @@ function Bar(monitor = 0)
     monitor,
     anchor: ["top", "left", "right"],
     exclusivity: "exclusive",
-    margins: bar_margins,// [top, right, bottom, left]
+    margins: bar_margin.as(margin => [margin * 6.9 + 5, margin * 5 + 5, 0, margin * 5 + 5]),// [top, right, bottom, left]
     layer: "top",
 
     child: Widget.CenterBox({

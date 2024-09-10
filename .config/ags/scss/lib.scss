@@ -27,8 +27,6 @@ $background: rgba($background, 0.5);
 
   &.button,
   .button {
-    // @extend .module;
-    background: transparent;
     transition: all 0.3s;
     border-radius: 10px;
     ////////////////////////////
@@ -40,6 +38,7 @@ $background: rgba($background, 0.5);
       * {
         color: $background;
       }
+      color: $background;
       background-color: mix($color13, $foreground, 69%);
     }
   }

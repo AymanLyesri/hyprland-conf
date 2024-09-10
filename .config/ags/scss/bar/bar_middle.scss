@@ -1,24 +1,24 @@
-.media-event {
-  &:hover * {
-    color: $foreground;
-    // color: $background;
-    // .media.media {
-    //   background: black;
+// .media-event {
+//   &:hover * {
+//     color: $foreground;
+//     // color: $background;
+//     // .media.media {
+//     //   background: black;
 
-    //   border-radius: 10px;
+//     //   border-radius: 10px;
 
-    //   .label {
-    //     border-radius: 0px 10px 10px 0px;
-    //   }
+//     //   .label {
+//     //     border-radius: 0px 10px 10px 0px;
+//     //   }
 
-    //   * {
-    //     transition: all 1s;
-    //     // background: $foreground;
-    //     // color: $background;
-    //   }
-    // }
-  }
-}
+//     //   * {
+//     //     transition: all 1s;
+//     //     // background: $foreground;
+//     //     // color: $background;
+//     //   }
+//     // }
+//   }
+// }
 
 .media {
   @extend .module;
@@ -48,6 +48,7 @@
   }
 
   @extend .module;
+  // background: black;
 }
 
 .bandwidth {

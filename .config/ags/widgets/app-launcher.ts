@@ -1,4 +1,5 @@
 import { readJson } from "utils/json"
+import { appLauncherVisibility, bar_margin } from "variables";
 
 var Results = Variable<{ app_name: string, app_exec: string }[]>([]
     // readJson(Utils.exec(`${App.configDir}/scripts/app-search.sh`))
@@ -17,7 +18,6 @@ function Input()
             Widget.Entry({
                 class_name: "input",
                 hexpand: true,
-                visibility: true, // set to false for passwords
                 onChange: async ({ text }) =>
                 {
                     // Clear the previous timeout
@@ -27,9 +27,13 @@ function Input()
                     debounceTimeout = setTimeout(async () =>
                     {
                         Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/app-search.sh ${text}`));
-                    }, 250); // 250ms delay
+                    }, 100); // 100ms delay
                 },
-                onAccept: () => Utils.execAsync(Results.value[0].app_exec),
+                on_accept: () =>
+                {
+                    Utils.execAsync(Results.value[0].app_exec);
+                    appLauncherVisibility.value = false
+                },
             })
         ]
     })
@@ -45,7 +49,11 @@ function ResultsDisplay()
             return Widget.Button({
                 class_name: `button`,
                 label: element.app_name,
-                on_clicked: () => Utils.execAsync(element.app_exec),
+                on_clicked: () =>
+                {
+                    Utils.execAsync(element.app_exec);
+                    appLauncherVisibility.value = false
+                },
             })
         })
         ),
@@ -56,12 +64,12 @@ export function AppLauncher()
 {
     return Widget.Window({
         name: `app-launcher`,
-        anchor: ["top", "left"],
+        anchor: bar_margin.as(margin => margin == 10 ? [] : ["top", "left"]),
         // exclusivity: "top",
         keymode: "on-demand",
         layer: "top",
-        margins: [10, 10],
-        visible: true,
+        margins: [10, 10], // top right bottom left
+        visible: appLauncherVisibility.bind(),
 
         child: Widget.EventBox({
             // on_hover_lost: () => mediaVisibility.value = false,

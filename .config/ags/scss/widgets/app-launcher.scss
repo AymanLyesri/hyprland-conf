@@ -5,13 +5,22 @@
     border: unset;
     margin: 0px;
     padding: 0px;
+    background: transparent;
+    color: $foreground;
+  }
+  .icon {
+    margin: 5px 10px;
   }
   .input {
     background: transparent;
+    min-width: 500px;
     .left,
     .right {
       border-color: $secondary;
       // background: white;
+    }
+    &:focus {
+      border-color: $secondary;
     }
   }
 }
