@@ -165,7 +165,7 @@ function Player(player)
     )
 }
 
-export function Media()
+export async function Media()
 {
     return Widget.Window({
         name: `media`,

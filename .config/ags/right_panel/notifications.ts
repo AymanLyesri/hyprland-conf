@@ -3,7 +3,7 @@ import { Notification } from "./notification"
 const notifications = await Service.import("notifications")
 
 
-export function NotificationPopups(monitor = 0)
+export async function NotificationPopups(monitor = 0)
 {
     const list = Widget.Box({
         vertical: true,

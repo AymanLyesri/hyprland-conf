@@ -1,6 +1,6 @@
 const hyprland = await Service.import("hyprland");
 
-export function Wallpapers(monitor = 0)
+export async function Wallpapers(monitor = 0)
 {
 
     const get_wallpapers: any = (self) =>

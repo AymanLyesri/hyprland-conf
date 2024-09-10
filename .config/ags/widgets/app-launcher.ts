@@ -60,7 +60,7 @@ function ResultsDisplay()
     })
 }
 
-export function AppLauncher()
+export async function AppLauncher()
 {
     return Widget.Window({
         name: `app-launcher`,

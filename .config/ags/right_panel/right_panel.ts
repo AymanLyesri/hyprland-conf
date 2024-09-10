@@ -99,7 +99,7 @@ function Panel()
     })
 }
 
-export function RightPanel(monitor = 0)
+export async function RightPanel(monitor = 0)
 {
     return Widget.Window({
         monitor,

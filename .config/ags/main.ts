@@ -62,11 +62,11 @@ App.config({
   style: css,
   windows: [
     Bar(),
-    RightPanel(),
-    NotificationPopups(),
-    Wallpapers(),
-    Media(),
-    AppLauncher(),
+    await RightPanel(),
+    await NotificationPopups(),
+    await Wallpapers(),
+    await Media(),
+    await AppLauncher(),
     // you can call it, for each monitor
     // Bar(0),
     // Bar(1)
