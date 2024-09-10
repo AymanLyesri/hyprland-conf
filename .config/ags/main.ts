@@ -4,6 +4,7 @@ import { Right } from "bar/bar_right";
 import { NotificationPopups } from "right_panel/notifications";
 import { RightPanel } from "right_panel/right_panel";
 import { bar_margins } from "variables";
+import { AppLauncher } from "widgets/app-launcher";
 import { Media } from "widgets/media";
 import { Wallpapers } from "widgets/wallpaper";
 
@@ -63,6 +64,7 @@ App.config({
     NotificationPopups(),
     Wallpapers(),
     Media(),
+    AppLauncher(),
     // you can call it, for each monitor
     // Bar(0),
     // Bar(1)

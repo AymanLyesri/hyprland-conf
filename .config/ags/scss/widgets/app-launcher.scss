@@ -1,0 +1,17 @@
+.app-launcher {
+  @extend .module;
+  padding: 10px;
+  button {
+    border: unset;
+    margin: 0px;
+    padding: 0px;
+  }
+  .input {
+    background: transparent;
+    .left,
+    .right {
+      border-color: $secondary;
+      // background: white;
+    }
+  }
+}

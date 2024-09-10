@@ -1,16 +1,8 @@
+import { readJSONFile } from "utils/json";
 import { Waifu } from "../interfaces/waifu.interface";
 var image = App.configDir + "/assets/images/waifu.jpg"
 
-function readJSONFile(filePath: string): any
-{
-    try {
-        const data = Utils.readFile(filePath);
-        return data.trim() ? JSON.parse(data) : null;
-    } catch (e) {
-        console.error('Error:', e);
-        return null;
-    }
-}
+
 var imageDetails = Variable<Waifu>(readJSONFile(`${App.configDir}/assets/images/waifu.json`))
 var previousImageDetails = readJSONFile(`${App.configDir}/assets/images/previous.json`)
 

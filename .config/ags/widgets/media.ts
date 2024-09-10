@@ -136,22 +136,28 @@ function Player(player)
             {
                 vertical: true,
                 hexpand: true,
+
             },
-            Widget.Box([
-                title,
-                icon,
-            ]),
+            Widget.Box({
+                children:
+                    [
+                        title,
+                        icon,
+                    ]
+            }),
 
             Widget.Box({ vexpand: true }), // spacer
             artist,
             positionSlider,
             Widget.CenterBox({
                 start_widget: positionLabel,
-                center_widget: Widget.Box([
-                    prev,
-                    playPause,
-                    next,
-                ]),
+                center_widget: Widget.Box({
+                    children: [
+                        prev,
+                        playPause,
+                        next,
+                    ]
+                }),
                 end_widget: lengthLabel,
             }),
         ),
@@ -159,10 +165,9 @@ function Player(player)
     )
 }
 
-export function Media(monitor = 0)
+export function Media()
 {
     return Widget.Window({
-        monitor,
         name: `media`,
         anchor: ["top"],
         // exclusivity: "exclusive",
