@@ -37,7 +37,7 @@ function Options()
             return Widget.Button({
                 label: filter.name,
                 hexpand: true,
-                on_clicked: () => notificationFilter.value = filter,
+                on_clicked: () => notificationFilter.value = (notificationFilter.value === filter ? { name: "", color: "" } : filter),
                 class_name: "module button",
                 css: `background: ${notificationFilter.bind().as(filter => filter.color)}`,
             });

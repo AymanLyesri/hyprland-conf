@@ -11,7 +11,7 @@ def main():
         post_id = "random"
 
     # Variables
-    api_url = f"https://danbooru.donmai.us/posts/{post_id}.json?tags=~1girl+~multiple_girls&-rating=explicit&ratio=%3C%3D1/10"
+    api_url = f"https://danbooru.donmai.us/posts/{post_id}.json?tags=~ass+~breasts&-rating%3Ae&ratio=%3C%3D1/10"
     api_key = "tYWBHV2Pv5dKKmRBsQaMHtFH"  # Replace with your own API key
     user_name = "lilayman"  # Replace with your own username
     save_dir = os.path.expanduser("~/.config/ags/assets/images")  # Directory where the image will be saved

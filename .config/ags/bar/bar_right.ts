@@ -190,12 +190,12 @@ export function Right()
         hpack: "end",
         spacing: 5,
         children: [
-            Notifications(),
-            SysTray(),
-            Theme(),
             Brightness(),
             Volume(),
+            SysTray(),
+            Theme(),
             BatteryLabel() as any,
+            Notifications(),
         ],
     });
 }

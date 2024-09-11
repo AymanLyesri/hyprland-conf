@@ -11,14 +11,14 @@ export async function NotificationPopups(monitor = 0)
         children: notifications.popups.map(Notification),
     })
 
-    function onNotified(_, /** @type {number} */ id)
+    async function onNotified(_, /** @type {number} */ id)
     {
         const n = notifications.getNotification(id)
         if (n)
             list.children = [Notification(n), ...list.children]
     }
 
-    function onDismissed(_, /** @type {number} */ id)
+    async function onDismissed(_, /** @type {number} */ id)
     {
         const notification = list.children.find(n => n.attribute.id === id)
 

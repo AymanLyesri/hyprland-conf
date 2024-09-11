@@ -1,3 +1,5 @@
+import Gdk from "gi://Gdk";
+import app from "types/app";
 import { readJson } from "utils/json"
 import { appLauncherVisibility, bar_margin } from "variables";
 
@@ -20,6 +22,9 @@ function Input()
                 hexpand: true,
                 onChange: async ({ text }) =>
                 {
+                    if (text == "") {
+                        Results.value = []
+                    }
                     // Clear the previous timeout
                     clearTimeout(debounceTimeout);
 
@@ -29,12 +34,23 @@ function Input()
                         Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/app-search.sh ${text}`));
                     }, 100); // 100ms delay
                 },
-                on_accept: () =>
+                on_accept: (self) =>
                 {
                     Utils.execAsync(Results.value[0].app_exec);
                     appLauncherVisibility.value = false
+                    self.text = ""
                 },
+            }).on("key-press-event", (self, event: Gdk.Event) =>
+            {
+                if (event.get_keyval()[1] == 65307) // Escape key
+                {
+                    self.text = ""
+                    appLauncherVisibility.value = false
+                }
+
             })
+
+
         ]
     })
 }
@@ -65,7 +81,7 @@ export async function AppLauncher()
     return Widget.Window({
         name: `app-launcher`,
         anchor: bar_margin.as(margin => margin == 10 ? [] : ["top", "left"]),
-        // exclusivity: "top",
+        exclusivity: "normal",
         keymode: "on-demand",
         layer: "top",
         margins: [10, 10], // top right bottom left

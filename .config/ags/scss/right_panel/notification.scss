@@ -8,8 +8,6 @@ window.notification-popups {
   min-width: 400px;
   border-radius: 1rem;
   padding: 1em;
-  margin: 0rem;
-  // border: 1px solid $background;
   background-color: $background;
   animation: background-pop 0.5s ease;
   .icon {
@@ -19,10 +17,10 @@ window.notification-popups {
   }
 
   .icon image {
-    font-size: 50px;
+    font-size: 40px;
     /* to center the icon */
     margin: 5px;
-    color: $foreground;
+    color: $secondary;
   }
 
   .icon box {
