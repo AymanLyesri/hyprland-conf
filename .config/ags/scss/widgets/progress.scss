@@ -4,7 +4,7 @@
       @extend .module;
       background: $background;
       color: $foreground;
-      min-height: 10px;
+      min-height: 6.9px;
       margin: 0px;
       padding: 10px;
 
@@ -12,6 +12,7 @@
         box-shadow: 0px 0px 10px 0px $secondary;
         background: $secondary;
         border-radius: 10px;
+        border: unset;
       }
     }
   }

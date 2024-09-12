@@ -9,6 +9,19 @@ const image = waifuPath
 var imageDetails = Variable<Waifu>(readJSONFile(`${App.configDir}/assets/images/waifu.json`))
 var previousImageDetails = readJSONFile(`${App.configDir}/assets/images/previous.json`)
 
+// Fetch random posts from Danbooru API
+function GetImageFromApi(id = "")
+{
+    openProgress()
+    Utils.execAsync(`python ${App.configDir}/scripts/get-waifu.py ${id}`).then((output) =>
+    {
+        closeProgress()
+        imageDetails.value = JSON.parse(Utils.readFile(`${App.configDir}/assets/images/waifu.json`))
+        previousImageDetails = JSON.parse(Utils.readFile(`${App.configDir}/assets/images/previous.json`))
+        print(imageDetails.value.id)
+    }).catch(async (error) => await Utils.execAsync(`notify-send "Error" "${error}"`))
+}
+
 
 function Image()
 {
@@ -16,6 +29,7 @@ function Image()
     return Widget.EventBox({
         class_name: "image",
         on_primary_click: async () => Utils.execAsync(`firefox https://danbooru.donmai.us/posts/${imageDetails.value.id}`).catch(err => print(err)),
+        on_secondary_click: async () => Utils.execAsync(`bash -c "wl-copy --type image/png < ${waifuPath}"`).catch(err => print(err)),
         child: Widget.Box({
             child: Actions(),
             css: imageDetails.bind().as(imageDetails =>
@@ -30,26 +44,13 @@ function Image()
     })
 }
 
-// Fetch random posts from Danbooru API
-function GetImageFromApi(id = "")
-{
-    openProgress()
-    Utils.execAsync(`python ${App.configDir}/scripts/get-waifu.py ${id}`).then((output) =>
-    {
-        closeProgress()
-        imageDetails.value = JSON.parse(Utils.readFile(`${App.configDir}/assets/images/waifu.json`))
-        previousImageDetails = JSON.parse(Utils.readFile(`${App.configDir}/assets/images/previous.json`))
-        print(imageDetails.value.id)
-    }).catch((error) => print(error))
-}
 
 function Actions()
 {
     return Widget.Box({
         class_name: "actions",
-        hexpand: true,
-        vexpand: false,
-        // hpack: "center",
+        // hexpand: true,
+        // vexpand: false,
         vpack: "end",
         children: [
             Widget.Button({
@@ -65,11 +66,26 @@ function Actions()
                 class_name: "button",
                 on_clicked: async () => GetImageFromApi(),
             }),
-            Widget.Button({
-                label: "Copy",
-                hexpand: true,
-                class_name: "button",
-                on_clicked: async () => Utils.execAsync(`bash -c "wl-copy --type image/png < ${waifuPath}"`).catch(err => print(err)),
+            // Widget.Button({
+            //     label: "Copy",
+            //     hexpand: true,
+            //     class_name: "button",
+            //     on_clicked: async () => Utils.execAsync(`bash -c "wl-copy --type image/png < ${waifuPath}"`).catch(err => print(err)),
+            // }),
+            Widget.EventBox({
+                class_name: "input button",
+                child: Widget.Entry({
+                    placeholder_text: 'Danbooru id',
+                    text: "",
+                    on_accept: (self) =>
+                    {
+                        if (self.text == null || self.text == "") {
+                            return
+                        }
+                        GetImageFromApi(self.text)
+                        self.text = ""
+                    },
+                }),
             }),
         ],
     })

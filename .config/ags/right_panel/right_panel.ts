@@ -108,6 +108,7 @@ export async function RightPanel(monitor = 0)
         anchor: ["right", "top", "bottom"],
         exclusivity: "exclusive",
         layer: "bottom",
+        keymode: "on-demand",
         // margins: [10, 0, 0, 0],
         visible: rightPanelVisibility.bind(),
         // visible: true,

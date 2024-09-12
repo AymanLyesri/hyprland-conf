@@ -30,6 +30,19 @@
           border-radius: 0px 10px 10px 0px;
         }
       }
+
+      .input {
+        & > * {
+          // @extend .module;
+          background: transparent;
+          border-radius: 0px 10px 10px 0px;
+          margin: 0px;
+          min-width: 1px;
+          &:focus {
+            border-color: $secondary;
+          }
+        }
+      }
     }
   }
 }

@@ -39,7 +39,7 @@ $background: rgba($background, 0.5);
         color: $background;
       }
       color: $background;
-      background-color: mix($color13, $foreground, 69%);
+      background: mix($color13, $foreground, 69%);
     }
   }
 }
