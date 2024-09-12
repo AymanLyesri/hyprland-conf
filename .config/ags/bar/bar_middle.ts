@@ -158,7 +158,7 @@ function Media()
 
     return Widget.EventBox({
         class_name: "media-event",
-        on_primary_click: () => Utils.execAsync(`ags -t media`),
+        // on_primary_click: () => Utils.execAsync(`ags -t media`).catch(err => print(err)),
         on_secondary_click: () => hyprland.messageAsync("dispatch workspace 4"),
         on_scroll_up: () => mpris.players[0].next(),
         on_scroll_down: () => mpris.players[0].previous(),

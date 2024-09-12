@@ -1,40 +1,34 @@
 .waifu {
   //   @extend .module;
-  margin: 5px 10px;
+  // margin: 5px 10px;
   padding: 0px;
 
-  // .image:hover > * {
-  //   // min-width: 500px;
-  //   // min-width: 690px;
-  //   min-height: 500px;
-  //   transition: min-height 0.5s ease 1s;
-  //   // transition: min-width 0.5s ease 3s;
-  // }
-
   .image > * {
+    margin: 10px;
     min-width: unset;
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
     min-height: 250px;
     border-radius: 10px;
-  }
+    // box-shadow: 0px 0px 10px 0px #c5a2bc;
 
-  .actions {
-    margin: 5px;
+    .actions {
+      margin: 5px;
 
-    .button {
-      @extend .module;
-      border-radius: 0px;
-      min-height: 0px;
-      min-width: 0px;
+      .button {
+        @extend .module;
+        border-radius: 0px;
+        min-height: 0px;
+        min-width: 0px;
 
-      &:first-child {
-        border-radius: 10px 0px 0px 10px;
-      }
+        &:first-child {
+          border-radius: 10px 0px 0px 10px;
+        }
 
-      &:last-child {
-        border-radius: 0px 10px 10px 0px;
+        &:last-child {
+          border-radius: 0px 10px 10px 0px;
+        }
       }
     }
   }

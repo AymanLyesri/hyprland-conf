@@ -1,7 +1,9 @@
 import { readJSONFile } from "utils/json";
 import { Waifu } from "../interfaces/waifu.interface";
-var image = App.configDir + "/assets/images/waifu.jpg"
+import { waifuPath } from "variables";
+import { getDominantColor } from "utils/image";
 
+const image = waifuPath
 
 var imageDetails = Variable<Waifu>(readJSONFile(`${App.configDir}/assets/images/waifu.json`))
 var previousImageDetails = readJSONFile(`${App.configDir}/assets/images/previous.json`)
@@ -12,7 +14,7 @@ function Image()
     // GetImageFromApi()
     return Widget.EventBox({
         class_name: "image",
-        on_primary_click: () => Utils.execAsync(`firefox https://danbooru.donmai.us/posts/${imageDetails.value.id}`),
+        on_primary_click: async () => Utils.execAsync(`firefox https://danbooru.donmai.us/posts/${imageDetails.value.id}`).catch(err => print(err)),
         child: Widget.Box({
             child: Actions(),
             css: imageDetails.bind().as(imageDetails =>
@@ -20,6 +22,7 @@ function Image()
                 return `
                 background-image: url("${image}");
                 min-height: ${Number(imageDetails.image_height) / Number(imageDetails.image_width) * 300}px;
+                box-shadow: 0 0 10px 0 ${getDominantColor(image)};
                 `
             }),
         }),
@@ -31,7 +34,7 @@ function GetImageFromApi(id = "")
 {
     Utils.execAsync(`python ${App.configDir}/scripts/get-waifu.py ${id}`).then((output) =>
     {
-        Utils.execAsync(`notify-send "Waifu" "${output}"`)
+        Utils.execAsync(`notify-send "Waifu" "${output}"`).catch(err => print(err));
         imageDetails.value = JSON.parse(Utils.readFile(`${App.configDir}/assets/images/waifu.json`))
         previousImageDetails = JSON.parse(Utils.readFile(`${App.configDir}/assets/images/previous.json`))
         print(imageDetails.value.id)
@@ -64,7 +67,7 @@ function Actions()
                 label: "Copy",
                 hexpand: true,
                 class_name: "button",
-                on_clicked: () => Utils.execAsync(`cat ${App.configDir}/assets/images/waifu.jpg | wl-copy --type image/jpeg`),
+                on_clicked: async () => Utils.execAsync(`bash -c "wl-copy --type image/png < ${waifuPath}"`).catch(err => print(err)),
             }),
         ],
     })

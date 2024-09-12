@@ -138,7 +138,7 @@ function Volume()
             }),
     })
 
-    return custom_revealer(icon, slider, () => Utils.execAsync(`pavucontrol`));
+    return custom_revealer(icon, slider, () => Utils.execAsync(`pavucontrol`).catch(err => print(err)));
 }
 
 function BatteryLabel()

@@ -20,7 +20,7 @@ export async function Wallpapers(monitor = 0)
 
                 on_primary_click: () =>
                 {
-                    Utils.execAsync(`bash -c "$HOME/.config/hypr/hyprpaper/random.sh ${key}"`)
+                    Utils.execAsync(`bash -c "$HOME/.config/hypr/hyprpaper/random.sh ${key}"`).catch(err => print(err));
                     setTimeout(() =>
                     {
                         let new_wallpaper = JSON.parse(Utils.exec(App.configDir + '/scripts/get-wallpapers.sh'))[key - 1]
@@ -29,7 +29,7 @@ export async function Wallpapers(monitor = 0)
                 },
                 on_secondary_click: () =>
                 {
-                    Utils.execAsync(`bash -c "$HOME/.config/hypr/hyprpaper/previous.sh ${key}"`)
+                    Utils.execAsync(`bash -c "$HOME/.config/hypr/hyprpaper/previous.sh ${key}"`).catch(err => print(err));
                     setTimeout(() =>
                     {
                         let new_wallpaper = JSON.parse(Utils.exec(App.configDir + '/scripts/get-wallpapers.sh'))[key - 1]
@@ -53,7 +53,7 @@ export async function Wallpapers(monitor = 0)
                 label: "󰑐",
                 on_primary_click: () =>
                 {
-                    Utils.execAsync(`bash -c "$HOME/.config/hypr/hyprpaper/reload.sh"`)
+                    Utils.execAsync(`bash -c "$HOME/.config/hypr/hyprpaper/reload.sh"`).catch(err => print(err));
                 }
             })
             ]

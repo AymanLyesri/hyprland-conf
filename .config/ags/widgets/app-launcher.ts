@@ -36,7 +36,7 @@ function Input()
                 },
                 on_accept: (self) =>
                 {
-                    Utils.execAsync(Results.value[0].app_exec);
+                    Utils.execAsync(Results.value[0].app_exec).catch(err => print(err));
                     appLauncherVisibility.value = false
                     self.text = ""
                 },
@@ -67,7 +67,7 @@ function ResultsDisplay()
                 label: element.app_name,
                 on_clicked: () =>
                 {
-                    Utils.execAsync(element.app_exec);
+                    Utils.execAsync(element.app_exec).catch(err => print(err));
                     appLauncherVisibility.value = false
                 },
             })

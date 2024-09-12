@@ -1,3 +1,4 @@
+import { getDominantColor } from "utils/image"
 import { mediaVisibility } from "variables"
 
 const mpris = await Service.import("mpris")
@@ -26,6 +27,7 @@ function Player(player)
         vpack: "start",
         css: player.bind("cover_path").transform(p => `
             background-image: url('${p}');
+            box-shadow: 0 0 5px 0 ${getDominantColor(p)};
         `),
     })
 

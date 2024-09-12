@@ -80,7 +80,7 @@ function NotificationsDisplay()
                         return Widget.EventBox(
                             {
                                 class_name: "notification-event",
-                                on_primary_click: () => Utils.execAsync(`wl-copy "${notification.body}"`),
+                                on_primary_click: () => Utils.execAsync(`wl-copy "${notification.body}"`).catch(err => print(err)),
                                 child: Notification(notification),
                             });
 

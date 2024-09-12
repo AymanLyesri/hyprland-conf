@@ -42,7 +42,7 @@ class BrightnessService extends Service
 
     // if (percent > 1) percent = 1;
 
-    Utils.execAsync(`brightnessctl set ${percent * 100}% -q`);
+    Utils.execAsync(`brightnessctl set ${percent * 100}% -q`).catch(err => print(err));
     // the file monitor will handle the rest
   }
 
