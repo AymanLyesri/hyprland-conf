@@ -6,6 +6,7 @@ import { RightPanel } from "right_panel/right_panel";
 import { appLauncherVisibility, bar_margin } from "variables";
 import { AppLauncher } from "widgets/app-launcher";
 import { Media } from "widgets/media";
+import { Progress } from "widgets/progress";
 import { Wallpapers } from "widgets/wallpaper";
 
 appLauncherVisibility.value = false;
@@ -67,9 +68,7 @@ App.config({
     await Wallpapers(),
     await Media(),
     await AppLauncher(),
-    // you can call it, for each monitor
-    // Bar(0),
-    // Bar(1)
+    await Progress(),
   ],
 });
 

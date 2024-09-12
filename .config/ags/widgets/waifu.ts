@@ -2,6 +2,7 @@ import { readJSONFile } from "utils/json";
 import { Waifu } from "../interfaces/waifu.interface";
 import { waifuPath } from "variables";
 import { getDominantColor } from "utils/image";
+import { closeProgress, openProgress } from "./progress";
 
 const image = waifuPath
 
@@ -32,9 +33,10 @@ function Image()
 // Fetch random posts from Danbooru API
 function GetImageFromApi(id = "")
 {
+    openProgress()
     Utils.execAsync(`python ${App.configDir}/scripts/get-waifu.py ${id}`).then((output) =>
     {
-        Utils.execAsync(`notify-send "Waifu" "${output}"`).catch(err => print(err));
+        closeProgress()
         imageDetails.value = JSON.parse(Utils.readFile(`${App.configDir}/assets/images/waifu.json`))
         previousImageDetails = JSON.parse(Utils.readFile(`${App.configDir}/assets/images/previous.json`))
         print(imageDetails.value.id)
