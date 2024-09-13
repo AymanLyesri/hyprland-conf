@@ -35,13 +35,19 @@
         & > * {
           // @extend .module;
           background: transparent;
-          border-radius: 0px 10px 10px 0px;
+          border-radius: 0px;
           margin: 0px;
           min-width: 1px;
+          min-height: 20px;
+          border-color: transparent;
           &:focus {
             border-color: $secondary;
           }
         }
+      }
+
+      .switch {
+        border-radius: 0px 10px 10px 0px;
       }
     }
   }

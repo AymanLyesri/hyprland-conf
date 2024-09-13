@@ -63,20 +63,6 @@
   }
 }
 
-.switch {
-  @extend .module;
-  margin: 0px;
-  padding: 0px;
-  // min-width: 100px;
-  slider {
-    min-height: 1px;
-    min-width: 15px;
-    margin: 4px;
-    background: $secondary;
-    // color: $foreground;
-  }
-}
-
 .system-tray {
   button.button {
     @extend .module;

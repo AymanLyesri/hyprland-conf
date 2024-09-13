@@ -48,6 +48,20 @@ button {
   padding: 0px;
 }
 
+.switch {
+  @extend .module;
+  margin: 0px;
+  padding: 0px;
+  // min-width: 100px;
+  slider {
+    min-height: 1px;
+    min-width: 15px;
+    margin: 4px;
+    background: $secondary;
+    // color: $foreground;
+  }
+}
+
 .secondary-module {
   // background-color: rgba(35, 39, 42, 0.534);
   color: rgba($foreground, 69%);

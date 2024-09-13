@@ -3,15 +3,30 @@ import sys
 import requests
 from requests.auth import HTTPBasicAuth
 
-def main():
-    # Check if ID parameter is passed
-    if len(sys.argv) > 1:
-        post_id = sys.argv[1]
-    else:
-        post_id = "random"
+if len(sys.argv) < 1:
+    print("Usage: get-waifu.py [nsfw] [id/tag]")
+    sys.exit(1)
 
+def main():
+    post_id = "random"
+    tags=[]
+    nsfw = "" if sys.argv[1]=="true" else "-"
+   # Check if ID or tag parameter is passed
+    
+    for arg in sys.argv[2:]:
+        if arg.isdigit():
+            post_id = arg
+        else:
+            tags.append(arg)
+            
+    if len(tags) == 0:
+        tags = ["~ass", "~breasts"]
+
+    tags = (tags + ["", ""])[:2]
+    
     # Variables
-    api_url = f"https://danbooru.donmai.us/posts/{post_id}.json?tags=-rating%3Aexplicit+~ass+~breasts&ratio=%3C%3D1/10"
+    api_url = f"https://danbooru.donmai.us/posts/{post_id}.json?tags={nsfw}rating%3Aexplicit+{tags[0]}+{tags[1]}&ratio=%3C%3D1/10"
+    print(api_url)
     api_key = "tYWBHV2Pv5dKKmRBsQaMHtFH"  # Replace with your own API key
     user_name = "lilayman"  # Replace with your own username
     save_dir = os.path.expanduser("~/.config/ags/assets/images")  # Directory where the image will be saved

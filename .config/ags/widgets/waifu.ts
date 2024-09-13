@@ -8,12 +8,13 @@ const image = waifuPath
 
 var imageDetails = Variable<Waifu>(readJSONFile(`${App.configDir}/assets/images/waifu.json`))
 var previousImageDetails = readJSONFile(`${App.configDir}/assets/images/previous.json`)
+var nsfw = Variable<boolean>(false)
 
 // Fetch random posts from Danbooru API
-function GetImageFromApi(id = "")
+function GetImageFromApi(param = "")
 {
     openProgress()
-    Utils.execAsync(`python ${App.configDir}/scripts/get-waifu.py ${id}`).then((output) =>
+    Utils.execAsync(`python ${App.configDir}/scripts/get-waifu.py ${nsfw.value} "${param}"`).then((output) =>
     {
         closeProgress()
         imageDetails.value = JSON.parse(Utils.readFile(`${App.configDir}/assets/images/waifu.json`))
@@ -66,16 +67,10 @@ function Actions()
                 class_name: "button",
                 on_clicked: async () => GetImageFromApi(),
             }),
-            // Widget.Button({
-            //     label: "Copy",
-            //     hexpand: true,
-            //     class_name: "button",
-            //     on_clicked: async () => Utils.execAsync(`bash -c "wl-copy --type image/png < ${waifuPath}"`).catch(err => print(err)),
-            // }),
             Widget.EventBox({
                 class_name: "input button",
                 child: Widget.Entry({
-                    placeholder_text: 'Danbooru id',
+                    placeholder_text: 'Tags/ID',
                     text: "",
                     on_accept: (self) =>
                     {
@@ -83,10 +78,18 @@ function Actions()
                             return
                         }
                         GetImageFromApi(self.text)
-                        self.text = ""
                     },
                 }),
             }),
+            Widget.Switch({
+                class_name: "switch",
+                onActivate: (status) =>
+                {
+                    nsfw.value = !nsfw.value
+                    Utils.execAsync(`notify-send "NSFW" "${nsfw.value ? "Enabled" : "Disabled"}"`).catch(err => print(err))
+                },
+            })
+
         ],
     })
 }
