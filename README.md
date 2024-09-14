@@ -17,19 +17,21 @@ Feel free to share your feedback ♡ (anything you can think of)!
 - **Dynamic wallpapers** based on workspaces: Custom scripts & [Hyprpaper](https://github.com/hyprwm/hyprpaper)
 - **Screenshot all active workspaces** into one image: Custom script
 - **Dynamic color themes**: Custom scripts & [PyWal](https://github.com/dylanaraps/pywal)
-- **Dynamic Ags widgets** (Eww replaced):
+- **Global Theme switcher**: Custom scripts
+- **Dynamic Ags widgets** ~~(Eww replaced)~~:
   - Dynamic color schemes (using PyWal)
   - Main bar
     - Dark/light modes
     - Bandwidth speed monitor
-  - Application launcher (replacing Rofi)
+  - Application launcher ~~(Rofi replaced)~~
+    - App loading progress bar
   - Wallpaper switcher for each workspace
+  - Media player
   - Right panel:
     - Waifu display
-    - System resources monitor
-    - Notification filter
-    - Media player
-- **Dynamic window borders**: Custom scripts & PyWal
+    - System resource monitor
+    - Notification history - filter
+- ~~**Dynamic window borders**: Custom scripts & PyWal~~
 - **Machine-based configuration** (laptop/desktop):
   - Blur
   - Mouse sensitivity
@@ -117,7 +119,7 @@ reboot # This will reboot the system without a warning
 
 ### Right Panel
 
-![image](https://github.com/user-attachments/assets/7341b1d0-2b16-4d18-a6ee-39ba013911ec)
+![image](https://github.com/user-attachments/assets/52d5ea0c-fd64-4890-8bcb-b4832819ce2a)
 
 ### Media Player
 
@@ -132,7 +134,12 @@ reboot # This will reboot the system without a warning
 
 ![image](https://github.com/user-attachments/assets/b3f411f5-14ab-4304-ae95-9c2e93b7f886)
 
-### Screenshot of All Workspaces ("New")
+### Theme Switching
+
+![image](https://github.com/user-attachments/assets/f3321fb4-9992-4133-b860-c2e7b8f246d6)
+![image](https://github.com/user-attachments/assets/87da3faa-fbc4-47d8-9901-354e54f5452e)
+
+### Screenshot of All Workspaces
 
 ![1724004552_grim_result](https://github.com/user-attachments/assets/3166118e-3023-4434-985b-23ae02b8aed2)
 
