@@ -2,32 +2,40 @@ import { Notification } from "./notification"
 
 const notifications = await Service.import("notifications")
 
+notifications.popupTimeout = 3000;
+notifications.forceTimeout = false;
+notifications.cacheActions = false;
+notifications.clearDelay = 100;
+
 
 export async function NotificationPopups(monitor = 0)
 {
     const list = Widget.Box({
         vertical: true,
         spacing: 10,
-        children: notifications.popups.map(Notification),
+        children: notifications.popups.map(n => Notification(n, true)),
     })
 
     async function onNotified(_, /** @type {number} */ id)
     {
         const n = notifications.getNotification(id)
-        if (n)
-            list.children = [Notification(n), ...list.children]
+        if (n) {
+            list.children = [Notification(n, true), ...list.children.map(n => Notification(notifications.getNotification(n.attribute.id)))]
+        }
     }
 
     async function onDismissed(_, /** @type {number} */ id)
     {
         const notification = list.children.find(n => n.attribute.id === id)
 
-        notification!.child.css = "min-width: 200px; background: transparent; opacity: 0;"
+        notification?.destroy()
 
-        setTimeout(() =>
-        {
-            notification?.destroy()
-        }, 500)
+        // notification!.child.css = "background: transparent; opacity: 0;"
+
+        // setTimeout(() =>
+        // {
+        //     notification?.destroy()
+        // }, 500)
     }
 
     list.hook(notifications, onNotified, "notified")

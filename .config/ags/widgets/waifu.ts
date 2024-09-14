@@ -45,7 +45,6 @@ function Image()
     })
 }
 
-
 function Actions()
 {
     return Widget.Box({

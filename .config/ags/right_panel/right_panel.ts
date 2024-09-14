@@ -54,13 +54,12 @@ function FilterNotifications(notifications: any[], filter: string): any[]
     notifications.forEach((notification: any) =>
     {
         if (notification.app_name === filter || notification.summary === filter) {
-            filtered.push(notification);
+            filtered.unshift(notification);
         } else {
-            others.push(notification);
+            others.unshift(notification);
         }
     });
-
-    return [...others, ...filtered].slice(-100).reverse();
+    return [...filtered, ...others].slice(0, 50); // Limit to the last 50 notifications DEFAULT, higher number will slow down the UI
 }
 
 
@@ -74,7 +73,7 @@ function NotificationsDisplay()
             vertical: true, children: Utils.merge([notificationFilter.bind(), Notifications.bind("notifications")], (filter, notifications) =>
             {
                 return FilterNotifications(notifications, filter.name)
-                    .slice(-100).map(notification =>
+                    .map(notification =>
                     {
                         // Limit to the last 100 notifications after sorting
                         return Widget.EventBox(
@@ -83,7 +82,6 @@ function NotificationsDisplay()
                                 on_primary_click: () => Utils.execAsync(`wl-copy "${notification.body}"`).catch(err => print(err)),
                                 child: Notification(notification),
                             });
-
                     })
             }),
         }),

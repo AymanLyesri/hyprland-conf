@@ -1,25 +1,3 @@
-// .media-event {
-//   &:hover * {
-//     color: $foreground;
-//     // color: $background;
-//     // .media.media {
-//     //   background: black;
-
-//     //   border-radius: 10px;
-
-//     //   .label {
-//     //     border-radius: 0px 10px 10px 0px;
-//     //   }
-
-//     //   * {
-//     //     transition: all 1s;
-//     //     // background: $foreground;
-//     //     // color: $background;
-//     //   }
-//     // }
-//   }
-// }
-
 .media {
   @extend .module;
   background-size: cover;
@@ -43,12 +21,16 @@
 }
 
 .custom-revealer {
-  > * {
-    padding: 0px 10px;
-  }
+  &.date {
+    // all: unset;
+    // padding: 0px;
+    // > * {
+    //   padding: 0px;
+    // }
 
-  @extend .module;
-  // background: black;
+    // @extend .module;
+    // background: black;
+  }
 }
 
 .bandwidth {

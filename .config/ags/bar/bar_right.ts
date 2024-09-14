@@ -1,5 +1,6 @@
 import brightness from "brightness";
 import { rightPanelVisibility } from "variables";
+import { custom_revealer } from "widgets/revealer";
 
 const audio = await Service.import("audio");
 const battery = await Service.import("battery");
@@ -14,34 +15,6 @@ function Notifications()
     });
 }
 
-function custom_revealer(trigger, slider, on_primary_click = () => { })
-{
-    const revealer = Widget.Revealer({
-        revealChild: false,
-        transitionDuration: 1000,
-        transition: 'slide_right',
-        child: slider,
-    });
-
-    const eventBox = Widget.EventBox({
-        class_name: "button custom-slider",
-        on_hover: async (self) =>
-        {
-            revealer.reveal_child = true
-        },
-        on_hover_lost: async () =>
-        {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            revealer.reveal_child = false
-        },
-        on_primary_click: on_primary_click,
-        child: Widget.Box({
-            children: [trigger, revealer],
-        }),
-    });
-
-    return eventBox;
-}
 
 
 // widgets can be only assigned as a child in one container
@@ -90,7 +63,7 @@ function Brightness()
     });
 
     const label = Widget.Label({
-        class_name: "label",
+        class_name: "icon",
         label: "󰃞",
         // brightness.bind('screen-value').as(v => `${Math.round(v * 100)}%`),
     });
@@ -138,7 +111,7 @@ function Volume()
             }),
     })
 
-    return custom_revealer(icon, slider, () => Utils.execAsync(`pavucontrol`).catch(err => print(err)));
+    return custom_revealer(icon, slider, '', () => Utils.execAsync(`pavucontrol`).catch(err => print(err)));
 }
 
 function BatteryLabel()

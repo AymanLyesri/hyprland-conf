@@ -2,6 +2,15 @@ import Gdk from "gi://Gdk";
 import app from "types/app";
 import { readJson } from "utils/json"
 import { appLauncherVisibility, bar_margin } from "variables";
+import { closeProgress, openProgress } from "./progress";
+import client from "types/client";
+
+// const hyprland = await Service.import('hyprland')
+
+// hyprland.bind("client-added").as(clients =>
+// {
+//     print("Clients changed")
+// })
 
 var Results = Variable<{ app_name: string, app_exec: string }[]>([]
     // readJson(Utils.exec(`${App.configDir}/scripts/app-search.sh`))
@@ -36,6 +45,8 @@ function Input()
                 },
                 on_accept: (self) =>
                 {
+                    openProgress()
+                    Utils.execAsync(`${App.configDir}/scripts/app-loading-progress.sh ${Results.value[0].app_name}`).finally(() => closeProgress()).catch(err => Utils.execAsync(`notify-send "Error" "${err}"`));
                     Utils.execAsync(Results.value[0].app_exec).catch(err => print(err));
                     appLauncherVisibility.value = false
                     self.text = ""

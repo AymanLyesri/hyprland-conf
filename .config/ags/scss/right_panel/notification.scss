@@ -9,7 +9,7 @@ window.notification-popups {
   border-radius: 1rem;
   padding: 1em;
   background-color: $background;
-  animation: background-pop 0.5s ease;
+
   .icon {
     min-width: 50px;
     min-height: 50px;
@@ -33,6 +33,11 @@ window.notification-popups {
     color: $foreground;
     font-size: 1.4em;
     font-weight: 900;
+  }
+
+  .close {
+    @extend .module;
+    @extend .button;
   }
 
   .body {

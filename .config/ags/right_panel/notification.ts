@@ -1,3 +1,6 @@
+
+import { getDominantColor } from "utils/image"
+
 const notifications = await Service.import("notifications")
 
 
@@ -9,7 +12,8 @@ function NotificationIcon({ app_entry, app_icon, image })
             css: `background-image: url("${image}");`
                 + "background-size: contain;"
                 + "background-repeat: no-repeat;"
-                + "background-position: center;",
+                + "background-position: center;"
+                + `box-shadow: 0 0 5px 0 ${getDominantColor(image)};`
         })
     }
 
@@ -26,7 +30,7 @@ function NotificationIcon({ app_entry, app_icon, image })
 }
 
 /** @param {import('resource:///com/github/Aylur/ags/service/notifications.js').Notification} n */
-export function Notification(n)
+export function Notification(n, new_Notification = false)
 {
     const icon = Widget.Box({
         vpack: "start",
@@ -71,6 +75,12 @@ export function Notification(n)
         })),
     })
 
+    const close = Widget.Button({
+        class_name: "close",
+        on_clicked: async () => n.close(),
+        child: Widget.Icon("window-close-symbolic"),
+    })
+
     return Widget.EventBox(
         {
             attribute: { id: n.id },
@@ -79,13 +89,17 @@ export function Notification(n)
         Widget.Box(
             {
                 class_name: `notification ${n.urgency} ${n.app_name}`,
+                css: new_Notification ? "animation: background-pop 0.5s ease;" : "",
                 vertical: true,
             },
             Widget.Box([
                 icon,
                 Widget.Box(
                     { vertical: true },
-                    title,
+                    Widget.Box({
+                        hexpand: true,
+                        children: [title, close],
+                    }),
                     body,
                 ),
             ]),

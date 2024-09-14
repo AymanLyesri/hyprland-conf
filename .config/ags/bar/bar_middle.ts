@@ -3,37 +3,8 @@ const mpris = await Service.import("mpris");
 const notifications = await Service.import("notifications");
 
 import { mediaVisibility } from "variables";
+import { custom_revealer } from "widgets/revealer";
 
-
-function custom_revealer(trigger, slider)
-{
-    const revealer = Widget.Revealer({
-        revealChild: false,
-        transitionDuration: 1000,
-        transition: 'slide_right',
-        child: slider,
-    });
-
-    const eventBox = Widget.EventBox({
-        class_name: "button custom-revealer",
-        vexpand: false,
-        hexpand: false,
-        on_hover: async (self) =>
-        {
-            revealer.reveal_child = true
-        },
-        on_hover_lost: async () =>
-        {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            revealer.reveal_child = false
-        },
-        child: Widget.Box({
-            children: [trigger, revealer],
-        }),
-    });
-
-    return eventBox;
-}
 
 // we don't need dunst or any other notification daemon
 // because the Notifications module is a notification daemon itself
@@ -179,20 +150,18 @@ function Clock()
         poll: [1000, 'date "+%H:%M"'],
     });
     const date_more = Variable("", {
-        poll: [1000, 'date "+:%S %b %e."'],
+        poll: [1000, 'date "+:%S %b %e, %A."']
     });
 
     const revealer = Widget.Label({
-        class_name: "label-left label",
-        css: "color: #ffffff",
+        css: "margin: 0px;",
         label: date_more.bind()
     })
     const trigger = Widget.Label({
-        class_name: "label-right label",
         label: date_less.bind()
     })
 
-    return custom_revealer(trigger, revealer);
+    return custom_revealer(trigger, revealer, "date");
 
 }
 

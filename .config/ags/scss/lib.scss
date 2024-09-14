@@ -52,33 +52,71 @@ button {
   @extend .module;
   margin: 0px;
   padding: 0px;
-  // min-width: 100px;
   slider {
+    border-radius: 10px;
+    font-size: 0.8rem;
     min-height: 1px;
-    min-width: 15px;
-    margin: 4px;
-    background: $secondary;
+    min-width: 1px;
+    margin: 5px;
+    background: mix($foreground, $secondary, 50%);
     // color: $foreground;
   }
 }
 
-.secondary-module {
-  // background-color: rgba(35, 39, 42, 0.534);
-  color: rgba($foreground, 69%);
-  font-size: 10px;
-  font-weight: bolder;
-  padding: 0px 5px;
-  transition: all 0.5s;
-}
+.custom-revealer {
+  label {
+    margin: 0px 10px;
+    // padding: 0px;
+  }
+  .icon {
+    font-size: 1.5em;
+    all: unset;
+    margin: 0px 10px;
+  }
+  button {
+    all: unset;
+    @extend .module;
+  }
+  @extend .module;
+  padding: 0px 10px;
 
-.sep {
-  font-size: 10px;
-  font-weight: bolder;
-  color: $foreground;
-}
+  .slider {
+    // margin: 0px 5px;
+    margin-right: 10px;
+    padding: 0px;
+    min-width: 100px;
+    * {
+      // border-radius: 50%;
+    }
 
-.txt {
-  font-size: 11px;
-  font-weight: bolder;
-  text-shadow: black 1px 1px 5px;
+    trough {
+      min-height: 2px;
+      min-width: 69px;
+      // padding-left: 5px;
+      border-radius: 10px;
+    }
+
+    highlight {
+      min-width: 10px;
+      background-color: $color4;
+    }
+
+    slider {
+      min-height: 1px;
+      min-width: 10px;
+      margin: -5px;
+      background-color: $color1;
+      color: $color7;
+    }
+
+    &:hover {
+      highlight {
+        background-color: mix($color4, #000000, 50%);
+      }
+      slider {
+        background-color: mix($color2, #000000, 50%);
+        color: mix($color2, #000000, 50%);
+      }
+    }
+  }
 }
