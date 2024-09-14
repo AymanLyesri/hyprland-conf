@@ -71,10 +71,14 @@ function ResultsDisplay()
     return Widget.Box({
         class_name: "results",
         vertical: true,
-        children: Results.bind().as(Results => Results.map(element =>
+        hexpand: true,
+        children: Results.bind().as(Results => Results.map((element, key) =>
         {
             return Widget.Button({
                 class_name: `button`,
+                hexpand: true,
+                // hpack: "start",
+                // css:'first' key == 0 ? 'margin-top: 10px' : '',
                 label: element.app_name,
                 on_clicked: () =>
                 {

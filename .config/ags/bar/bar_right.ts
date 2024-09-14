@@ -1,5 +1,6 @@
 import brightness from "brightness";
 import { rightPanelVisibility } from "variables";
+import { closeProgress, openProgress } from "widgets/progress";
 import { custom_revealer } from "widgets/revealer";
 
 const audio = await Service.import("audio");
@@ -39,13 +40,12 @@ function Theme()
     return Widget.Button({
         on_clicked: async (self) =>
         {
-            Utils.subprocess(['bash', '-c', '$HOME/.config/hypr/theme/scripts/switch-global-theme.sh'])
-            // await new Promise(resolve => setTimeout(resolve, 500)); // Sleep for 2 seconds
-            self.child.label = icon()
+            openProgress()
+            Utils.execAsync(['bash', '-c', '$HOME/.config/hypr/theme/scripts/set-global-theme.sh switch']).then(() => self.label = icon())
+                .finally(() => closeProgress())
         },
-        child: Widget.Label({
-            label: icon(),
-        }),
+
+        label: icon(),
         class_name: "theme button",
     })
 

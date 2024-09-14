@@ -22,7 +22,7 @@ function Bar(monitor = 0)
     monitor,
     anchor: ["top", "left", "right"],
     exclusivity: "exclusive",
-    margins: bar_margin.as(margin => [margin * 6.9 + 5, margin * 5 + 5, 0, margin * 5 + 5]),// [top, right, bottom, left]
+    margins: bar_margin.as(margin => [margin * 6.9 + 5, margin * 5 + 69, 0, margin * 5 + 69]),// [top, right, bottom, left]
     layer: "top",
 
     child: Widget.CenterBox({
