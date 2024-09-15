@@ -93,14 +93,14 @@ function Media()
     {
         let colors = {
             spotify: "#1ED760",
-            VLC: "#FF5722",
+            VLC: "#FF9500",
             YouTube: "#FF0000",
-            Brave: "#FF5722",
-            Audacious: "#FF5722",
-            Rhythmbox: "#FF5722",
-            Chromium: "#FF5722",
-            Firefox: "#FF5722",
-            firefox: "#FF5722",
+            Brave: "#FF9500",
+            Audacious: "#FF9500",
+            Rhythmbox: "#FF9500",
+            Chromium: "#FF9500",
+            Firefox: "#FF9500",
+            firefox: "#FF9500",
         }
 
         return colors[name]
@@ -201,10 +201,30 @@ const calendar = Widget.Calendar({
     },
 })
 
+function ClientTitle()
+{
+    return Widget.Revealer({
+        revealChild: hyprland.active.client.bind("title").as(title => title.length > 0),
+        transitionDuration: 1000,
+        transition: 'slide_right',
+        child: Widget.Label({
+            class_name: "client-title",
+            // css: 'margin: 0px 15px',
+            truncate: "end",
+            max_width_chars: 24,
+            // css: hyprland.active.client.bind("title").as(title => title.length > 0 ? "opacity: 1" : "opacity: 0"),
+            // visible: hyprland.active.client.bind("title").as(title => title.length > 0),
+            label: hyprland.active.client.bind("title"),
+        })
+    })
+}
+
+
 export function Center()
 {
     return Widget.Box({
+        class_name: 'bar-middle',
         spacing: 5,
-        children: [Media(), Clock(), Bandwidth()],
+        children: [Media(), Clock(), Bandwidth(), ClientTitle()],
     });
 }

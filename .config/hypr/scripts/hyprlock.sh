@@ -10,4 +10,6 @@ if [ $1 == "suspend" ]; then
     systemctl suspend
 fi
 
+# hyprctl dispatch dpms on
+
 hyprlock

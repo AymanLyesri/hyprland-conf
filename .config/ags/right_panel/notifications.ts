@@ -20,7 +20,7 @@ export async function NotificationPopups(monitor = 0)
     {
         const n = notifications.getNotification(id)
         if (n) {
-            list.children = [Notification(n, true), ...list.children.map(n => Notification(notifications.getNotification(n.attribute.id)))]
+            list.children = [Notification(n, true, true), ...list.children.map(n => Notification(notifications.getNotification(n.attribute.id), false, true))]
         }
     }
 
@@ -29,13 +29,6 @@ export async function NotificationPopups(monitor = 0)
         const notification = list.children.find(n => n.attribute.id === id)
 
         notification?.destroy()
-
-        // notification!.child.css = "background: transparent; opacity: 0;"
-
-        // setTimeout(() =>
-        // {
-        //     notification?.destroy()
-        // }, 500)
     }
 
     list.hook(notifications, onNotified, "notified")

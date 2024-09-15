@@ -1,3 +1,4 @@
+aylurs-gtk-shell
 bat
 bc
 btop
@@ -9,11 +10,11 @@ blueman
 colorz
 dnsmasq
 evremap-git
-eww
 git
 gst-plugin-pipewire
 gtk4
 gnome-themes-extra 
+gvfs
 htop
 hyprpaper
 hyprlock

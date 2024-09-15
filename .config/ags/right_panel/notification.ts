@@ -30,10 +30,11 @@ function NotificationIcon({ app_entry, app_icon, image })
 }
 
 /** @param {import('resource:///com/github/Aylur/ags/service/notifications.js').Notification} n */
-export function Notification(n, new_Notification = false)
+export function Notification(n, new_Notification = false, expand = false)
 {
     const icon = Widget.Box({
-        vpack: "start",
+        vpack: "center",
+        hpack: "center",
         class_name: "icon",
         child: NotificationIcon(n),
     })
@@ -54,7 +55,7 @@ export function Notification(n, new_Notification = false)
         class_name: "body",
         hexpand: true,
         use_markup: true,
-        truncate: "end",
+        truncate: expand ? "none" : "end",
         xalign: 0,
         justification: "left",
         label: n.body,

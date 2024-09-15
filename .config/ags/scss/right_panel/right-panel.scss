@@ -39,6 +39,22 @@
       font-size: 1.2rem;
     }
 
+    .icon {
+      min-width: 20px;
+      min-height: 20px;
+
+      image {
+        font-size: 25px;
+        /* to center the icon */
+      }
+
+      box {
+        min-width: 20px;
+        min-height: 20px;
+        border-radius: 7px;
+      }
+    }
+
     // .body {
     //     color: $foreground;
     // }

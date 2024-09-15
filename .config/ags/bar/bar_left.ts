@@ -32,27 +32,12 @@ function Workspaces()
     });
 }
 
-function truncateWithEllipsis(str, limit)
-{
-    return str.length > limit ? str.slice(0, limit - 2) + ".." : str;
-}
-
-function ClientTitle()
-{
-    return Widget.Label({
-        class_name: "client-title",
-        css: hyprland.active.client.bind("title").as(title => title.length > 0 ? "opacity: 1" : "opacity: 0"),
-        // visible: hyprland.active.client.bind("title").as(title => title.length > 0),
-        label: hyprland.active.client.bind("title").as(title => truncateWithEllipsis(title, 25)),
-    });
-}
-
 // layout of the bar
 export function Left()
 {
     return Widget.Box({
-        class_name: "bar_left",
+        class_name: "bar-left",
         spacing: 8,
-        children: [Workspaces(), ClientTitle()],
+        child: Workspaces(),
     });
 }

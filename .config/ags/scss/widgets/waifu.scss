@@ -33,15 +33,17 @@
 
       .input {
         & > * {
-          // @extend .module;
+          @extend .module;
           background: transparent;
           border-radius: 0px;
           margin: 0px;
+          padding: 0px;
           min-width: 1px;
           min-height: 20px;
           border-color: transparent;
+          border: unset;
           &:focus {
-            border-color: $secondary;
+            border-color: transparent;
           }
         }
       }

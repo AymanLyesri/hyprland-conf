@@ -16,7 +16,7 @@ def main():
     for arg in sys.argv[2:]:
         if arg.isdigit():
             post_id = arg
-        else:
+        elif arg != "":
             tags.append(arg)
             
     if len(tags) == 0:
