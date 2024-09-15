@@ -2,28 +2,8 @@ const hyprland = await Service.import("hyprland");
 const mpris = await Service.import("mpris");
 const notifications = await Service.import("notifications");
 
-import { mediaVisibility } from "variables";
+import { emptyWorkspace, mediaVisibility } from "variables";
 import { custom_revealer } from "widgets/revealer";
-
-
-// we don't need dunst or any other notification daemon
-// because the Notifications module is a notification daemon itself
-function Notification()
-{
-    const popups = notifications.bind("popups");
-    return Widget.Box({
-        class_name: "notification",
-        visible: popups.as((p) => p.length > 0),
-        children: [
-            Widget.Icon({
-                icon: "preferences-system-notifications-symbolic",
-            }),
-            Widget.Label({
-                label: popups.as((p) => p[0]?.summary || ""),
-            }),
-        ],
-    });
-}
 
 function Media()
 {
@@ -186,34 +166,16 @@ function Bandwidth()
     });
 }
 
-const calendar = Widget.Calendar({
-    showDayNames: true,
-    showDetails: true,
-    showHeading: true,
-    showWeekNumbers: true,
-    detail: (self, y, m, d) =>
-    {
-        return `<span color="white">${y}. ${m}. ${d}.</span>`
-    },
-    onDaySelected: ({ date: [y, m, d] }) =>
-    {
-        print(`${y}. ${m}. ${d}.`)
-    },
-})
-
 function ClientTitle()
 {
     return Widget.Revealer({
-        revealChild: hyprland.active.client.bind("title").as(title => title.length > 0),
+        revealChild: emptyWorkspace.as(empty => !empty),
         transitionDuration: 1000,
         transition: 'slide_right',
         child: Widget.Label({
             class_name: "client-title",
-            // css: 'margin: 0px 15px',
             truncate: "end",
             max_width_chars: 24,
-            // css: hyprland.active.client.bind("title").as(title => title.length > 0 ? "opacity: 1" : "opacity: 0"),
-            // visible: hyprland.active.client.bind("title").as(title => title.length > 0),
             label: hyprland.active.client.bind("title"),
         })
     })

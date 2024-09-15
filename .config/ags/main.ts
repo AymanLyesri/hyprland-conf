@@ -3,7 +3,7 @@ import { Center } from "bar/bar_middle";
 import { Right } from "bar/bar_right";
 import { NotificationPopups } from "right_panel/notifications";
 import { RightPanel } from "right_panel/right_panel";
-import { appLauncherVisibility, bar_margin } from "variables";
+import { appLauncherVisibility, emptyWorkspace } from "variables";
 import { AppLauncher } from "widgets/app-launcher";
 import { Media } from "widgets/media";
 import { Progress } from "widgets/progress";
@@ -18,11 +18,11 @@ function Bar(monitor = 0)
 {
   return Widget.Window({
     name: `bar`, // name has to be unique
-    class_name: "bar",
+    class_name: emptyWorkspace.as(empty => !!empty ? "bar empty" : "bar full"),
     monitor,
     anchor: ["top", "left", "right"],
     exclusivity: "exclusive",
-    margins: bar_margin.as(margin => [margin * 6.9 + 5, margin * 5 + 69, 0, margin * 5 + 69]),// [top, right, bottom, left]
+    margins: emptyWorkspace.as(margin => [margin * 69, margin * 50, 0, margin * 50]),// [top, right, bottom, left]
     layer: "top",
 
     child: Widget.CenterBox({

@@ -1,0 +1,10 @@
+.bar {
+  transition: background 0s;
+  &.full {
+    background: $background;
+    > * {
+      padding: 0px 10px;
+    }
+  }
+  //   background: ;
+}

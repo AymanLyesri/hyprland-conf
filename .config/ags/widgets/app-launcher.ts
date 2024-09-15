@@ -1,7 +1,7 @@
 import Gdk from "gi://Gdk";
 import app from "types/app";
 import { readJson } from "utils/json"
-import { appLauncherVisibility, bar_margin } from "variables";
+import { appLauncherVisibility, emptyWorkspace } from "variables";
 import { closeProgress, openProgress } from "./progress";
 import client from "types/client";
 
@@ -95,7 +95,7 @@ export async function AppLauncher()
 {
     return Widget.Window({
         name: `app-launcher`,
-        anchor: bar_margin.as(margin => margin == 10 ? [] : ["top", "left"]),
+        anchor: emptyWorkspace.as(margin => margin == 1 ? [] : ["top", "left"]),
         exclusivity: "normal",
         keymode: "on-demand",
         layer: "top",
