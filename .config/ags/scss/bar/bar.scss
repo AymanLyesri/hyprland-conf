@@ -1,10 +1,53 @@
 .bar {
+  padding: 5px 10;
   transition: background 0s;
   &.full {
     background: $background;
-    > * {
-      padding: 0px 10px;
+    border-radius: 10px 10px 50px 50px;
+
+    .bar-left {
+      .module {
+        border-radius: 10px 50px 10px 50px;
+        // border-radius: 50px 10px 50px 10px;
+      }
+    }
+    .bar-right {
+      .module {
+        border-radius: 50px 10px 50px 10px;
+        // border-radius: 10px 50px 10px 50px;
+      }
+      .system-tray {
+        button.button {
+          @extend .module;
+          border-radius: 0px;
+        }
+
+        button:first-child {
+          border-radius: 50px 0px 0px 0px;
+        }
+
+        button:last-child {
+          border-radius: 0px 0px 50px 0px;
+        }
+
+        button:only-child {
+          border-radius: 50px 10px 50px 10px;
+        }
+      }
     }
   }
-  //   background: ;
+
+  &.empty {
+    // background: $background;
+    // padding: 0px 10px;
+
+    // .bar-left {
+    //   .module {
+    //   }
+    // }
+    // .bar-right {
+    //   .module {
+    //   }
+    // }
+  }
 }

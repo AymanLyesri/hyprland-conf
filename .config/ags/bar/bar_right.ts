@@ -160,6 +160,8 @@ function SysTray()
 export function Right()
 {
     return Widget.Box({
+        class_name: "bar-right",
+        // hexpand: true,
         hpack: "end",
         spacing: 5,
         children: [

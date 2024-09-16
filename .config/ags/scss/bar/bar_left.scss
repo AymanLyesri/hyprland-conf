@@ -1,44 +1,42 @@
 $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
 
-.workspaces {
-  button {
-    @extend .module;
-    border-radius: 10px;
-    ////////////////////////////
-    padding-right: 5px;
-    padding-left: 5px;
-    ////////////////////////////
-    &.focused {
-      padding: 0px 20px;
-      background-image: linear-gradient(to bottom right, $gradient-Colors);
-      // animation: workspace-focus 0.3s ease;
-      text-shadow: black 1px 1px 5px;
+.bar-left {
+  .workspaces {
+    button {
+      @extend .module;
+      ////////////////////////////
+      &.focused {
+        padding: 0px 20px;
+        background-image: linear-gradient(to bottom right, $gradient-Colors);
+        // animation: workspace-focus 0.3s ease;
+        text-shadow: black 1px 1px 5px;
+      }
+      &.same-focused {
+        padding-right: 20px;
+        padding-left: 20px;
+        text-shadow: black 1px 1px 5px;
+        //no transition for margin
+        transition: all 0.5s, padding 0s;
+        background-image: linear-gradient(to bottom right, $gradient-Colors);
+      }
+      ////////////////////////////
+      &:hover {
+        color: $background;
+        background-color: mix(mix($color5, $color6, 50%), $foreground, 69%);
+      }
+      ////////////////////////////
+      // $special: mix(mix($color5, $color6, 50%), $foreground, 69%);
+      // &.special {
+      //   color: $background;
+      //   background-image: linear-gradient(
+      //     to bottom right,
+      //     rgba($special, 0.5),
+      //     rgba($special, 1),
+      //     rgba($special, 0.5)
+      //   );
+      //   font-weight: bolder;
+      // }
     }
-    &.same-focused {
-      padding-right: 20px;
-      padding-left: 20px;
-      text-shadow: black 1px 1px 5px;
-      //no transition for margin
-      transition: all 0.5s, padding 0s;
-      background-image: linear-gradient(to bottom right, $gradient-Colors);
-    }
-    ////////////////////////////
-    &:hover {
-      color: $background;
-      background-color: mix(mix($color5, $color6, 50%), $foreground, 69%);
-    }
-    ////////////////////////////
-    // $special: mix(mix($color5, $color6, 50%), $foreground, 69%);
-    // &.special {
-    //   color: $background;
-    //   background-image: linear-gradient(
-    //     to bottom right,
-    //     rgba($special, 0.5),
-    //     rgba($special, 1),
-    //     rgba($special, 0.5)
-    //   );
-    //   font-weight: bolder;
-    // }
   }
 }
 
@@ -63,7 +61,3 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
 //     padding-left: 0px;
 //   }
 // }
-
-.client-title {
-  @extend .module;
-}

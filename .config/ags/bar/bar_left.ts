@@ -37,7 +37,8 @@ export function Left()
 {
     return Widget.Box({
         class_name: "bar-left",
-        spacing: 8,
+        // hexpand: true,
+        // hpack: "center",
         child: Workspaces(),
     });
 }

@@ -21,6 +21,13 @@ export async function NotificationPopups(monitor = 0)
         const n = notifications.getNotification(id)
         if (n) {
             list.children = [Notification(n, true, true), ...list.children.map(n => Notification(notifications.getNotification(n.attribute.id), false, true))]
+
+            setTimeout(() =>
+            {
+                let notification = list.children.find(n => n.attribute.id === id)
+                notification?.destroy()
+
+            }, notifications.popupTimeout)
         }
     }
 
@@ -32,7 +39,7 @@ export async function NotificationPopups(monitor = 0)
     }
 
     list.hook(notifications, onNotified, "notified")
-        .hook(notifications, onDismissed, "dismissed")
+    // .hook(notifications, onDismissed, "dismissed") // it bugs when clear is triggered
 
     return Widget.Window({
         monitor,

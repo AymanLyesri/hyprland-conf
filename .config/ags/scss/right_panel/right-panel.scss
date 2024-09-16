@@ -1,16 +1,13 @@
 .right-panel {
   @extend .module;
-  background: $background;
-  border-radius: 0px;
-  border: 1px solid $secondary;
-  border-right: 0px;
-  border-bottom: 0px;
-  padding: 0rem;
+  border-radius: 0px 0px 0px 0px;
+  // border: 1px solid $secondary;
+  padding: 0px;
   min-width: 300px;
 }
 
 .options {
-  margin: 5px 10px;
+  margin: 0px 10px;
 
   .button {
     @extend .module;
@@ -29,9 +26,21 @@
   }
 }
 
+.clear {
+  @extend .module;
+  margin: 0px 10px;
+
+  background: rgba(177, 62, 62, 0.493);
+  color: $foreground;
+  &:hover {
+    background: rgba(177, 62, 62, 0.8);
+  }
+}
+
 .notification-event {
   .notification {
     margin: 5px 10px;
+    padding: 10px;
     min-width: 0px;
 
     .summary {
@@ -45,13 +54,12 @@
 
       image {
         font-size: 25px;
-        /* to center the icon */
       }
 
       box {
-        min-width: 20px;
-        min-height: 20px;
-        border-radius: 7px;
+        min-width: 40px;
+        min-height: 40px;
+        border-radius: 10px;
       }
     }
 

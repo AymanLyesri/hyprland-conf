@@ -5,8 +5,13 @@ const notifications = await Service.import("notifications");
 import { emptyWorkspace, mediaVisibility } from "variables";
 import { custom_revealer } from "widgets/revealer";
 
+const Player = mpris.bind("players").as(players => players[0])
+
 function Media()
 {
+
+
+
     function getComplementaryColor(hex: string): string
     {
         // Remove the hash at the start if it's there
@@ -48,22 +53,22 @@ function Media()
         return icons[name]
     }
 
-    const progress = Widget.CircularProgress({
+    const progress = (player) => Widget.CircularProgress({
         class_name: "progress",
         rounded: true,
         inverted: false,
         startAt: 0.75,
         child: Widget.Label({
-            label: playerToIcon(mpris.players[0].name),
+            label: player.bind("name").as(playerToIcon),
         }),
         setup: self =>
         {
             function update()
             {
-                const value = mpris.players[0].position / mpris.players[0].length
+                const value = player.position / player.length
                 self.value = value > 0 ? value : 0
             }
-            self.hook(mpris.players[0], update)
+            self.hook(player, update)
             // self.hook(player, update, "position")
             self.poll(1000, update)
         },
@@ -86,43 +91,73 @@ function Media()
         return colors[name]
     }
 
-    const truncateWithEllipsis = (str, limit) =>
-    {
-        return str.length > limit ? str.slice(0, limit - 2) + "..." : str;
-    }
+    // const truncateWithEllipsis = (str, limit) =>
+    // {
+    //     return str.length > limit ? str.slice(0, limit - 2) + "..." : str;
+    // }
 
-    const title = () =>
-    {
-        var { track_artists, track_title } = mpris.players[0];
-        return `${truncateWithEllipsis(track_artists.join(", "), 20)} - ${truncateWithEllipsis(track_title, 20)}`
-    };
+    // const toTitle = (player) =>
+    // {
+    //     var { track_artists, track_title } = player;
+    //     return `${truncateWithEllipsis(track_artists.join(", "), 20)} - ${truncateWithEllipsis(track_title, 20)}`
+    // };
 
-    const label = Widget.Label({
+    const title = (player) => Widget.Label({
         class_name: "label",
-        label: Utils.watch(title(), mpris, "changed", () => title()),
+        max_width_chars: 20,
+        truncate: "end",
+        label: player.bind("track_title"),
     })
 
-    const getPlayerCss = () => `
-            color: ${playerToColor(mpris.players[0].name)};
-            background-image:  linear-gradient(to right, #000000 , rgba(0, 0, 0, 0.5)), url('${mpris.players[0].track_cover_url}');
-            `
+    const artist = (player) => Widget.Label({
+        class_name: "label",
+        max_width_chars: 20,
+        truncate: "end",
+        label: player.bind("track_artists").transform(a => "-- " + a.join(", ")),
+    })
+
+    const activePlayer = (player) => Widget.Box({
+        class_name: "media",
+        spacing: 5,
+        children: [progress(player), title(player), artist(player)],
+        css: player.bind("track_cover_url").as(t => `
+            color: ${playerToColor(player.name)};
+            background-image:  linear-gradient(to right, #000000 , rgba(0, 0, 0, 0.5)), url('${player.track_cover_url}');
+            `,
+        ),
+    })
 
     return Widget.EventBox({
         class_name: "media-event",
         // on_primary_click: () => Utils.execAsync(`ags -t media`).catch(err => print(err)),
         on_secondary_click: () => hyprland.messageAsync("dispatch workspace 4"),
-        on_scroll_up: () => mpris.players[0].next(),
-        on_scroll_down: () => mpris.players[0].previous(),
+        // on_scroll_up: () => Player.next(),
+        // on_scroll_down: () => Player.previous(),
         on_hover: () => mediaVisibility.value = true,
-        child: Widget.Box({
-            class_name: "media",
-            spacing: 5,
-            children: [progress, label],
-            css: Utils.watch(getPlayerCss(), mpris, "changed", () => getPlayerCss())
 
-        })
+        child: Utils.watch(activePlayer(mpris.players[0]), mpris, "changed", () => activePlayer(mpris.players.find(player => player.play_back_status === "Playing"))),
+        // child: Utils.merge([mpris.bind("players"), mpris.bind("players").as(players =>
+        // {
+        //     return players.map(player => player.bind("play_back_status"));
+        // })
+        // ], (players, b) =>
+        // {
+        //     print(players)
+        //     // const active = players.find(player => player.play_back_status === "Playing") || players[0]
+        //     const active = players[0]
+        //     // print("AAAAAAAACTIIIIIVE", active.play_back_status)
+        //     // return Widget.Label({
+        //     //     label: active ? toTitle(active) : "No media playing",
+        //     // })
+        //     return activePlayer(active)
+
+        // })
+
     })
 }
+
+
+
 
 function Clock()
 {

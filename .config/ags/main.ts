@@ -18,14 +18,14 @@ function Bar(monitor = 0)
 {
   return Widget.Window({
     name: `bar`, // name has to be unique
-    class_name: emptyWorkspace.as(empty => !!empty ? "bar empty" : "bar full"),
     monitor,
     anchor: ["top", "left", "right"],
     exclusivity: "exclusive",
-    margins: emptyWorkspace.as(margin => [margin * 69, margin * 50, 0, margin * 50]),// [top, right, bottom, left]
+    margins: emptyWorkspace.as(margin => [margin * 69, margin * 50 + 10, 0, margin * 50 + 10]),// [top, right, bottom, left]
     layer: "top",
 
     child: Widget.CenterBox({
+      class_name: emptyWorkspace.as(empty => !!empty ? "bar empty" : "bar full"),
       start_widget: Left(),
       center_widget: Center(),
       end_widget: Right(),

@@ -5,7 +5,7 @@ wallpaper=$1                                                   # wallpaper
 
 ####################################1######
 
-sleep 0.25s # wait for wallpaper to load
+# sleep 0.25s # wait for wallpaper to load
 
 ##########################################
 
@@ -15,7 +15,8 @@ done
 
 ##########################################
 
-# sleep 0.5s                                       # wait for wallpaper to load
+# sleep 0.50s # wait for wallpaper to load
+
 $hyprdir/theme/scripts/wal-theme.sh "$wallpaper" # set wallpaper theme
 
 # $hyprdir/scripts/dynamic-border.sh # set border theme

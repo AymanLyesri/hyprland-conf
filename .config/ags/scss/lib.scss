@@ -14,7 +14,8 @@ $background: rgba($background, 0.5);
 
 .module {
   background: $background;
-  color: mix($foreground, $secondary, 50%);
+  // color: mix($foreground, $secondary, 50%);
+  color: $foreground;
   min-height: 1px;
   border: none;
   box-shadow: none;
@@ -31,8 +32,7 @@ $background: rgba($background, 0.5);
     transition: all 0.3s;
     border-radius: 10px;
     ////////////////////////////
-    padding-right: 5px;
-    padding-left: 5px;
+    padding: 0px 10px;
     ////////////////////////////
     &:hover,
     &:focus {
@@ -68,23 +68,16 @@ $background: rgba($background, 0.5);
   .icon {
     font-size: 1.5em;
     all: unset;
-    margin: 0px 10px;
-  }
-  button {
-    all: unset;
-    @extend .module;
+    margin: 0px 15px;
   }
   @extend .module;
-  padding: 0px 10px;
 
   .slider {
     // margin: 0px 5px;
     margin-right: 10px;
+    margin-left: 5px;
     padding: 0px;
     min-width: 100px;
-    * {
-      // border-radius: 50%;
-    }
 
     trough {
       min-height: 2px;

@@ -1,25 +1,27 @@
-.theme {
-  @extend .module;
-  label {
-    font-size: larger;
-  }
-}
-
-.system-tray {
-  button.button {
+.bar-right {
+  .theme {
     @extend .module;
-    border-radius: 0px;
+    label {
+      font-size: larger;
+    }
   }
 
-  button:first-child {
-    border-radius: 10px 0px 0px 10px;
-  }
+  .system-tray {
+    button.button {
+      @extend .module;
+      border-radius: 0px;
+    }
 
-  button:last-child {
-    border-radius: 0px 10px 10px 0px;
-  }
+    button:first-child {
+      border-radius: 10px 0px 0px 10px;
+    }
 
-  button:only-child {
-    border-radius: 10px;
+    button:last-child {
+      border-radius: 0px 10px 10px 0px;
+    }
+
+    button:only-child {
+      border-radius: 10px;
+    }
   }
 }

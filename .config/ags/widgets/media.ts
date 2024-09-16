@@ -184,7 +184,7 @@ export async function Media()
                     vertical: true,
                     spacing: 10,
                     // visible: players.as(p => p.length > 0),
-                    children: players.as(p => p.map(Player)),
+                    children: players.as(p => { print("hhhhhhhhhhhhhhhhhhh"); return p.map(Player) }),
                 })
             }),
         }),

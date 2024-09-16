@@ -62,6 +62,17 @@ function FilterNotifications(notifications: any[], filter: string): any[]
     return [...filtered, ...others].slice(0, 50); // Limit to the last 50 notifications DEFAULT, higher number will slow down the UI
 }
 
+const ClearNotifications = () =>
+{
+    return Widget.Button({
+        class_name: "clear button",
+        label: "Clear",
+        on_clicked: async () => await Notifications.clear(),
+    })
+}
+
+const separator = Widget.Separator({ vertical: false });
+
 
 function NotificationsDisplay()
 {
@@ -93,7 +104,8 @@ function Panel()
     return Widget.Box({
         class_name: "right-panel",
         vertical: true,
-        children: [Waifu(), Resources(), Options(), NotificationsDisplay()],
+        spacing: 5,
+        children: [Waifu(), Resources(), Options(), ClearNotifications(), NotificationsDisplay()],
     })
 }
 

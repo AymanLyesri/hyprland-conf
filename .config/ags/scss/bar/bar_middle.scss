@@ -10,6 +10,7 @@
   margin: 0px;
   padding: 0px 10px;
   border-radius: 10px;
+  transition: all 0s;
 
   // font-size: 0.5rem;
 
@@ -25,19 +26,6 @@
   }
 }
 
-.custom-revealer {
-  &.date {
-    // all: unset;
-    // padding: 0px;
-    // > * {
-    //   padding: 0px;
-    // }
-
-    // @extend .module;
-    // background: black;
-  }
-}
-
 .bandwidth {
   //   padding: 0px;
   // min-width: 100px;
@@ -48,4 +36,8 @@
     // padding: 0px;
     border-radius: 10px;
   }
+}
+
+.client-title {
+  @extend .module;
 }
