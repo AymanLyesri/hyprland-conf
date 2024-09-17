@@ -1,8 +1,0 @@
-; Secondary bar visibility
-(defvar notification_bar false)
-
-; Notification History
-(defpoll notification_history :interval "2s" "jq -r '[.[] | [.summary, .body]]' notification_bar/json/history.json")
-
-; Notifications
-(deflisten notifs :initial "[]" "python ./notification_bar/scripts/notification-daemon-loop.py")

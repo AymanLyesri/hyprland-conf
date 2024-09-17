@@ -15,8 +15,6 @@
 !.config/ranger/
 # include btop config
 !.config/btop/
-# include dunst config
-!.config/dunst/
 # include nvim config
 !.config/nvim/
 # include aria2c config

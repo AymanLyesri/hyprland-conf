@@ -1,7 +1,0 @@
-*.jpg
-
-bar/media/*
-bar/scss/theme.scss
-bar/config/*
-
-notification_bar/json/history.json
