@@ -5,6 +5,7 @@
     background-size: cover;
     background-position: center;
     border-radius: 10px;
+    // background-color: transparent;
     // box-shadow: 0px 0px 10px 0px #c5a2bc;
 
     // * {
@@ -13,7 +14,20 @@
     // }
 
     .actions {
-      // margin: 5px;
+      .top {
+        margin: 5px;
+      }
+      .bottom {
+        // margin: 5px;
+        .action-trigger.action-trigger {
+          font-size: 15px;
+          margin: 5px;
+          min-width: 25px;
+          min-height: 25px;
+          padding: 0px;
+          border-radius: 50%;
+        }
+      }
 
       .button {
         @extend .module;

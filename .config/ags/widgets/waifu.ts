@@ -61,7 +61,6 @@ function Actions()
                 class_name: "button",
                 on_clicked: () =>
                 {
-
                     Utils.execAsync(`bash -c "cmp -s ${waifuPath} ${terminalWaifuPath} && { rm ${terminalWaifuPath}; echo 1; } || { cp ${waifuPath} ${terminalWaifuPath}; echo 0; }"`)
                         .then((output) => Utils.execAsync(`notify-send "Waifu ${Number(output)}" "${Number(output) == 0 ? 'Pinned To Terminal' : 'UN-Pinned from Terminal'}"`))
                         .catch(err => print(err))
@@ -70,49 +69,77 @@ function Actions()
         ],
     })
 
-    const bottom = Widget.Box({
-        class_name: "bottom",
-        vpack: "end",
-        vexpand: true,
-        children: [
-            Widget.Button({
-                label: "Undo",
-                hexpand: true,
-                class_name: "button",
+    const actions = Widget.Revealer({
+        revealChild: false,
+        transitionDuration: 1000,
+        transition: 'slide_up',
+        child: Widget.Box({
+            children: [
+                Widget.Button({
+                    label: "Undo",
+                    hexpand: true,
+                    class_name: "button",
 
-                on_clicked: () => GetImageFromApi(previousImageDetails.id),
-            }),
-            Widget.Button({
-                label: "Random",
-                hexpand: true,
-                class_name: "button",
-                on_clicked: async () => GetImageFromApi(),
-            }),
-            Widget.EventBox({
-                class_name: "input button",
-                child: Widget.Entry({
-                    placeholder_text: 'Tags/ID',
-                    text: "",
-                    on_accept: (self) =>
+                    on_clicked: () => GetImageFromApi(previousImageDetails.id),
+                }),
+                Widget.Button({
+                    label: "Random",
+                    hexpand: true,
+                    class_name: "button",
+                    on_clicked: async () => GetImageFromApi(),
+                }),
+                Widget.EventBox({
+                    class_name: "input button",
+                    child: Widget.Entry({
+                        placeholder_text: 'Tags/ID',
+                        text: "",
+                        on_accept: (self) =>
+                        {
+                            if (self.text == null || self.text == "") {
+                                return
+                            }
+                            GetImageFromApi(self.text)
+                        },
+                    }),
+                }),
+
+                // Widget.Switch({
+                //     class_name: "switch",
+                //     onActivate: (status) =>
+                //     {
+                //         nsfw.value = !nsfw.value
+                //         Utils.execAsync(`notify-send "NSFW" "${nsfw.value ? "Enabled" : "Disabled"}"`).catch(err => print(err))
+                //     },
+                // })
+
+                Widget.Button({
+                    label: "NSFW",
+                    class_name: "button",
+                    on_clicked: () =>
                     {
-                        if (self.text == null || self.text == "") {
-                            return
-                        }
-                        GetImageFromApi(self.text)
+                        nsfw.value = !nsfw.value
+                        Utils.execAsync(`notify-send "NSFW" "${nsfw.value ? "Enabled" : "Disabled"}"`).catch(err => print(err))
                     },
                 }),
-            }),
-            Widget.Switch({
-                class_name: "switch",
-                onActivate: (status) =>
-                {
-                    nsfw.value = !nsfw.value
-                    Utils.execAsync(`notify-send "NSFW" "${nsfw.value ? "Enabled" : "Disabled"}"`).catch(err => print(err))
-                },
-            })
 
-        ],
+            ],
 
+        })
+    })
+    const bottom = Widget.Box({
+        class_name: "bottom",
+        vertical: true,
+        vpack: "end",
+        children: [Widget.Button({
+            label: "",
+            class_name: "button action-trigger",
+            hpack: "end",
+            on_clicked: (self) =>
+            {
+                actions.reveal_child = !actions.reveal_child
+                self.label = actions.reveal_child ? "" : ""
+            },
+        }), actions],
     })
 
     return Widget.Box({

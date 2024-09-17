@@ -9,7 +9,6 @@ const Notifications = await Service.import("notifications")
 // notifications.cacheActions = false;
 // notifications.clearDelay = 100;
 
-const notificationFilter = Variable<Filter>({ name: "", color: "" });
 
 interface Filter
 {
@@ -17,21 +16,27 @@ interface Filter
     color: string
 }
 
-const Filters: Filter[] = [{
-    name: "Spotify",
-    color: "#1DB954",
-}, {
-    name: "QBittorent",
-    color: "#3775A9",
-}, {
-    name: "Clipboard",
-    color: "#000000",
-}]
+const notificationFilter = Variable<Filter>({ name: "", color: "" });
+
 function Options()
 {
+    const Filters: Filter[] = [{
+        name: "Spotify",
+        color: "rgba(30, 215, 96, 0.5)",
+    }, {
+        name: "QBittorent",
+        color: "rgba(0, 123, 255, 0.5)",
+    }, {
+        name: "Clipboard",
+        color: "rgba(33, 150, 243, 0.5)",
+    }, {
+        name: "Update",
+        color: "rgba(255, 152, 0, 0.5)",
+    }];
+
     return Widget.Box({
         class_name: "options",
-        hexpand: true,
+        hexpand: false,
         children: Filters.map(filter =>
         {
             return Widget.Button({
@@ -39,11 +44,29 @@ function Options()
                 hexpand: true,
                 on_clicked: () => notificationFilter.value = (notificationFilter.value === filter ? { name: "", color: "" } : filter),
                 class_name: "module button",
-                css: `background: ${notificationFilter.bind().as(filter => filter.color)}`,
+                css: notificationFilter.bind().as(filter => `background: ${filter.color}`),
             });
         })
     })
 }
+
+
+const ClearNotifications = () =>
+{
+    return Widget.Button({
+        class_name: "clear button",
+        label: "Clear",
+        on_clicked: async () =>
+        {
+            NotificationsDisplay.child = Widget.Box({
+                vertical: true,
+                children: [],
+            });
+            Notifications.clear().then(() => NotificationsDisplay.child = NotificationHistory());
+        },
+    })
+}
+
 
 
 
@@ -54,7 +77,7 @@ function FilterNotifications(notifications: any[], filter: string): any[]
 
     notifications.forEach((notification: any) =>
     {
-        if (notification.app_name === filter || notification.summary === filter) {
+        if (notification.app_name.includes(filter) || notification.summary.includes(filter)) {
             filtered.unshift(notification);
         } else {
             others.unshift(notification);
@@ -63,47 +86,31 @@ function FilterNotifications(notifications: any[], filter: string): any[]
     return [...filtered, ...others].slice(0, 50); // Limit to the last 50 notifications DEFAULT, higher number will slow down the UI
 }
 
-const ClearNotifications = () =>
-{
-    return Widget.Button({
-        class_name: "clear button",
-        label: "Clear",
-        on_clicked: async () =>
-        {
-            const previousChild = NotificationsDisplay.child;
-            NotificationsDisplay.child = Widget.Box({
-                vertical: true,
-                children: [],
-            });
-            Notifications.clear();
-            NotificationsDisplay.child = previousChild;
-        },
-    })
-}
+const NotificationHistory = () => Widget.Box({
+    vertical: true,
+    children: Utils.merge([notificationFilter.bind(), Notifications.bind("notifications")], (filter, notifications) =>
+    {
+        if (!notifications) return [];
+        return FilterNotifications(notifications, filter.name)
+            .map(notification =>
+            {
+                return Widget.EventBox(
+                    {
+                        class_name: "notification-event",
+                        on_primary_click: () => Utils.execAsync(`wl-copy "${notification.body}"`).catch(err => print(err)),
+                        child: Notification(notification),
+                    });
+            })
+    }),
+})
 
-const separator = Widget.Separator({ vertical: false });
+// const separator = Widget.Separator({ vertical: false });
 
 const NotificationsDisplay = Widget.Scrollable({
     class_name: "notification-history",
     hscroll: 'never',
     vexpand: true,
-    child: Widget.Box({
-        vertical: true,
-        children: Utils.merge([notificationFilter.bind(), Notifications.bind("notifications")], (filter, notifications) =>
-        {
-            if (!notifications) return [];
-            return FilterNotifications(notifications, filter.name)
-                .map(notification =>
-                {
-                    return Widget.EventBox(
-                        {
-                            class_name: "notification-event",
-                            on_primary_click: () => Utils.execAsync(`wl-copy "${notification.body}"`).catch(err => print(err)),
-                            child: Notification(notification),
-                        });
-                })
-        }),
-    }),
+    child: NotificationHistory(),
 })
 
 
@@ -113,7 +120,7 @@ function Panel()
         class_name: "right-panel",
         vertical: true,
         spacing: 5,
-        children: [Waifu(), Resources(), Options(), ClearNotifications(), NotificationsDisplay],
+        children: [Waifu(), Resources(), Options(), NotificationsDisplay, ClearNotifications()],
     })
 }
 

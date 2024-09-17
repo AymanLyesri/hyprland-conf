@@ -1,10 +1,9 @@
 # (cat ~/.cache/wal/sequences &)
 (nohup $HOME/.config/hypr/theme/scripts/wal-theme.sh > /dev/null 2>&1 &) # set wallpaper theme
-export QT_QPA_PLATFORMTHEME=qt5ct
+# export QT_QPA_PLATFORMTHEME=qt5ct
 
 # fetch system information
-FETCH="fastfetch --logo-recache --logo-width 33 --logo-padding 1 --logo-padding-top 0 --logo $HOME/.config/ags/assets/terminal/icon.jpg"
-eval "$FETCH"
+source $HOME/.config/fastfetch/fastfetch.sh
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]

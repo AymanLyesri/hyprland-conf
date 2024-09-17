@@ -1,82 +1,113 @@
+// Designed for Arch Linux
+// Modified from: https://github.com/fastfetch-cli/fastfetch/pull/1025#issuecomment-2177566138
 {
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  "logo": {
+    "source": "arch3",
+    "color": {
+      "1": "red",
+      "2": "yellow"
+    }
+  },
+  "display": {
+    "color": {
+      "separator": "blue"
+    },
+    "separator": " | ",
+    "constants": [
+      ">-----------<+>---------------------------------------------<"
+    ]
+  },
   "modules": [
     {
-      "type": "title",
-      "key": "User",
-      "format": "{user-name}"
+      "type": "kernel",
+      "key": " /\\rch Linux",
+      "keyColor": "magenta"
     },
     {
-      "type": "title",
-      "key": "Hostname",
-      "format": "{host-name}"
+      "type": "custom",
+      "format": "{$1}",
+      "outputColor": "separator"
     },
     {
-      "type": "host",
-      "key": "Model"
+      "type": "uptime",
+      "key": "   Uptime   ",
+      "keyColor": "green"
     },
     {
-      "type": "os",
-      "format": "{pretty-name} {version-id} {arch}"
+      "type": "shell",
+      "key": "   Shell    ",
+      "keyColor": "green"
     },
-    "kernel",
-    "uptime",
-    {
-      "type": "loadavg",
-      "key": "Load Average"
-    },
-    "processes",
-    {
-      "type": "wm",
-      "key": "Window Manager"
-    },
-    {
-      "type": "de",
-      "key": "Desktop Environment"
-    },
-    "shell",
     {
       "type": "terminal",
-      "format": "{pretty-name} {version} {#37}█{#97}█ {#36}█{#96}█ {#35}█{#95}█ {#34}█{#94}█ {#33}█{#93}█ {#32}█{#92}█ {#31}█{#91}█ {#30}█{#90}█"
+      "key": "   Terminal ",
+      "keyColor": "green"
+    },
+    {
+      "type": "terminalfont",
+      "key": "   Font     ",
+      "keyColor": "green"
     },
     {
       "type": "packages",
-      "format": "{all}"
-    },
-    {
-      "type": "cpu",
-      "key": "Temperature",
-      "temp": true,
-      "format": "{temperature}"
-    },
-    {
-      "type": "cpu",
-      "key": "CPU",
-      "format": "{cores-logical} x {name}"
-    },
-    {
-      "type": "gpu",
-      "format": "{name}"
-    },
-    {
-      "type": "memory",
-      "key": "RAM"
-    },
-    {
-      "type": "disk",
-      "key": "Disk",
-      "folders": "/"
+      "key": "   Packages ",
+      "keyColor": "green"
     },
     {
       "type": "localip",
-      "key": "LAN IP",
-      "showIpv6": true,
-      "showPrefixLen": false
+      "key": "   Local IP ",
+      "keyColor": "green"
     },
     {
-      "type": "publicip",
-      "key": "WAN IP",
-      "timeout": 1000
+      "type": "custom",
+      "format": "{$1}",
+      "outputColor": "separator"
+    },
+    {
+      "type": "display",
+      "key": "   Display  ",
+      "keyColor": "cyan"
+    },
+    {
+      "type": "cpu",
+      "key": "   CPU      ",
+      "keyColor": "cyan"
+    },
+    {
+      "type": "gpu",
+      "key": "   GPU      ",
+      "keyColor": "cyan"
+    },
+    {
+      "type": "memory",
+      "key": "   RAM      ",
+      "keyColor": "cyan"
+    },
+    {
+      "type": "swap",
+      "key": "   SWAP     ",
+      "keyColor": "cyan"
+    },
+    {
+      "type": "disk",
+      "key": "   Disk     ",
+      "keyColor": "cyan"
+    },
+    {
+      "type": "battery",
+      "key": "   Battery  ",
+      "keyColor": "cyan"
+    },
+    {
+      "type": "custom",
+      "format": "{$1}",
+      "outputColor": "separator"
+    },
+    "break",
+    {
+      "type": "colors",
+      "paddingLeft": 15
     }
   ]
 }
