@@ -10,6 +10,7 @@ blueman
 colorz
 dnsmasq
 evremap-git
+fastfetch
 git
 gst-plugin-pipewire
 gtk4
@@ -35,7 +36,6 @@ pipewire
 playerctl
 python-pywal
 python-setuptools
-pfetch
 rofi
 ranger
 rclone

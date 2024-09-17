@@ -2,7 +2,7 @@ import { Notification } from "./notification"
 
 const notifications = await Service.import("notifications")
 
-notifications.popupTimeout = 3000;
+notifications.popupTimeout = 5000;
 notifications.forceTimeout = false;
 notifications.cacheActions = false;
 notifications.clearDelay = 100;
@@ -39,7 +39,7 @@ export async function NotificationPopups(monitor = 0)
     }
 
     list.hook(notifications, onNotified, "notified")
-    // .hook(notifications, onDismissed, "dismissed") // it bugs when clear is triggered
+        .hook(notifications, onDismissed, "dismissed") // it bugs when clear is triggered
 
     return Widget.Window({
         monitor,

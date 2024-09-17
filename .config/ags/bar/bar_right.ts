@@ -148,7 +148,7 @@ function SysTray()
                 class_name: "button"
             })
         )
-    );
+    ); 
 
     return Widget.Box({
         children: items,

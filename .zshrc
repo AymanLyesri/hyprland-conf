@@ -2,16 +2,16 @@
 (nohup $HOME/.config/hypr/theme/scripts/wal-theme.sh > /dev/null 2>&1 &) # set wallpaper theme
 export QT_QPA_PLATFORMTHEME=qt5ct
 
+# fetch system information
+FETCH="fastfetch --logo-recache --logo-width 33 --logo-padding 1 --logo-padding-top 0 --logo $HOME/.config/ags/assets/terminal/icon.jpg"
+eval "$FETCH"
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
-
-# Pfetch
-PFETCH="pfetch | lolcat"
-eval "$PFETCH"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f $HOME/.p10k.zsh ]] || source $HOME/.p10k.zsh

@@ -29,9 +29,11 @@ function Image()
     // GetImageFromApi()
     return Widget.EventBox({
         class_name: "image",
-        on_primary_click: async () => Utils.execAsync(`firefox https://danbooru.donmai.us/posts/${imageDetails.value.id}`).catch(err => print(err)),
-        on_secondary_click: async () => Utils.execAsync(`bash -c "wl-copy --type image/png < ${waifuPath}"`).catch(err => print(err)),
+        on_primary_click: async () => Utils.execAsync(`firefox https://danbooru.donmai.us/posts/${imageDetails.value.id}`).then(() => Utils.execAsync('notify-send "Waifu" "opened in Firefox"')).catch(err => print(err)),
+        on_secondary_click: async () => Utils.execAsync(`bash -c "wl-copy --type image/png < ${waifuPath}"`).then(() => Utils.execAsync('notify-send "Waifu" "Copied"')).catch(err => print(err)),
         child: Widget.Box({
+            hexpand: false,
+            vexpand: false,
             child: Actions(),
             css: imageDetails.bind().as(imageDetails =>
             {
@@ -47,11 +49,31 @@ function Image()
 
 function Actions()
 {
-    return Widget.Box({
-        class_name: "actions",
-        // hexpand: true,
-        // vexpand: false,
+    const terminalWaifuPath = `${App.configDir}/assets/terminal/icon.jpg`
+
+    const top = Widget.Box({
+        class_name: "top",
+        vpack: "start",
+        vexpand: true,
+        children: [
+            Widget.Button({
+                label: "Pin",
+                class_name: "button",
+                on_clicked: () =>
+                {
+
+                    Utils.execAsync(`bash -c "cmp -s ${waifuPath} ${terminalWaifuPath} && { rm ${terminalWaifuPath}; echo 1; } || { cp ${waifuPath} ${terminalWaifuPath}; echo 0; }"`)
+                        .then((output) => Utils.execAsync(`notify-send "Waifu ${Number(output)}" "${Number(output) == 0 ? 'Pinned To Terminal' : 'UN-Pinned from Terminal'}"`))
+                        .catch(err => print(err))
+                },
+            }),
+        ],
+    })
+
+    const bottom = Widget.Box({
+        class_name: "bottom",
         vpack: "end",
+        vexpand: true,
         children: [
             Widget.Button({
                 label: "Undo",
@@ -90,6 +112,21 @@ function Actions()
             })
 
         ],
+
+    })
+
+    return Widget.Box({
+        class_name: "actions",
+        hexpand: true,
+        // vexpand: true,
+        // hpack: "center",
+        // vpack: "fill",
+        vertical: true,
+        children: [
+            top,
+            bottom,
+        ],
+
     })
 }
 

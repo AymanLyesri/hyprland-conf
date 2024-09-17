@@ -46,6 +46,7 @@ function Options()
 }
 
 
+
 function FilterNotifications(notifications: any[], filter: string): any[]
 {
     const filtered: any[] = [];
@@ -67,37 +68,44 @@ const ClearNotifications = () =>
     return Widget.Button({
         class_name: "clear button",
         label: "Clear",
-        on_clicked: async () => await Notifications.clear(),
+        on_clicked: async () =>
+        {
+            const previousChild = NotificationsDisplay.child;
+            NotificationsDisplay.child = Widget.Box({
+                vertical: true,
+                children: [],
+            });
+            Notifications.clear();
+            NotificationsDisplay.child = previousChild;
+        },
     })
 }
 
 const separator = Widget.Separator({ vertical: false });
 
-
-function NotificationsDisplay()
-{
-    return Widget.Scrollable({
-        class_name: "notification-history",
-        hscroll: 'never',
-        vexpand: true,
-        child: Widget.Box({
-            vertical: true, children: Utils.merge([notificationFilter.bind(), Notifications.bind("notifications")], (filter, notifications) =>
-            {
-                return FilterNotifications(notifications, filter.name)
-                    .map(notification =>
-                    {
-                        // Limit to the last 100 notifications after sorting
-                        return Widget.EventBox(
-                            {
-                                class_name: "notification-event",
-                                on_primary_click: () => Utils.execAsync(`wl-copy "${notification.body}"`).catch(err => print(err)),
-                                child: Notification(notification),
-                            });
-                    })
-            }),
+const NotificationsDisplay = Widget.Scrollable({
+    class_name: "notification-history",
+    hscroll: 'never',
+    vexpand: true,
+    child: Widget.Box({
+        vertical: true,
+        children: Utils.merge([notificationFilter.bind(), Notifications.bind("notifications")], (filter, notifications) =>
+        {
+            if (!notifications) return [];
+            return FilterNotifications(notifications, filter.name)
+                .map(notification =>
+                {
+                    return Widget.EventBox(
+                        {
+                            class_name: "notification-event",
+                            on_primary_click: () => Utils.execAsync(`wl-copy "${notification.body}"`).catch(err => print(err)),
+                            child: Notification(notification),
+                        });
+                })
         }),
-    })
-}
+    }),
+})
+
 
 function Panel()
 {
@@ -105,7 +113,7 @@ function Panel()
         class_name: "right-panel",
         vertical: true,
         spacing: 5,
-        children: [Waifu(), Resources(), Options(), ClearNotifications(), NotificationsDisplay()],
+        children: [Waifu(), Resources(), Options(), ClearNotifications(), NotificationsDisplay],
     })
 }
 

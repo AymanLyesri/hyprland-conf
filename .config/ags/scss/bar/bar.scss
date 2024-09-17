@@ -23,11 +23,11 @@
         }
 
         button:first-child {
-          border-radius: 50px 0px 0px 0px;
+          border-radius: 50px 0px 0px 10px;
         }
 
         button:last-child {
-          border-radius: 0px 0px 50px 0px;
+          border-radius: 0px 10px 50px 0px;
         }
 
         button:only-child {
