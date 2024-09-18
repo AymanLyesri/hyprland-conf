@@ -1,7 +1,7 @@
-import { Waifu } from "widgets/waifu";
-import { Notification } from "./notification";
-import { Resources } from "widgets/resources";
-import { rightPanelVisibility } from "variables";
+
+import { Notification } from "./components/notification";
+import { Resources } from "widgets/Resources";
+import waifu from "./components/waifu";
 
 const Notifications = await Service.import("notifications")
 // notifications.popupTimeout = 3000;
@@ -120,14 +120,13 @@ function Panel()
         class_name: "right-panel",
         vertical: true,
         spacing: 5,
-        children: [Waifu(), Resources(), Options(), NotificationsDisplay, ClearNotifications()],
+        children: [waifu(), Resources(), Options(), NotificationsDisplay, ClearNotifications()],
     })
 }
 
-export async function RightPanel(monitor = 0)
+export default () =>
 {
     return Widget.Window({
-        monitor,
         name: `right-panel`,
         class_name: "",
         anchor: ["right", "top", "bottom"],
@@ -135,8 +134,11 @@ export async function RightPanel(monitor = 0)
         layer: "bottom",
         keymode: "on-demand",
         // margins: [10, 0, 0, 0],
-        visible: rightPanelVisibility.bind(),
-        // visible: true,
+        visible: false,
         child: Panel(),
+        // setup: (self) =>
+        // {
+        //     self.hook(rightPanelVisibility, (self) => self.visible = rightPanelVisibility.value, "changed");
+        // }
     })
 }

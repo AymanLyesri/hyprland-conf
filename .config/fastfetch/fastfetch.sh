@@ -2,6 +2,12 @@
 # Path to the image file
 IMAGE_PATH="$HOME/.config/ags/assets/terminal/icon.jpg"
 
+if [ ! -f "$IMAGE_PATH" ]; then
+    FETCH="fastfetch --logo-padding 1 --logo-padding-top 0 --logo $HOME/.config/ags/assets/terminal/icon.jpg"
+    eval "$FETCH"
+    return 0
+fi
+
 # Get the image dimensions
 DIMENSIONS=$(identify -format "%wx%h" "$IMAGE_PATH")
 

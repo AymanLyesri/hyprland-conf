@@ -1,4 +1,4 @@
-import { progressVisibility } from "variables";
+
 
 const INTERVAL = 10;
 const INCREMENT = 0.069;
@@ -18,11 +18,11 @@ const levelBar = Widget.LevelBar({
     value: progressValue.bind(),
     setup: async (self) =>
     {
-        while (progressVisibility.bind()) {
+        while (true) {
             progressValue.value += progressIncrement.value;
             await sleep(); // Wait for 2 seconds before continuing
             if (progressValue.value >= 100) {
-                progressVisibility.value = false;
+                App.closeWindow("progress");
             }
         }
     }
@@ -32,7 +32,7 @@ export function openProgress()
 {
     progressValue.value = 0;
     progressIncrement.value = INCREMENT;
-    progressVisibility.value = true;
+    App.openWindow("progress");
 }
 
 export function closeProgress()
@@ -40,14 +40,13 @@ export function closeProgress()
     progressIncrement.value = 1;
 }
 
-export async function Progress()
+export default () =>
 {
     return Widget.Window({
         name: `progress`,
         anchor: ["bottom", "right"],
-        // exclusivity: "exclusive",
         margins: [10, 10],
-        visible: progressVisibility.bind(),
+        visible: false,
         child: Widget.Box({
             class_name: "progress-widget",
             children: [levelBar],

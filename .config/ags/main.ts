@@ -1,74 +1,29 @@
-import { Left } from "bar/bar_left";
-import { Center } from "bar/bar_middle";
-import { Right } from "bar/bar_right";
-import { NotificationPopups } from "right_panel/notifications";
-import { RightPanel } from "right_panel/right_panel";
-import { appLauncherVisibility, emptyWorkspace } from "variables";
-import { AppLauncher } from "widgets/app-launcher";
-import { Media } from "widgets/media";
-import { Progress } from "widgets/progress";
-import { Wallpapers } from "widgets/wallpaper";
+import NotificationPopups from "right_panel/NotificationPopups";
+import RightPanel from "right_panel/RightPanel";
+import Bar from "bar/Bar";
+import AppLauncher from "widgets/AppLauncher";
+import Media from "widgets/Media";
+import Progress from "widgets/Progress";
+import WallpaperSwitcher from "widgets/WallpaperSwitcher";
 
-appLauncherVisibility.value = false;
+import { getCssPath, refreshCss } from "utils/scss";
 
 // required packages
 // gvfs is required for images
-
-function Bar(monitor = 0)
-{
-  return Widget.Window({
-    name: `bar`, // name has to be unique
-    monitor,
-    anchor: ["top", "left", "right"],
-    exclusivity: "exclusive",
-    margins: emptyWorkspace.as(margin => [margin * 69, margin * 50 + 10, 0, margin * 50 + 10]),// [top, right, bottom, left]
-    layer: "top",
-
-    child: Widget.CenterBox({
-      class_name: emptyWorkspace.as(empty => !!empty ? "bar empty" : "bar full"),
-      start_widget: Left(),
-      center_widget: Center(),
-      end_widget: Right(),
-    }),
-  });
-}
-
-// target css file
-const css = `/tmp/tmp-style.css`
-
-function refreshCss()
-{
-  // main scss file
-  const scss = `${App.configDir}/scss/style.scss`
-  Utils.exec(`sassc ${scss} ${css}`)
-  App.resetCss()
-  App.applyCss(css)
-}
-
-Utils.monitorFile(
-  // directory that contains the scss files
-  `${App.configDir}/scss`,
-  () => refreshCss()
-)
-
-Utils.monitorFile(
-  "/home/ayman/.cache/wal/colors.scss",
-  () => refreshCss()
-)
 
 refreshCss()
 
 App.addIcons(`${App.configDir}/assets`)
 App.config({
-  style: css,
+  style: getCssPath(),
   windows: [
     Bar(),
-    await RightPanel(),
-    await NotificationPopups(),
-    await Wallpapers(),
-    await Media(),
-    await AppLauncher(),
-    await Progress(),
+    RightPanel(),
+    NotificationPopups(),
+    WallpaperSwitcher(),
+    Media(),
+    AppLauncher(),
+    Progress(),
   ],
 });
 

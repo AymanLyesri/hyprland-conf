@@ -1,5 +1,4 @@
 import { getDominantColor } from "utils/image"
-import { mediaVisibility } from "variables"
 
 const mpris = await Service.import("mpris")
 const players = mpris.bind("players")
@@ -167,24 +166,22 @@ function Player(player)
     )
 }
 
-export async function Media()
+export default () =>
 {
     return Widget.Window({
         name: `media`,
+        // class_name: "media",
         anchor: ["top"],
-        // exclusivity: "exclusive",
         margins: [10, 10],
-        visible: mediaVisibility.bind(),
-
+        visible: false,
         child: Widget.Box({
             class_name: "media-widget",
             child: Widget.EventBox({
-                on_hover_lost: () => mediaVisibility.value = false,
+                on_hover_lost: () => App.closeWindow("media"),
                 child: Widget.Box({
                     vertical: true,
                     spacing: 10,
-                    // visible: players.as(p => p.length > 0),
-                    children: players.as(p => { print("hhhhhhhhhhhhhhhhhhh"); return p.map(Player) }),
+                    children: players.as(p => { return p.map(Player) }),
                 })
             }),
         }),

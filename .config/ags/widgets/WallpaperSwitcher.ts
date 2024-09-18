@@ -1,6 +1,6 @@
 const hyprland = await Service.import("hyprland");
 
-export async function Wallpapers(monitor = 0)
+function Wallpapers()
 {
 
     const get_wallpapers: any = (self) =>
@@ -40,7 +40,7 @@ export async function Wallpapers(monitor = 0)
         })
     }
 
-    const switcher = Widget.Box({
+    return Widget.Box({
         hexpand: true,
         vexpand: true,
         class_name: "wallpaper-switcher",
@@ -60,8 +60,13 @@ export async function Wallpapers(monitor = 0)
         }
     });
 
+
+}
+
+export default () =>
+{
     return Widget.Window({
-        monitor,
+
         name: `wallpaper-switcher`,
         class_name: "",
         anchor: [],
@@ -69,6 +74,6 @@ export async function Wallpapers(monitor = 0)
         // layer: "top",
         // margins: [0, 0, 100, 0],
         visible: false,
-        child: switcher
+        child: Wallpapers(),
     })
 }

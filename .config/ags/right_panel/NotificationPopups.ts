@@ -1,4 +1,4 @@
-import { Notification } from "./notification"
+import { Notification } from "./components/notification"
 
 const notifications = await Service.import("notifications")
 
@@ -8,7 +8,7 @@ notifications.cacheActions = false;
 notifications.clearDelay = 100;
 
 
-export async function NotificationPopups(monitor = 0)
+export default () =>
 {
     const list = Widget.Box({
         vertical: true,
@@ -42,7 +42,6 @@ export async function NotificationPopups(monitor = 0)
         .hook(notifications, onDismissed, "dismissed") // it bugs when clear is triggered
 
     return Widget.Window({
-        monitor,
         name: `notifications`,
         class_name: "notification-popups",
         anchor: ["top", "right"],

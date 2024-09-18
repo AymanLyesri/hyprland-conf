@@ -1,16 +1,9 @@
 import Gdk from "gi://Gdk";
 import app from "types/app";
 import { readJson } from "utils/json"
-import { appLauncherVisibility, emptyWorkspace } from "variables";
-import { closeProgress, openProgress } from "./progress";
+import { emptyWorkspace } from "variables";
+import { closeProgress, openProgress } from "./Progress";
 import client from "types/client";
-
-// const hyprland = await Service.import('hyprland')
-
-// hyprland.bind("client-added").as(clients =>
-// {
-//     print("Clients changed")
-// })
 
 var Results = Variable<{ app_name: string, app_exec: string }[]>([]
     // readJson(Utils.exec(`${App.configDir}/scripts/app-search.sh`))
@@ -56,7 +49,8 @@ function Input()
                 if (event.get_keyval()[1] == 65307) // Escape key
                 {
                     self.text = ""
-                    appLauncherVisibility.value = false
+                    // appLauncherVisibility.value = false
+                    App.closeWindow("app-launcher")
                 }
 
             })
@@ -77,8 +71,6 @@ function ResultsDisplay()
             return Widget.Button({
                 class_name: `button`,
                 hexpand: true,
-                // hpack: "start",
-                // css:'first' key == 0 ? 'margin-top: 10px' : '',
                 label: element.app_name,
                 on_clicked: () =>
                 {
@@ -91,7 +83,7 @@ function ResultsDisplay()
     })
 }
 
-export async function AppLauncher()
+export default () =>
 {
     return Widget.Window({
         name: `app-launcher`,
@@ -100,10 +92,9 @@ export async function AppLauncher()
         keymode: "on-demand",
         layer: "top",
         margins: [10, 10], // top right bottom left
-        visible: appLauncherVisibility.bind(),
+        visible: false,
 
         child: Widget.EventBox({
-            // on_hover_lost: () => mediaVisibility.value = false,
             child: Widget.Box({
                 vertical: true,
                 class_name: "app-launcher",
@@ -111,5 +102,9 @@ export async function AppLauncher()
 
             }),
         }),
+        // setup: (self) =>
+        // {
+        //     self.hook(appLauncherVisibility, (self) => self.visible = appLauncherVisibility.value, "changed");
+        // }
     })
 }

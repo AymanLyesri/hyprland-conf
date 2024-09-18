@@ -1,8 +1,8 @@
 import { readJSONFile } from "utils/json";
-import { Waifu } from "../interfaces/waifu.interface";
+import { Waifu } from "../../interfaces/waifu.interface";
 import { waifuPath } from "variables";
 import { getDominantColor } from "utils/image";
-import { closeProgress, openProgress } from "./progress";
+import { closeProgress, openProgress } from "../../widgets/Progress";
 
 const image = waifuPath
 
@@ -62,7 +62,7 @@ function Actions()
                 on_clicked: () =>
                 {
                     Utils.execAsync(`bash -c "cmp -s ${waifuPath} ${terminalWaifuPath} && { rm ${terminalWaifuPath}; echo 1; } || { cp ${waifuPath} ${terminalWaifuPath}; echo 0; }"`)
-                        .then((output) => Utils.execAsync(`notify-send "Waifu ${Number(output)}" "${Number(output) == 0 ? 'Pinned To Terminal' : 'UN-Pinned from Terminal'}"`))
+                        .then((output) => Utils.execAsync(`notify-send "Waifu" "${Number(output) == 0 ? 'Pinned To Terminal' : 'UN-Pinned from Terminal'}"`))
                         .catch(err => print(err))
                 },
             }),
@@ -134,10 +134,19 @@ function Actions()
             label: "",
             class_name: "button action-trigger",
             hpack: "end",
-            on_clicked: (self) =>
+            on_clicked: async (self) =>
             {
                 actions.reveal_child = !actions.reveal_child
                 self.label = actions.reveal_child ? "" : ""
+
+                if (actions.reveal_child) {
+                    setTimeout(() =>
+                    {
+                        actions.reveal_child = false;
+                        self.label = ""
+                    }, 5000)
+
+                }
             },
         }), actions],
     })
@@ -157,7 +166,7 @@ function Actions()
     })
 }
 
-export function Waifu()
+export default () =>
 {
     return Widget.EventBox({
         class_name: "waifu-event",

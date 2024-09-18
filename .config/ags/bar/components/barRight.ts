@@ -1,21 +1,10 @@
 import brightness from "brightness";
-import { rightPanelVisibility } from "variables";
-import { closeProgress, openProgress } from "widgets/progress";
+import { closeProgress, openProgress } from "widgets/Progress";
 import { custom_revealer } from "widgets/revealer";
 
 const audio = await Service.import("audio");
 const battery = await Service.import("battery");
 const systemtray = await Service.import("systemtray");
-
-function Notifications()
-{
-    return Widget.Button({
-        on_clicked: () => rightPanelVisibility.value = !rightPanelVisibility.value,
-        label: "",
-        class_name: "module button",
-    });
-}
-
 
 
 // widgets can be only assigned as a child in one container
@@ -148,11 +137,20 @@ function SysTray()
                 class_name: "button"
             })
         )
-    ); 
+    );
 
     return Widget.Box({
         children: items,
         class_name: "system-tray",
+    });
+}
+
+function RightPanel()
+{
+    return Widget.Button({
+        on_clicked: () => App.toggleWindow("right-panel"),
+        label: "",
+        class_name: "module button",
     });
 }
 
@@ -161,7 +159,6 @@ export function Right()
 {
     return Widget.Box({
         class_name: "bar-right",
-        // hexpand: true,
         hpack: "end",
         spacing: 5,
         children: [
@@ -170,7 +167,7 @@ export function Right()
             SysTray(),
             Theme(),
             BatteryLabel() as any,
-            Notifications(),
+            RightPanel(),
         ],
     });
 }
