@@ -1,3 +1,4 @@
+armcord
 aylurs-gtk-shell
 bat
 bc
@@ -7,7 +8,7 @@ sassc
 bluez
 bluez-utils 
 blueman
-colorz
+python-colorthief
 dnsmasq
 evremap-git
 fastfetch
@@ -36,7 +37,6 @@ pipewire
 playerctl
 python-pywal
 python-setuptools
-rofi
 ranger
 rclone
 rocm_smi_lib
@@ -46,11 +46,9 @@ spotify-launcher
 socat
 thefuck
 ttf-jetbrains-mono-nerd
-vim
 wget
 wireless_tools
 wireplumber
-webcord
 wofi
 xdg-desktop-portal-hyprland
 xdg-utils

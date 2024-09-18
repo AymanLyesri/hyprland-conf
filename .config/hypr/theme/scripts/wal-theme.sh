@@ -14,11 +14,11 @@ fi
 
 if [ "$current_theme" = "dark" ]; then
 
-    wal -e -n -i $current_wallpaper &
+    wal --backend colorthief -e -n -i $current_wallpaper &
 
 elif [ "$current_theme" = "light" ]; then
 
-    wal -e -n -i $current_wallpaper -l &
+    wal --backend colorthief -e -n -i $current_wallpaper -l &
 
 fi
 
