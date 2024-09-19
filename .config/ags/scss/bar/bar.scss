@@ -2,7 +2,7 @@
   padding: 5px 10;
   transition: background 0s;
   &.full {
-    background: $background;
+    background: $module-background;
     border-radius: 10px 10px 50px 50px;
 
     .bar-left {

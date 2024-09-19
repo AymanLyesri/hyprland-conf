@@ -10,7 +10,7 @@ export default () =>
         anchor: ["top", "left", "right"],
         exclusivity: "exclusive",
         margins: emptyWorkspace.as(margin => [margin * 69, margin * 50 + 10, 0, margin * 50 + 10]),// [top, right, bottom, left]
-        layer: "overlay",
+        layer: "top",
 
         child: Widget.CenterBox({
             class_name: emptyWorkspace.as(empty => !!empty ? "bar empty" : "bar full"),

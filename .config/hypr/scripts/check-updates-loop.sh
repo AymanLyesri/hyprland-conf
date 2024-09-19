@@ -39,20 +39,6 @@ check_pull_needed() {
         notify-send "Repository Update" "No pull is needed."
     fi
 }
-
-# Function to perform git pull
-perform_git_pull() {
-    notify-send "Pulling latest changes..."
-    git pull
-    notify-send "Pull completed."
-}
-
-# Check if the notification is triggered by the action button click
-if [ "$1" == "pull" ]; then
-    perform_git_pull
-    exit 0
-fi
-
 # Call the function
 while true; do
     # sleep 1m # Wait for 1 minute before checking for updates

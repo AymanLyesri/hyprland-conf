@@ -3,9 +3,12 @@ $background: $color0; // Example background color
 $foreground: $color15; // Example foreground color
 $secondary: $color13; // Example selected background color
 
-$module-background: mix($background, $color4, 69%);
+$module-background: mix($background, $color1, 50%);
+$module-foreground: mix($foreground, $color1, 50%);
 
 $background: rgba($background, 0.5);
+$module-background: rgba($module-background, 0.5);
+$module-foreground: rgba($module-foreground, 0.5);
 
 * {
   font-family: "JetBrainsMono NFM";
@@ -13,7 +16,7 @@ $background: rgba($background, 0.5);
 }
 
 .module {
-  background: $background;
+  background: $module-background;
   // color: mix($foreground, $secondary, 50%);
   color: $foreground;
   min-height: 1px;
@@ -25,19 +28,17 @@ $background: rgba($background, 0.5);
   text-shadow: none;
   padding: 0px 10px;
   margin: 0px;
-  transition: all 0.5s;
 }
 
 button,
 .button {
   @extend .module;
+  text-shadow: $background 0px 0px 10px;
   ////////////////////////////
   &:hover {
-    * {
-      color: $background;
-    }
     color: $background;
-    background: mix($color13, $foreground, 69%);
+    background: $module-foreground;
+    text-shadow: $foreground 1px 1px 5px;
   }
   &:checked {
     background: $color10;
