@@ -2,12 +2,37 @@
 import { Notification } from "./components/notification";
 import { Resources } from "widgets/Resources";
 import waifu from "./components/waifu";
+import { rightPanelExclusivity } from "variables";
 
 const Notifications = await Service.import("notifications")
 // notifications.popupTimeout = 3000;
 // notifications.forceTimeout = false;
 // notifications.cacheActions = false;
 // notifications.clearDelay = 100;
+
+function WindowActions()
+{
+    return Widget.Box({
+        class_name: "window-actions",
+        hpack: "end", spacing: 5
+    },
+        Widget.Button({
+            label: "󰐃",
+            class_name: "button exclusivity",
+            on_clicked: () =>
+            {
+                rightPanelExclusivity.value = rightPanelExclusivity.value === "normal" ? "exclusive" : "normal"
+            },
+        }),
+        Widget.Button({
+            label: "",
+            class_name: "button close",
+            on_clicked: () => App.closeWindow("right-panel"),
+        }),
+    )
+
+
+}
 
 
 interface Filter
@@ -117,28 +142,33 @@ const NotificationsDisplay = Widget.Scrollable({
 function Panel()
 {
     return Widget.Box({
-        class_name: "right-panel",
         vertical: true,
-        spacing: 5,
-        children: [waifu(), Resources(), Options(), NotificationsDisplay, ClearNotifications()],
+        // spacing: 5,
+        children: [WindowActions(), waifu(), Resources(), Options(), NotificationsDisplay, ClearNotifications()],
     })
 }
 
+const Window = () => Widget.Window({
+    name: `right-panel`,
+    class_name: "right-panel",
+    anchor: ["right", "top", "bottom"],
+    exclusivity: rightPanelExclusivity.value as any,
+    layer: "top",
+    keymode: "on-demand",
+    // margins: [10, 0, 0, 0],
+    visible: false,
+    child: Panel(),
+    setup: (self) =>
+    {
+        self.hook(rightPanelExclusivity, (self) =>
+        {
+            self.exclusivity = rightPanelExclusivity.value as any
+            self.class_name = "right-panel " + rightPanelExclusivity.value
+        }, "changed");
+    }
+})
+
 export default () =>
 {
-    return Widget.Window({
-        name: `right-panel`,
-        class_name: "",
-        anchor: ["right", "top", "bottom"],
-        exclusivity: "exclusive",
-        layer: "bottom",
-        keymode: "on-demand",
-        // margins: [10, 0, 0, 0],
-        visible: false,
-        child: Panel(),
-        // setup: (self) =>
-        // {
-        //     self.hook(rightPanelVisibility, (self) => self.visible = rightPanelVisibility.value, "changed");
-        // }
-    })
+    return Window();
 }

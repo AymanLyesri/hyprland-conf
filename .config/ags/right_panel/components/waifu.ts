@@ -44,7 +44,7 @@ function Image()
                 return `
                 background-image: url("${image}");
                 min-height: ${Number(imageDetails.image_height) / Number(imageDetails.image_width) * 300}px;
-                box-shadow: 0 0 10px 0 ${getDominantColor(image)};
+                box-shadow: 0 0 5px 0 ${getDominantColor(image)};
                 `
             }),
         }),

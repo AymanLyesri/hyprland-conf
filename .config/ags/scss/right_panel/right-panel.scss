@@ -1,13 +1,33 @@
 .right-panel {
-  @extend .module;
-  border-radius: 0px 0px 0px 0px;
-  // border: 1px solid $secondary;
-  padding: 0px;
-  min-width: 300px;
+  &.exclusive > * {
+    border-radius: 0px;
+  }
+  &.normal > * {
+    border-radius: 10px;
+    margin: 10px 15px;
+  }
+
+  > * {
+    @extend .module;
+    border-radius: 0px 0px 0px 0px;
+    // border: 1px solid $secondary;
+    padding: 0px;
+    min-width: 300px;
+
+    .window-actions {
+      margin: 5px;
+      .button {
+        padding: 0px 10px;
+        margin: 0px;
+        min-height: 10px;
+        box-shadow: unset;
+      }
+    }
+  }
 }
 
 .options {
-  margin: 0px 10px;
+  margin: 10px 10px 1px 10px;
 
   .button {
     @extend .module;
