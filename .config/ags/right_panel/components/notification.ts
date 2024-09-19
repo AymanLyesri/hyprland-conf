@@ -1,4 +1,5 @@
 
+import { hyprctl } from "utils/hyprctl"
 import { getDominantColor } from "utils/image"
 
 const notifications = await Service.import("notifications")
@@ -65,14 +66,19 @@ export function Notification(n, new_Notification = false, popup = false)
     const actions = Widget.Box({
         class_name: "actions",
         children: n.actions.map(({ id, label }) => Widget.Button({
-            class_name: "action-button",
+            class_name: "button",
             on_clicked: () =>
             {
+                const [command, action] = label.split(':');
+
                 n.invoke(id)
-                n.dismiss()
+                // n.dispatch(id)
+
+                hyprctl(command)
+
             },
             hexpand: true,
-            child: Widget.Label(label),
+            child: Widget.Label(label.split(':')[1]),
         })),
     })
 

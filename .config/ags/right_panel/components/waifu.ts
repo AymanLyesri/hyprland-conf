@@ -3,6 +3,7 @@ import { Waifu } from "../../interfaces/waifu.interface";
 import { waifuPath } from "variables";
 import { getDominantColor } from "utils/image";
 import { closeProgress, openProgress } from "../../widgets/Progress";
+import { hyprctl } from "utils/hyprctl";
 
 const image = waifuPath
 
@@ -26,7 +27,7 @@ const SearchImage = () => Utils.execAsync(`bash -c "xdg-open 'https://danbooru.d
 
 const CopyImage = () => Utils.execAsync(`bash -c "wl-copy --type image/png < ${waifuPath}"`).then(() => Utils.execAsync('notify-send "Waifu" "Copied"')).catch(err => print(err))
 
-const OpenImage = () => Utils.execAsync(`hyprctl dispatch exec "[float;size 50%] feh --scale-down ${waifuPath}"`).catch(err => print(err))
+const OpenImage = () => hyprctl("feh --scale-down " + waifuPath, "size 50%")
 
 function Image()
 {
@@ -34,7 +35,7 @@ function Image()
     return Widget.EventBox({
         class_name: "image",
         on_primary_click: async () => OpenImage(),
-        on_secondary_click: async () => CopyImage(),
+        on_secondary_click: async () => SearchImage(),
         child: Widget.Box({
             hexpand: false,
             vexpand: false,
