@@ -83,7 +83,7 @@ mv <repository_folder>/* $HOME/
 sudo reboot
 ```
 
-# Package List and Installation
+# [Package List](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/pacman/pkglist.txt) and Installation
 
 **To install packages:**
 
