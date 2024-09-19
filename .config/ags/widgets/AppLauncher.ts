@@ -41,8 +41,8 @@ function Input()
                     openProgress()
                     Utils.execAsync(`${App.configDir}/scripts/app-loading-progress.sh ${Results.value[0].app_name}`).finally(() => closeProgress()).catch(err => Utils.execAsync(`notify-send "Error" "${err}"`));
                     Utils.execAsync(Results.value[0].app_exec).catch(err => print(err));
-                    appLauncherVisibility.value = false
                     self.text = ""
+                    App.closeWindow("app-launcher")
                 },
             }).on("key-press-event", (self, event: Gdk.Event) =>
             {
@@ -75,7 +75,7 @@ function ResultsDisplay()
                 on_clicked: () =>
                 {
                     Utils.execAsync(element.app_exec).catch(err => print(err));
-                    appLauncherVisibility.value = false
+                    App.closeWindow("app-launcher")
                 },
             })
         })

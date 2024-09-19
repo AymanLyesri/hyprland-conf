@@ -93,6 +93,8 @@ sudo reboot
 ```bash
 cd $HOME
 pacman -S - < .config/hypr/pacman/pkglist.txt
+#OR
+yay -S - < .config/hypr/pacman/pkglist.txt
 ```
 
 **To generate a package list:** `optional`
@@ -100,6 +102,8 @@ pacman -S - < .config/hypr/pacman/pkglist.txt
 ```bash
 cd $HOME
 pacman -Qqen > .config/hypr/pacman/pkglist.txt
+#OR
+yay -Qqen > .config/hypr/pacman/pkglist.txt
 ```
 
 # Tips

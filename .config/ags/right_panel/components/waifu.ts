@@ -10,7 +10,6 @@ var imageDetails = Variable<Waifu>(readJSONFile(`${App.configDir}/assets/images/
 var previousImageDetails = readJSONFile(`${App.configDir}/assets/images/previous.json`)
 var nsfw = Variable<boolean>(false)
 
-// Fetch random posts from Danbooru API
 function GetImageFromApi(param = "")
 {
     openProgress()
@@ -23,14 +22,19 @@ function GetImageFromApi(param = "")
     }).catch(async (error) => await Utils.execAsync(`notify-send "Error" "${error}"`))
 }
 
+const SearchImage = () => Utils.execAsync(`bash -c "xdg-open 'https://danbooru.donmai.us/posts/${imageDetails.value.id}' && xdg-settings get default-web-browser | sed 's/\.desktop$//'"`).then((browser) => Utils.execAsync(`notify-send "Waifu" "opened in ${browser}"`)).catch(err => print(err))
+
+const CopyImage = () => Utils.execAsync(`bash -c "wl-copy --type image/png < ${waifuPath}"`).then(() => Utils.execAsync('notify-send "Waifu" "Copied"')).catch(err => print(err))
+
+const OpenImage = () => Utils.execAsync(`hyprctl dispatch exec "[float;size 50%] feh --scale-down ${waifuPath}"`).catch(err => print(err))
 
 function Image()
 {
     // GetImageFromApi()
     return Widget.EventBox({
         class_name: "image",
-        on_primary_click: async () => Utils.execAsync(`firefox https://danbooru.donmai.us/posts/${imageDetails.value.id}`).then(() => Utils.execAsync('notify-send "Waifu" "opened in Firefox"')).catch(err => print(err)),
-        on_secondary_click: async () => Utils.execAsync(`bash -c "wl-copy --type image/png < ${waifuPath}"`).then(() => Utils.execAsync('notify-send "Waifu" "Copied"')).catch(err => print(err)),
+        on_primary_click: async () => OpenImage(),
+        on_secondary_click: async () => CopyImage(),
         child: Widget.Box({
             hexpand: false,
             vexpand: false,
@@ -58,7 +62,7 @@ function Actions()
         children: [
             Widget.Button({
                 label: "Pin",
-                class_name: "button",
+                class_name: "button pin",
                 on_clicked: () =>
                 {
                     Utils.execAsync(`bash -c "cmp -s ${waifuPath} ${terminalWaifuPath} && { rm ${terminalWaifuPath}; echo 1; } || { cp ${waifuPath} ${terminalWaifuPath}; echo 0; }"`)
@@ -69,62 +73,73 @@ function Actions()
         ],
     })
 
+    const Entry = Widget.EventBox({
+        class_name: "input button entry",
+        child: Widget.Entry({
+            placeholder_text: 'Tags/ID',
+            text: "",
+            on_accept: (self) =>
+            {
+                if (self.text == null || self.text == "") {
+                    return
+                }
+                GetImageFromApi(self.text)
+            },
+        }),
+    })
+
     const actions = Widget.Revealer({
         revealChild: false,
         transitionDuration: 1000,
         transition: 'slide_up',
-        child: Widget.Box({
-            children: [
+        child: Widget.Box({ vertical: true },
+            Widget.Box([
                 Widget.Button({
                     label: "Undo",
                     hexpand: true,
-                    class_name: "button",
+                    class_name: "button undo",
 
                     on_clicked: () => GetImageFromApi(previousImageDetails.id),
                 }),
                 Widget.Button({
                     label: "Random",
                     hexpand: true,
-                    class_name: "button",
+                    class_name: "button random",
                     on_clicked: async () => GetImageFromApi(),
                 }),
-                Widget.EventBox({
-                    class_name: "input button",
-                    child: Widget.Entry({
-                        placeholder_text: 'Tags/ID',
-                        text: "",
-                        on_accept: (self) =>
-                        {
-                            if (self.text == null || self.text == "") {
-                                return
-                            }
-                            GetImageFromApi(self.text)
-                        },
-                    }),
-                }),
-
-                // Widget.Switch({
-                //     class_name: "switch",
-                //     onActivate: (status) =>
-                //     {
-                //         nsfw.value = !nsfw.value
-                //         Utils.execAsync(`notify-send "NSFW" "${nsfw.value ? "Enabled" : "Disabled"}"`).catch(err => print(err))
-                //     },
-                // })
-
                 Widget.Button({
-                    label: "NSFW",
-                    class_name: "button",
+                    label: "Search",
+                    hexpand: true,
+                    class_name: "button search",
+                    on_clicked: async () => SearchImage(),
+                }),
+                Widget.Button({
+                    label: "Copy",
+                    hexpand: true,
+                    class_name: "button copy",
+                    on_clicked: async () => CopyImage(),
+                })
+            ]),
+            Widget.Box([
+                Widget.Button({
+                    label: "",
+                    class_name: "button entry-search",
+                    hexpand: true,
+                    on_clicked: () => GetImageFromApi(Entry.child.text || ""),
+                }),
+                Entry,
+                Widget.Button({
+                    label: "Nsfw",
+                    class_name: "button nsfw",
+                    hexpand: true,
                     on_clicked: () =>
                     {
                         nsfw.value = !nsfw.value
                         Utils.execAsync(`notify-send "NSFW" "${nsfw.value ? "Enabled" : "Disabled"}"`).catch(err => print(err))
                     },
                 }),
-
-            ],
-
-        })
+            ])
+        )
     })
     const bottom = Widget.Box({
         class_name: "bottom",
@@ -134,18 +149,17 @@ function Actions()
             label: "",
             class_name: "button action-trigger",
             hpack: "end",
-            on_clicked: async (self) =>
+            on_clicked: (self) =>
             {
                 actions.reveal_child = !actions.reveal_child
                 self.label = actions.reveal_child ? "" : ""
-
+                // while (true) && !actions.child.children[2].child
                 if (actions.reveal_child) {
                     setTimeout(() =>
                     {
                         actions.reveal_child = false;
                         self.label = ""
-                    }, 5000)
-
+                    }, 15000)
                 }
             },
         }), actions],
@@ -154,9 +168,6 @@ function Actions()
     return Widget.Box({
         class_name: "actions",
         hexpand: true,
-        // vexpand: true,
-        // hpack: "center",
-        // vpack: "fill",
         vertical: true,
         children: [
             top,

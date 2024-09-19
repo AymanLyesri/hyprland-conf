@@ -12,6 +12,7 @@ python-colorthief
 dnsmasq
 evremap-git
 fastfetch
+feh
 git
 gst-plugin-pipewire
 gtk4
@@ -49,7 +50,6 @@ ttf-jetbrains-mono-nerd
 wget
 wireless_tools
 wireplumber
-wofi
 xdg-desktop-portal-hyprland
 xdg-utils
 xava
