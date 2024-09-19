@@ -18,8 +18,8 @@ App.config({
   style: getCssPath(),
   windows: [
     Bar(),
-    RightPanel(),
     NotificationPopups(),
+    RightPanel(),
     WallpaperSwitcher(),
     Media(),
     AppLauncher(),

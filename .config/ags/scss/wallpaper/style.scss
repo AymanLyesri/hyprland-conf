@@ -8,7 +8,6 @@
 }
 
 .reload-wallpapers.reload-wallpapers {
-  @extend .module;
   padding: 0px;
   min-height: 69px;
   min-width: 69px;
@@ -19,8 +18,6 @@
 }
 
 .workspace-wallpaper {
-  //   @extend .module;
-  //   box-shadow: inset 0 0 10px rgba(0, 0, 0, 1);
   all: unset;
   transition: all 0.5s;
   border: none;

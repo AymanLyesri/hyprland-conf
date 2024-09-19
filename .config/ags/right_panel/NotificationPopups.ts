@@ -1,3 +1,4 @@
+import { rightPanelExclusivity } from "variables";
 import { Notification } from "./components/notification"
 
 const notifications = await Service.import("notifications")
@@ -44,8 +45,8 @@ export default () =>
     return Widget.Window({
         name: `notifications`,
         class_name: "notification-popups",
-        anchor: ["top", "right"],
-        layer: "overlay",
+        anchor: rightPanelExclusivity.bind().as(exclusive => exclusive ? ["right", "top"] : ["left", "top"]),
+        layer: "top",
         exclusivity: "normal",
         margins: [10, 10, 10, 10],
         child: Widget.Box({

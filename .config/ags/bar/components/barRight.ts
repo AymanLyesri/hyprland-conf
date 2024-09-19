@@ -13,28 +13,15 @@ const systemtray = await Service.import("systemtray");
 
 function Theme()
 {
-
-    function icon()
-    {
-        const theme: any = Utils.exec(['bash', '-c', '/home/ayman/.config/hypr/theme/scripts/system-theme.sh get'])
-
-        return theme as string == "dark" ? "" : ""
-    }
-
-    // return Widget.Switch({
-    //     class_name: "switch",
-    //     onActivate: (state) => { Utils.execAsync(['bash', '-c', '$HOME/.config/hypr/theme/scripts/switch-global-theme.sh']) },
-    // })
-
-    return Widget.Button({
-        on_clicked: async (self) =>
+    return Widget.ToggleButton({
+        on_toggled: (self) =>
         {
             openProgress()
-            Utils.execAsync(['bash', '-c', '$HOME/.config/hypr/theme/scripts/set-global-theme.sh switch']).then(() => self.label = icon())
+            Utils.execAsync(['bash', '-c', '$HOME/.config/hypr/theme/scripts/set-global-theme.sh switch']).then(() => self.label = self.active ? "" : "")
                 .finally(() => closeProgress())
         },
 
-        label: icon(),
+        label: "",
         class_name: "theme button",
     })
 
@@ -133,6 +120,7 @@ function SysTray()
                 child: Widget.Icon({ icon: item.bind("icon") }),
                 on_primary_click: (_, event) => item.activate(event),
                 on_secondary_click: (_, event) => item.openMenu(event),
+                on_middle_click: (_, event) => item.secondaryActivate(event),
                 tooltip_markup: item.bind("tooltip_markup"),
                 class_name: "button"
             })
@@ -147,10 +135,10 @@ function SysTray()
 
 function RightPanel()
 {
-    return Widget.Button({
-        on_clicked: () => App.toggleWindow("right-panel"),
+    return Widget.ToggleButton({
+        onToggled: ({ active }) => active ? App.openWindow("right-panel") : App.closeWindow("right-panel"),
         label: "",
-        class_name: "module button",
+        class_name: "button panel-trigger",
     });
 }
 

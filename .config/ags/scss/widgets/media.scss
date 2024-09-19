@@ -66,8 +66,6 @@
   }
 
   .player button {
-    all: unset;
-    @extend .module;
     min-height: 1em;
     min-width: 1em;
     // padding: 0.3em;

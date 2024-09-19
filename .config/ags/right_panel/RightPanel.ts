@@ -16,12 +16,12 @@ function WindowActions()
         class_name: "window-actions",
         hpack: "end", spacing: 5
     },
-        Widget.Button({
+        Widget.ToggleButton({
             label: "󰐃",
             class_name: "button exclusivity",
-            on_clicked: () =>
+            onToggled: ({ active }) =>
             {
-                rightPanelExclusivity.value = rightPanelExclusivity.value === "normal" ? "exclusive" : "normal"
+                rightPanelExclusivity.value = !active;
             },
         }),
         Widget.Button({
@@ -152,8 +152,8 @@ const Window = () => Widget.Window({
     name: `right-panel`,
     class_name: "right-panel",
     anchor: ["right", "top", "bottom"],
-    exclusivity: rightPanelExclusivity.value as any,
-    layer: "top",
+    exclusivity: "normal",
+    layer: "overlay",
     keymode: "on-demand",
     // margins: [10, 0, 0, 0],
     visible: false,
@@ -162,8 +162,9 @@ const Window = () => Widget.Window({
     {
         self.hook(rightPanelExclusivity, (self) =>
         {
-            self.exclusivity = rightPanelExclusivity.value as any
-            self.class_name = "right-panel " + rightPanelExclusivity.value
+            self.exclusivity = rightPanelExclusivity.value ? "exclusive" : "normal"
+            self.layer = rightPanelExclusivity.value ? "bottom" : "top"
+            self.class_name = rightPanelExclusivity.value ? "right-panel exclusive" : "right-panel normal"
         }, "changed");
     }
 })

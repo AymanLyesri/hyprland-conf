@@ -26,22 +26,22 @@ $background: rgba($background, 0.5);
   padding: 0px 10px;
   margin: 0px;
   transition: all 0.5s;
+}
 
-  &.button,
-  .button {
-    transition: all 0.3s;
-    border-radius: 10px;
-    ////////////////////////////
-    padding: 0px 10px;
-    ////////////////////////////
-    &:hover,
-    &:focus {
-      * {
-        color: $background;
-      }
+button,
+.button {
+  @extend .module;
+  ////////////////////////////
+  &:hover {
+    * {
       color: $background;
-      background: mix($color13, $foreground, 69%);
     }
+    color: $background;
+    background: mix($color13, $foreground, 69%);
+  }
+  &:checked {
+    background: $color10;
+    color: $color0;
   }
 }
 

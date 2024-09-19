@@ -1,17 +1,11 @@
 .bar-right {
   .theme {
-    @extend .module;
     label {
       font-size: larger;
     }
   }
 
   .system-tray {
-    button.button {
-      @extend .module;
-      border-radius: 0px;
-    }
-
     button:first-child {
       border-radius: 10px 0px 0px 10px;
     }

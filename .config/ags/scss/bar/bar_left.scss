@@ -3,7 +3,6 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
 .bar-left {
   .workspaces {
     button {
-      @extend .module;
       ////////////////////////////
       &.focused {
         padding: 0px 20px;

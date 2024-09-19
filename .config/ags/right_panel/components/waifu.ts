@@ -145,20 +145,21 @@ function Actions()
         class_name: "bottom",
         vertical: true,
         vpack: "end",
-        children: [Widget.Button({
+        children: [Widget.ToggleButton({
             label: "",
             class_name: "button action-trigger",
             hpack: "end",
-            on_clicked: (self) =>
+            onToggled: (self) =>
             {
-                actions.reveal_child = !actions.reveal_child
-                self.label = actions.reveal_child ? "" : ""
+                actions.reveal_child = self.active
+                self.label = self.active ? "" : ""
                 // while (true) && !actions.child.children[2].child
-                if (actions.reveal_child) {
+                if (self.active) {
                     setTimeout(() =>
                     {
-                        actions.reveal_child = false;
+                        actions.reveal_child = !self.active;
                         self.label = ""
+                        self.active = !self.active
                     }, 15000)
                 }
             },

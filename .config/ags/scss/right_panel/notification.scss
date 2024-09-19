@@ -36,8 +36,6 @@ window.notification-popups {
   }
 
   .close {
-    @extend .module;
-    @extend .button;
   }
 
   .body {

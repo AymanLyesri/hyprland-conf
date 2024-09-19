@@ -19,7 +19,7 @@ function Workspaces()
                     {
                         let class_name: string = `${i != previousId && i == id ? "focused" : i == previousId && i == id ? "same-focused" : ""}`
                         if (i == id) previousId = i;
-                        return class_name
+                        return "button " + class_name
                     })
                 });
             })
