@@ -18,7 +18,7 @@ function WindowActions()
     },
         Widget.ToggleButton({
             label: "󰐃",
-            class_name: "button exclusivity",
+            class_name: "exclusivity",
             onToggled: ({ active }) =>
             {
                 rightPanelExclusivity.value = !active;
@@ -26,7 +26,7 @@ function WindowActions()
         }),
         Widget.Button({
             label: "",
-            class_name: "button close",
+            class_name: "close",
             on_clicked: () => App.closeWindow("right-panel"),
         }),
     )
@@ -43,7 +43,7 @@ interface Filter
 
 const notificationFilter = Variable<Filter>({ name: "", color: "" });
 
-function Options()
+function Filter()
 {
     const Filters: Filter[] = [{
         name: "Spotify",
@@ -60,7 +60,7 @@ function Options()
     }];
 
     return Widget.Box({
-        class_name: "options",
+        class_name: "filter",
         hexpand: false,
         children: Filters.map(filter =>
         {
@@ -68,7 +68,7 @@ function Options()
                 label: filter.name,
                 hexpand: true,
                 on_clicked: () => notificationFilter.value = (notificationFilter.value === filter ? { name: "", color: "" } : filter),
-                class_name: "module button",
+                class_name: "",
                 css: notificationFilter.bind().as(filter => `background: ${filter.color}`),
             });
         })
@@ -79,7 +79,7 @@ function Options()
 const ClearNotifications = () =>
 {
     return Widget.Button({
-        class_name: "clear button",
+        class_name: "clear",
         label: "Clear",
         on_clicked: async () =>
         {
@@ -129,7 +129,7 @@ const NotificationHistory = () => Widget.Box({
     }),
 })
 
-// const separator = Widget.Separator({ vertical: false });
+const Separator = () => Widget.Separator({ vertical: false });
 
 const NotificationsDisplay = Widget.Scrollable({
     class_name: "notification-history",
@@ -138,13 +138,23 @@ const NotificationsDisplay = Widget.Scrollable({
     child: NotificationHistory(),
 })
 
+const NotificationPanel = () =>
+{
+    return Widget.Box({
+        class_name: "notification-panel",
+        // spacing: 5,
+        vertical: true,
+        children: [Filter(), NotificationsDisplay, ClearNotifications()],
+    })
+}
+
 
 function Panel()
 {
     return Widget.Box({
         vertical: true,
         // spacing: 5,
-        children: [WindowActions(), waifu(), Resources(), Options(), NotificationsDisplay, ClearNotifications()],
+        children: [WindowActions(), waifu(), Separator(), Resources(), Separator(), NotificationPanel()],
     })
 }
 

@@ -22,7 +22,7 @@ function Theme()
         },
 
         label: "",
-        class_name: "theme button",
+        class_name: "theme",
     })
 
 }
@@ -122,7 +122,6 @@ function SysTray()
                 on_secondary_click: (_, event) => item.openMenu(event),
                 on_middle_click: (_, event) => item.secondaryActivate(event),
                 tooltip_markup: item.bind("tooltip_markup"),
-                class_name: "button"
             })
         )
     );
@@ -138,7 +137,7 @@ function RightPanel()
     return Widget.ToggleButton({
         onToggled: ({ active }) => active ? App.openWindow("right-panel") : App.closeWindow("right-panel"),
         label: "",
-        class_name: "button panel-trigger",
+        class_name: "panel-trigger",
     });
 }
 

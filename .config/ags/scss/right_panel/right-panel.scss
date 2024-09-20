@@ -24,67 +24,62 @@
       }
     }
   }
-  .options {
-    margin: 10px 10px 1px 10px;
+  .notification-panel {
+    @extend .module;
+    margin: 1px 10px;
+    padding: 5px;
 
-    .button {
-      padding: 5px 0px;
-      border-radius: 0px;
-      min-height: 0px;
-      min-width: 0px;
+    .filter {
+      button {
+        padding: 5px 0px;
+        border-radius: 0px;
+        min-height: 0px;
+        min-width: 0px;
 
-      &:first-child {
-        border-radius: 10px 0px 0px 10px;
-      }
+        &:first-child {
+          border-radius: 10px 0px 0px 10px;
+        }
 
-      &:last-child {
-        border-radius: 0px 10px 10px 0px;
+        &:last-child {
+          border-radius: 0px 10px 10px 0px;
+        }
       }
     }
-  }
 
-  .clear {
-    margin: 0px 10px;
-    background: rgba(177, 62, 62, 0.493);
-    color: $foreground;
-    &:hover {
-      background: rgba(177, 62, 62, 0.8);
-    }
-  }
-}
-
-.notification-event {
-  .notification {
-    margin: 5px 10px;
-    padding: 10px;
-    min-width: 0px;
-
-    .summary {
+    .clear {
+      background: rgba(177, 62, 62, 0.493);
       color: $foreground;
-      font-size: 1.2rem;
-    }
-
-    .icon {
-      min-width: 20px;
-      min-height: 20px;
-
-      image {
-        font-size: 25px;
-      }
-
-      box {
-        min-width: 40px;
-        min-height: 40px;
-        border-radius: 10px;
+      &:hover {
+        background: rgba(177, 62, 62, 0.8);
       }
     }
 
-    // .body {
-    //     color: $foreground;
-    // }
+    .notification-event {
+      .notification {
+        margin: 5px 0px;
+        padding: 10px;
+        min-width: 0px;
+
+        .summary {
+          color: $foreground;
+          font-size: 1.2rem;
+        }
+
+        .icon {
+          min-width: 20px;
+          min-height: 20px;
+
+          image {
+            font-size: 25px;
+          }
+
+          box {
+            min-width: 40px;
+            min-height: 40px;
+            border-radius: 10px;
+          }
+        }
+      }
+    }
   }
-
-  // &:hover * {
-  //   background: $black;
-  // }
 }

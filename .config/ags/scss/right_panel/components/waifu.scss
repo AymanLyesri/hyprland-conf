@@ -1,19 +1,11 @@
 .waifu {
   .image > * {
-    // margin: 10px;
-    margin: 0px 10px 10px 10px;
+    margin: 0px 10px;
     padding: 0px;
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
     border-radius: 10px;
-    // background-color: transparent;
-    // box-shadow: 0px 0px 10px 0px #c5a2bc;
-
-    // * {
-    //   min-width: 1px;
-    //   min-height: 1px;
-    // }
 
     .actions {
       .top {
@@ -31,6 +23,12 @@
         }
       }
 
+      .input {
+        @extend .button;
+        border-radius: 0px 0px 0px 0px;
+      }
+
+      button,
       .button {
         min-height: 0px;
         min-width: 0px;
@@ -62,10 +60,6 @@
           min-height: 5px;
           padding: 0px;
           border-radius: 0px 0px 0px 10px;
-        }
-
-        &.entry {
-          border-radius: 0px 0px 0px 0px;
         }
 
         &.nsfw {

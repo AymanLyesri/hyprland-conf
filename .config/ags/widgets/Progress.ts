@@ -1,3 +1,4 @@
+import { globalMargin } from "variables";
 
 
 const INTERVAL = 10;
@@ -14,7 +15,7 @@ function sleep()
 const levelBar = Widget.LevelBar({
     class_name: "progress-bar",
     max_value: 100,
-    widthRequest: 690,
+    widthRequest: 333,
     value: progressValue.bind(),
     setup: async (self) =>
     {
@@ -40,16 +41,18 @@ export function closeProgress()
     progressIncrement.value = 1;
 }
 
+const Spinner = Widget.Spinner()
+
 export default () =>
 {
     return Widget.Window({
         name: `progress`,
-        anchor: ["bottom", "right"],
-        margins: [10, 10],
+        anchor: ["bottom", "left"],
+        margins: [globalMargin, globalMargin],
         visible: false,
         child: Widget.Box({
             class_name: "progress-widget",
-            children: [levelBar],
+            child: levelBar,
         }),
     })
 }

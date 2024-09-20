@@ -63,7 +63,7 @@ function Actions()
         children: [
             Widget.Button({
                 label: "Pin",
-                class_name: "button pin",
+                class_name: "pin",
                 on_clicked: () =>
                 {
                     Utils.execAsync(`bash -c "cmp -s ${waifuPath} ${terminalWaifuPath} && { rm ${terminalWaifuPath}; echo 1; } || { cp ${waifuPath} ${terminalWaifuPath}; echo 0; }"`)
@@ -75,7 +75,7 @@ function Actions()
     })
 
     const Entry = Widget.EventBox({
-        class_name: "input button entry",
+        class_name: "input",
         child: Widget.Entry({
             placeholder_text: 'Tags/ID',
             text: "",
@@ -98,40 +98,40 @@ function Actions()
                 Widget.Button({
                     label: "Undo",
                     hexpand: true,
-                    class_name: "button undo",
+                    class_name: "undo",
 
                     on_clicked: () => GetImageFromApi(previousImageDetails.id),
                 }),
                 Widget.Button({
                     label: "Random",
                     hexpand: true,
-                    class_name: "button random",
+                    class_name: "random",
                     on_clicked: async () => GetImageFromApi(),
                 }),
                 Widget.Button({
                     label: "Search",
                     hexpand: true,
-                    class_name: "button search",
+                    class_name: "search",
                     on_clicked: async () => SearchImage(),
                 }),
                 Widget.Button({
                     label: "Copy",
                     hexpand: true,
-                    class_name: "button copy",
+                    class_name: "copy",
                     on_clicked: async () => CopyImage(),
                 })
             ]),
             Widget.Box([
                 Widget.Button({
                     label: "",
-                    class_name: "button entry-search",
+                    class_name: "entry-search",
                     hexpand: true,
                     on_clicked: () => GetImageFromApi(Entry.child.text || ""),
                 }),
                 Entry,
                 Widget.Button({
                     label: "Nsfw",
-                    class_name: "button nsfw",
+                    class_name: "nsfw",
                     hexpand: true,
                     on_clicked: () =>
                     {
@@ -148,7 +148,7 @@ function Actions()
         vpack: "end",
         children: [Widget.ToggleButton({
             label: "",
-            class_name: "button action-trigger",
+            class_name: "action-trigger",
             hpack: "end",
             onToggled: (self) =>
             {

@@ -3,8 +3,8 @@ $background: $color0; // Example background color
 $foreground: $color15; // Example foreground color
 $secondary: $color13; // Example selected background color
 
-$module-background: mix($background, $color1, 50%);
-$module-foreground: mix($foreground, $color1, 50%);
+$module-background: mix($background, $color1, 69%);
+$module-foreground: mix($foreground, $color1, 69%);
 
 $background: rgba($background, 0.5);
 $module-background: rgba($module-background, 0.5);
@@ -45,6 +45,17 @@ button,
     background: $color10;
     color: $color0;
   }
+}
+
+icon,
+.icon {
+  font-size: 15px;
+}
+
+separator {
+  // padding: 0px 10px;
+  margin: 5px 10px;
+  background: $background;
 }
 
 .switch {

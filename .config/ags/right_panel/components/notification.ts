@@ -72,7 +72,6 @@ export function Notification(n, new_Notification = false, popup = false)
     const actions = Widget.Box({
         class_name: "actions",
         children: n.actions.map(({ id, label }) => Widget.Button({
-            class_name: "button",
             on_clicked: () =>
             {
                 const [command, action] = label.split(':');

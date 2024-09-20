@@ -2,15 +2,13 @@
   .progress-bar {
     trough {
       @extend .module;
-      background: $background;
-      color: $foreground;
       min-height: 6.9px;
       margin: 0px;
       padding: 10px;
 
       .filled {
-        box-shadow: 0px 0px 10px 0px $secondary;
-        background: $secondary;
+        box-shadow: 0px 0px 5px 0px $secondary;
+        background: $foreground;
         border-radius: 10px;
         border: unset;
       }

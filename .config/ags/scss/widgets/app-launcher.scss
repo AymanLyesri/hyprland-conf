@@ -1,17 +1,22 @@
 .app-launcher {
   @extend .module;
   padding: 10px;
+  border-radius: 15px;
 
+  .icon {
+    margin: 5px 10px;
+  }
   .input {
     background: transparent;
     min-width: 500px;
+    border: unset;
     .left,
     .right {
       border-color: $secondary;
       // background: white;
     }
     &:focus {
-      border-color: $secondary;
+      box-shadow: none;
     }
   }
   button {
@@ -24,8 +29,5 @@
       background: $secondary;
       color: $background;
     }
-  }
-  .icon {
-    margin: 5px 10px;
   }
 }

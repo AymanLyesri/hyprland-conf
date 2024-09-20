@@ -49,7 +49,7 @@ function Wallpapers()
         {
             self.children = [...get_wallpapers(self), Widget.Button({
                 vpack: "center",
-                class_name: "button reload-wallpapers",
+                class_name: "reload-wallpapers",
                 label: "󰑐",
                 on_primary_click: () =>
                 {

@@ -3,14 +3,12 @@ const mpris = await Service.import("mpris");
 
 import { playerToColor } from "utils/color";
 import { playerToIcon } from "utils/icon";
-import { emptyWorkspace, mediaVisibility } from "variables";
+import { emptyWorkspace } from "variables";
 import { custom_revealer } from "widgets/revealer";
 
 
 function Media()
 {
-
-
     const progress = (player) => Widget.CircularProgress({
         class_name: "progress",
         rounded: true,
@@ -112,6 +110,15 @@ function Bandwidth()
     });
 }
 
+function AppLauncher()
+{
+    return Widget.Button({
+        label: "",
+        class_name: "app-search",
+        on_clicked: () => App.toggleWindow("app-launcher"),
+    });
+}
+
 function ClientTitle()
 {
     return Widget.Revealer({
@@ -133,6 +140,6 @@ export function Center()
     return Widget.Box({
         class_name: 'bar-middle',
         spacing: 5,
-        children: [Media(), Clock(), Bandwidth(), ClientTitle()],
+        children: [Media(), Clock(), Bandwidth(), AppLauncher(), ClientTitle()],
     });
 }

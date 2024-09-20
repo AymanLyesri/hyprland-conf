@@ -1,5 +1,6 @@
 import { Mpris, MprisPlayer } from "types/service/mpris"
 import { getDominantColor } from "utils/image"
+import { globalMargin } from "variables"
 
 const mpris = await Service.import("mpris")
 const players = mpris.bind("players")
@@ -175,7 +176,7 @@ export default () =>
         name: `media`,
         // class_name: "media",
         anchor: ["top"],
-        margins: [10, 10],
+        margins: [globalMargin, globalMargin],
         visible: false,
         child: Widget.Box({
             class_name: "media-widget",

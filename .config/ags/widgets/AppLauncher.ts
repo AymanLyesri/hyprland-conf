@@ -1,7 +1,7 @@
 import Gdk from "gi://Gdk";
 import app from "types/app";
 import { readJson } from "utils/json"
-import { emptyWorkspace } from "variables";
+import { emptyWorkspace, globalMargin } from "variables";
 import { closeProgress, openProgress } from "./Progress";
 import client from "types/client";
 
@@ -69,7 +69,6 @@ function ResultsDisplay()
         children: Results.bind().as(Results => Results.map((element, key) =>
         {
             return Widget.Button({
-                class_name: `button`,
                 hexpand: true,
                 label: element.app_name,
                 on_clicked: () =>
@@ -91,7 +90,7 @@ export default () =>
         exclusivity: "normal",
         keymode: "on-demand",
         layer: "top",
-        margins: [10, 10], // top right bottom left
+        margins: [globalMargin, globalMargin], // top right bottom left
         visible: false,
 
         child: Widget.EventBox({
@@ -102,9 +101,5 @@ export default () =>
 
             }),
         }),
-        // setup: (self) =>
-        // {
-        //     self.hook(appLauncherVisibility, (self) => self.visible = appLauncherVisibility.value, "changed");
-        // }
     })
 }

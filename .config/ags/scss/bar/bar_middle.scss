@@ -1,43 +1,48 @@
-// .bar-middle > * {
-//   padding: 0px 5px;
-//   background: black;
-// }
+.bar-middle {
+  // padding: 0px 5px;
+  // background: black;
 
-.media {
-  @extend .module;
-  background-size: cover;
-  background-position: center;
-  margin: 0px;
-  padding: 0px 10px;
-  border-radius: 10px;
-  transition: all 0s;
+  .media {
+    @extend .module;
+    background-size: cover;
+    background-position: center;
+    margin: 0px;
+    padding: 0px 10px;
+    border-radius: 10px;
+    transition: all 0s;
 
-  // font-size: 0.5rem;
+    // font-size: 0.5rem;
 
-  .progress {
-    min-width: 15px; /* its size is min(min-height, min-width) */
-    min-height: 1px;
-    font-size: 1px; /* to set its thickness set font-size on it */
-    margin: 0px; /* you can set margin on it */
-    padding: 0px;
-    label {
-      font-size: 15px;
+    .progress {
+      min-width: 15px; /* its size is min(min-height, min-width) */
+      min-height: 1px;
+      font-size: 1px; /* to set its thickness set font-size on it */
+      margin: 0px; /* you can set margin on it */
+      padding: 0px;
+      label {
+        font-size: 15px;
+      }
     }
   }
-}
 
-.bandwidth {
-  //   padding: 0px;
-  // min-width: 100px;
-  @extend .module;
+  .bandwidth {
+    //   padding: 0px;
+    // min-width: 100px;
+    @extend .module;
 
-  label {
-    font-size: 10px;
-    // padding: 0px;
-    border-radius: 10px;
+    label {
+      font-size: 10px;
+      // padding: 0px;
+      border-radius: 10px;
+    }
   }
-}
 
-.client-title {
-  @extend .module;
+  .app-search {
+    @extend .icon;
+    font-weight: 800;
+  }
+
+  .client-title {
+    @extend .module;
+  }
 }
