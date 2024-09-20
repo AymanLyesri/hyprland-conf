@@ -9,19 +9,20 @@ if [[ "$2" ]]; then
 fi
 
 # notify and view screenshot
-notify_cmd_shot="notify-send -h string:x-canonical-private-synchronous:shot-notify -u low -i ${iDIR}/picture.png"
+notify_cmd_shot="notify-send 'Clipboard' 'Screenshot taken and copied to clipboard.' --action=\"feh $file\":\"Display it\""
+# echo $notify_cmd_shot
 
 if [[ "$1" == "--now" ]]; then
 
 	grim - | wl-copy && wl-paste >$file
 
-	${notify_cmd_shot} "Copied to clipboard."
+	eval ${notify_cmd_shot}
 
 elif [[ "$1" == "--area" ]]; then
 
 	grim -g "$(slurp)" - | wl-copy && wl-paste >$file
 
-	${notify_cmd_shot} "Copied to clipboard."
+	eval ${notify_cmd_shot}
 
 else
 	echo -e "Available Options : --now --area"

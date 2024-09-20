@@ -12,13 +12,9 @@
   min-height: 69px;
   min-width: 69px;
   border-radius: 50%;
-
-  font-weight: 800;
-  text-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
 }
 
 .workspace-wallpaper {
-  all: unset;
   transition: all 0.5s;
   border: none;
 
@@ -30,8 +26,8 @@
   min-height: 100px;
   border-radius: 50%;
 
-  font-weight: 800;
-  text-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+  padding: 0px;
+  margin: 0px;
 
   &.focused {
     min-height: 150px;
@@ -40,7 +36,9 @@
 
   &:hover {
     min-height: 200px;
-    min-width: 400px;
+    min-width: 350px;
+    background-position: center;
+    background-size: 400px;
 
     border-radius: 20px;
   }

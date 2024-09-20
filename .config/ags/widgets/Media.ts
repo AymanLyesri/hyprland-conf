@@ -1,3 +1,4 @@
+import { Mpris, MprisPlayer } from "types/service/mpris"
 import { getDominantColor } from "utils/image"
 
 const mpris = await Service.import("mpris")
@@ -19,8 +20,9 @@ function lengthStr(length)
 }
 
 /** @param {import('types/service/mpris').MprisPlayer} player */
-function Player(player)
+function Player(player: MprisPlayer)
 {
+    const dominantColor = player.bind("cover_path").as((path) => getDominantColor(path))
     const img = Widget.Box({
         class_name: "img",
         vpack: "start",
@@ -47,8 +49,9 @@ function Player(player)
     })
 
     const positionSlider = Widget.Slider({
-        class_name: "position",
+        class_name: "slider",
         draw_value: false,
+        css: dominantColor.as(c => `highlight{background: ${c}}`),
         on_change: ({ value }) => player.position = value * player.length,
         visible: player.bind("length").as(l => l > 0),
         setup: self =>

@@ -62,6 +62,12 @@ export function Notification(n, new_Notification = false, popup = false)
         label: n.body,
         wrap: true,
     })
+    // print(n.hints[0])
+    // const actions = Widget.Box({
+    //     class_name: "actions",
+    //     children: []
+
+    // })
 
     const actions = Widget.Box({
         class_name: "actions",
@@ -70,11 +76,9 @@ export function Notification(n, new_Notification = false, popup = false)
             on_clicked: () =>
             {
                 const [command, action] = label.split(':');
+                hyprctl(command).then(() => Utils.execAsync('killall notify-send'))
 
-                n.invoke(id)
-                // n.dispatch(id)
-
-                hyprctl(command)
+                // n.invoke(id)
 
             },
             hexpand: true,

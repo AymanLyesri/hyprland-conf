@@ -48,21 +48,28 @@
     // font-size: 1px;
   }
 
-  .player scale.position {
-    padding: 0;
+  .player scale.slider {
+    // padding: 0;
     margin-bottom: 0.3em;
   }
 
-  .player scale.position trough {
-    min-height: 8px;
+  .player scale.slider trough {
+    min-height: 5px;
+    background: $background;
   }
 
-  .player scale.position highlight {
-    background-color: $foreground;
+  .player scale.slider highlight {
+    background: $secondary;
   }
 
-  .player scale.position slider {
+  .player scale.slider slider {
     all: unset;
+    border: none;
+    min-height: 10px;
+    min-width: 20px;
+    margin: -5px;
+    border-radius: 10px;
+    background: $foreground;
   }
 
   .player button {

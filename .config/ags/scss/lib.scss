@@ -20,6 +20,7 @@ $module-foreground: rgba($module-foreground, 0.5);
   // color: mix($foreground, $secondary, 50%);
   color: $foreground;
   min-height: 1px;
+  // border: 1px solid $color15;
   border: none;
   box-shadow: none;
   border-radius: 10px;
@@ -33,7 +34,7 @@ $module-foreground: rgba($module-foreground, 0.5);
 button,
 .button {
   @extend .module;
-  text-shadow: $background 0px 0px 10px;
+  text-shadow: $background 0px 0px 1px;
   ////////////////////////////
   &:hover {
     color: $background;
