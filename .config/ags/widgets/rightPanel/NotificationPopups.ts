@@ -1,5 +1,5 @@
 import { rightPanelExclusivity } from "variables";
-import { Notification } from "./components/notification"
+import { Notification_ } from "./components/notification"
 
 const notifications = await Service.import("notifications")
 
@@ -14,14 +14,14 @@ export default () =>
     const list = Widget.Box({
         vertical: true,
         spacing: 10,
-        children: notifications.popups.map(n => Notification(n, true)),
+        children: notifications.popups.map(n => Notification_(n, true)),
     })
 
     async function onNotified(_, /** @type {number} */ id)
     {
         const n = notifications.getNotification(id)
         if (n) {
-            list.children = [Notification(n, true, true), ...list.children.map(n => Notification(notifications.getNotification(n.attribute.id), false, true))]
+            list.children = [Notification_(n, true, true), ...list.children.map(n => Notification_(notifications.getNotification(n.attribute.id) as any, false, true))]
 
             setTimeout(() =>
             {

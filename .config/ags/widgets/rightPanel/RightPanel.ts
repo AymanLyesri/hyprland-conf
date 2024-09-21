@@ -1,5 +1,5 @@
 
-import { Notification } from "./components/notification";
+import { Notification_ } from "./components/notification";
 import { Resources } from "widgets/Resources";
 import waifu from "./components/waifu";
 import { rightPanelExclusivity } from "variables";
@@ -124,7 +124,7 @@ const NotificationHistory = () => Widget.Box({
                     {
                         class_name: "notification-event",
                         on_primary_click: () => Utils.execAsync(`wl-copy "${notification.body}"`).catch(err => print(err)),
-                        child: Notification(notification),
+                        child: Notification_(notification),
                     });
             })
     }),

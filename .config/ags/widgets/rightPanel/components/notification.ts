@@ -1,4 +1,6 @@
+import { Notification } from "types/service/notifications"
 import { getDominantColor } from "utils/image"
+import { readJson } from "utils/json"
 
 const Hyprland = await Service.import('hyprland')
 
@@ -29,7 +31,7 @@ function NotificationIcon({ app_entry, app_icon, image })
 }
 
 /** @param {import('resource:///com/github/Aylur/ags/service/notifications.js').Notification} n */
-export function Notification(n, new_Notification = false, popup = false)
+export function Notification_(n: Notification, new_Notification = false, popup = false)
 {
     const icon = Widget.Box({
         vpack: "center",
@@ -61,21 +63,41 @@ export function Notification(n, new_Notification = false, popup = false)
         wrap: true,
     })
 
-    const actions = Widget.Box({
+    // interface action { label: string, command: string };
+
+    // const command = n.hints.command ? n.hints.command.get_string()[0] : ''; // Default to false if undefined
+    const actions: any[][] = n.hints.actions ? readJson(n.hints.actions.get_string()[0]) : [];
+
+    const Actions = Widget.Box({
         class_name: "actions",
-        children: n.actions.map(({ id, label }) => Widget.Button({
+        children: actions.map((action) => Widget.Button({
             on_clicked: () =>
             {
-                const [command, action] = label.split(':');
-                Hyprland.sendMessage(`dispatch exec ${command}`).then(() => Utils.execAsync('killall notify-send'))
-
-                // n.invoke(id)
-
+                Hyprland.sendMessage(`dispatch exec ${action[1]}`)
+                    .then(() => Utils.execAsync('killall notify-send'));
             },
             hexpand: true,
-            child: Widget.Label(label.split(':')[1]),
-        })),
-    })
+            child: Widget.Label(action[0]),
+        })
+        ),
+    });
+
+
+    // const actions = Widget.Box({
+    //     class_name: "actions",
+    //     children: n.actions.map(({ id, label }) => Widget.Button({
+    //         on_clicked: () =>
+    //         {
+    //             const [command, action] = label.split(':');
+    //             Hyprland.sendMessage(`dispatch exec ${command}`).then(() => Utils.execAsync('killall notify-send'))
+
+    //             // n.invoke(id)
+
+    //         },
+    //         hexpand: true,
+    //         child: Widget.Label(label.split(':')[1]),
+    //     })),
+    // })
 
     const close = Widget.Button({
         class_name: "close",
@@ -105,7 +127,7 @@ export function Notification(n, new_Notification = false, popup = false)
                     body,
                 ),
             ]),
-            actions,
+            Actions,
         ),
     )
 }
