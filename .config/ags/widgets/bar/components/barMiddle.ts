@@ -61,7 +61,7 @@ function Media()
         on_secondary_click: () => hyprland.messageAsync("dispatch workspace 4"),
         on_hover: () => App.openWindow("media"),
 
-        child: Utils.watch(activePlayer(mpris.players.find(player => player.play_back_status === "Playing") || mpris.players[0]),
+        child: Utils.watch(Widget.Box(),
             mpris, "changed",
             () => activePlayer(mpris.players.find(player => player.play_back_status === "Playing") || mpris.players[0])),
 

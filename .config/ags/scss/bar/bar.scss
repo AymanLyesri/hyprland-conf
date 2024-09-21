@@ -3,20 +3,20 @@
   transition: background 0s;
   &.full {
     background: $module-background;
-    border-radius: 10px 10px 50px 50px;
+    border-radius: 50px 50px 10px 10px;
     // border-radius: 0px 0px 10px 10px;
 
     .bar-left {
       button {
-        border-radius: 10px 50px 10px 50px;
-        // border-radius: 50px 10px 50px 10px;
+        // border-radius: 10px 50px 10px 50px;
+        border-radius: 50px 10px 50px 10px;
       }
     }
     .bar-right {
       button,
       .button {
-        border-radius: 50px 10px 50px 10px;
-        // border-radius: 10px 50px 10px 50px;
+        // border-radius: 50px 10px 50px 10px;
+        border-radius: 10px 50px 10px 50px;
       }
       .system-tray {
         button {
@@ -24,15 +24,15 @@
         }
 
         button:first-child {
-          border-radius: 50px 0px 0px 10px;
+          border-radius: 10px 0px 0px 50px;
         }
 
         button:last-child {
-          border-radius: 0px 10px 50px 0px;
+          border-radius: 0px 50px 10px 0px;
         }
 
         button:only-child {
-          border-radius: 50px 10px 50px 10px;
+          border-radius: 10px 50px 10px 50px;
         }
       }
     }
