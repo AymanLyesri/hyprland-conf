@@ -1,6 +1,6 @@
 import { readJSONFile } from "utils/json";
 import { Waifu } from "../../../interfaces/waifu.interface";
-import { waifuPath } from "variables";
+import { rightPanelWidth, waifuPath } from "variables";
 import { getDominantColor } from "utils/image";
 import { closeProgress, openProgress } from "../../Progress";
 import { getOption, setOption } from "utils/options";
@@ -33,29 +33,6 @@ const CopyImage = () => Utils.execAsync(`bash -c "wl-copy --type image/png < ${w
     .catch(err => print(err))
 
 const OpenImage = () => Hyprland.sendMessage("dispatch exec [float;size 50%] feh --scale-down " + waifuPath)
-
-function Image()
-{
-    // GetImageFromApi()
-    return Widget.EventBox({
-        class_name: "image",
-        on_primary_click: async () => OpenImage(),
-        on_secondary_click: async () => SearchImage(),
-        child: Widget.Box({
-            hexpand: false,
-            vexpand: false,
-            child: Actions(),
-            css: imageDetails.bind().as(imageDetails =>
-            {
-                return `
-                background-image: url("${image}");
-                min-height: ${Number(imageDetails.image_height) / Number(imageDetails.image_width) * 300}px;
-                box-shadow: 0 0 5px 0 ${getDominantColor(image)};
-                `
-            }),
-        }),
-    })
-}
 
 function Actions()
 {
@@ -162,14 +139,14 @@ function Actions()
                 actions.reveal_child = self.active
                 self.label = self.active ? "" : ""
                 // while (true) && !actions.child.children[2].child
-                if (self.active) {
-                    setTimeout(() =>
-                    {
-                        actions.reveal_child = !self.active;
+                setTimeout(() =>
+                {
+                    if (self.active) {
+                        actions.reveal_child = false;
                         self.label = ""
-                        self.active = !self.active
-                    }, 15000)
-                }
+                        self.active = false
+                    }
+                }, 15000)
             },
         }), actions],
     })
@@ -185,6 +162,30 @@ function Actions()
 
     })
 }
+
+function Image()
+{
+    // GetImageFromApi()
+    return Widget.EventBox({
+        class_name: "image",
+        on_primary_click: async () => OpenImage(),
+        on_secondary_click: async () => SearchImage(),
+        child: Widget.Box({
+            hexpand: false,
+            vexpand: false,
+            child: Actions(),
+            css: Utils.merge([imageDetails.bind(), rightPanelWidth.bind()], (imageDetails, width) =>
+            {
+                return `
+                background-image: url("${image}");
+                min-height: ${Number(imageDetails.image_height) / Number(imageDetails.image_width) * width}px;
+                box-shadow: 0 0 5px 0 ${getDominantColor(image)};
+                `
+            }),
+        }),
+    })
+}
+
 
 export default () =>
 {

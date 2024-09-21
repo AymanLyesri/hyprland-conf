@@ -1,29 +1,27 @@
 .right-panel {
-  &.exclusive > * {
+  &.exclusive {
     border-radius: 0px;
   }
-  &.normal > * {
-    border-radius: 10px;
+  &.normal {
+    border-radius: 15px;
     margin: 10px 15px;
   }
 
-  > * {
-    @extend .module;
-    border-radius: 0px 0px 0px 0px;
-    // border: 1px solid $secondary;
-    padding: 0px;
-    min-width: 300px;
+  @extend .module;
+  border-radius: 0px 0px 0px 0px;
+  // border: 1px solid $secondary;
+  padding: 0px;
 
-    .window-actions {
-      margin: 5px;
-      .button {
-        padding: 0px 10px;
-        margin: 0px;
-        min-height: 10px;
-        box-shadow: unset;
-      }
+  .window-actions {
+    margin: 5px;
+    .button {
+      padding: 0px 10px;
+      margin: 0px;
+      min-height: 10px;
+      box-shadow: unset;
     }
   }
+
   .notification-panel {
     @extend .module;
     margin: 1px 10px;

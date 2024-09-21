@@ -2,27 +2,37 @@
 import { Notification_ } from "./components/notification";
 import { Resources } from "widgets/Resources";
 import waifu from "./components/waifu";
-import { rightPanelExclusivity } from "variables";
+import { globalMargin, rightPanelExclusivity, rightPanelWidth } from "variables";
+import { setOption } from "utils/options";
 
 const Notifications = await Service.import("notifications")
-// notifications.popupTimeout = 3000;
-// notifications.forceTimeout = false;
-// notifications.cacheActions = false;
-// notifications.clearDelay = 100;
+
+const maxRightPanelWidth = 600;
+const minRightPanelWidth = 300;
 
 function WindowActions()
 {
     return Widget.Box({
         class_name: "window-actions",
         hpack: "end", spacing: 5
-    },
+    }, Widget.Button({
+        label: "",
+        class_name: "expand-window",
+        on_clicked: () => rightPanelWidth.value = rightPanelWidth.value < maxRightPanelWidth ? rightPanelWidth.value + 50 : maxRightPanelWidth,
+    }),
+        Widget.Button({
+            label: "",
+            class_name: "shrink-window",
+            on_clicked: () => rightPanelWidth.value = rightPanelWidth.value > minRightPanelWidth ? rightPanelWidth.value - 50 : minRightPanelWidth,
+        }),
         Widget.ToggleButton({
             label: "󰐃",
             class_name: "exclusivity",
             onToggled: ({ active }) =>
             {
-                rightPanelExclusivity.value = !active;
+                rightPanelExclusivity.value = active;
             },
+            setup: (self) => self.active = rightPanelExclusivity.value,
         }),
         Widget.Button({
             label: "",
@@ -87,8 +97,7 @@ const ClearNotifications = () =>
                 vertical: true,
                 children: [],
             });
-            Notifications.clear()
-            // NotificationsDisplay.child = NotificationHistory()
+            Notifications.clear().finally(() => NotificationsDisplay.child = NotificationHistory())
         },
     })
 }
@@ -153,6 +162,7 @@ const NotificationPanel = () =>
 function Panel()
 {
     return Widget.Box({
+        css: rightPanelWidth.bind().as(width => `*{min-width: ${width}px}`),
         vertical: true,
         // spacing: 5,
         children: [WindowActions(), waifu(), Separator(), Resources(), Separator(), NotificationPanel()],
@@ -166,19 +176,16 @@ const Window = () => Widget.Window({
     exclusivity: "normal",
     layer: "overlay",
     keymode: "on-demand",
-    // margins: [10, 0, 0, 0],
     visible: false,
     child: Panel(),
-    setup: (self) =>
-    {
-        self.hook(rightPanelExclusivity, (self) =>
-        {
-            self.exclusivity = rightPanelExclusivity.value ? "exclusive" : "normal"
-            self.layer = rightPanelExclusivity.value ? "bottom" : "top"
-            self.class_name = rightPanelExclusivity.value ? "right-panel exclusive" : "right-panel normal"
-        }, "changed");
-    }
-})
+}).hook(rightPanelExclusivity, (self) =>
+{
+    setOption("rightPanel.exclusivity", rightPanelExclusivity.value);
+    self.exclusivity = rightPanelExclusivity.value ? "exclusive" : "normal"
+    self.layer = rightPanelExclusivity.value ? "bottom" : "top"
+    self.class_name = rightPanelExclusivity.value ? "right-panel exclusive" : "right-panel normal"
+    self.margins = rightPanelExclusivity.value ? [0, 0] : [5, globalMargin, globalMargin, globalMargin]
+}, "changed");
 
 export default () =>
 {

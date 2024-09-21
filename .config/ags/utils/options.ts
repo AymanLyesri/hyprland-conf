@@ -2,18 +2,13 @@ import { readJSONFile, writeJSONFile } from "./json";
 
 const optionsPath = App.configDir + "/assets/options/options.json";
 
-interface Options
+function createEmptyObject<T>(): Partial<Record<keyof T, any>>
 {
-  waifu: {
-    input_history: string,
-  }
+  return {} as Partial<Record<keyof T, any>>;
 }
 
-const options = Variable<Options>({
-  waifu: {
-    input_history: "",
-  },
-})
+
+const options = Variable<Options>(createEmptyObject<Options>() as any);
 
 // Options are stored in a json file, containing all the options, check if it exists, if not, create it
 if (readJSONFile(optionsPath)) {

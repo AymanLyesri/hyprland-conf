@@ -1,12 +1,9 @@
-window.notification-popups {
-  padding: 0rem;
-  border-radius: 10px;
-}
-
 .notification {
   @extend .module;
+  min-height: 2px;
   min-width: 400px;
-  padding: 1em;
+  padding: 10px;
+  margin: 0px;
 
   .icon {
     min-width: 50px;

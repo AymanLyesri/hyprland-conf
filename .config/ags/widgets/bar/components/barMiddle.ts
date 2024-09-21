@@ -51,7 +51,7 @@ function Media()
             children: [progress(player), title(player), artist(player)],
             css: `
             color: ${playerToColor(player.name)};
-            background-image:  linear-gradient(to right, #000000 , rgba(0, 0, 0, 0.5)), url('${player.track_cover_url}');
+            background-image:  linear-gradient(to right, #000000 , rgba(0, 0, 0, 0.5)), url('${player.cover_path}');
             `,
         })
     }

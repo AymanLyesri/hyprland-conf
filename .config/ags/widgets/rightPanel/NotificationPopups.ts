@@ -1,4 +1,4 @@
-import { rightPanelExclusivity } from "variables";
+import { globalMargin, rightPanelExclusivity } from "variables";
 import { Notification_ } from "./components/notification"
 
 const notifications = await Service.import("notifications")
@@ -48,20 +48,11 @@ export default () =>
         anchor: rightPanelExclusivity.bind().as(exclusive => exclusive ? ["right", "top"] : ["left", "top"]),
         layer: "top",
         exclusivity: "normal",
-        margins: [10, 10, 10, 10],
+        margins: [5, globalMargin, globalMargin, globalMargin],
         child: Widget.Box({
-            css: "min-width: 2px; min-height: 2px;",
             class_name: "notifications",
             vertical: true,
             child: list,
-            // margin: 10,
-
-            /** this is a simple one liner that could be used instead of
-                hooking into the 'notified' and 'dismissed' signals.
-                but its not very optimized becuase it will recreate
-                the whole list everytime a notification is added or dismissed */
-            // children: notifications.bind('popups')
-            //     .as(popups => popups.map(Notification))
         }),
     })
 }
