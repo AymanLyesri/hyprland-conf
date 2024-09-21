@@ -1,3 +1,4 @@
+import { Util } from "types/@girs/atk-1.0/atk-1.0.cjs"
 import { Notification } from "types/service/notifications"
 import { getDominantColor } from "utils/image"
 import { readJson } from "utils/json"
@@ -63,21 +64,22 @@ export function Notification_(n: Notification, new_Notification = false, popup =
         wrap: true,
     })
 
-    // interface action { label: string, command: string };
-
-    // const command = n.hints.command ? n.hints.command.get_string()[0] : ''; // Default to false if undefined
-    const actions: any[][] = n.hints.actions ? readJson(n.hints.actions.get_string()[0]) : [];
+    const actions: string[][] = n.hints.actions ? readJson(n.hints.actions.get_string()[0]) : [];
 
     const Actions = Widget.Box({
         class_name: "actions",
+        spacing: 5,
+        // hpack: "fill",
         children: actions.map((action) => Widget.Button({
+            class_name: action[0].includes("Delete") ? "delete" : "",
+            // hpack: action[0].includes("Delete") ? "end" : "fill",
             on_clicked: () =>
             {
                 Hyprland.sendMessage(`dispatch exec ${action[1]}`)
-                    .then(() => Utils.execAsync('killall notify-send'));
+                    .then(() => Utils.execAsync('killall notify-send')).catch((err) => Utils.notify(err))
             },
             hexpand: true,
-            child: Widget.Label(action[0]),
+            child: Widget.Label(action[0].includes("Delete") ? "󰆴" : action[0]),
         })
         ),
     });

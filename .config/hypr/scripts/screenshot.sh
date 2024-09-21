@@ -9,20 +9,18 @@ if [[ "$2" ]]; then
 fi
 
 # notify and view screenshot
-notify_cmd_shot="notify-send 'Clipboard' 'Screenshot taken and copied to clipboard.' --action=\"feh $file\":\"Display it\""
-# echo $notify_cmd_shot
 
 if [[ "$1" == "--now" ]]; then
 
 	grim - | wl-copy && wl-paste >$file
 
-	eval ${notify_cmd_shot}
+	notify-send 'Clipboard' 'Screenshot taken and copied to clipboard.' --hint=string:actions:"[[\"Preview\",\"feh $file \"],[\"Edit\",\"gimp $file \"],[\"Delete\",\"rm $file \"]]"
 
 elif [[ "$1" == "--area" ]]; then
 
 	grim -g "$(slurp)" - | wl-copy && wl-paste >$file
 
-	eval ${notify_cmd_shot}
+	notify-send 'Clipboard' 'Screenshot taken and copied to clipboard.' --hint=string:actions:"[[\"Preview\",\"feh $file \"],[\"Edit\",\"gimp $file \"],[\"Delete\",\"rm $file \"]]"
 
 else
 	echo -e "Available Options : --now --area"

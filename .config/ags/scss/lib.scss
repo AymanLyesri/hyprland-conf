@@ -46,6 +46,13 @@ button,
   }
 }
 
+.danger {
+  background: rgba(177, 62, 62, 0.493);
+  &:hover {
+    background: rgba(177, 62, 62, 0.8);
+  }
+}
+
 icon,
 .icon {
   font-size: 15px;

@@ -38,17 +38,28 @@
     font-size: 1.2em;
   }
 
-  .actions .action-button {
-    margin: 0 0.4em;
-    margin-top: 0.8em;
-  }
+  .actions {
+    button {
+      // border-radius: 0px;
 
-  .actions .action-button:first-child {
-    margin-left: 0;
-  }
+      &.delete {
+        @extend .danger;
+      }
 
-  .actions .action-button:last-child {
-    margin-right: 0;
+      // &:first-child {
+      //   border-radius: 10px 0px 0px 10px;
+      // }
+
+      // &:only-child {
+      //   border-radius: 10px;
+      // }
+
+      // &:last-child {
+      //   border-radius: 0px 10px 10px 0px;
+      // }
+    }
+    // margin: 0 0.4em;
+    // margin-top: 0.8em;
   }
 }
 
