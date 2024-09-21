@@ -18,3 +18,12 @@ export function readJson(string: string)
         return "null";
     }
 }
+
+export function writeJSONFile(filePath: string, data: any)
+{
+    try {
+        Utils.writeFile(JSON.stringify(data, null, 4), filePath);
+    } catch (e) {
+        console.error('Error:', e);
+    }
+}

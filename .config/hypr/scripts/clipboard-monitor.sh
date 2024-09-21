@@ -4,12 +4,10 @@
 
 # Use wl-paste to watch the clipboard
 wl-paste --watch bash -c '
-  # Capture the entire clipboard content into a variable
-  clipboard_content=$(wl-paste)
+  clipboard_content=$(wl-paste --no-newline --type text 2>/dev/null)
   
-  # Replace line breaks with spaces
-  sanitized_content=$(echo "$clipboard_content" | tr "\n" " ")
-  
-  # Send a single notification with the sanitized content
-  notify-send "Clipboard" "$sanitized_content"
+  if [ -n "$clipboard_content" ]; then
+    sanitized_content=$(echo "$clipboard_content" | tr "\n" " ")
+    notify-send "Clipboard" "$sanitized_content"
+  fi
 '

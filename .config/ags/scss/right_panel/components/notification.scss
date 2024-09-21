@@ -6,9 +6,7 @@ window.notification-popups {
 .notification {
   @extend .module;
   min-width: 400px;
-  border-radius: 1rem;
   padding: 1em;
-  background-color: $background;
 
   .icon {
     min-width: 50px;

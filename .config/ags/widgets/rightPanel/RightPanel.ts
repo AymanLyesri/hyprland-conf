@@ -81,13 +81,14 @@ const ClearNotifications = () =>
     return Widget.Button({
         class_name: "clear",
         label: "Clear",
-        on_clicked: async () =>
+        on_clicked: () =>
         {
             NotificationsDisplay.child = Widget.Box({
                 vertical: true,
                 children: [],
             });
-            Notifications.clear().then(() => NotificationsDisplay.child = NotificationHistory());
+            Notifications.clear()
+            // NotificationsDisplay.child = NotificationHistory()
         },
     })
 }

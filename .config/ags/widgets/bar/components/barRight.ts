@@ -4,7 +4,7 @@ import { custom_revealer } from "widgets/revealer";
 
 const audio = await Service.import("audio");
 const battery = await Service.import("battery");
-const systemtray = await Service.import("systemtray");
+const SystemTray = await Service.import("systemtray");
 
 
 // widgets can be only assigned as a child in one container
@@ -114,7 +114,7 @@ function BatteryLabel()
 
 function SysTray()
 {
-    const items = systemtray.bind("items").as((items) =>
+    const items = SystemTray.bind("items").as((items) =>
         items.map((item) =>
             Widget.Button({
                 child: Widget.Icon({ icon: item.bind("icon") }),

@@ -1,9 +1,10 @@
 import { readJSONFile } from "utils/json";
-import { Waifu } from "../../interfaces/waifu.interface";
+import { Waifu } from "../../../interfaces/waifu.interface";
 import { waifuPath } from "variables";
 import { getDominantColor } from "utils/image";
-import { closeProgress, openProgress } from "../../widgets/Progress";
-import { hyprctl } from "utils/hyprctl";
+import { closeProgress, openProgress } from "../../Progress";
+import { getOption, setOption } from "utils/options";
+const Hyprland = await Service.import('hyprland')
 
 const image = waifuPath
 
@@ -20,14 +21,18 @@ function GetImageFromApi(param = "")
         imageDetails.value = JSON.parse(Utils.readFile(`${App.configDir}/assets/images/waifu.json`))
         previousImageDetails = JSON.parse(Utils.readFile(`${App.configDir}/assets/images/previous.json`))
         print(imageDetails.value.id)
-    }).catch(async (error) => await Utils.execAsync(`notify-send "Error" "${error}"`))
+    }).catch(async (error) => await Utils.notify({ summary: "Error", body: error }))
 }
 
-const SearchImage = () => Utils.execAsync(`bash -c "xdg-open 'https://danbooru.donmai.us/posts/${imageDetails.value.id}' && xdg-settings get default-web-browser | sed 's/\.desktop$//'"`).then((browser) => Utils.execAsync(`notify-send "Waifu" "opened in ${browser}"`)).catch(err => print(err))
+const SearchImage = () => Utils.execAsync(`bash -c "xdg-open 'https://danbooru.donmai.us/posts/${imageDetails.value.id}' && xdg-settings get default-web-browser | sed 's/\.desktop$//'"`)
+    .then((browser) => Utils.notify({ summary: 'Waifu', body: `opened in ${browser}` }))
+    .catch(err => print(err))
 
-const CopyImage = () => Utils.execAsync(`bash -c "wl-copy --type image/png < ${waifuPath}"`).then(() => Utils.execAsync('notify-send "Waifu" "Copied"')).catch(err => print(err))
+const CopyImage = () => Utils.execAsync(`bash -c "wl-copy --type image/png < ${waifuPath}"`)
+    .then(() => Utils.notify({ summary: 'Clipboard', body: 'waifu copied to clipboard' }))
+    .catch(err => print(err))
 
-const OpenImage = () => hyprctl("feh --scale-down " + waifuPath, "size 50%")
+const OpenImage = () => Hyprland.sendMessage("dispatch exec [float;size 50%] feh --scale-down " + waifuPath)
 
 function Image()
 {
@@ -67,7 +72,7 @@ function Actions()
                 on_clicked: () =>
                 {
                     Utils.execAsync(`bash -c "cmp -s ${waifuPath} ${terminalWaifuPath} && { rm ${terminalWaifuPath}; echo 1; } || { cp ${waifuPath} ${terminalWaifuPath}; echo 0; }"`)
-                        .then((output) => Utils.execAsync(`notify-send "Waifu" "${Number(output) == 0 ? 'Pinned To Terminal' : 'UN-Pinned from Terminal'}"`))
+                        .then((output) => Utils.notify({ summary: "Waifu", body: `${Number(output) == 0 ? 'Pinned To Terminal' : 'UN-Pinned from Terminal'}` }))
                         .catch(err => print(err))
                 },
             }),
@@ -78,12 +83,13 @@ function Actions()
         class_name: "input",
         child: Widget.Entry({
             placeholder_text: 'Tags/ID',
-            text: "",
+            text: getOption("waifu.input_history"),
             on_accept: (self) =>
             {
                 if (self.text == null || self.text == "") {
                     return
                 }
+                setOption("waifu.input_history", self.text)
                 GetImageFromApi(self.text)
             },
         }),
@@ -126,7 +132,7 @@ function Actions()
                     label: "",
                     class_name: "entry-search",
                     hexpand: true,
-                    on_clicked: () => GetImageFromApi(Entry.child.text || ""),
+                    on_clicked: () => Entry.child.activate(),
                 }),
                 Entry,
                 Widget.Button({
@@ -136,7 +142,8 @@ function Actions()
                     on_clicked: () =>
                     {
                         nsfw.value = !nsfw.value
-                        Utils.execAsync(`notify-send "NSFW" "${nsfw.value ? "Enabled" : "Disabled"}"`).catch(err => print(err))
+                        Utils.notify({ summary: "Waifu", body: `NSFW is ${nsfw.value ? 'Enabled' : 'Disabled'}` })
+                            .catch(err => print(err))
                     },
                 }),
             ])

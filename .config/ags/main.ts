@@ -1,6 +1,6 @@
-import NotificationPopups from "right_panel/NotificationPopups";
-import RightPanel from "right_panel/RightPanel";
-import Bar from "bar/Bar";
+import NotificationPopups from "widgets/rightPanel/NotificationPopups";
+import RightPanel from "widgets/rightPanel/RightPanel";
+import Bar from "widgets/bar/Bar";
 import AppLauncher from "widgets/AppLauncher";
 import Media from "widgets/Media";
 import Progress from "widgets/Progress";
@@ -10,6 +10,8 @@ import { getCssPath, refreshCss } from "utils/scss";
 
 // required packages
 // gvfs is required for images
+
+
 
 refreshCss()
 
@@ -25,5 +27,10 @@ App.config({
     AppLauncher(),
     Progress(),
   ],
-});
+  closeWindowDelay: {
+    // "media": 5000, // milliseconds
+    // "right-panel": 5000, // milliseconds
+  },
+})
+
 

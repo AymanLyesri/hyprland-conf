@@ -1,9 +1,8 @@
 import Gdk from "gi://Gdk";
-import app from "types/app";
 import { readJson } from "utils/json"
 import { emptyWorkspace, globalMargin } from "variables";
 import { closeProgress, openProgress } from "./Progress";
-import client from "types/client";
+const Hyprland = await Service.import('hyprland')
 
 var Results = Variable<{ app_name: string, app_exec: string }[]>([]
     // readJson(Utils.exec(`${App.configDir}/scripts/app-search.sh`))
@@ -39,7 +38,8 @@ function Input()
                 on_accept: (self) =>
                 {
                     openProgress()
-                    Utils.execAsync(`${App.configDir}/scripts/app-loading-progress.sh ${Results.value[0].app_name}`).finally(() => closeProgress()).catch(err => Utils.execAsync(`notify-send "Error" "${err}"`));
+                    Utils.execAsync(`${App.configDir}/scripts/app-loading-progress.sh ${Results.value[0].app_name}`).finally(() => closeProgress())
+                        .catch(err => Utils.notify({ summary: "Error", body: err }));
                     Utils.execAsync(Results.value[0].app_exec).catch(err => print(err));
                     self.text = ""
                     App.closeWindow("app-launcher")
@@ -73,7 +73,8 @@ function ResultsDisplay()
                 label: element.app_name,
                 on_clicked: () =>
                 {
-                    Utils.execAsync(element.app_exec).catch(err => print(err));
+                    // Utils.execAsync(element.app_exec).catch(err => print(err));
+                    Hyprland.sendMessage(`dispatch exec ${element.app_exec}`).catch(err => print(err));
                     App.closeWindow("app-launcher")
                 },
             })
