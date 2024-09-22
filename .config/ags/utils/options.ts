@@ -2,13 +2,18 @@ import { readJSONFile, writeJSONFile } from "./json";
 
 const optionsPath = App.configDir + "/assets/options/options.json";
 
-function createEmptyObject<T>(): Partial<Record<keyof T, any>>
-{
-  return {} as Partial<Record<keyof T, any>>;
-}
-
-
-const options = Variable<Options>(createEmptyObject<Options>() as any);
+// Options are stored in a json file, containing all the options, check if it exists, if not, create it
+const options = Variable<Options>({
+  "waifu": {
+    "input_history": "",
+    "visibility": true
+  },
+  "rightPanel": {
+    "exclusivity": true,
+    "width": 300,
+    "visibility": true
+  }
+});
 
 // Options are stored in a json file, containing all the options, check if it exists, if not, create it
 if (readJSONFile(optionsPath)) {
@@ -17,9 +22,9 @@ if (readJSONFile(optionsPath)) {
   writeJSONFile(optionsPath, options.value);
 }
 
+// When the options change, write them to the json file
 options.connect('changed', ({ value }) =>
 {
-  // print('options changed', value.waifu.input_history);
   writeJSONFile(optionsPath, value);
 });
 

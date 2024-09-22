@@ -29,7 +29,7 @@ def main():
     print(api_url)
     api_key = "tYWBHV2Pv5dKKmRBsQaMHtFH"  # Replace with your own API key
     user_name = "lilayman"  # Replace with your own username
-    save_dir = os.path.expanduser("~/.config/ags/assets/images")  # Directory where the image will be saved
+    save_dir = os.path.expanduser("~/.config/ags/assets/waifu")  # Directory where the image will be saved
     image_name = "waifu.jpg"
 
     # Create the directory if it doesn't exist

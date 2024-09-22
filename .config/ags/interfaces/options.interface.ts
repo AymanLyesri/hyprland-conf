@@ -5,7 +5,9 @@ interface Options
         input_history: string,
     }
     rightPanel: {
+        visibility: boolean,
         exclusivity: boolean,
         width: number,
+
     }
 }

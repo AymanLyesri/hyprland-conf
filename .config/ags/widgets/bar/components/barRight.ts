@@ -1,7 +1,8 @@
 import brightness from "brightness";
-import { waifuPath, waifuVisibility } from "variables";
+import { rightPanelVisibility, waifuPath, waifuVisibility } from "variables";
 import { closeProgress, openProgress } from "widgets/Progress";
 import { custom_revealer } from "widgets/revealer";
+import { WaifuVisibility } from "widgets/rightPanel/components/waifu";
 
 const audio = await Service.import("audio");
 const battery = await Service.import("battery");
@@ -23,7 +24,7 @@ function Theme()
         },
 
         label: "",
-        class_name: "theme",
+        class_name: "theme icon",
     })
 
 }
@@ -41,7 +42,7 @@ function Brightness()
 
     const label = Widget.Label({
         class_name: "icon",
-        label: "󰃞",
+        label: "",
         // brightness.bind('screen-value').as(v => `${Math.round(v * 100)}%`),
     });
 
@@ -81,12 +82,10 @@ function Volume()
         draw_value: false,
         class_name: "slider",
         on_change: ({ value }) => (audio.speaker.volume = value),
-        setup: (self) =>
-            self.hook(audio.speaker, () =>
-            {
-                self.value = audio.speaker.volume || 0;
-            }),
-    })
+    }).hook(audio.speaker, (self) =>
+    {
+        self.value = audio.speaker.volume || 0;
+    });
 
     return custom_revealer(icon, slider, '', () => Utils.execAsync(`pavucontrol`).catch(err => print(err)));
 }
@@ -136,25 +135,11 @@ function SysTray()
 function RightPanel()
 {
     return Widget.ToggleButton({
-        onToggled: ({ active }) => active ? App.openWindow("right-panel") : App.closeWindow("right-panel"),
+        onToggled: ({ active }) => rightPanelVisibility.value = active,
         label: "",
-        class_name: "panel-trigger",
-    });
+        class_name: "panel-trigger icon",
+    }).hook(rightPanelVisibility, (self) => self.active = rightPanelVisibility.value, "changed");
 }
-
-function Waifu()
-{
-    return Widget.ToggleButton({
-        onToggled: ({ active }) => { waifuVisibility.value = active },
-        label: "󰬄",
-        class_name: "waifu",
-        setup: (self) =>
-        {
-            self.hook(waifuVisibility, () => self.active = waifuVisibility.value, "changed");
-        }
-    })
-}
-
 
 export function Right()
 {
@@ -168,7 +153,7 @@ export function Right()
             SysTray(),
             Theme(),
             BatteryLabel() as any,
-            Waifu(),
+            WaifuVisibility(),
             RightPanel(),
         ],
     });

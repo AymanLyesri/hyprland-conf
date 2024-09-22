@@ -8,26 +8,35 @@ fi
 
 app_name="$1"
 
-# Function to check if the specified application is present
-is_app_present() {
-    # Capture output of hyprctl clients for debugging
-    output=$(hyprctl clients)
-    found=$(echo "$output" | grep -qiE "class: *${app_name}*|title: *${app_name}*" && echo 1 || echo 0)
-    echo $found
-    # Check if any window has the specified class or title containing app_name
-    if [ "$found" -eq 1 ]; then
-        return 0
+# Function to get the workspace of a specific application
+get_workspace() {
+    local app_name="$1"
+
+    # Get the window data from hyprctl
+    window_data=$(hyprctl clients)
+
+    # Use awk to extract the workspace for the specified application (case-insensitive)
+    workspace=$(echo "$window_data" | awk -v app="$app_name" '
+        BEGIN { found = 0 }
+        tolower($0) ~ tolower(app) { found = 1 }
+        found && $0 ~ /workspace:/ { split($0, a, " "); print a[2]; exit }
+    ')
+
+    if [ -n "$workspace" ]; then
+        echo $workspace
     else
-        return 1
+        echo 0
     fi
 }
 
 handle() {
-    # Call the function and store its exit status
-    if is_app_present "$app_name"; then
-        echo "$app_name is present"
+    workspace=$(get_workspace "$1")
+    # check if workspace is greater than 0
+    if [ "$workspace" -gt 0 ]; then
+        echo $workspace
         exit 0
     fi
+
 }
 
 socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do handle "$app_name"; done

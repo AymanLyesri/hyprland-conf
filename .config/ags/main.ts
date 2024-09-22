@@ -15,7 +15,7 @@ import { getCssPath, refreshCss } from "utils/scss";
 
 refreshCss()
 
-App.addIcons(`${App.configDir}/assets`)
+App.addIcons(`${App.configDir}/assets/icons`)
 App.config({
   style: getCssPath(),
   windows: [

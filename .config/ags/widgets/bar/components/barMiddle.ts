@@ -116,7 +116,7 @@ function Bandwidth()
 function AppLauncher()
 {
     return Widget.Button({
-        label: "",
+        child: Widget.Icon("preferences-system-search-symbolic"),
         class_name: "app-search",
         on_clicked: () => App.toggleWindow("app-launcher"),
     });

@@ -1,8 +1,8 @@
 
 import { Notification_ } from "./components/notification";
 import { Resources } from "widgets/Resources";
-import waifu from "./components/waifu";
-import { globalMargin, rightPanelExclusivity, rightPanelWidth } from "variables";
+import waifu, { WaifuVisibility } from "./components/waifu";
+import { globalMargin, rightPanelExclusivity, rightPanelVisibility, rightPanelWidth, waifuVisibility } from "variables";
 import { setOption } from "utils/options";
 
 const Notifications = await Service.import("notifications")
@@ -19,12 +19,11 @@ function WindowActions()
         label: "",
         class_name: "expand-window",
         on_clicked: () => rightPanelWidth.value = rightPanelWidth.value < maxRightPanelWidth ? rightPanelWidth.value + 50 : maxRightPanelWidth,
-    }),
-        Widget.Button({
-            label: "",
-            class_name: "shrink-window",
-            on_clicked: () => rightPanelWidth.value = rightPanelWidth.value > minRightPanelWidth ? rightPanelWidth.value - 50 : minRightPanelWidth,
-        }),
+    }), Widget.Button({
+        label: "",
+        class_name: "shrink-window",
+        on_clicked: () => rightPanelWidth.value = rightPanelWidth.value > minRightPanelWidth ? rightPanelWidth.value - 50 : minRightPanelWidth,
+    }), WaifuVisibility(),
         Widget.ToggleButton({
             label: "󰐃",
             class_name: "exclusivity",
@@ -32,12 +31,11 @@ function WindowActions()
             {
                 rightPanelExclusivity.value = active;
             },
-            setup: (self) => self.active = rightPanelExclusivity.value,
-        }),
+        }).hook(rightPanelExclusivity, (self) => self.active = rightPanelExclusivity.value, "changed"),
         Widget.Button({
             label: "",
             class_name: "close",
-            on_clicked: () => App.closeWindow("right-panel"),
+            on_clicked: () => rightPanelVisibility.value = false,
         }),
     )
 
@@ -176,7 +174,7 @@ const Window = () => Widget.Window({
     exclusivity: "normal",
     layer: "overlay",
     keymode: "on-demand",
-    visible: false,
+    visible: rightPanelVisibility.value,
     child: Panel(),
 }).hook(rightPanelExclusivity, (self) =>
 {
@@ -184,7 +182,7 @@ const Window = () => Widget.Window({
     self.layer = rightPanelExclusivity.value ? "bottom" : "top"
     self.class_name = rightPanelExclusivity.value ? "right-panel exclusive" : "right-panel normal"
     self.margins = rightPanelExclusivity.value ? [0, 0] : [5, globalMargin, globalMargin, globalMargin]
-}, "changed");
+}, "changed").hook(rightPanelVisibility, (self) => self.visible = rightPanelVisibility.value, "changed");
 
 export default () =>
 {

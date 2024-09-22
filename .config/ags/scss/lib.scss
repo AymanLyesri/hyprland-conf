@@ -11,7 +11,7 @@ $module-background: rgba($module-background, 0.5);
 $module-foreground: rgba($module-foreground, 0.5);
 
 * {
-  font-family: "JetBrainsMono NFM";
+  font-family: "JetBrainsMono NFP";
   transition: all 0.5s;
 }
 
@@ -34,6 +34,7 @@ $module-foreground: rgba($module-foreground, 0.5);
 button,
 .button {
   @extend .module;
+  min-height: 20px;
   text-shadow: $background 0px 0px 2px;
   ////////////////////////////
   &:hover {
@@ -59,8 +60,13 @@ button,
 }
 
 icon,
+image {
+  font-size: 12px;
+  color: $foreground;
+}
+
 .icon {
-  font-size: 15px;
+  font-size: 10px;
 }
 
 separator {

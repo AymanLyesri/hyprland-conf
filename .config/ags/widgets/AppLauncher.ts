@@ -1,8 +1,7 @@
 import Gdk from "gi://Gdk";
 import { readJson } from "utils/json"
-import { emptyWorkspace, globalMargin } from "variables";
+import { emptyWorkspace, globalMargin, newAppWorkspace } from "variables";
 import { closeProgress, openProgress } from "./Progress";
-import { Box } from "types/widget";
 const Hyprland = await Service.import('hyprland')
 
 var Results = Variable<{ app_name: string, app_exec: string, app_icon: string }[]>([]
@@ -45,15 +44,10 @@ function Input()
                     // appLauncherVisibility.value = false
                     App.closeWindow("app-launcher")
                 }
-
             })
-
-
         ]
     })
 }
-
-
 
 const ResultsDisplay = Widget.Box({
     class_name: "results",
@@ -77,6 +71,7 @@ const ResultsDisplay = Widget.Box({
             {
                 openProgress()
                 Utils.execAsync(`${App.configDir}/scripts/app-loading-progress.sh ${element.app_name}`)
+                    .then((workspace) => newAppWorkspace.value = Number(workspace))
                     .finally(() => closeProgress())
                     .catch(err => Utils.notify({ summary: "Error", body: err }));
 

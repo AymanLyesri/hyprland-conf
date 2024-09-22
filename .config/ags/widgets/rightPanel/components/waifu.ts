@@ -6,8 +6,8 @@ import { closeProgress, openProgress } from "../../Progress";
 import { getOption, setOption } from "utils/options";
 const Hyprland = await Service.import('hyprland')
 
-var imageDetails = Variable<Waifu>(readJSONFile(`${App.configDir}/assets/images/waifu.json`))
-var previousImageDetails = readJSONFile(`${App.configDir}/assets/images/previous.json`)
+var imageDetails = Variable<Waifu>(readJSONFile(`${App.configDir}/assets/waifu/waifu.json`))
+var previousImageDetails = readJSONFile(`${App.configDir}/assets/waifu/previous.json`)
 var nsfw = Variable<boolean>(false)
 
 function GetImageFromApi(param = "")
@@ -16,8 +16,8 @@ function GetImageFromApi(param = "")
     Utils.execAsync(`python ${App.configDir}/scripts/get-waifu.py ${nsfw.value} "${param}"`).then((output) =>
     {
         closeProgress()
-        imageDetails.value = JSON.parse(Utils.readFile(`${App.configDir}/assets/images/waifu.json`))
-        previousImageDetails = JSON.parse(Utils.readFile(`${App.configDir}/assets/images/previous.json`))
+        imageDetails.value = JSON.parse(Utils.readFile(`${App.configDir}/assets/waifu/waifu.json`))
+        previousImageDetails = JSON.parse(Utils.readFile(`${App.configDir}/assets/waifu/previous.json`))
         print(imageDetails.value.id)
     }).catch(async (error) => await Utils.notify({ summary: "Error", body: error }))
 }
@@ -199,4 +199,13 @@ export default () =>
 
         ),
     })
+}
+
+export function WaifuVisibility()
+{
+    return Widget.ToggleButton({
+        onToggled: ({ active }) => { waifuVisibility.value = active },
+        label: "",
+        class_name: "waifu icon",
+    }).hook(waifuVisibility, (self) => self.active = waifuVisibility.value, "changed")
 }

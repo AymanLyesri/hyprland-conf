@@ -3,18 +3,22 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
 .bar-left {
   .workspaces {
     button {
+      padding: 0px 15px;
       ////////////////////////////
       &.focused {
-        padding: 0px 20px;
+        // padding: 0px 20px;
         background-image: linear-gradient(to bottom right, $gradient-Colors);
         // animation: workspace-focus 0.3s ease;
       }
       &.same-focused {
-        padding: 0px 20px;
+        // padding: 0px 20px;
 
         //no transition for margin
-        // transition: all 0.5s, padding 0s;
+        transition: all 0s;
         background-image: linear-gradient(to bottom right, $gradient-Colors);
+      }
+      &.new-app {
+        @extend .danger;
       }
       ////////////////////////////
       // $special: mix(mix($color5, $color6, 50%), $foreground, 69%);
