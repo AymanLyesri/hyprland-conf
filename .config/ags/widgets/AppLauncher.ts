@@ -2,9 +2,10 @@ import Gdk from "gi://Gdk";
 import { readJson } from "utils/json"
 import { emptyWorkspace, globalMargin } from "variables";
 import { closeProgress, openProgress } from "./Progress";
+import { Box } from "types/widget";
 const Hyprland = await Service.import('hyprland')
 
-var Results = Variable<{ app_name: string, app_exec: string }[]>([]
+var Results = Variable<{ app_name: string, app_exec: string, app_icon: string }[]>([]
     // readJson(Utils.exec(`${App.configDir}/scripts/app-search.sh`))
 )
 
@@ -23,9 +24,9 @@ function Input()
                 hexpand: true,
                 onChange: async ({ text }) =>
                 {
-                    if (text == "") {
-                        Results.value = []
-                    }
+                    // if (text == "") {
+                    //     Results.value = []
+                    // }
                     // Clear the previous timeout
                     clearTimeout(debounceTimeout);
 
@@ -38,11 +39,19 @@ function Input()
                 on_accept: (self) =>
                 {
                     openProgress()
-                    Utils.execAsync(`${App.configDir}/scripts/app-loading-progress.sh ${Results.value[0].app_name}`).finally(() => closeProgress())
+                    Utils.execAsync(`${App.configDir}/scripts/app-loading-progress.sh ${Results.value[0].app_name}`)
+                        .finally(() => closeProgress())
                         .catch(err => Utils.notify({ summary: "Error", body: err }));
-                    Utils.execAsync(Results.value[0].app_exec).catch(err => print(err));
-                    self.text = ""
-                    App.closeWindow("app-launcher")
+                    Utils.notify({ summary: "Launching", body: Results.value[0].app_exec });
+                    Hyprland.sendMessage(`dispatch exec ${Results.value[0].app_exec}`)
+                        .then(() =>
+                        {
+                            self.text = ""
+                            Results.value = []
+                            App.closeWindow("app-launcher")
+                        })
+                        .catch(err => Utils.notify({ summary: "Error", body: err }));
+
                 },
             }).on("key-press-event", (self, event: Gdk.Event) =>
             {
@@ -68,15 +77,26 @@ function ResultsDisplay()
         hexpand: true,
         children: Results.bind().as(Results => Results.map((element, key) =>
         {
+
+            const content = Widget.Box({
+                spacing: 10,
+                children: [Widget.Icon({ icon: element.app_icon ? element.app_icon : "dialog-application-symbolic" }), Widget.Label({ label: element.app_name })]
+            })
+
             return Widget.Button({
                 hexpand: true,
-                label: element.app_name,
+                xalign: 0,
+                child: content,
                 on_clicked: () =>
                 {
+                    Utils.notify({ summary: "Launching", body: element.app_exec });
                     // Utils.execAsync(element.app_exec).catch(err => print(err));
-                    Hyprland.sendMessage(`dispatch exec ${element.app_exec}`).catch(err => print(err));
-                    App.closeWindow("app-launcher")
+                    Hyprland.sendMessage(`dispatch exec ${element.app_exec}`)
+                        .then(() => App.closeWindow("app-launcher"))
+                        .catch(err => Utils.notify({ summary: "Error", body: err }));
+
                 },
+                setup: (self) => key == 1 ? self.activate() : null,
             })
         })
         ),
@@ -91,7 +111,7 @@ export default () =>
         exclusivity: "normal",
         keymode: "on-demand",
         layer: "top",
-        margins: [globalMargin, globalMargin], // top right bottom left
+        margins: [5, globalMargin, globalMargin, globalMargin], // top right bottom left
         visible: false,
 
         child: Widget.EventBox({

@@ -40,6 +40,11 @@ button,
     background: $background;
     text-shadow: $foreground 0px 0px 2px;
   }
+  &:focus {
+    outline: none;
+    border-color: transparent;
+    box-shadow: none;
+  }
   &:checked {
     background: $color10;
     color: $color0;

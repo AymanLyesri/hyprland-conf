@@ -17,17 +17,17 @@
     }
     &:focus {
       box-shadow: none;
+      background: $module-background;
     }
   }
-  button {
-    border: unset;
-    margin: 5px;
-    padding: 0px;
-    background: transparent;
-    color: $foreground;
-    &:first-child {
-      background: $secondary;
-      color: $background;
+  .results {
+    button {
+      border: unset;
+      margin-top: 10px;
+      padding: 10px;
+      &:focus {
+        background: $background;
+      }
     }
   }
 }
