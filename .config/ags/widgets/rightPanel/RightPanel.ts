@@ -180,7 +180,6 @@ const Window = () => Widget.Window({
     child: Panel(),
 }).hook(rightPanelExclusivity, (self) =>
 {
-    setOption("rightPanel.exclusivity", rightPanelExclusivity.value);
     self.exclusivity = rightPanelExclusivity.value ? "exclusive" : "normal"
     self.layer = rightPanelExclusivity.value ? "bottom" : "top"
     self.class_name = rightPanelExclusivity.value ? "right-panel exclusive" : "right-panel normal"

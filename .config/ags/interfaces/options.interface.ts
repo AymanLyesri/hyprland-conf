@@ -1,6 +1,7 @@
 interface Options
 {
     waifu: {
+        visibility: boolean,
         input_history: string,
     }
     rightPanel: {

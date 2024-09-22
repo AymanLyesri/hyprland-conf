@@ -1,12 +1,10 @@
 import { readJSONFile } from "utils/json";
 import { Waifu } from "../../../interfaces/waifu.interface";
-import { rightPanelWidth, waifuPath } from "variables";
+import { rightPanelWidth, waifuPath, waifuVisibility } from "variables";
 import { getDominantColor } from "utils/image";
 import { closeProgress, openProgress } from "../../Progress";
 import { getOption, setOption } from "utils/options";
 const Hyprland = await Service.import('hyprland')
-
-const image = waifuPath
 
 var imageDetails = Variable<Waifu>(readJSONFile(`${App.configDir}/assets/images/waifu.json`))
 var previousImageDetails = readJSONFile(`${App.configDir}/assets/images/previous.json`)
@@ -177,9 +175,9 @@ function Image()
             css: Utils.merge([imageDetails.bind(), rightPanelWidth.bind()], (imageDetails, width) =>
             {
                 return `
-                background-image: url("${image}");
+                background-image: url("${waifuPath}");
                 min-height: ${Number(imageDetails.image_height) / Number(imageDetails.image_width) * width}px;
-                box-shadow: 0 0 5px 0 ${getDominantColor(image)};
+                box-shadow: 0 0 5px 0 ${getDominantColor(waifuPath)};
                 `
             }),
         }),
@@ -191,6 +189,7 @@ export default () =>
 {
     return Widget.EventBox({
         class_name: "waifu-event",
+        visible: waifuVisibility.bind(),
         child: Widget.Box(
             {
                 vertical: true,

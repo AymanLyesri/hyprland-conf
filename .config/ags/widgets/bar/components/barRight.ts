@@ -1,4 +1,5 @@
 import brightness from "brightness";
+import { waifuPath, waifuVisibility } from "variables";
 import { closeProgress, openProgress } from "widgets/Progress";
 import { custom_revealer } from "widgets/revealer";
 
@@ -141,6 +142,19 @@ function RightPanel()
     });
 }
 
+function Waifu()
+{
+    return Widget.ToggleButton({
+        onToggled: ({ active }) => { waifuVisibility.value = active },
+        label: "󰬄",
+        class_name: "waifu",
+        setup: (self) =>
+        {
+            self.hook(waifuVisibility, () => self.active = waifuVisibility.value, "changed");
+        }
+    })
+}
+
 
 export function Right()
 {
@@ -154,6 +168,7 @@ export function Right()
             SysTray(),
             Theme(),
             BatteryLabel() as any,
+            Waifu(),
             RightPanel(),
         ],
     });
