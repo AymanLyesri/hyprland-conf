@@ -9,6 +9,7 @@ var Results = Variable<{ app_name: string, app_exec: string, app_icon: string }[
     // readJson(Utils.exec(`${App.configDir}/scripts/app-search.sh`))
 )
 
+
 function Input()
 {
     let debounceTimeout;
@@ -24,10 +25,6 @@ function Input()
                 hexpand: true,
                 onChange: async ({ text }) =>
                 {
-                    // if (text == "") {
-                    //     Results.value = []
-                    // }
-                    // Clear the previous timeout
                     clearTimeout(debounceTimeout);
 
                     // Set a new timeout for 500ms
@@ -36,22 +33,9 @@ function Input()
                         Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/app-search.sh ${text}`));
                     }, 100); // 100ms delay
                 },
-                on_accept: (self) =>
+                on_accept: () =>
                 {
-                    openProgress()
-                    Utils.execAsync(`${App.configDir}/scripts/app-loading-progress.sh ${Results.value[0].app_name}`)
-                        .finally(() => closeProgress())
-                        .catch(err => Utils.notify({ summary: "Error", body: err }));
-                    Utils.notify({ summary: "Launching", body: Results.value[0].app_exec });
-                    Hyprland.sendMessage(`dispatch exec ${Results.value[0].app_exec}`)
-                        .then(() =>
-                        {
-                            self.text = ""
-                            Results.value = []
-                            App.closeWindow("app-launcher")
-                        })
-                        .catch(err => Utils.notify({ summary: "Error", body: err }));
-
+                    ResultsDisplay.children[0].clicked()
                 },
             }).on("key-press-event", (self, event: Gdk.Event) =>
             {
@@ -69,39 +53,43 @@ function Input()
     })
 }
 
-function ResultsDisplay()
-{
-    return Widget.Box({
-        class_name: "results",
-        vertical: true,
-        hexpand: true,
-        children: Results.bind().as(Results => Results.map((element, key) =>
-        {
 
-            const content = Widget.Box({
-                spacing: 10,
-                children: [Widget.Icon({ icon: element.app_icon ? element.app_icon : "dialog-application-symbolic" }), Widget.Label({ label: element.app_name })]
-            })
 
-            return Widget.Button({
-                hexpand: true,
-                xalign: 0,
-                child: content,
-                on_clicked: () =>
-                {
-                    Utils.notify({ summary: "Launching", body: element.app_exec });
-                    // Utils.execAsync(element.app_exec).catch(err => print(err));
-                    Hyprland.sendMessage(`dispatch exec ${element.app_exec}`)
-                        .then(() => App.closeWindow("app-launcher"))
-                        .catch(err => Utils.notify({ summary: "Error", body: err }));
-
-                },
-                setup: (self) => key == 1 ? self.activate() : null,
-            })
+const ResultsDisplay = Widget.Box({
+    class_name: "results",
+    vertical: true,
+    hexpand: true,
+    children: Results.bind().as(Results => Results.map((element, key) =>
+    {
+        const content = Widget.Box({
+            spacing: 10,
+            children: [
+                Widget.Icon({ icon: element.app_icon ? element.app_icon : "dialog-application-symbolic" }),
+                Widget.Label({ label: element.app_name })
+            ]
         })
-        ),
+
+        return Widget.Button({
+            hexpand: true,
+            xalign: 0,
+            child: content,
+            on_clicked: () =>
+            {
+                openProgress()
+                Utils.execAsync(`${App.configDir}/scripts/app-loading-progress.sh ${element.app_name}`)
+                    .finally(() => closeProgress())
+                    .catch(err => Utils.notify({ summary: "Error", body: err }));
+
+                Hyprland.sendMessage(`dispatch exec ${element.app_exec}`)
+                    .then(() => App.closeWindow("app-launcher"))
+                    .catch(err => Utils.notify({ summary: "Error", body: err }));
+
+            },
+        })
     })
-}
+    ),
+})
+
 
 export default () =>
 {
@@ -118,7 +106,7 @@ export default () =>
             child: Widget.Box({
                 vertical: true,
                 class_name: "app-launcher",
-                children: [Input(), ResultsDisplay()]
+                children: [Input(), ResultsDisplay]
 
             }),
         }),
