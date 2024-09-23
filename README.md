@@ -57,8 +57,8 @@ Feel free to share your feedback ♡ (anything you can think of) !
 # To-Do List
 
 - Add tutorials for each part of the dot-files **(WIP)**
-- List essential packages for easy download **(WIP)**
-- Provide an easy-to-read list of keybinds **(WIP)**
+- List easy-to-read essential packages for fast download **(Done)**
+- Provide an easy-to-read list of keybinds **(Done)**
 - Continuous improvements and polishing **(INDEFINITELY)**
 
 # [KeyBinds](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/configs/keybinds.conf)
@@ -87,33 +87,28 @@ sudo reboot
 
 **To install packages:**
 
-> **Warning:** Certain packages need to be installed through a Pacman wrapper, e.g., [yay](https://github.com/Jguer/yay).
+> **Warning:** [Yay](https://github.com/Jguer/yay) needs to be installed for this to work properly.
+
 > Some packages may be missing or added unnecessarily.
 
 ```bash
-cd $HOME
-pacman -S - < .config/hypr/pacman/pkglist.txt
-#OR
-yay -S - < .config/hypr/pacman/pkglist.txt
+#Paste this into the command line (just the command lol...)
+bash $HOME/.config/hypr/pacman/update.sh
 ```
 
 **To generate a package list:** `optional`
 
 ```bash
 cd $HOME
-pacman -Qqen > .config/hypr/pacman/pkglist.txt
+pacman -Qqen > $HOME/.config/hypr/pacman/pkglist.txt
 #OR
-yay -Qqen > .config/hypr/pacman/pkglist.txt
+yay -Qqen > $HOME/.config/hypr/pacman/pkglist.txt
 ```
 
 # Tips
 
 - Most functionalities have associated [keybinds](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/configs/keybinds.conf). Check them out!
-- After the initial installation, a reboot is recommended.
-
-```bash
-reboot # This will reboot the system without a warning
-```
+- If you encountered a problem even if its small, be sure to open an issue am happy to help :)
 
 # Additional Notes
 

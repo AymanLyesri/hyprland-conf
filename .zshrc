@@ -57,6 +57,9 @@ alias ls='lsd'
 # Aliases for cat
 alias cat='bat'
 
+# Aliases for fastfetch
+alias f='clear && source $HOME/.config/fastfetch/fastfetch.sh'
+
 # Aliase functions
 function code() {
   /bin/code $1 && exit
@@ -65,9 +68,8 @@ function v()
 {
   /bin/neovide --fork $1 && exit 
 }
-function cpdir {
-  pwd | tr -d "\r\n" | wl-copy
-}
+alias cpdir='pwd | tr -d "\r\n" | wl-copy'
+
 # Test Connection
 TEST_CONNECTION="/home/ayman/.config/hypr/scripts/test-connection.sh"
 alias conn=$TEST_CONNECTION
@@ -84,8 +86,8 @@ alias logout='hyprctl dispatch exit'
 # Docker
 alias drun='sudo docker run -it --network=host --device=/dev/kfd --device=/dev/dri --ipc=host --shm-size 16G --group-add video --cap-add=SYS_PTRACE --security-opt seccomp=unconfined -v $HOME/dockerx:/dockerx'
 
-# Yay skip validation
-alias yayskip='yay -S --mflags --skipinteg'
+# # Yay skip validation
+# alias yayskip='yay -S --mflags --skipinteg'
 
 # The fuck
 eval $(thefuck --alias)
