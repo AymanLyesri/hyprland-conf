@@ -41,6 +41,7 @@
   .actions {
     button {
       // border-radius: 0px;
+      margin-top: 10px;
 
       &.delete {
         @extend .danger;

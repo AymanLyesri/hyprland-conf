@@ -54,10 +54,7 @@ def main():
                     file.write(img_response.content)
 
                 # Save response to files
-                previous_file = os.path.join(save_dir, 'previous.json')
                 waifu_file = os.path.join(save_dir, 'waifu.json')
-                if os.path.exists(waifu_file):
-                    os.rename(waifu_file, previous_file)
                 with open(waifu_file, 'w') as file:
                     file.write(response.text)
                 

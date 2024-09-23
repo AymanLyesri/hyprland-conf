@@ -2,7 +2,7 @@ export function readJSONFile(filePath: string): any
 {
     try {
         const data = Utils.readFile(filePath);
-        return data.trim() ? JSON.parse(data) : null;
+        return data.trim() ? JSON.parse(data) : {};
     } catch (e) {
         console.error('Error:', e);
         return null;

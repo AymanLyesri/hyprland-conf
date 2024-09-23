@@ -14,12 +14,12 @@
       .bottom {
         // margin: 5px;
         .action-trigger.action-trigger {
-          font-size: 15px;
+          // font-size: 15px;
           margin: 5px;
-          min-width: 25px;
-          min-height: 25px;
+          min-width: 30px;
+          // min-height: 25px;
           padding: 0px;
-          border-radius: 50%;
+          border-radius: 10px;
         }
       }
 
@@ -32,37 +32,34 @@
       .button {
         min-height: 0px;
         min-width: 0px;
-        // border-radius: 0px;
+        border-radius: 0px;
 
         &.pin {
-          // border-radius: 0px;
+          border-radius: 10px;
         }
 
-        &.undo {
-          border-radius: 0px;
+        &.favorite {
+          // border-radius: 0px 0px 10px 0px;
         }
 
         &.random {
-          border-radius: 0px;
+          // border-radius: 0px;
         }
 
-        &.search {
-          border-radius: 0px;
+        &.browser {
+          // border-radius: 0px;
         }
 
         &.copy {
-          border-radius: 0px;
+          // border-radius: 0px;
         }
 
         &.entry-search {
-          font-size: 15px;
-          min-width: 5px;
-          min-height: 5px;
-          padding: 0px;
           border-radius: 0px 0px 0px 10px;
         }
 
         &.nsfw {
+          @extend .danger;
           border-radius: 0px 0px 10px 0px;
         }
 

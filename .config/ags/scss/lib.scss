@@ -3,6 +3,9 @@ $background: $color0; // Example background color
 $foreground: $color15; // Example foreground color
 $secondary: $color13; // Example selected background color
 
+$danger: rgb(255, 36, 0);
+// $danger: rgba($danger, 0.69);
+
 $module-background: mix($background, $color1, 69%);
 $module-foreground: mix($foreground, $color1, 69%);
 
@@ -53,9 +56,13 @@ button,
 }
 
 .danger {
-  background: rgba(177, 62, 62, 0.493);
+  background: rgba($danger, 0.5);
+  color: $foreground;
   &:hover {
-    background: rgba(177, 62, 62, 0.8);
+    background: rgba($danger, 0.8);
+  }
+  &:checked {
+    background: rgba($danger, 0.8);
   }
 }
 

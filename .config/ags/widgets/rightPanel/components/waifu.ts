@@ -6,31 +6,35 @@ import { closeProgress, openProgress } from "../../Progress";
 import { getOption, setOption } from "utils/options";
 const Hyprland = await Service.import('hyprland')
 
-var imageDetails = Variable<Waifu>(readJSONFile(`${App.configDir}/assets/waifu/waifu.json`))
-var previousImageDetails = readJSONFile(`${App.configDir}/assets/waifu/previous.json`)
-var nsfw = Variable<boolean>(false)
+const imageDetails = Variable<Waifu>(readJSONFile(`${App.configDir}/assets/waifu/waifu.json`))
+const favoriteImageDetails = () => readJSONFile(`${App.configDir}/assets/waifu/favorite.json`)
+const nsfw = Variable<boolean>(false)
 
 function GetImageFromApi(param = "")
 {
     openProgress()
-    Utils.execAsync(`python ${App.configDir}/scripts/get-waifu.py ${nsfw.value} "${param}"`).then((output) =>
+    Utils.execAsync(`python ${App.configDir}/scripts/get-waifu.py ${nsfw.value} "${param}"`).finally(() =>
     {
         closeProgress()
         imageDetails.value = JSON.parse(Utils.readFile(`${App.configDir}/assets/waifu/waifu.json`))
-        previousImageDetails = JSON.parse(Utils.readFile(`${App.configDir}/assets/waifu/previous.json`))
-        print(imageDetails.value.id)
     }).catch(async (error) => await Utils.notify({ summary: "Error", body: error }))
 }
 
 const SearchImage = () => Utils.execAsync(`bash -c "xdg-open 'https://danbooru.donmai.us/posts/${imageDetails.value.id}' && xdg-settings get default-web-browser | sed 's/\.desktop$//'"`)
     .then((browser) => Utils.notify({ summary: 'Waifu', body: `opened in ${browser}` }))
-    .catch(err => print(err))
+    .catch(err => Utils.notify({ summary: 'Error', body: err }))
 
 const CopyImage = () => Utils.execAsync(`bash -c "wl-copy --type image/png < ${waifuPath}"`)
     .then(() => Utils.notify({ summary: 'Clipboard', body: 'waifu copied to clipboard' }))
-    .catch(err => print(err))
+    .catch(err => Utils.notify({ summary: 'Error', body: err }))
 
 const OpenImage = () => Hyprland.sendMessage("dispatch exec [float;size 50%] feh --scale-down " + waifuPath)
+
+const FavoriteImage = () => Utils.execAsync(`bash -c "cp ${App.configDir}/assets/waifu/waifu.json ${App.configDir}/assets/waifu/favorite.json"`)
+    .then(() => Utils.notify({ summary: 'Waifu', body: 'Added to favorite' }))
+    .catch(err => Utils.notify({ summary: 'Error', body: err }))
+
+const FavoriteToImage = async () => GetImageFromApi(favoriteImageDetails().id)
 
 function Actions()
 {
@@ -70,6 +74,8 @@ function Actions()
         }),
     })
 
+    let confirmation = false
+
     const actions = Widget.Revealer({
         revealChild: false,
         transitionDuration: 1000,
@@ -77,11 +83,28 @@ function Actions()
         child: Widget.Box({ vertical: true },
             Widget.Box([
                 Widget.Button({
-                    label: "Undo",
+                    label: "",
+                    class_name: "favorite",
                     hexpand: true,
-                    class_name: "undo",
-
-                    on_clicked: () => GetImageFromApi(previousImageDetails.id),
+                    on_primary_click: async () =>
+                    {
+                        if (confirmation) {
+                            FavoriteImage()
+                            confirmation = false
+                        }
+                        else {
+                            confirmation = true
+                            Utils.notify({ summary: 'Waifu', body: 'Click again to confirm' })
+                            setTimeout(() => confirmation = false, 3000)
+                        }
+                    },
+                    on_secondary_click: async () => FavoriteToImage()
+                        .then(() => Utils.notify({ summary: 'Waifu', body: 'Favorite Enabled' }))
+                        .catch(err =>
+                        {
+                            Utils.notify({ summary: "Error", body: err });
+                            Utils.notify({ summary: "Waifu", body: "No favorite is found, Please right click to create one" })
+                        }),
                 }),
                 Widget.Button({
                     label: "Random",
@@ -90,9 +113,9 @@ function Actions()
                     on_clicked: async () => GetImageFromApi(),
                 }),
                 Widget.Button({
-                    label: "Search",
+                    label: "browser",
                     hexpand: true,
-                    class_name: "search",
+                    class_name: "browser",
                     on_clicked: async () => SearchImage(),
                 }),
                 Widget.Button({
@@ -110,17 +133,18 @@ function Actions()
                     on_clicked: () => Entry.child.activate(),
                 }),
                 Entry,
-                Widget.Button({
-                    label: "Nsfw",
+                Widget.ToggleButton({
+                    label: "",
                     class_name: "nsfw",
                     hexpand: true,
-                    on_clicked: () =>
+                    on_toggled: ({ active }) =>
                     {
-                        nsfw.value = !nsfw.value
+                        nsfw.value = active
                         Utils.notify({ summary: "Waifu", body: `NSFW is ${nsfw.value ? 'Enabled' : 'Disabled'}` })
                             .catch(err => print(err))
                     },
                 }),
+
             ])
         )
     })
@@ -132,19 +156,18 @@ function Actions()
             label: "",
             class_name: "action-trigger",
             hpack: "end",
-            onToggled: (self) =>
+            on_toggled: (self) =>
             {
                 actions.reveal_child = self.active
                 self.label = self.active ? "" : ""
                 // while (true) && !actions.child.children[2].child
-                setTimeout(() =>
-                {
-                    if (self.active) {
+                if (self.active)
+                    setTimeout(() =>
+                    {
                         actions.reveal_child = false;
                         self.label = ""
                         self.active = false
-                    }
-                }, 15000)
+                    }, 15000)
             },
         }), actions],
     })

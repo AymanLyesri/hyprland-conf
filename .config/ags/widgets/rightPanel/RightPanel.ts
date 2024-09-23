@@ -84,22 +84,6 @@ function Filter()
 }
 
 
-const ClearNotifications = () =>
-{
-    return Widget.Button({
-        class_name: "clear",
-        label: "Clear",
-        on_clicked: () =>
-        {
-            NotificationsDisplay.child = Widget.Box({
-                vertical: true,
-                children: [],
-            });
-            Notifications.clear().finally(() => NotificationsDisplay.child = NotificationHistory())
-        },
-    })
-}
-
 
 
 
@@ -156,6 +140,23 @@ const NotificationPanel = () =>
     })
 }
 
+
+const ClearNotifications = () =>
+{
+    return Widget.Button({
+        class_name: "clear",
+        label: "Clear",
+        on_clicked: () =>
+        {
+            NotificationsDisplay.child = Widget.Box({
+                vertical: true,
+                children: [],
+            });
+            Notifications.clear()
+            // .finally(() => NotificationsDisplay.child = NotificationHistory())
+        },
+    })
+}
 
 function Panel()
 {
