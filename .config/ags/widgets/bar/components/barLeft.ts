@@ -6,7 +6,7 @@ function Workspaces()
 {
     let previousId: any = 0
 
-    const workspaceToIcon = ["", "", "", "", "", "", "󰙯", "󰓓", "󰲯", "󰲰", ""]
+    const workspaceToIcon = ["", "", "", "", "", "", "󰙯", "󰓓", "", "", ""]
 
     const activeId = hyprland.active.workspace.bind("id");
     const workspaces = Utils.merge([newAppWorkspace.bind(), hyprland.bind("workspaces")], (newWorkspace, workspaces) =>

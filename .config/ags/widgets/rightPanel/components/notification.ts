@@ -75,8 +75,7 @@ export function Notification_(n: Notification, new_Notification = false, popup =
             // hpack: action[0].includes("Delete") ? "end" : "fill",
             on_clicked: () =>
             {
-                Hyprland.sendMessage(`dispatch exec ${action[1]}`)
-                    .then(() => Utils.execAsync('killall notify-send')).catch((err) => Utils.notify(err))
+                Hyprland.sendMessage(`dispatch exec ${action[1]}`).catch((err) => Utils.notify(err))
             },
             hexpand: true,
             child: Widget.Label(action[0].includes("Delete") ? "󰆴" : action[0]),

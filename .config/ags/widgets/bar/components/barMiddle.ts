@@ -5,6 +5,7 @@ import { MprisPlayer } from "types/service/mpris";
 import { playerToColor } from "utils/color";
 import { playerToIcon } from "utils/icon";
 import { emptyWorkspace } from "variables";
+import CavaWidget from "widgets/cava/Cava";
 import { custom_revealer } from "widgets/revealer";
 
 
@@ -56,20 +57,19 @@ function Media()
         })
     }
 
+    const _activeplayer_ = () => activePlayer(mpris.players.find(player => player.play_back_status === "Playing") || mpris.players[0])
+
     return Widget.EventBox({
         class_name: "media-event",
         on_secondary_click: () => hyprland.messageAsync("dispatch workspace 4"),
         on_hover: () => App.openWindow("media"),
 
-        child: Utils.watch(Widget.Box(),
+        child: Utils.watch(mpris.players.length > 0 ? _activeplayer_() : Widget.Box(),
             mpris, "changed",
-            () => activePlayer(mpris.players.find(player => player.play_back_status === "Playing") || mpris.players[0])),
+            () => _activeplayer_()),
 
     })
 }
-
-
-
 
 function Clock()
 {
@@ -142,6 +142,6 @@ export function Center()
     return Widget.Box({
         class_name: 'bar-middle',
         spacing: 5,
-        children: [Media(), Clock(), Bandwidth(), AppLauncher(), ClientTitle()],
+        children: [CavaWidget("middle"), Media(), Clock(), Bandwidth(), AppLauncher(), ClientTitle()],
     });
 }

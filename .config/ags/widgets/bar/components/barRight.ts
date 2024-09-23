@@ -32,12 +32,14 @@ function Theme()
 
 function Brightness()
 {
+
+    const value = brightness.bind("screen_value")
     const slider = Widget.Slider({
         class_name: "slider",
         hexpand: true,
         draw_value: false,
         on_change: self => brightness.screen_value = self.value,
-        value: brightness.bind('screen-value' as any),
+        value: brightness.bind('screen_value' as any),
     });
 
     const label = Widget.Label({
@@ -46,7 +48,7 @@ function Brightness()
         // brightness.bind('screen-value').as(v => `${Math.round(v * 100)}%`),
     });
 
-    return custom_revealer(label, slider);
+    return Widget.Box();
 }
 
 

@@ -6,7 +6,7 @@ $secondary: $color13; // Example selected background color
 $module-background: mix($background, $color1, 69%);
 $module-foreground: mix($foreground, $color1, 69%);
 
-// $background: rgba($background, 0.5);
+$background: rgba($background, 0.69);
 $module-background: rgba($module-background, 0.5);
 $module-foreground: rgba($module-foreground, 0.5);
 
