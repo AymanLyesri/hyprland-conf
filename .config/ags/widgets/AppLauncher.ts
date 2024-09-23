@@ -2,6 +2,7 @@ import Gdk from "gi://Gdk";
 import { readJson } from "utils/json"
 import { emptyWorkspace, globalMargin, newAppWorkspace } from "variables";
 import { closeProgress, openProgress } from "./Progress";
+import { containsProtocolOrTLD, formatToURL, getDomainFromURL } from "utils/url";
 const Hyprland = await Service.import('hyprland')
 
 const Results = Variable<any[]>([])
@@ -9,8 +10,8 @@ const Results = Variable<any[]>([])
 
 function containsOperator(str: string): boolean
 {
-    // Regular expression to match common operators
-    const operatorPattern = /[+\-*/]/;
+    // Regular expression to match essential arithmetic operators (without nth root and logarithm)
+    const operatorPattern = /[+\-*/×÷%^]|(\*\*)/;
 
     // Test if the string contains any of the operators
     return operatorPattern.test(str);
@@ -35,14 +36,17 @@ function Input()
                     // Set a new timeout for 500ms
                     debounceTimeout = setTimeout(async () =>
                     {
+                        if (!text) return
+
                         let script = ''
 
-                        if (containsOperator(text || ''))
-                            script = `${App.configDir}/scripts/arithmetic.sh ${text}`
+                        if (containsProtocolOrTLD(text))
+                            Results.value = [{ app_name: getDomainFromURL(text), app_exec: `xdg-open ${formatToURL(text)}`, type: 'url' }]
+                        else if (containsOperator(text))
+                            Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/arithmetic.sh ${text}`));
                         else
-                            script = `${App.configDir}/scripts/app-search.sh ${text}`
+                            Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/app-search.sh ${text}`));
 
-                        Results.value = readJson(await Utils.execAsync(script));
                     }, 100); // 100ms delay
                 },
                 on_accept: () =>
@@ -54,7 +58,6 @@ function Input()
                 if (event.get_keyval()[1] == 65307) // Escape key
                 {
                     self.text = ""
-                    // appLauncherVisibility.value = false
                     App.closeWindow("app-launcher")
                 }
             })
@@ -82,14 +85,30 @@ const ResultsDisplay = Widget.Box({
             child: content,
             on_clicked: () =>
             {
-                openProgress()
-                Utils.execAsync(`${App.configDir}/scripts/app-loading-progress.sh ${element.app_name}`)
-                    .then((workspace) => newAppWorkspace.value = Number(workspace))
-                    .finally(() => closeProgress())
-                    .catch(err => Utils.notify({ summary: "Error", body: err }));
+                if (element.type == "app") {
+                    openProgress()
+                    Utils.execAsync(`${App.configDir}/scripts/app-loading-progress.sh ${element.app_name}`)
+                        .then((workspace) => newAppWorkspace.value = Number(workspace))
+                        .finally(() => closeProgress())
+                        .catch(err => Utils.notify({ summary: "Error", body: err }));
+                }
 
                 Hyprland.sendMessage(`dispatch exec ${element.app_exec}`)
-                    .then(() => App.closeWindow("app-launcher"))
+                    .then(() =>
+                    {
+                        switch (element.type) {
+                            case 'app':
+                                Utils.notify({ summary: "App", body: `Opening ${element.app_name}` });
+                                break;
+                            case 'url':
+                                let browser = Utils.exec(`bash -c "xdg-settings get default-web-browser | sed 's/\.desktop$//'"`);
+                                Utils.notify({ summary: "URL", body: `Opening ${element.app_name} in ${browser}` });
+                                break;
+                            default:
+                                break;
+                        }
+                    })
+                    .finally(() => App.closeWindow("app-launcher"))
                     .catch(err => Utils.notify({ summary: "Error", body: err }));
 
             },

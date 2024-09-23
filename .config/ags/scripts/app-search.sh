@@ -63,7 +63,7 @@ search_apps() {
                 full_icon_path=$(find_icon_path "$app_icon")
 
                 # Add the JSON object to the array
-                json_array+=("{\"app_name\": \"$app_name\", \"app_exec\": \"$app_exec\", \"app_icon\": \"$full_icon_path\"}")
+                json_array+=("{\"app_name\": \"$app_name\", \"app_exec\": \"$app_exec\", \"app_icon\": \"$full_icon_path\"}, type: \"app\"")
             fi
         done < <(
             find "$app_dir" -name "*.desktop" -print0 | xargs -0 -n 1 -P 4 awk -v term="$search_term" '
