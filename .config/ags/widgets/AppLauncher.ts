@@ -4,16 +4,22 @@ import { emptyWorkspace, globalMargin, newAppWorkspace } from "variables";
 import { closeProgress, openProgress } from "./Progress";
 const Hyprland = await Service.import('hyprland')
 
-var Results = Variable<{ app_name: string, app_exec: string, app_icon: string }[]>([]
-    // readJson(Utils.exec(`${App.configDir}/scripts/app-search.sh`))
-)
+const Results = Variable<any[]>([])
 
+
+function containsOperator(str: string): boolean
+{
+    // Regular expression to match common operators
+    const operatorPattern = /[+\-*/]/;
+
+    // Test if the string contains any of the operators
+    return operatorPattern.test(str);
+}
 
 function Input()
 {
     let debounceTimeout;
     return Widget.Box({
-        // hpack: "start",
         children: [
             Widget.Icon({
                 class_name: "icon",
@@ -29,12 +35,19 @@ function Input()
                     // Set a new timeout for 500ms
                     debounceTimeout = setTimeout(async () =>
                     {
-                        Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/app-search.sh ${text}`));
+                        let script = ''
+
+                        if (containsOperator(text || ''))
+                            script = `${App.configDir}/scripts/arithmetic.sh ${text}`
+                        else
+                            script = `${App.configDir}/scripts/app-search.sh ${text}`
+
+                        Results.value = readJson(await Utils.execAsync(script));
                     }, 100); // 100ms delay
                 },
                 on_accept: () =>
                 {
-                    ResultsDisplay.children[0].clicked()
+                    ResultsDisplay.children[0]?.clicked()
                 },
             }).on("key-press-event", (self, event: Gdk.Event) =>
             {
@@ -58,7 +71,7 @@ const ResultsDisplay = Widget.Box({
         const content = Widget.Box({
             spacing: 10,
             children: [
-                Widget.Icon({ icon: element.app_icon ? element.app_icon : "dialog-application-symbolic" }),
+                Widget.Icon({ icon: element.app_icon || "view-grid-symbolic" }),
                 Widget.Label({ label: element.app_name })
             ]
         })
