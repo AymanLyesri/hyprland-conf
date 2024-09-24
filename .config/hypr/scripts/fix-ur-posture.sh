@@ -4,5 +4,5 @@
 while true; do
     #urgency level: high
     notify-send -u low "Fix your posture" " Sit up straight and look at the screen at eye level "
-    sleep 120
+    sleep 0.5h
 done

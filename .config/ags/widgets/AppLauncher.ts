@@ -3,19 +3,10 @@ import { readJson } from "utils/json"
 import { emptyWorkspace, globalMargin, newAppWorkspace } from "variables";
 import { closeProgress, openProgress } from "./Progress";
 import { containsProtocolOrTLD, formatToURL, getDomainFromURL } from "utils/url";
+import { arithmetic, containsOperator } from "utils/arithmetic";
 const Hyprland = await Service.import('hyprland')
 
 const Results = Variable<any[]>([])
-
-
-function containsOperator(str: string): boolean
-{
-    // Regular expression to match essential arithmetic operators (without nth root and logarithm)
-    const operatorPattern = /[+\-*/×÷%^]|(\*\*)/;
-
-    // Test if the string contains any of the operators
-    return operatorPattern.test(str);
-}
 
 function Input()
 {
@@ -36,14 +27,12 @@ function Input()
                     // Set a new timeout for 500ms
                     debounceTimeout = setTimeout(async () =>
                     {
-                        if (!text) return
-
-                        let script = ''
+                        if (!text) return Results.value = []
 
                         if (containsProtocolOrTLD(text))
                             Results.value = [{ app_name: getDomainFromURL(text), app_exec: `xdg-open ${formatToURL(text)}`, type: 'url' }]
                         else if (containsOperator(text))
-                            Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/arithmetic.sh ${text}`));
+                            Results.value = arithmetic(text) ? [{ app_name: arithmetic(text), app_exec: `wl-copy ${arithmetic(text)}`, type: 'calc' }] : []
                         else
                             Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/app-search.sh ${text}`));
 
