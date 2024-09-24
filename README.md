@@ -4,7 +4,7 @@ This is my daily driver configuration that I use on both my laptop and desktop f
 
 I use Arch BTW.. :)
 
-Feel free to share your feedback ♡ (anything you can think of) !
+> Feel free to open an issue ♡ (anything you can think of)!
 
 # Design Philosophy
 
@@ -26,19 +26,19 @@ Feel free to share your feedback ♡ (anything you can think of) !
     - Dark/light modes
     - Bandwidth speed monitor
   - Application launcher ~~(Rofi replaced)~~
-    - App loading progress bar
+    - App launcher
+    - Arithmetics
+    - Url forwarding to default browser
   - Wallpaper switcher for each workspace
   - Media player
-  - Right panel:
+  - Right panel
     - Waifu display
     - System resource monitor
     - Notification history - filter
-- ~~**Dynamic window borders**: Custom scripts & PyWal~~
 - **Machine-based configuration** (laptop/desktop):
   - Blur
   - Mouse sensitivity
   - Gaps
-  - ~~Border size~~
 - **Customizable shaders**: Includes saturation & retro effects
 - **High-quality wallpapers** from [Danbooru](https://danbooru.donmai.us), [Yandere](https://yande.re), and [Gelbooru](https://gelbooru.com)
 
@@ -108,13 +108,13 @@ yay -Qqen > $HOME/.config/hypr/pacman/pkglist.txt
 # Tips
 
 - Most functionalities have associated [keybinds](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/configs/keybinds.conf). Check them out!
-- If you encountered a problem even if its small, be sure to open an issue am happy to help :)
+- When adding new wallpapers, be sure to run wallpaper reducer script to reduce there sizes.
+
+> **Important:** If you encountered any problem even if its small, be sure to open an issue am happy to help :)
 
 # Additional Notes
 
 - I use **Dvorak**, so QWERTY users might face some issues.
-- The **numpad** buttons are remapped as number keys using [evremap](https://github.com/wez/evremap) due to a broken laptop keyboard.
-- I’ve included my personal **mobile wallpapers**, which I use on Android with [Wallpaper Changer](https://play.google.com/store/apps/details?id=de.j4velin.wallpaperChanger).
 
 # Visuals
 
