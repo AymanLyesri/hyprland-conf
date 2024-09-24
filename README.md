@@ -125,15 +125,15 @@ yay -Qqen > $HOME/.config/hypr/pacman/pkglist.txt
 
 #### Apps
 
-![alt text](image.png)
+![1727169030_grim](https://github.com/user-attachments/assets/1de43c71-da3c-495c-885f-0b5b0f2f73a2)
 
 #### Arithmetics
 
-![alt text](image-3.png)
+![1727169606_grim](https://github.com/user-attachments/assets/e4610919-ab8b-44fb-8349-3ce124974281)
 
 #### URLs
 
-![alt text](image-2.png)
+![1727169383_grim](https://github.com/user-attachments/assets/6d3ffd8e-8693-4e04-952e-a6d54d707c77)
 
 </details>
 
@@ -156,7 +156,7 @@ yay -Qqen > $HOME/.config/hypr/pacman/pkglist.txt
 <details>
   <summary>SCREENSHOTS</summary>
 
-![alt text](image-5.png)
+![1727169881_grim](https://github.com/user-attachments/assets/821dc6b8-386c-4fb2-9223-05f44e0ba046)
 
 </details>
 
