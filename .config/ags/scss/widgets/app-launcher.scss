@@ -2,24 +2,15 @@
   @extend .module;
   padding: 10px;
   border-radius: 15px;
+  min-width: 500px;
 
   .icon {
     margin: 5px 10px;
   }
-  .input {
-    background: transparent;
-    min-width: 500px;
-    border: unset;
-    .left,
-    .right {
-      border-color: $secondary;
-      // background: white;
-    }
-    &:focus {
-      box-shadow: none;
-      background: $module-background;
-    }
+
+  .help {
   }
+
   .results {
     button {
       border: unset;

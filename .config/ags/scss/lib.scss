@@ -14,7 +14,7 @@ $module-background: rgba($module-background, 0.5);
 $module-foreground: rgba($module-foreground, 0.5);
 
 * {
-  font-family: "JetBrainsMono NFP";
+  font-family: "JetBrainsMono NFP", "Noto Font";
   transition: all 0.5s;
 }
 
@@ -76,10 +76,35 @@ image {
   font-size: 10px;
 }
 
+entry {
+  background: transparent;
+  border: unset;
+  .left,
+  .right {
+    border-color: $secondary;
+    // background: white;
+  }
+  &:focus {
+    box-shadow: none;
+    background: $module-background;
+  }
+}
+
 separator {
   // padding: 0px 10px;
   margin: 5px 10px;
   background: $background;
+}
+
+menu {
+  @extend .module;
+  background: $background;
+  padding: 0px;
+  menuitem {
+    @extend .button;
+    border-radius: 0px;
+    padding: 5px;
+  }
 }
 
 .switch {

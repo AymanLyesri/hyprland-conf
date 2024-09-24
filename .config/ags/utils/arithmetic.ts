@@ -19,10 +19,10 @@ export function arithmetic(text)
             return String(result);
         } else {
             // Return null if result is not a valid number
-            return null;
+            return '';
         }
     } catch (error) {
         // If there's any error (like a malformed expression), return null
-        return null;
+        return '';
     }
 }

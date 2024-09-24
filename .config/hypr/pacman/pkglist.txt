@@ -125,3 +125,4 @@ hyprlock
 hyprpaper
 lsd
 ttf-jetbrains-mono-nerd
+noto-fonts-emoji

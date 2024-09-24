@@ -1,0 +1,434 @@
+[
+  {
+    "app_tags": "Grinning Face",
+    "app_exec": "`wl-copy 😀`",
+    "app_name": "😀",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Thumbs Up",
+    "app_exec": "`wl-copy 👍`",
+    "app_name": "👍",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Red Heart",
+    "app_exec": "`wl-copy ❤`",
+    "app_name": "❤",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Crying Face",
+    "app_exec": "`wl-copy 😢`",
+    "app_name": "😢",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Clapping Hands",
+    "app_exec": "`wl-copy 👏`",
+    "app_name": "👏",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Fire",
+    "app_exec": "`wl-copy 🔥`",
+    "app_name": "🔥",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Star",
+    "app_exec": "`wl-copy ⭐`",
+    "app_name": "⭐",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Rocket",
+    "app_exec": "`wl-copy 🚀`",
+    "app_name": "🚀",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Party Popper",
+    "app_exec": "`wl-copy 🎉`",
+    "app_name": "🎉",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Face with Tears of Joy",
+    "app_exec": "`wl-copy 😂`",
+    "app_name": "😂",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Smiling Face with Heart-Eyes",
+    "app_exec": "`wl-copy 😍`",
+    "app_name": "😍",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Winking Face",
+    "app_exec": "`wl-copy 😉`",
+    "app_name": "😉",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Check Mark",
+    "app_exec": "`wl-copy ✅`",
+    "app_name": "✅",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Cross Mark",
+    "app_exec": "`wl-copy ❌`",
+    "app_name": "❌",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Hundred Points",
+    "app_exec": "`wl-copy 💯`",
+    "app_name": "💯",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Flexed Bicep",
+    "app_exec": "`wl-copy 💪`",
+    "app_name": "💪",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Face Blowing a Kiss",
+    "app_exec": "`wl-copy 😘`",
+    "app_name": "😘",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Thinking Face",
+    "app_exec": "`wl-copy 🤔`",
+    "app_name": "🤔",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Sleeping Face",
+    "app_exec": "`wl-copy 😴`",
+    "app_name": "😴",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Face with Medical Mask",
+    "app_exec": "`wl-copy 😷`",
+    "app_name": "😷",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Grimacing Face",
+    "app_exec": "`wl-copy 😬`",
+    "app_name": "😬",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Shushing Face",
+    "app_exec": "`wl-copy 🤫`",
+    "app_name": "🤫",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Face with Rolling Eyes",
+    "app_exec": "`wl-copy 🙄`",
+    "app_name": "🙄",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Face Screaming in Fear",
+    "app_exec": "`wl-copy 😱`",
+    "app_name": "😱",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Zipper-Mouth Face",
+    "app_exec": "`wl-copy 🤐`",
+    "app_name": "🤐",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Face with Raised Eyebrow",
+    "app_exec": "`wl-copy 🤨`",
+    "app_name": "🤨",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Nerd Face",
+    "app_exec": "`wl-copy 🤓`",
+    "app_name": "🤓",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Confused Face",
+    "app_exec": "`wl-copy 😕`",
+    "app_name": "😕",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Face with Monocle",
+    "app_exec": "`wl-copy 🧐`",
+    "app_name": "🧐",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Upside-Down Face",
+    "app_exec": "`wl-copy 🙃`",
+    "app_name": "🙃",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Exploding Head",
+    "app_exec": "`wl-copy 🤯`",
+    "app_name": "🤯",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Smiling Face with Sunglasses",
+    "app_exec": "`wl-copy 😎`",
+    "app_name": "😎",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Face with Tongue",
+    "app_exec": "`wl-copy 😛`",
+    "app_name": "😛",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Alien",
+    "app_exec": "`wl-copy 👽`",
+    "app_name": "👽",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Ghost",
+    "app_exec": "`wl-copy 👻`",
+    "app_name": "👻",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Poop",
+    "app_exec": "`wl-copy 💩`",
+    "app_name": "💩",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Face with Hand Over Mouth",
+    "app_exec": "`wl-copy 🤭`",
+    "app_name": "🤭",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Face with Raised Eyebrows",
+    "app_exec": "`wl-copy 😲`",
+    "app_name": "😲",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Angry Face",
+    "app_exec": "`wl-copy 😠`",
+    "app_name": "😠",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Smiling Face with Halo",
+    "app_exec": "`wl-copy 😇`",
+    "app_name": "😇",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Crying Laughing",
+    "app_exec": "`wl-copy 🤣`",
+    "app_name": "🤣",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Thumbs Down",
+    "app_exec": "`wl-copy 👎`",
+    "app_name": "👎",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Praying Hands",
+    "app_exec": "`wl-copy 🙏`",
+    "app_name": "🙏",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Face Palm",
+    "app_exec": "`wl-copy 🤦`",
+    "app_name": "🤦",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Face with Thermometer",
+    "app_exec": "`wl-copy 🤒`",
+    "app_name": "🤒",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Face with Head-Bandage",
+    "app_exec": "`wl-copy 🤕`",
+    "app_name": "🤕",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Star-Struck",
+    "app_exec": "`wl-copy 🤩`",
+    "app_name": "🤩",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Money-Mouth Face",
+    "app_exec": "`wl-copy 🤑`",
+    "app_name": "🤑",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Robot Face",
+    "app_exec": "`wl-copy 🤖`",
+    "app_name": "🤖",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Skull",
+    "app_exec": "`wl-copy 💀`",
+    "app_name": "💀",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Clinking Glasses",
+    "app_exec": "`wl-copy 🥂`",
+    "app_name": "🥂",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Cupcake",
+    "app_exec": "`wl-copy 🧁`",
+    "app_name": "🧁",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Pizza",
+    "app_exec": "`wl-copy 🍕`",
+    "app_name": "🍕",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Birthday Cake",
+    "app_exec": "`wl-copy 🎂`",
+    "app_name": "🎂",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Trophy",
+    "app_exec": "`wl-copy 🏆`",
+    "app_name": "🏆",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Medal",
+    "app_exec": "`wl-copy 🥇`",
+    "app_name": "🥇",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Soccer Ball",
+    "app_exec": "`wl-copy ⚽`",
+    "app_name": "⚽",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Basketball",
+    "app_exec": "`wl-copy 🏀`",
+    "app_name": "🏀",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Wrapped Gift",
+    "app_exec": "`wl-copy 🎁`",
+    "app_name": "🎁",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Rose",
+    "app_exec": "`wl-copy 🌹`",
+    "app_name": "🌹",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Cherry Blossom",
+    "app_exec": "`wl-copy 🌸`",
+    "app_name": "🌸",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Sunflower",
+    "app_exec": "`wl-copy 🌻`",
+    "app_name": "🌻",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Tree",
+    "app_exec": "`wl-copy 🌳`",
+    "app_name": "🌳",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Snowflake",
+    "app_exec": "`wl-copy ❄`",
+    "app_name": "❄",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Rainbow",
+    "app_exec": "`wl-copy 🌈`",
+    "app_name": "🌈",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Sun",
+    "app_exec": "`wl-copy ☀`",
+    "app_name": "☀",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Lightning Bolt",
+    "app_exec": "`wl-copy ⚡`",
+    "app_name": "⚡",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Umbrella",
+    "app_exec": "`wl-copy ☂`",
+    "app_name": "☂",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Moon",
+    "app_exec": "`wl-copy 🌕`",
+    "app_name": "🌕",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Volcano",
+    "app_exec": "`wl-copy 🌋`",
+    "app_name": "🌋",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Rocket Ship",
+    "app_exec": "`wl-copy 🛸`",
+    "app_name": "🛸",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Globe",
+    "app_exec": "`wl-copy 🌍`",
+    "app_name": "🌍",
+    "app_type": "emoji"
+  }
+]
