@@ -46,25 +46,22 @@ function WindowActions()
 interface Filter
 {
     name: string
-    color: string
+    class: string
 }
 
-const notificationFilter = Variable<Filter>({ name: "", color: "" });
+const notificationFilter = Variable<Filter>({ name: "", class: "" });
 
 function Filter()
 {
     const Filters: Filter[] = [{
         name: "Spotify",
-        color: "rgba(30, 215, 96, 0.5)",
-    }, {
-        name: "QBittorent",
-        color: "rgba(0, 123, 255, 0.5)",
+        class: "spotify",
     }, {
         name: "Clipboard",
-        color: "rgba(33, 150, 243, 0.5)",
+        class: "clipboard",
     }, {
         name: "Update",
-        color: "rgba(255, 152, 0, 0.5)",
+        class: "update",
     }];
 
     return Widget.Box({
@@ -75,10 +72,9 @@ function Filter()
             return Widget.Button({
                 label: filter.name,
                 hexpand: true,
-                on_clicked: () => notificationFilter.value = (notificationFilter.value === filter ? { name: "", color: "" } : filter),
-                class_name: "",
-                css: notificationFilter.bind().as(filter => `background: ${filter.color}`),
-            });
+                on_clicked: () => notificationFilter.value = (notificationFilter.value === filter ? { name: "", class: "" } : filter),
+                class_name: notificationFilter.bind().as(filter => filter.class),
+            })
         })
     })
 }

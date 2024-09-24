@@ -45,20 +45,16 @@ function Entry()
                 {
                     clearTimeout(debounceTimeout);
 
-                    // Set a new timeout for 500ms
-                    debounceTimeout = setTimeout(async () =>
-                    {
-                        if (!text) return Results.value = []
-                        if (text.includes("emoji"))
-                            Results.value = readJSONFile(`${App.configDir}/assets/emojis/emojis.json`).filter(emoji => emoji.app_tags.toLowerCase().includes(text.replace("emoji", "").trim()));
-                        else if (containsProtocolOrTLD(text))
-                            Results.value = [{ app_name: getDomainFromURL(text), app_exec: `xdg-open ${formatToURL(text)}`, app_type: 'url' }]
-                        else if (containsOperator(text))
-                            Results.value = [{ app_name: arithmetic(text), app_exec: `wl-copy ${arithmetic(text)}`, app_type: 'calc' }]
-                        else
-                            Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/app-search.sh ${text}`));
-
-                    }, 100); // 100ms delay
+                    if (!text)
+                        Results.value = []
+                    else if (text.includes("emoji"))
+                        Results.value = readJSONFile(`${App.configDir}/assets/emojis/emojis.json`).filter(emoji => emoji.app_tags.toLowerCase().includes(text.replace("emoji", "").trim()));
+                    else if (containsProtocolOrTLD(text))
+                        Results.value = [{ app_name: getDomainFromURL(text), app_exec: `xdg-open ${formatToURL(text)}`, app_type: 'url' }]
+                    else if (containsOperator(text))
+                        Results.value = [{ app_name: arithmetic(text), app_exec: `wl-copy ${arithmetic(text)}`, app_type: 'calc' }]
+                    else
+                        Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/app-search.sh ${text}`));
                 },
                 on_accept: () =>
                 {
@@ -128,6 +124,8 @@ const organizeResults = (results: any[]) =>
 
         },
     })
+
+    if (results.length == 0) return [Widget.Box()]
 
     const rows: any[] = []
     const columns: number = results[0].app_type == "emoji" ? 4 : 2

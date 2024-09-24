@@ -1,13 +1,21 @@
 // Define the theme variables
 $background: $color0; // Example background color
-$foreground: $color15; // Example foreground color
+$foreground: $color7; // Example foreground color
 $secondary: $color13; // Example selected background color
 
-$danger: rgb(255, 36, 0);
-// $danger: rgba($danger, 0.69);
+// $red: rgb(255, 102, 77); /* Muted red-orange */
+// $green: rgb(153, 255, 153); /* Soft pastel green */
+// $blue: rgb(102, 153, 255); /* Light desaturated blue */
+// $orange: rgb(255, 191, 128); /* Muted peachy orange */
+
+$red: rgba(255, 102, 77, 0.4); /* Muted red-orange, with less opacity */
+$green: rgba(153, 255, 153, 0.4); /* Softer pastel green */
+$blue: rgba(102, 153, 255, 0.4); /* Lighter desaturated blue */
+$orange: rgba(255, 139, 23, 0.4); /* Muted peachy orange */
 
 $module-background: mix($background, $color1, 69%);
 $module-foreground: mix($foreground, $color1, 69%);
+$module-secondary: mix($secondary, $foreground, 69%);
 
 $background: rgba($background, 0.69);
 $module-background: rgba($module-background, 0.5);
@@ -38,11 +46,11 @@ button,
 .button {
   @extend .module;
   min-height: 20px;
-  text-shadow: $background 0px 0px 2px;
+  text-shadow: $background 0px 0px 1px;
   ////////////////////////////
   &:hover {
     background: $background;
-    text-shadow: $foreground 0px 0px 2px;
+    text-shadow: $foreground 0px 0px 1px;
   }
   &:focus {
     outline: none;
@@ -56,13 +64,13 @@ button,
 }
 
 .danger {
-  background: rgba($danger, 0.5);
+  background: rgba($red, 0.5);
   color: $foreground;
   &:hover {
-    background: rgba($danger, 0.8);
+    background: rgba($red, 0.8);
   }
   &:checked {
-    background: rgba($danger, 0.8);
+    background: rgba($red, 0.8);
   }
 }
 
@@ -92,18 +100,19 @@ entry {
 
 separator {
   // padding: 0px 10px;
-  margin: 5px 10px;
-  background: $background;
+  margin: 5px 5px;
+  background: transparent;
+  border-top: 2px dashed $module-foreground;
 }
 
 menu {
   @extend .module;
   background: $background;
-  padding: 0px;
+  padding: 0px 10px;
   menuitem {
     @extend .button;
-    border-radius: 0px;
-    padding: 5px;
+    padding: 5px 0px;
+    margin: 5px 0px;
   }
 }
 

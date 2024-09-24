@@ -24,10 +24,19 @@
 
   .notification-panel {
     @extend .module;
-    margin: 1px 10px;
+    margin: 0px 10px;
     padding: 5px;
 
     .filter {
+      .spotify {
+        background: $green;
+      }
+      .clipboard {
+        background: $blue;
+      }
+      .update {
+        background: $orange;
+      }
       button {
         padding: 5px 0px;
         border-radius: 0px;

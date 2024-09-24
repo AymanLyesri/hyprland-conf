@@ -9,6 +9,7 @@ const Hyprland = await Service.import('hyprland')
 const imageDetails = Variable<Waifu>(readJSONFile(`${App.configDir}/assets/waifu/waifu.json`))
 const favoriteImageDetails = () => readJSONFile(`${App.configDir}/assets/waifu/favorite.json`)
 const nsfw = Variable<boolean>(false)
+const terminalWaifuPath = `${App.configDir}/assets/terminal/icon.jpg`
 
 function GetImageFromApi(param = "")
 {
@@ -35,8 +36,6 @@ const FavoriteImage = () => Utils.execAsync(`bash -c "cp ${App.configDir}/assets
     .catch(err => Utils.notify({ summary: 'Error', body: err }))
 
 const FavoriteToImage = async () => GetImageFromApi(favoriteImageDetails().id)
-
-const terminalWaifuPath = `${App.configDir}/assets/terminal/icon.jpg`
 
 const PinImageToTerminal = () =>
 {
@@ -79,7 +78,30 @@ function Actions()
         }),
     })
 
-    let confirmation = false
+    const favoriteMenu = Widget.Menu({
+        children: [
+            Widget.MenuItem({
+                child: Widget.Label({
+                    label: "Favorite this",
+                }),
+                on_activate: () => FavoriteImage()
+
+
+            }),
+            Widget.MenuItem({
+                child: Widget.Label({
+                    label: "Get Favorite",
+                }),
+                on_activate: () => FavoriteToImage().then(() => Utils.notify({ summary: 'Waifu', body: 'Favorite Enabled' }))
+                    .catch(err =>
+                    {
+                        Utils.notify({ summary: "Error", body: err });
+                        Utils.notify({ summary: "Waifu", body: "No favorite is found, Please right click to create one" })
+                    }),
+
+            }),
+        ]
+    })
 
     const actions = Widget.Revealer({
         revealChild: false,
@@ -91,25 +113,7 @@ function Actions()
                     label: "",
                     class_name: "favorite",
                     hexpand: true,
-                    on_primary_click: async () =>
-                    {
-                        if (confirmation) {
-                            FavoriteImage()
-                            confirmation = false
-                        }
-                        else {
-                            confirmation = true
-                            Utils.notify({ summary: 'Waifu', body: 'Click again to confirm' })
-                            setTimeout(() => confirmation = false, 3000)
-                        }
-                    },
-                    on_secondary_click: async () => FavoriteToImage()
-                        .then(() => Utils.notify({ summary: 'Waifu', body: 'Favorite Enabled' }))
-                        .catch(err =>
-                        {
-                            Utils.notify({ summary: "Error", body: err });
-                            Utils.notify({ summary: "Waifu", body: "No favorite is found, Please right click to create one" })
-                        }),
+                    on_primary_click: (_, event) => favoriteMenu.popup_at_pointer(event),
                 }),
                 Widget.Button({
                     label: "Random",
@@ -165,7 +169,6 @@ function Actions()
             {
                 actions.reveal_child = self.active
                 self.label = self.active ? "" : ""
-                // while (true) && !actions.child.children[2].child
                 if (self.active)
                     setTimeout(() =>
                     {
@@ -191,7 +194,6 @@ function Actions()
 
 function Image()
 {
-    // GetImageFromApi()
     return Widget.EventBox({
         class_name: "image",
         on_primary_click: async () => OpenImage(),
