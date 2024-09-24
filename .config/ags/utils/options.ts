@@ -15,8 +15,9 @@ const options = Variable<Options>({
   }
 });
 
+
 // Options are stored in a json file, containing all the options, check if it exists, if not, create it
-if (readJSONFile(optionsPath)) {
+if (Object.keys(readJSONFile(optionsPath)).length !== 0) {
   options.value = readJSONFile(optionsPath);
 } else {
   writeJSONFile(optionsPath, options.value);

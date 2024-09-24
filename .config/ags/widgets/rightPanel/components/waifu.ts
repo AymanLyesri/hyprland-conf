@@ -36,9 +36,19 @@ const FavoriteImage = () => Utils.execAsync(`bash -c "cp ${App.configDir}/assets
 
 const FavoriteToImage = async () => GetImageFromApi(favoriteImageDetails().id)
 
+const terminalWaifuPath = `${App.configDir}/assets/terminal/icon.jpg`
+
+const PinImageToTerminal = () =>
+{
+    if (Utils.readFile(terminalWaifuPath) == '') Utils.exec(`mkdir -p ${terminalWaifuPath.split('/').slice(0, -1).join('/')}`);
+    Utils.execAsync(`bash -c "cmp -s ${waifuPath} ${terminalWaifuPath} && { rm ${terminalWaifuPath}; echo 1; } || { cp ${waifuPath} ${terminalWaifuPath}; echo 0; }"`)
+        .then((output) => Utils.notify({ summary: "Waifu", body: `${Number(output) == 0 ? 'Pinned To Terminal' : 'UN-Pinned from Terminal'}` }))
+        .catch(err => print(err))
+}
+
 function Actions()
 {
-    const terminalWaifuPath = `${App.configDir}/assets/terminal/icon.jpg`
+
 
     const top = Widget.Box({
         class_name: "top",
@@ -48,12 +58,7 @@ function Actions()
             Widget.Button({
                 label: "Pin",
                 class_name: "pin",
-                on_clicked: () =>
-                {
-                    Utils.execAsync(`bash -c "cmp -s ${waifuPath} ${terminalWaifuPath} && { rm ${terminalWaifuPath}; echo 1; } || { cp ${waifuPath} ${terminalWaifuPath}; echo 0; }"`)
-                        .then((output) => Utils.notify({ summary: "Waifu", body: `${Number(output) == 0 ? 'Pinned To Terminal' : 'UN-Pinned from Terminal'}` }))
-                        .catch(err => print(err))
-                },
+                on_clicked: () => PinImageToTerminal()
             }),
         ],
     })

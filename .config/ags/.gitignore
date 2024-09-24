@@ -1,6 +1,16 @@
 .vscode
 types
+
+!assets/
+
 assets/images/*
+!assets/images/
+
 assets/terminal/*
+!assets/terminal/
+
 assets/options/*
+!assets/options/
+
 assets/waifu/*
+!assets/waifu/
