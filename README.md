@@ -87,7 +87,7 @@ sudo reboot
 
 **To install packages:**
 
-> **Warning:** [Yay](https://github.com/Jguer/yay) needs to be installed for this to work properly.
+> **Warning:** [Yay](https://github.com/Jguer/yay) need to be installed for this to work properly.
 
 > Some packages may be missing or added unnecessarily.
 
@@ -118,6 +118,25 @@ yay -Qqen > $HOME/.config/hypr/pacman/pkglist.txt
 
 # Visuals
 
+### Application Launcher
+
+<details>
+  <summary>SCREENSHOTS</summary>
+
+#### Apps
+
+![alt text](image.png)
+
+#### Arithmetics
+
+![alt text](image-3.png)
+
+#### URLs
+
+![alt text](image-2.png)
+
+</details>
+
 ### Right Panel
 
 <details>
@@ -132,19 +151,13 @@ yay -Qqen > $HOME/.config/hypr/pacman/pkglist.txt
   <img src="https://github.com/user-attachments/assets/1c56869d-8b83-457a-8f28-b6006ae83fdb" alt="Media Player">
 </details>
 
-### Application Launcher
-
-<details>
-  <summary>SCREENSHOTS</summary>
-  <img src="https://github.com/user-attachments/assets/79077273-04d2-4871-a5a1-078de8f2a83e" alt="Application Launcher 1">
-  <img src="https://github.com/user-attachments/assets/6f76124c-5361-420f-a7e0-3ae73aa2e297" alt="Application Launcher 2">
-</details>
-
 ### Wallpaper Switcher
 
 <details>
   <summary>SCREENSHOTS</summary>
-  <img src="https://github.com/user-attachments/assets/b3f411f5-14ab-4304-ae95-9c2e93b7f886" alt="Wallpaper Switcher">
+
+![alt text](image-5.png)
+
 </details>
 
 ### Theme Switching
