@@ -127,6 +127,10 @@ yay -Qqen > $HOME/.config/hypr/pacman/pkglist.txt
 
 ![1727169030_grim](https://github.com/user-attachments/assets/1de43c71-da3c-495c-885f-0b5b0f2f73a2)
 
+#### Emojis
+
+![1727198590_grim](https://github.com/user-attachments/assets/09c48f18-1d7f-499e-be24-efb836cc7821)
+
 #### Arithmetics
 
 ![1727169606_grim](https://github.com/user-attachments/assets/e4610919-ab8b-44fb-8349-3ce124974281)
