@@ -4,18 +4,26 @@ import { emptyWorkspace, globalMargin, newAppWorkspace } from "variables";
 import { closeProgress, openProgress } from "./Progress";
 import { containsProtocolOrTLD, formatToURL, getDomainFromURL } from "utils/url";
 import { arithmetic, containsOperator } from "utils/arithmetic";
+import { getArgumentBeforeSpace } from "utils/string";
 const Hyprland = await Service.import('hyprland')
 
-const Results = Variable<{ app_name: string, app_exec: string, app_type: string }[]>([])
+interface Result
+{
+    app_name: string,
+    app_exec: string,
+    app_arg?: string,
+    app_type?: string,
+    app_icon?: string
+}
+
+const Results = Variable<Result[]>([])
 
 function Entry()
 {
-    let debounceTimeout;
-
     const help = Widget.Menu({
         children: [
             Widget.MenuItem({
-                child: Widget.Label({ xalign: 0, label: '......... \t => \t open app' }),
+                child: Widget.Label({ xalign: 0, label: '... ... \t => \t open with argument' }),
             }),
             Widget.MenuItem({
                 child: Widget.Label({ xalign: 0, label: 'https://... \t => \t open link' }),
@@ -43,18 +51,19 @@ function Entry()
                 hexpand: true,
                 onChange: async ({ text }) =>
                 {
-                    clearTimeout(debounceTimeout);
-
                     if (!text)
                         Results.value = []
                     else if (text.includes("emoji"))
                         Results.value = readJSONFile(`${App.configDir}/assets/emojis/emojis.json`).filter(emoji => emoji.app_tags.toLowerCase().includes(text.replace("emoji", "").trim()));
-                    else if (containsProtocolOrTLD(text))
+                    else if (containsProtocolOrTLD(getArgumentBeforeSpace(text)))
                         Results.value = [{ app_name: getDomainFromURL(text), app_exec: `xdg-open ${formatToURL(text)}`, app_type: 'url' }]
-                    else if (containsOperator(text))
+                    else if (containsOperator(getArgumentBeforeSpace(text)))
                         Results.value = [{ app_name: arithmetic(text), app_exec: `wl-copy ${arithmetic(text)}`, app_type: 'calc' }]
-                    else
+                    else {
                         Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/app-search.sh ${text}`));
+                        if (Results.value.length == 0)
+                            Results.value = [{ app_name: `Try ${text}`, app_exec: text, app_icon: "󰋖" }]
+                    }
                 },
                 on_accept: () =>
                 {
@@ -70,7 +79,6 @@ function Entry()
             })
             , Widget.Button({
                 label: "󰋖",
-                class_name: "help",
                 on_primary_click: (_, event) =>
                 {
                     help.popup_at_pointer(event)
@@ -80,20 +88,21 @@ function Entry()
     })
 }
 
-const organizeResults = (results: any[]) =>
+const organizeResults = (results: Result[]) =>
 {
-    const content = (element) => Widget.Box({
+    const buttonContent = (element: Result) => Widget.Box({
         spacing: 10,
         hpack: element.app_type == 'emoji' ? "center" : "start",
-        children: element.app_type == 'app' ? [
-            Widget.Icon({ icon: element.app_icon || "view-grid-symbolic" }),
-            Widget.Label({ label: element.app_name })
-        ] : [Widget.Label({ label: element.app_name })]
+        children: [
+            element.app_type == 'app' ? Widget.Icon({ icon: element.app_icon || "view-grid-symbolic" }) : Widget.Label({ label: element.app_icon }),
+            Widget.Label({ label: element.app_name }),
+            Widget.Label({ class_name: "argument", label: element.app_arg || "" })
+        ],
     })
 
-    const button = (element: any) => Widget.Button({
+    const button = (element: Result) => Widget.Button({
         hexpand: true,
-        child: content(element),
+        child: buttonContent(element),
         on_clicked: () =>
         {
             if (element.app_type == "app") {
@@ -104,7 +113,7 @@ const organizeResults = (results: any[]) =>
                     .catch(err => Utils.notify({ summary: "Error", body: err }));
             }
 
-            Hyprland.sendMessage(`dispatch exec ${element.app_exec}`)
+            Hyprland.sendMessage(`dispatch exec ${element.app_exec} ${element.app_arg || ""}`)
                 .then(() =>
                 {
                     switch (element.app_type) {
@@ -121,7 +130,6 @@ const organizeResults = (results: any[]) =>
                 })
                 .finally(() => App.closeWindow("app-launcher"))
                 .catch(err => Utils.notify({ summary: "Error", body: err }));
-
         },
     })
 
@@ -165,8 +173,7 @@ export default () =>
             child: Widget.Box({
                 vertical: true,
                 class_name: "app-launcher",
-                children: [Entry(), ResultsDisplay]
-
+                children: [Entry(), ResultsDisplay],
             }),
         }),
     })

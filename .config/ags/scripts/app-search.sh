@@ -38,6 +38,7 @@ find_icon_path() {
 # Main function to search through directories and extract app info
 search_apps() {
     local search_term="$1"
+    local app_arg="$2"
 
     # Check if search term is provided
     if [[ -z "$search_term" ]]; then
@@ -63,7 +64,7 @@ search_apps() {
                 full_icon_path=$(find_icon_path "$app_icon")
 
                 # Add the JSON object to the array
-                json_array+=("{\"app_name\": \"$app_name\", \"app_exec\": \"$app_exec\", \"app_icon\": \"$full_icon_path\", \"app_type\": \"app\"}")
+                json_array+=("{\"app_name\": \"$app_name\", \"app_exec\": \"$app_exec\", \"app_arg\": \"$app_arg\", \"app_icon\": \"$full_icon_path\", \"app_type\": \"app\"}")
             fi
         done < <(
             find "$app_dir" -name "*.desktop" -print0 | xargs -0 -n 1 -P 4 awk -v term="$search_term" '
@@ -87,6 +88,7 @@ search_apps() {
 
 # Get the search term from the command line argument
 search_term="$1"
-
+shift 1
+search_args="$@"
 # Call the main function with the search term
-search_apps "$search_term"
+search_apps "$search_term" "$search_args"

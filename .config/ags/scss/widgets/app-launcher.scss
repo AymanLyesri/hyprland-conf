@@ -8,10 +8,11 @@
     margin: 5px 10px;
   }
 
-  .help {
-  }
-
   .results {
+    .argument {
+      color: $module-foreground;
+      font-size: 0.69rem;
+    }
     button {
       border: unset;
       margin-top: 10px;

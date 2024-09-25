@@ -72,11 +72,15 @@ export default (pos: string) =>
             }, "output-changed")
     })
 
-    const update = () =>
-    {
-        btn.visible = !!mpris.players.find(player => player.play_back_status === "Playing");
-    }
+    const revealer = Widget.Revealer({
+        transitionDuration: 1000,
+        transition: 'slide_left',
+        reveal_child: false,
+        child: btn,
+    })
 
-    return btn
+    const update = () => setTimeout(() => revealer.reveal_child = !!mpris.players.find(player => player.play_back_status === "Playing"), 1000)
+
+    return revealer
         .hook(mpris, update, "changed")
 }

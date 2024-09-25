@@ -107,12 +107,14 @@ separator {
 
 menu {
   @extend .module;
+  border-radius: 0px;
   background: $background;
-  padding: 0px 10px;
+  padding: 0px;
   menuitem {
     @extend .button;
+    border-radius: 0px;
     padding: 5px 0px;
-    margin: 5px 0px;
+    margin: 2.5px 0px;
   }
 }
 
