@@ -65,11 +65,13 @@ I use Arch BTW.. :)
 
 # Installation Guide
 
-### Step 1: Clone the Repository
+### Step 1: Clone the Repository (only last commit)
 
 ```bash
-git clone https://github.com/AymanLyesri/hyprland-conf.git
+git clone --depth 1 https://github.com/AymanLyesri/hyprland-conf.git
 ```
+
+~~git clone https://github.com/AymanLyesri/hyprland-conf.git~~ (temporarly) big repo size
 
 ### Step 2: Move the Repository to Your Home Directory
 
