@@ -4,7 +4,7 @@ import { emptyWorkspace, globalMargin, newAppWorkspace } from "variables";
 import { closeProgress, openProgress } from "./Progress";
 import { containsProtocolOrTLD, formatToURL, getDomainFromURL } from "utils/url";
 import { arithmetic, containsOperator } from "utils/arithmetic";
-import { getArgumentBeforeSpace } from "utils/string";
+import { getArgumentAfterSpace, getArgumentBeforeSpace } from "utils/string";
 const Hyprland = await Service.import('hyprland')
 
 interface Result
@@ -23,19 +23,22 @@ function Entry()
     const help = Widget.Menu({
         children: [
             Widget.MenuItem({
-                child: Widget.Label({ xalign: 0, label: '... ... \t => \t open with argument' }),
+                child: Widget.Label({ xalign: 0, label: '... ... \t\t =>> \t open with argument' }),
             }),
             Widget.MenuItem({
-                child: Widget.Label({ xalign: 0, label: 'https://... \t => \t open link' }),
+                child: Widget.Label({ xalign: 0, label: 'translate .. => .. \t =>> \t translate into (en,fr,es,de,pt,ru,ar...)' }),
             }),
             Widget.MenuItem({
-                child: Widget.Label({ xalign: 0, label: '... .com \t => \t open link' }),
+                child: Widget.Label({ xalign: 0, label: 'https://... \t\t =>> \t open link' }),
             }),
             Widget.MenuItem({
-                child: Widget.Label({ xalign: 0, label: '..*/+-.. \t => \t arithmetics' }),
+                child: Widget.Label({ xalign: 0, label: '... .com \t\t =>> \t open link' }),
             }),
             Widget.MenuItem({
-                child: Widget.Label({ xalign: 0, label: 'emoji ... \t => \t search emojis' }),
+                child: Widget.Label({ xalign: 0, label: '..*/+-.. \t\t =>> \t arithmetics' }),
+            }),
+            Widget.MenuItem({
+                child: Widget.Label({ xalign: 0, label: 'emoji ... \t\t =>> \t search emojis' }),
             }),
         ],
     })
@@ -51,8 +54,14 @@ function Entry()
                 hexpand: true,
                 onChange: async ({ text }) =>
                 {
-                    if (!text)
+                    if (text == null) {
                         Results.value = []
+                        return
+                    }
+                    else if (text.includes("translate")) {
+                        let language = text.includes("=>") ? text.split("=>")[1].trim() : "en";
+                        Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/translate.sh '${text.split("=>")[0].replace("translate", "").trim()}' '${language}'`));
+                    }
                     else if (text.includes("emoji"))
                         Results.value = readJSONFile(`${App.configDir}/assets/emojis/emojis.json`).filter(emoji => emoji.app_tags.toLowerCase().includes(text.replace("emoji", "").trim()));
                     else if (containsProtocolOrTLD(getArgumentBeforeSpace(text)))
