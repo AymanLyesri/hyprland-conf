@@ -56,9 +56,9 @@ I use Arch BTW.. :)
 
 # To-Do List
 
+- **Users: Any suggestions or issues?**
+- Make sure the dot files work for every machine not just mine **(WIP)**
 - Add tutorials for each part of the dot-files **(WIP)**
-- List easy-to-read essential packages for fast download **(Done)**
-- Provide an easy-to-read list of keybinds **(Done)**
 - Continuous improvements and polishing **(INDEFINITELY)**
 
 # [KeyBinds](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/configs/keybinds.conf)
@@ -99,8 +99,8 @@ sudo reboot
 > Some packages may be missing or added unnecessarily.
 
 ```bash
-#Paste this into the command line (just the command lol...)
-bash $HOME/.config/hypr/pacman/update.sh
+#For installing and updating essential packages (default:yay)
+bash $HOME/.config/hypr/pacman/update.sh [yay,paru...]
 ```
 
 **To generate a package list:** `optional`
