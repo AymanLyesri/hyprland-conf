@@ -2,7 +2,7 @@
 
 # Define variables
 hyprdir=$HOME/.config/hypr
-wallpaper=$1
+wallpaper=$1  # This is passed as an argument to the script
 
 # Get list of monitors
 monitors=($(hyprctl monitors | awk '/Monitor/ {print $2}'))
@@ -12,7 +12,10 @@ for monitor in "${monitors[@]}"; do
     hyprctl hyprpaper wallpaper "$monitor,$wallpaper"
 done
 
-sleep 1 # Wait for wallpaper to be set (remove stutering)
+sleep 1 # Wait for wallpaper to be set (removes stuttering)
+
+# Call the script with the expanded full path of $wallpaper
+echo "$hyprdir/theme/scripts/wal-theme.sh" "$wallpaper"
 
 # Set wallpaper theme
-$hyprdir/theme/scripts/wal-theme.sh "$wallpaper"
+"$hyprdir/theme/scripts/wal-theme.sh" "$wallpaper"

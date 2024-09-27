@@ -7,19 +7,19 @@ border_theme_script=$hyprDir/theme/scripts/border-theme.sh
 
 # check if $1 is provided
 if [ $1 ]; then
-    current_wallpaper=$1
+    current_wallpaper=${1/\$HOME/$HOME}
 fi
 
 # killall wal # kill pywal.sh
 
 if [ "$current_theme" = "dark" ]; then
-
-    wal --backend colorthief -e -n -i $current_wallpaper &
-
-elif [ "$current_theme" = "light" ]; then
-
-    wal --backend colorthief -e -n -i $current_wallpaper -l &
-
+    
+    wal --backend colorthief -e -n -i "$current_wallpaper" &
+    
+    elif [ "$current_theme" = "light" ]; then
+    
+    wal --backend colorthief -e -n -i "$current_wallpaper" -l &
+    
 fi
 
 # Run the border theme script

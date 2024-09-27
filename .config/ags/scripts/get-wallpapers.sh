@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the file that contains the wallpaper paths
-file="/home/ayman/.config/hypr/hyprpaper/config/defaults.conf"
+file="$HOME/.config/hypr/hyprpaper/config/defaults.conf"
 
 # Initialize an empty array for the wallpaper paths
 wallpaper_paths=()
@@ -9,7 +9,7 @@ wallpaper_paths=()
 # Read the file line by line
 while IFS='=' read -r key path; do
     # Trim any whitespace from the path and add to the array
-    path=$(echo "$path" | xargs)
+    path=$(echo "$path" | sed "s~^\$HOME~$HOME~" | xargs )
     wallpaper_paths+=("\"$path\"")
 done <"$file"
 

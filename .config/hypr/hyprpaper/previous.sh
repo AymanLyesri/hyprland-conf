@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the necessary directories and files
-hyprDir=/home/ayman/.config/hypr
+hyprDir=$HOME/.config/hypr
 current_config=$hyprDir/hyprpaper/config/defaults.conf
 previous_config=$hyprDir/hyprpaper/config/previous.conf
 

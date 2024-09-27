@@ -1,6 +1,6 @@
 #!/bin/bash
-random=$(find /home/ayman/wallpapers/normal -type f | shuf -n 1) # get random wallpaper
-hyprDir=/home/ayman/.config/hypr                                 # hypr directory
+random=$(find $HOME/wallpapers/normal -type f | shuf -n 1 | sed "s|$HOME|\\\$HOME|") # get random wallpaper
+hyprDir=$HOME/.config/hypr                                 # hypr directory
 current_config=$hyprDir/hyprpaper/config/defaults.conf           # config file
 previous_config=$hyprDir/hyprpaper/config/previous.conf          # previous config file
 

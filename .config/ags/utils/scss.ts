@@ -20,6 +20,6 @@ Utils.monitorFile(
 
 Utils.monitorFile(
     // directory that contains pywal colors
-    "/home/ayman/.cache/wal/colors.scss",
+    `$../../.cache/wal/colors.scss`,
     () => refreshCss()
 )
