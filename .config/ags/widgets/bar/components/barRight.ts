@@ -21,6 +21,7 @@ function Theme()
             openProgress()
             Utils.execAsync(['bash', '-c', '$HOME/.config/hypr/theme/scripts/set-global-theme.sh switch']).then(() => self.label = self.active ? "" : "")
                 .finally(() => closeProgress())
+                .catch(err => Utils.notify(err))
         },
 
         label: "",

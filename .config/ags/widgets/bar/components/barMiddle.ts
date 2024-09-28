@@ -61,7 +61,7 @@ function Media()
 
     return Widget.EventBox({
         class_name: "media-event",
-        on_secondary_click: () => hyprland.messageAsync("dispatch workspace 4"),
+        on_secondary_click: () => hyprland.messageAsync("dispatch workspace 4").catch(err => print(err)),
         on_hover: () => App.openWindow("media"),
 
         child: Utils.watch(mpris.players.length > 0 ? _activeplayer_() : Widget.Box(),

@@ -17,7 +17,7 @@ export default () =>
         children: notifications.popups.map(n => Notification_(n, true)),
     })
 
-    async function onNotified(_, /** @type {number} */ id)
+    function onNotified(_, /** @type {number} */ id)
     {
         const n = notifications.getNotification(id)
         if (n) {
@@ -32,7 +32,7 @@ export default () =>
         }
     }
 
-    async function onDismissed(_, /** @type {number} */ id)
+    function onDismissed(_, /** @type {number} */ id)
     {
         const notification = list.children.find(n => n.attribute.id === id)
 

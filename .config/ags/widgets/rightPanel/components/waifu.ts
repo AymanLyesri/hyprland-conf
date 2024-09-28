@@ -18,7 +18,7 @@ function GetImageFromApi(param = "")
     {
         closeProgress()
         imageDetails.value = JSON.parse(Utils.readFile(`${App.configDir}/assets/waifu/waifu.json`))
-    }).catch(async (error) => await Utils.notify({ summary: "Error", body: error }))
+    }).catch((error) => Utils.notify({ summary: "Error", body: error }))
 }
 
 const SearchImage = () => Utils.execAsync(`bash -c "xdg-open 'https://danbooru.donmai.us/posts/${imageDetails.value.id}' && xdg-settings get default-web-browser | sed 's/\.desktop$//'"`)

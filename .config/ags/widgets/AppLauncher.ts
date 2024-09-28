@@ -54,24 +54,28 @@ function Entry()
                 hexpand: true,
                 onChange: async ({ text }) =>
                 {
-                    if (text == null) {
-                        Results.value = []
-                        return
-                    }
-                    else if (text.includes("translate")) {
-                        let language = text.includes("=>") ? text.split("=>")[1].trim() : "en";
-                        Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/translate.sh '${text.split("=>")[0].replace("translate", "").trim()}' '${language}'`));
-                    }
-                    else if (text.includes("emoji"))
-                        Results.value = readJSONFile(`${App.configDir}/assets/emojis/emojis.json`).filter(emoji => emoji.app_tags.toLowerCase().includes(text.replace("emoji", "").trim()));
-                    else if (containsProtocolOrTLD(getArgumentBeforeSpace(text)))
-                        Results.value = [{ app_name: getDomainFromURL(text), app_exec: `xdg-open ${formatToURL(text)}`, app_type: 'url' }]
-                    else if (containsOperator(getArgumentBeforeSpace(text)))
-                        Results.value = [{ app_name: arithmetic(text), app_exec: `wl-copy ${arithmetic(text)}`, app_type: 'calc' }]
-                    else {
-                        Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/app-search.sh ${text}`));
-                        if (Results.value.length == 0)
-                            Results.value = [{ app_name: `Try ${text}`, app_exec: text, app_icon: "󰋖" }]
+                    try {
+                        if (text == null) {
+                            Results.value = []
+                            return
+                        }
+                        else if (text.includes("translate")) {
+                            let language = text.includes("=>") ? text.split("=>")[1].trim() : "en";
+                            Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/translate.sh '${text.split("=>")[0].replace("translate", "").trim()}' '${language}'`));
+                        }
+                        else if (text.includes("emoji"))
+                            Results.value = readJSONFile(`${App.configDir}/assets/emojis/emojis.json`).filter(emoji => emoji.app_tags.toLowerCase().includes(text.replace("emoji", "").trim()));
+                        else if (containsProtocolOrTLD(getArgumentBeforeSpace(text)))
+                            Results.value = [{ app_name: getDomainFromURL(text), app_exec: `xdg-open ${formatToURL(text)}`, app_type: 'url' }]
+                        else if (containsOperator(getArgumentBeforeSpace(text)))
+                            Results.value = [{ app_name: arithmetic(text), app_exec: `wl-copy ${arithmetic(text)}`, app_type: 'calc' }]
+                        else {
+                            Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/app-search.sh ${text}`));
+                            if (Results.value.length == 0)
+                                Results.value = [{ app_name: `Try ${text}`, app_exec: text, app_icon: "󰋖" }]
+                        }
+                    } catch (err) {
+                        print(err)
                     }
                 },
                 on_accept: () =>

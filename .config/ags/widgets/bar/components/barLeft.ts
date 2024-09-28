@@ -15,7 +15,7 @@ function Workspaces()
             .map(({ id }) =>
             {
                 return Widget.Button<any>({
-                    on_clicked: () => hyprland.messageAsync(id == -99 ? `dispatch togglespecialworkspace` : `dispatch workspace ${id}`),
+                    on_clicked: () => hyprland.messageAsync(id == -99 ? `dispatch togglespecialworkspace` : `dispatch workspace ${id}`).catch(err => print(err)),
                     child: id < 0 ? Widget.Icon("view-grid-symbolic") : Widget.Label({ class_name: 'icon', label: workspaceToIcon[id] }),
                     class_name: activeId.as((i) =>
                     {
