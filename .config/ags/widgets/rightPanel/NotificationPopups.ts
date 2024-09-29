@@ -3,10 +3,10 @@ import { Notification_ } from "./components/notification"
 
 const notifications = await Service.import("notifications")
 
-notifications.popupTimeout = 5000;
+notifications.popupTimeout = 3000;
 notifications.forceTimeout = false;
 notifications.cacheActions = false;
-notifications.clearDelay = 100;
+// notifications.clearDelay = 100;
 
 
 export default () =>
