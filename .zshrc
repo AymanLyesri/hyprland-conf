@@ -1,6 +1,7 @@
-# (cat ~/.cache/wal/sequences &)
-(nohup $HOME/.config/hypr/theme/scripts/wal-theme.sh > /dev/null 2>&1 &) # set wallpaper theme
-# export QT_QPA_PLATFORMTHEME=qt5ct
+(cat ~/.cache/wal/sequences &)
+# (nohup $HOME/.config/hypr/theme/scripts/wal-theme.sh > /dev/null 2>&1 &) # set wallpaper theme
+
+eval "$(starship init zsh)"
 
 # fetch system information
 source $HOME/.config/fastfetch/fastfetch.sh
@@ -8,20 +9,20 @@ source $HOME/.config/fastfetch/fastfetch.sh
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
+# if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+#   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+# fi
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f $HOME/.p10k.zsh ]] || source $HOME/.p10k.zsh
+# # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+# [[ ! -f $HOME/.p10k.zsh ]] || source $HOME/.p10k.zsh
 
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
-source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
+# source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 source /usr/share/zsh/plugins/zsh-directory-history/zsh-directory-history.zsh
 source /usr/share/zsh/plugins/zsh-sudo/sudo.plugin.zsh
-source /usr/share/zsh/plugins/zsh-auto-notify/auto-notify.plugin.zsh 
+source /usr/share/zsh/plugins/zsh-auto-notify/auto-notify.plugin.zsh
 
 #History
 HISTSIZE=10000                # Maximum events for internal history
@@ -62,11 +63,11 @@ alias f='clear && source $HOME/.config/fastfetch/fastfetch.sh'
 
 # Aliase functions
 function code() {
-  /bin/code $1 && exit
+    /bin/code $1 && exit
 }
 function v()
 {
-  /bin/neovide --fork $1 && exit 
+    /bin/neovide --fork $1 && exit
 }
 alias cpdir='pwd | tr -d "\r\n" | wl-copy'
 
@@ -107,3 +108,5 @@ export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
 # export HADOOP_MAPRED_HOME=$HADOOP_HOME
 # export YARN_HOME=$HADOOP_HOME
 # export HADOOP_COMMON_HOME=$HADOOP_HOME
+
+# export QT_QPA_PLATFORMTHEME=qt5ct
