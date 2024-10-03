@@ -49,7 +49,7 @@ function Brightness()
         // brightness.bind('screen-value').as(v => `${Math.round(v * 100)}%`),
     });
 
-    return Widget.Box();
+    return Number(value) == 0 ? Widget.Box() : custom_revealer(label, slider);
 }
 
 
@@ -112,7 +112,7 @@ function BatteryLabel()
         value,
     });
 
-    return value == 0 ? custom_revealer(icon, slider) : null;
+    return value != 0 ? custom_revealer(icon, slider) : null;
 }
 
 function SysTray()
