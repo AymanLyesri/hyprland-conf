@@ -16,32 +16,33 @@ source $HOME/.config/fastfetch/fastfetch.sh
 # # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 # [[ ! -f $HOME/.p10k.zsh ]] || source $HOME/.p10k.zsh
 
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh # Autosuggestions for commands
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh # Syntax Highlighting and colors
+source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh # Substring history search using up and down arrow keys
 # source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
-source /usr/share/zsh/plugins/zsh-directory-history/zsh-directory-history.zsh
+# source /usr/share/zsh/plugins/zsh-directory-history/zsh-directory-history.zsh
 source /usr/share/zsh/plugins/zsh-sudo/sudo.plugin.zsh
 source /usr/share/zsh/plugins/zsh-auto-notify/auto-notify.plugin.zsh
+source /usr/share/zsh/plugins/fzf-tab-git/fzf-tab.plugin.zsh
 
-#History
+
+#Zsh Auto-Suggestions
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#696969,bold"
 HISTSIZE=10000                # Maximum events for internal history
 SAVEHIST=10000                # Maximum events in history file
 HISTFILE=~/.cache/zsh/history # History filepath
 
-#Zsh Tab Complete
+# Zsh Tab Complete
 autoload -U compinit
-zstyle '*:compinit' arguments -D -i -u -C -w
-zstyle ':completion:*' completer _extensions _complete _approximate
-zstyle ':completion:*' menu select
-zstyle ':completion:*:*:*:*:descriptions' format '%F{2}-- %d --%f'
-zstyle ':completion:*:*:*:*:corrections' format '%F{208}!- %d (errors: %e) -!%f'
-zstyle ':completion:*:messages' format ' %F{11} -- %d --%f'
-zstyle ':completion:*:warnings' format ' %F{9}-- no matches found --%f'
+# zstyle '*:compinit' arguments -D -i -u -C -w
+# zstyle ':completion:*' completer _extensions _complete _approximate
+# zstyle ':completion:*' menu select
+# zstyle ':completion:*:*:*:*:descriptions' format '%F{2}-- %d --%f'
+# zstyle ':completion:*:*:*:*:corrections' format '%F{208}!- %d (errors: %e) -!%f'
+# zstyle ':completion:*:messages' format ' %F{11} -- %d --%f'
+# zstyle ':completion:*:warnings' format ' %F{9}-- no matches found --%f'
 compinit
 
-#Zsh Auto-Suggestions
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#696969,bold"
 
 #Zsh Substring History Search
 bindkey '^[[A' history-substring-search-up
@@ -95,6 +96,9 @@ eval $(thefuck --alias)
 
 # navi
 eval "$(navi widget zsh)"
+
+# Set up fzf key bindings and fuzzy completion
+source <(fzf --zsh)
 
 # Waifu Chat Bot and Assistant
 alias waifu='source $HOME/linux-chat-bot/main.sh "$(pwd)"'
