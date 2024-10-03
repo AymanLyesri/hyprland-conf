@@ -1,9 +1,10 @@
 import { readJSONFile } from "utils/json";
 import { Waifu } from "../../../interfaces/waifu.interface";
-import { rightPanelWidth, waifuPath, waifuVisibility } from "variables";
+import { globalTransition, rightPanelWidth, waifuPath, waifuVisibility } from "variables";
 import { getDominantColor } from "utils/image";
 import { closeProgress, openProgress } from "../../Progress";
 import { getOption, setOption } from "utils/options";
+import { timeout } from "resource:///com/github/Aylur/ags/utils/timeout.js";
 const Hyprland = await Service.import('hyprland')
 
 const imageDetails = Variable<Waifu>(readJSONFile(`${App.configDir}/assets/waifu/waifu.json`))
@@ -105,7 +106,7 @@ function Actions()
 
     const actions = Widget.Revealer({
         revealChild: false,
-        transitionDuration: 1000,
+        transitionDuration: globalTransition,
         transition: 'slide_up',
         child: Widget.Box({ vertical: true },
             Widget.Box([
@@ -161,23 +162,26 @@ function Actions()
         class_name: "bottom",
         vertical: true,
         vpack: "end",
-        children: [Widget.ToggleButton({
-            label: "",
-            class_name: "action-trigger",
-            hpack: "end",
-            on_toggled: (self) =>
-            {
-                actions.reveal_child = self.active
-                self.label = self.active ? "" : ""
-                if (self.active)
-                    setTimeout(() =>
-                    {
-                        actions.reveal_child = false;
-                        self.label = ""
-                        self.active = false
-                    }, 15000)
-            },
-        }), actions],
+        children: [
+            Widget.ToggleButton({
+                label: "",
+                class_name: "action-trigger",
+                hpack: "end",
+                on_toggled: (self) =>
+                {
+                    actions.reveal_child = self.active
+                    self.label = self.active ? "" : ""
+                    if (self.active)
+                        timeout(15000, () =>
+                        {
+                            actions.reveal_child = false;
+                            self.label = ""
+                            self.active = false
+                        })
+                },
+            }),
+            actions
+        ],
     })
 
     return Widget.Box({
@@ -217,17 +221,21 @@ function Image()
 
 export default () =>
 {
-    return Widget.EventBox({
-        class_name: "waifu-event",
-        visible: waifuVisibility.bind(),
-        child: Widget.Box(
-            {
-                vertical: true,
-                class_name: "waifu",
-            },
-            Image(),
+    return Widget.Revealer({
+        transitionDuration: globalTransition,
+        transition: 'slide_down',
+        reveal_child: waifuVisibility.bind(),
+        child: Widget.EventBox({
+            class_name: "waifu-event",
+            child: Widget.Box(
+                {
+                    vertical: true,
+                    class_name: "waifu",
+                },
+                Image(),
 
-        ),
+            ),
+        })
     })
 }
 

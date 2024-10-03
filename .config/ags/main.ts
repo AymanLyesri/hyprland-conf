@@ -1,4 +1,5 @@
 import NotificationPopups from "widgets/rightPanel/NotificationPopups";
+import NotificationPopups_NEW from "widgets/rightPanel/NotificationPopups_not_mine_and_too_complicated_for_no_reason";
 import RightPanel from "widgets/rightPanel/RightPanel";
 import Bar from "widgets/bar/Bar";
 import AppLauncher from "widgets/AppLauncher";
@@ -11,8 +12,6 @@ import { getCssPath, refreshCss } from "utils/scss";
 // required packages
 // gvfs is required for images
 
-
-
 refreshCss()
 
 App.addIcons(`${App.configDir}/assets/icons`)
@@ -21,6 +20,7 @@ App.config({
   windows: [
     Bar(),
     NotificationPopups(),
+    // NotificationPopups_NEW(),
     RightPanel(),
     WallpaperSwitcher(),
     Media(),

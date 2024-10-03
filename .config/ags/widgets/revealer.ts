@@ -1,8 +1,10 @@
+import { globalTransition } from "variables";
+
 export function custom_revealer(trigger, slider, custom_class = '', on_primary_click = () => { })
 {
     const revealer = Widget.Revealer({
         revealChild: false,
-        transitionDuration: 1000,
+        transitionDuration: globalTransition,
         transition: 'slide_right',
         child: slider,
     });

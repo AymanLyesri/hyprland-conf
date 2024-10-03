@@ -1,6 +1,7 @@
 
 import { getDominantColor } from "utils/image";
 import cavaService from "./cavaService";
+import { globalTransition } from "variables";
 // import options from "options"
 
 const mpris = await Service.import("mpris")
@@ -73,7 +74,7 @@ export default (pos: string) =>
     })
 
     const revealer = Widget.Revealer({
-        transitionDuration: 1000,
+        transitionDuration: globalTransition,
         transition: 'slide_left',
         reveal_child: false,
         child: btn,

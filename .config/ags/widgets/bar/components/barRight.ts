@@ -15,17 +15,24 @@ const SystemTray = await Service.import("systemtray");
 
 function Theme()
 {
+
+    function getIcon()
+    {
+        return Utils.execAsync(['bash', '-c', '$HOME/.config/hypr/theme/scripts/system-theme.sh get']).then(theme => theme.includes('dark') ? "" : "")
+    }
+
     return Widget.ToggleButton({
         on_toggled: (self) =>
         {
             openProgress()
-            Utils.execAsync(['bash', '-c', '$HOME/.config/hypr/theme/scripts/set-global-theme.sh switch']).then(() => self.label = self.active ? "" : "")
+            Utils.execAsync(['bash', '-c', '$HOME/.config/hypr/theme/scripts/set-global-theme.sh switch']).then(() => self.label = self.label == "" ? "" : "")
                 .finally(() => closeProgress())
                 .catch(err => Utils.notify(err))
         },
 
         label: "",
         class_name: "theme icon",
+        setup: (self) => getIcon().then(icon => self.label = icon)
     })
 
 }
@@ -139,9 +146,12 @@ function RightPanel()
 {
     return Widget.ToggleButton({
         onToggled: ({ active }) => rightPanelVisibility.value = active,
-        label: "",
         class_name: "panel-trigger icon",
-    }).hook(rightPanelVisibility, (self) => self.active = rightPanelVisibility.value, "changed");
+    }).hook(rightPanelVisibility, (self) =>
+    {
+        self.active = rightPanelVisibility.value
+        self.label = rightPanelVisibility.value ? "" : ""
+    }, "changed");
 }
 
 export function Right()
