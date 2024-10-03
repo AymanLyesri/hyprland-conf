@@ -3,7 +3,11 @@ import { Notification } from "types/service/notifications"
 import { getDominantColor } from "utils/image"
 import { readJson } from "utils/json"
 
+import { timeout } from "resource:///com/github/Aylur/ags/utils.js";
+
 const Hyprland = await Service.import('hyprland')
+
+const TRANSITION = 200;
 
 
 /** @param {import('resource:///com/github/Aylur/ags/service/notifications.js').Notification} n */
@@ -102,33 +106,49 @@ export function Notification_(n: Notification, new_Notification = false, popup =
 
     const close = Widget.Button({
         class_name: "close",
-        on_clicked: async () => n.close(),
+        on_clicked: async () =>
+        {
+            Revealer.reveal_child = false;
+            timeout(TRANSITION, () => { n.close(); Revealer.destroy() })
+        },
         child: Widget.Icon("window-close-symbolic"),
     })
 
-    return Widget.EventBox(
+    const Box = Widget.Box(
         {
             attribute: { id: n.id },
-            on_primary_click: n.dismiss,
+            class_name: `notification ${n.urgency} ${n.app_name}`,
+            // css: new_Notification ? "animation: background-pop 0.5s ease;" : "",
+            vertical: true,
         },
-        Widget.Box(
-            {
-                class_name: `notification ${n.urgency} ${n.app_name}`,
-                css: new_Notification ? "animation: background-pop 0.5s ease;" : "",
-                vertical: true,
-            },
-            Widget.Box([
-                icon,
-                Widget.Box(
-                    { vertical: true },
-                    Widget.Box({
-                        hexpand: true,
-                        children: popup ? [title] : [title, close],
-                    }),
-                    body,
-                ),
-            ]),
-            Actions,
-        ),
+        Widget.Box([
+            icon,
+            Widget.Box(
+                { vertical: true },
+                Widget.Box({
+                    hexpand: true,
+                    children: popup ? [title] : [title, close],
+                }),
+                body,
+            ),
+        ]),
+        Actions,
     )
+
+    const Revealer = Widget.Revealer({
+        child: Box,
+        transition: "slide_down",
+        transition_duration: TRANSITION,
+        reveal_child: !new_Notification,
+        visible: true, // this is necessary for the revealer to work
+        setup: (self) =>
+        {
+            timeout(1, () =>
+            {
+                self.reveal_child = true;
+            });
+        }
+    })
+
+    return Revealer
 }
