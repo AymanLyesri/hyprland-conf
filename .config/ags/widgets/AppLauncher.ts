@@ -26,7 +26,7 @@ function Entry()
                 child: Widget.Label({ xalign: 0, label: '... ... \t\t =>> \t open with argument' }),
             }),
             Widget.MenuItem({
-                child: Widget.Label({ xalign: 0, label: 'translate .. => .. \t =>> \t translate into (en,fr,es,de,pt,ru,ar...)' }),
+                child: Widget.Label({ xalign: 0, label: 'translate .. > .. \t =>> \t translate into (en,fr,es,de,pt,ru,ar...)' }),
             }),
             Widget.MenuItem({
                 child: Widget.Label({ xalign: 0, label: 'https://... \t\t =>> \t open link' }),
@@ -52,16 +52,16 @@ function Entry()
             }),
             Widget.Entry({
                 hexpand: true,
-                onChange: async ({ text }) =>
+                placeholder_text: "Search for an app, emoji, translate, url, or do some math...",
+                on_change: async ({ text }) =>
                 {
                     try {
-                        if (text == null) {
+                        if (text == "" || text == " " || text == null) {
                             Results.value = []
-                            return
                         }
                         else if (text.includes("translate")) {
-                            let language = text.includes("=>") ? text.split("=>")[1].trim() : "en";
-                            Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/translate.sh '${text.split("=>")[0].replace("translate", "").trim()}' '${language}'`));
+                            let language = text.includes(">") ? text.split(">")[1].trim() : "en";
+                            Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/translate.sh '${text.split(">")[0].replace("translate", "").trim()}' '${language}'`));
                         }
                         else if (text.includes("emoji"))
                             Results.value = readJSONFile(`${App.configDir}/assets/emojis/emojis.json`).filter(emoji => emoji.app_tags.toLowerCase().includes(text.replace("emoji", "").trim()));
@@ -80,7 +80,7 @@ function Entry()
                 },
                 on_accept: () =>
                 {
-                    ResultsDisplay.child.children[0]?.on_clicked()
+                    (ResultsDisplay as any).child.child.children[0]?.on_clicked()
                 },
             }).on("key-press-event", (self, event: Gdk.Event) =>
             {
@@ -131,7 +131,7 @@ const organizeResults = (results: Result[]) =>
                 {
                     switch (element.app_type) {
                         case 'app':
-                            Utils.notify({ summary: "App", body: `Opening ${element.app_name}` });
+                            // Utils.notify({ summary: "App", body: `Opening ${element.app_name}` });
                             break;
                         case 'url':
                             let browser = Utils.exec(`bash -c "xdg-settings get default-web-browser | sed 's/\.desktop$//'"`);
@@ -146,7 +146,7 @@ const organizeResults = (results: Result[]) =>
         },
     })
 
-    if (results.length == 0) return [Widget.Box()]
+    if (results.length == 0) return Widget.Box()
 
     const rows: any[] = []
     const columns: number = results[0].app_type == "emoji" ? 4 : 2
@@ -160,16 +160,26 @@ const organizeResults = (results: Result[]) =>
         }))
     }
 
-    return rows
+    const maxHeight = 500
+
+    return Widget.Scrollable({
+        // hscroll: 'never',
+        vexpand: true,
+        hexpand: true,
+        css: `min-height: ${rows.length * 50 > maxHeight ? maxHeight : rows.length * 50}px`,
+        child: Widget.Box({
+            class_name: "results",
+            vertical: true,
+            vexpand: true,
+            hexpand: true,
+            children: rows,
+        })
+    })
 }
 
-
 const ResultsDisplay = Widget.Box({
-    class_name: "results",
-    vertical: true,
-    children: Results.bind().as(organizeResults),
+    child: Results.bind().as(organizeResults)
 })
-
 
 export default () =>
 {

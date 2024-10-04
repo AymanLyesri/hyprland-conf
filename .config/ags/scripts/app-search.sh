@@ -42,7 +42,7 @@ search_apps() {
 
     # Check if search term is provided
     if [[ -z "$search_term" ]]; then
-        echo "Usage: $0 <search-term>"
+        echo [] # Return an empty JSON array
         exit 1
     fi
 
