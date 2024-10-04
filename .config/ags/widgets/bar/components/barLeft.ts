@@ -54,13 +54,20 @@ function Workspaces()
     });
 }
 
-// layout of the bar
+function AppLauncher()
+{
+    return Widget.ToggleButton({
+        child: Widget.Icon("preferences-system-search-symbolic"),
+        class_name: "app-search",
+        on_toggled: ({ active }) => active ? App.openWindow("app-launcher") : App.closeWindow("app-launcher"),
+    });
+}
+
 export function Left()
 {
     return Widget.Box({
         class_name: "bar-left",
-        // hexpand: true,
-        // hpack: "center",
-        child: Workspaces(),
+        spacing: 10,
+        children: [AppLauncher(), Workspaces()]
     });
 }

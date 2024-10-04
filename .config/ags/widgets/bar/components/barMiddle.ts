@@ -115,27 +115,18 @@ function Bandwidth()
         // listen to an array of [up, down] values
         listen: [App.configDir + '/scripts/bandwidth.sh', out =>
         {
-            return " ↑" + JSON.parse(out)[0] + " ↓" + JSON.parse(out)[1];
+            return "↑" + JSON.parse(out)[0] + " ↓" + JSON.parse(out)[1];
         }],
     });
 
-    const icon = Widget.Icon({ icon: "network-wired-symbolic" });
+    // const icon = Widget.Icon({ icon: "network-wired-symbolic" });
     const label = Widget.Label({
         label: bandwidth.bind(),
     });
 
     return Widget.Box({
         class_name: "bandwidth",
-        children: [icon, label],
-    });
-}
-
-function AppLauncher()
-{
-    return Widget.Button({
-        child: Widget.Icon("preferences-system-search-symbolic"),
-        class_name: "app-search",
-        on_clicked: () => App.toggleWindow("app-launcher"),
+        child: label,
     });
 }
 
@@ -159,6 +150,6 @@ export function Center()
     return Widget.Box({
         class_name: 'bar-middle',
         spacing: 5,
-        children: [CavaWidget("middle"), Media(), Clock(), Bandwidth(), AppLauncher(), ClientTitle()],
+        children: [CavaWidget("middle"), Media(), Clock(), Bandwidth(), ClientTitle()],
     });
 }

@@ -40,8 +40,6 @@ function Theme()
 
 function Brightness()
 {
-
-    const value = brightness.bind("screen_value")
     const slider = Widget.Slider({
         class_name: "slider",
         hexpand: true,
@@ -56,7 +54,7 @@ function Brightness()
         // brightness.bind('screen-value').as(v => `${Math.round(v * 100)}%`),
     });
 
-    return Number(value) == 0 ? Widget.Box() : custom_revealer(label, slider);
+    return brightness.screen_value == 0 ? Widget.Box() : custom_revealer(label, slider);
 }
 
 
@@ -115,11 +113,10 @@ function BatteryLabel()
     const slider = Widget.LevelBar({
         class_name: "slider",
         widthRequest: 69,
-
         value,
     });
 
-    return value != 0 ? custom_revealer(icon, slider) : null;
+    return battery.percent <= 0 ? Widget.Box() : custom_revealer(icon, slider);
 }
 
 function SysTray()
@@ -161,11 +158,11 @@ export function Right()
         hpack: "end",
         spacing: 5,
         children: [
+            BatteryLabel(),
             Brightness(),
             Volume(),
             SysTray(),
             Theme(),
-            BatteryLabel() as any,
             WaifuVisibility(),
             RightPanel(),
         ],
