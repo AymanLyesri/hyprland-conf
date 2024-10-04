@@ -16,21 +16,6 @@ const list = Widget.Box({
 }).hook(notifications, onNotified, "notified").hook(notifications, onDismissed, "dismissed") // it bugs when clear is triggered
 
 
-// const Revealer = (notification) => Widget.Revealer({
-//     transition: "slide_right",
-//     transition_duration: 200,
-//     child: Notification_(notification, true),
-//     visible: true, // this is necessary for the revealer to work
-//     setup: (self) =>
-//     {
-//         timeout(1, () =>
-//         {
-//             self.reveal_child = true;
-//         });
-//     }
-// })
-
-
 function onNotified(_, /** @type {number} */ id)
 {
     const n = notifications.getNotification(id)

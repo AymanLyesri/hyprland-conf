@@ -80,7 +80,8 @@ function Entry()
                 },
                 on_accept: () =>
                 {
-                    (ResultsDisplay as any).child.child.children[0]?.on_clicked()
+                    // Utils.notify({ summary: "Enter", body: String(ResultsDisplay.child.child.child.children[0].child) });
+                    (ResultsDisplay as any).child.child.child.children[0].child.clicked()
                 },
             }).on("key-press-event", (self, event: Gdk.Event) =>
             {
@@ -146,18 +147,23 @@ const organizeResults = (results: Result[]) =>
         },
     })
 
-    if (results.length == 0) return Widget.Box()
+    // if (results.length == 0) return Widget.Box()
 
-    const rows: any[] = []
+    const rows = Widget.Box({
+        class_name: "results",
+        vertical: true,
+        vexpand: true,
+        hexpand: true,
+    })
     const columns: number = results[0].app_type == "emoji" ? 4 : 2
 
     for (let i = 0; i < results.length; i += columns) {
         const rowResults = results.slice(i, i + columns)
-        rows.push(Widget.Box({
+        rows.pack_end(Widget.Box({
             vertical: false,
             spacing: 5,
             children: rowResults.map(element => button(element))
-        }))
+        }), false, false, 0)
     }
 
     const maxHeight = 500
@@ -166,14 +172,8 @@ const organizeResults = (results: Result[]) =>
         // hscroll: 'never',
         vexpand: true,
         hexpand: true,
-        css: `min-height: ${rows.length * 50 > maxHeight ? maxHeight : rows.length * 50}px`,
-        child: Widget.Box({
-            class_name: "results",
-            vertical: true,
-            vexpand: true,
-            hexpand: true,
-            children: rows,
-        })
+        css: `min-height: ${rows.children.length * 50 > maxHeight ? maxHeight : rows.children.length * 50}px`,
+        child: rows
     })
 }
 
