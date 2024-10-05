@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Run hostnamectl and filter output for Chassis information
-chassis_type=$(hostnamectl | grep "Chassis:" | awk '/Chassis/{print $2}')
+# chassis_type=$(hostnamectl | grep "Chassis:" | awk '/Chassis/{print $2}')
+resolution=$(xrandr | grep '*' | awk '{print $1}')
 
 sens_file="$HOME/.config/hypr/configs/custom/sensitivity.conf"        # Path to the sensitivity file
 gap_file="$HOME/.config/hypr/configs/custom/gaps.conf"                # Path to the gaps file
@@ -10,7 +11,7 @@ blur_file="$HOME/.config/hypr/configs/custom/blur.conf"               # Path to 
 
 touch -c $sens_file $gap_file $border_size_file $blur_file # Create the files if they don't exist
 
-if [ $chassis_type == "laptop" ]; then
+if [ $chassis_type == "1366×768" ]; then
     sensitivity="0.4"     # Sensitivity for the touchpad
     gaps_in="5"           # Inner Gaps for the windows
     gaps_out="5,10,10,10" # Outer Gaps for the windows, top, right, bottom, left

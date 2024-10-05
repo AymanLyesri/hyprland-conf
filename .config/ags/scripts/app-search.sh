@@ -89,6 +89,6 @@ search_apps() {
 # Get the search term from the command line argument
 search_term="$1"
 shift 1
-search_args="$@"
+search_args="$@" # Additional arguments to pass to the app
 # Call the main function with the search term
 search_apps "$search_term" "$search_args"

@@ -11,16 +11,11 @@ bc
 bun-bin
 figlet
 git
-htop
-nano
-navi
 p7zip
 ranger
-smartmontools
 thefuck
-wget
-translate-shell
 wl-clipboard
+lsd
 
 # ____                 _                                  _   
 #|  _ \  _____   _____| | ___  _ __  _ __ ___   ___ _ __ | |_ 
@@ -50,6 +45,7 @@ zsh-history-substring-search
 zsh-syntax-highlighting
 zsh-team-powerlevel10k
 zsh-sudo-git
+fzf-tab-git
 
 # ____            _                                   _ 
 #/ ___| _   _ ___| |_ ___ _ __ ___     __ _ _ __   __| |
@@ -81,12 +77,6 @@ pamixer
 pavucontrol
 playerctl
 pipewire
-sddm
-socat
-smartmontools
-wireless_tools
-xdg-desktop-portal-hyprland
-xdg-utils
 brightnessctl
 
 #    _             _ _                _     _                               _ 
@@ -100,15 +90,13 @@ brightnessctl
 #| '_ ` _ \ / _ \/ _` | |/ _` |
 #| | | | | |  __/ (_| | | (_| |
 #|_| |_| |_|\___|\__,_|_|\__,_|
-#                              
-gst-plugin-pipewire
+#         
+feh                     
 kitty
-libpulse
 light
 lolcat
 spotify-launcher
-wireplumber
-xava
+xava-git
 # _____ _                                                _   _   _ ___ 
 #|_   _| |__   ___ _ __ ___   ___  ___    __ _ _ __   __| | | | | |_ _|
 #  | | | '_ \ / _ \ '_ ` _ \ / _ \/ __|  / _` | '_ \ / _` | | | | || | 
@@ -121,12 +109,10 @@ xava
 #|  __/ | | | | | | (_| | | | | (_|  __/ | | | | |  __/ | | | |_\__ \
 # \___|_| |_|_| |_|\__,_|_| |_|\___\___|_| |_| |_|\___|_| |_|\__|___/
 #                                                                    
-feh
 gtk4
 gnome-themes-extra
 gvfs
 hyprlock
 hyprpaper
-lsd
 ttf-jetbrains-mono-nerd
 noto-fonts-emoji

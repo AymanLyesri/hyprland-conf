@@ -185,7 +185,7 @@ export default () =>
 {
     return Widget.Window({
         name: `app-launcher`,
-        anchor: emptyWorkspace.as(margin => margin == 1 ? [] : ["top", "left"]),
+        anchor: emptyWorkspace.as(empty => empty == 1 ? [] : ["top", "left"]),
         exclusivity: "normal",
         keymode: "on-demand",
         layer: "top",

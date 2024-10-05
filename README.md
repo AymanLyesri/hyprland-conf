@@ -4,7 +4,7 @@ This is my daily driver configuration that I use on both my laptop and desktop f
 
 I use Arch BTW.. :)
 
-> Feel free to open an issue ♡ (anything you can think of)!
+> **Feel free to open an issue ♡ (anything you can think of)!**
 
 # Design Philosophy
 
@@ -69,12 +69,9 @@ I use Arch BTW.. :)
 
 > **Notice:** Repo has been Cleaned up from 2Gb to 90Mb, sorry for the inconvenience.
 
+> Clone latest commit (less download size)
+
 ```bash
-git clone https://github.com/AymanLyesri/hyprland-conf.git
-
-#OR
-#clone latest commit (less download size)
-
 git clone --depth 1 https://github.com/AymanLyesri/hyprland-conf.git
 ```
 

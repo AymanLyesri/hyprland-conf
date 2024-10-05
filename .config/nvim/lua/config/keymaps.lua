@@ -41,4 +41,4 @@ vim.api.nvim_set_keymap('n', '<Leader>mm', ':Mason<CR>', { noremap = true, silen
 vim.api.nvim_set_keymap('n', '<Leader>r', ':source $MYVIMRC<CR>', { noremap = true, silent = true })
 
 -- Neotree
-vim.api.nvim_set_keymap('n', '<C-B>', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-B>', ':Neotree toggle<CR>', { noremap = true, silent = true })
