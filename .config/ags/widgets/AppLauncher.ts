@@ -43,6 +43,8 @@ function Entry()
         ],
     })
 
+    let debounceTimer: any
+
     return Widget.Box({
         spacing: 5,
         children: [
@@ -53,30 +55,39 @@ function Entry()
             Widget.Entry({
                 hexpand: true,
                 placeholder_text: "Search for an app, emoji, translate, url, or do some math...",
+
                 on_change: async ({ text }) =>
                 {
-                    try {
-                        if (text == "" || text == " " || text == null) {
-                            Results.value = []
-                        }
-                        else if (text.includes("translate")) {
-                            let language = text.includes(">") ? text.split(">")[1].trim() : "en";
-                            Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/translate.sh '${text.split(">")[0].replace("translate", "").trim()}' '${language}'`));
-                        }
-                        else if (text.includes("emoji"))
-                            Results.value = readJSONFile(`${App.configDir}/assets/emojis/emojis.json`).filter(emoji => emoji.app_tags.toLowerCase().includes(text.replace("emoji", "").trim()));
-                        else if (containsProtocolOrTLD(getArgumentBeforeSpace(text)))
-                            Results.value = [{ app_name: getDomainFromURL(text), app_exec: `xdg-open ${formatToURL(text)}`, app_type: 'url' }]
-                        else if (containsOperator(getArgumentBeforeSpace(text)))
-                            Results.value = [{ app_name: arithmetic(text), app_exec: `wl-copy ${arithmetic(text)}`, app_type: 'calc' }]
-                        else {
-                            Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/app-search.sh ${text}`));
-                            if (Results.value.length == 0)
-                                Results.value = [{ app_name: `Try ${text}`, app_exec: text, app_icon: "󰋖" }]
-                        }
-                    } catch (err) {
-                        print(err)
+                    // Clear any previously set timer
+                    if (debounceTimer) {
+                        clearTimeout(debounceTimer);
                     }
+
+                    // Set a new timer with a delay (e.g., 300ms)
+                    debounceTimer = setTimeout(async () =>
+                    {
+                        try {
+                            if (text == "" || text == " " || text == null) {
+                                Results.value = [];
+                                Utils.notify("hhh")
+                            } else if (text.includes("translate")) {
+                                let language = text.includes(">") ? text.split(">")[1].trim() : "en";
+                                Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/translate.sh '${text.split(">")[0].replace("translate", "").trim()}' '${language}'`));
+                            } else if (text.includes("emoji")) {
+                                Results.value = readJSONFile(`${App.configDir}/assets/emojis/emojis.json`).filter(emoji => emoji.app_tags.toLowerCase().includes(text.replace("emoji", "").trim()));
+                            } else if (containsProtocolOrTLD(getArgumentBeforeSpace(text))) {
+                                Results.value = [{ app_name: getDomainFromURL(text), app_exec: `xdg-open ${formatToURL(text)}`, app_type: 'url' }];
+                            } else if (containsOperator(getArgumentBeforeSpace(text))) {
+                                Results.value = [{ app_name: arithmetic(text), app_exec: `wl-copy ${arithmetic(text)}`, app_type: 'calc' }];
+                            } else {
+                                Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/app-search.sh ${text}`));
+                                if (Results.value.length == 0)
+                                    Results.value = [{ app_name: `Try ${text}`, app_exec: text, app_icon: "󰋖" }];
+                            }
+                        } catch (err) {
+                            print(err);
+                        }
+                    }, 10);  // 300ms delay
                 },
                 on_accept: () =>
                 {
@@ -147,7 +158,7 @@ const organizeResults = (results: Result[]) =>
         },
     })
 
-    // if (results.length == 0) return Widget.Box()
+    if (results.length == 0) return Widget.Box()
 
     const rows = Widget.Box({
         class_name: "results",
