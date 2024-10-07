@@ -30,20 +30,18 @@ lsd
 # \__\___/ \___/|_|___/
 #                      
 btop
-dart-sass 
+dart-sass
 fd
 lazygit
 python-colorthief
 python-pywal
 python-setuptools
 rclone
-rocm_smi_lib
 zsh
 zsh-auto-notify
 zsh-directory-history
 zsh-history-substring-search
 zsh-syntax-highlighting
-zsh-team-powerlevel10k
 zsh-sudo-git
 fzf-tab-git
 
@@ -91,7 +89,7 @@ brightnessctl
 #| | | | | |  __/ (_| | | (_| |
 #|_| |_| |_|\___|\__,_|_|\__,_|
 #         
-feh                     
+feh
 kitty
 light
 lolcat
