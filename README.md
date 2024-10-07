@@ -81,9 +81,9 @@ git clone --depth 1 https://github.com/AymanLyesri/hyprland-conf.git
 mv <repository_folder>/* $HOME/
 ```
 
-### Step 3: [Package List](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/pacman/pkglist.txt) and Installation
+### Step 3: Install necessary [Packages](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/pacman/pkglist.txt)
 
-> **Warning:** [Yay](https://github.com/Jguer/yay) or another pacman wrapper need to be installed for this to work properly.
+> **Warning:** [Yay](https://github.com/Jguer/yay) or another pacman wrapper should be installed for this to work properly.
 
 > Some packages may be missing or added unnecessarily.
 
