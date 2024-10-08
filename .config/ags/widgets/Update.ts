@@ -78,7 +78,7 @@ export default () =>
     })
 
     return Widget.Box({
-        class_name: "update",
+        class_name: "update-widget",
         vertical: true,
         children: [
             Top,

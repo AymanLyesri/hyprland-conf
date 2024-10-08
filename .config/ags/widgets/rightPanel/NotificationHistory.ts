@@ -59,7 +59,7 @@ export default () =>
                 others.unshift(notification);
             }
         });
-        return [...filtered, ...others].slice(0, 50); // Limit to the last 50 notifications DEFAULT, higher number will slow down the UI
+        return [...filtered, ...others].slice(0, 33); // Limit to the last 50 notifications DEFAULT, higher number will slow down the UI
     }
 
     const NotificationHistory = () => Widget.Box({

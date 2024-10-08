@@ -7,26 +7,6 @@
   // opacity: 0;
   transition: opacity 0.5s ease-out; /* Adjust timing */
 
-  /* When notification is active (appearing) */
-  &.active {
-    opacity: 1;
-  }
-
-  /* When notification is being destroyed */
-  &.destroying {
-    opacity: 0;
-    transition: opacity 2s ease-in; /* Adjust timing */
-  }
-
-  &.Spotify {
-    background-color: mix(rgba(30, 215, 95, 0.5), $background, 33%);
-    border: 1px solid rgb(30, 215, 95);
-  }
-
-  &.critical {
-    border: 1px solid rgb(255, 0, 0);
-  }
-
   .icon {
     min-width: 50px;
     min-height: 50px;

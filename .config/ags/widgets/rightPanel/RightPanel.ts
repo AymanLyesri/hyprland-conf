@@ -1,12 +1,29 @@
 
-import { Resources } from "widgets/Resources";
 import waifu, { WaifuVisibility } from "./components/waifu";
-import { globalMargin, rightPanelExclusivity, rightPanelVisibility, rightPanelWidth, waifuVisibility } from "variables";
-import { setOption } from "utils/options";
+import { globalMargin, rightPanelExclusivity, rightPanelVisibility, rightPanelWidth, widgetLimit, Widgets } from "variables";
 import Calendar from "widgets/Calendar";
 import Update from "widgets/Update";
 import NotificationHistory from "./NotificationHistory";
-import Gtk from "gi://Gtk?version=3.0";
+import { WidgetSelector } from "interfaces/widgetSelector.interface";
+
+
+export const WidgetSelectors: WidgetSelector[] = [{
+    name: "Waifu",
+    icon: "",
+    widget: () => waifu()
+}, {
+    name: "Calendar",
+    icon: "",
+    widget: () => Calendar()
+}, {
+    name: "Update",
+    icon: "󰚰",
+    widget: () => Update()
+}, {
+    name: "NotificationHistory",
+    icon: "",
+    widget: () => NotificationHistory()
+}]
 
 
 
@@ -46,36 +63,7 @@ function WindowActions()
 
 }
 
-const Widgets = Variable<Gtk.Widget[]>([]);
-const widgetLimit = 4
-
-interface WidgetSelector
-{
-    name: string;
-    icon: string;
-    widget: () => Gtk.Widget;
-    widgetInstance?: Gtk.Widget;  // To track the active widget instance
-}
-
-const WidgetSelectors: WidgetSelector[] = [{
-    name: "Waifu",
-    icon: "󰐃",
-    widget: () => waifu()
-}, {
-    name: "Calendar",
-    icon: "󰐓",
-    widget: () => Calendar()
-}, {
-    name: "Update",
-    icon: "󰐕",
-    widget: () => Update()
-}, {
-    name: "Notification History",
-    icon: "󰐖",
-    widget: () => NotificationHistory()
-}]
-
-const Selectors = Widget.Box({
+const Selectors = () => Widget.Box({
     class_name: "selectors",
     vertical: true,
     spacing: 5,
@@ -83,6 +71,7 @@ const Selectors = Widget.Box({
         Widget.ToggleButton({
             class_name: "selector",
             label: selector.icon,
+            active: Widgets.value.find(w => w.name == selector.name) ? true : false,
             on_toggled: (self) =>
             {
                 // If the button is active, create and store a new widget instance
@@ -97,13 +86,13 @@ const Selectors = Widget.Box({
                         selector.widgetInstance = selector.widget();
                     }
                     // Add the widget instance to Widgets if it's not already added
-                    if (!Widgets.value.includes(selector.widgetInstance)) {
-                        Widgets.value = [...Widgets.value, selector.widgetInstance];
+                    if (!Widgets.value.includes(selector)) {
+                        Widgets.value = [...Widgets.value, selector];
                     }
                 }
                 // If the button is deactivated, remove the widget from the array
                 else if (!self.active) {
-                    Widgets.value = Widgets.value.filter(w => w != selector.widgetInstance);  // Remove it from the array
+                    Widgets.value = Widgets.value.filter(w => w != selector);  // Remove it from the array
                     selector.widgetInstance = undefined;  // Reset the widget instance
                 }
             }
@@ -120,14 +109,14 @@ function Panel()
             css: rightPanelWidth.bind().as(width => `*{min-width: ${width}px}`),
             vertical: true,
             spacing: 5,
-            children: Widgets.bind(),
+            children: Widgets.bind().as(widgets => widgets.map(widget => widget.widget())),
         })
-            , Selectors
+            , Selectors()
         ]
     })
 }
 
-const Separator = () => Widget.Separator({ vertical: false });
+// const Separator = () => Widget.Separator({ vertical: false });
 
 const Window = () => Widget.Window({
     name: `right-panel`,
