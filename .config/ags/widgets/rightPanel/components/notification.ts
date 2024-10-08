@@ -116,9 +116,13 @@ export function Notification_(n: Notification, new_Notification = false, popup =
 
     const Box = Widget.Box(
         {
-            attribute: { id: n.id },
+            attribute: {
+                id: n.id, hide: () =>
+                {
+                    Revealer.reveal_child = false;
+                }
+            },
             class_name: `notification ${n.urgency} ${n.app_name}`,
-            // css: new_Notification ? "animation: background-pop 0.5s ease;" : "",
             vertical: true,
         },
         Widget.Box([

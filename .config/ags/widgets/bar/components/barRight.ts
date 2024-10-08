@@ -2,7 +2,6 @@ import brightness from "brightness";
 import { rightPanelVisibility, waifuPath, waifuVisibility } from "variables";
 import { closeProgress, openProgress } from "widgets/Progress";
 import { custom_revealer } from "widgets/revealer";
-import { WaifuVisibility } from "widgets/rightPanel/components/waifu";
 
 const audio = await Service.import("audio");
 const battery = await Service.import("battery");
@@ -163,7 +162,6 @@ export function Right()
             Volume(),
             SysTray(),
             Theme(),
-            WaifuVisibility(),
             RightPanel(),
         ],
     });

@@ -233,7 +233,6 @@ export default () =>
                     class_name: "waifu",
                 },
                 Image(),
-
             ),
         })
     })
@@ -243,7 +242,7 @@ export function WaifuVisibility()
 {
     return Widget.ToggleButton({
         onToggled: ({ active }) => { waifuVisibility.value = active },
-        label: "",
+        label: "󱙣",
         class_name: "waifu icon",
     }).hook(waifuVisibility, (self) => self.active = waifuVisibility.value, "changed")
 }
