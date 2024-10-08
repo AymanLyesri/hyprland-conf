@@ -1,0 +1,19 @@
+.calendar {
+  @extend .module;
+  padding: 10px;
+  margin: 0px 10px;
+
+  //   background: ;
+
+  * {
+    background: transparent;
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+  }
+
+  //   header,
+  //   .header {
+  //     background: $module-background;
+  //   }
+}

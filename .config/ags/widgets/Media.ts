@@ -176,7 +176,7 @@ export default () =>
         name: `media`,
         // class_name: "media",
         anchor: ["top"],
-        margins: [globalMargin, globalMargin],
+        margins: [5, globalMargin, globalMargin, globalMargin],
         visible: false,
         child: Widget.Box({
             class_name: "media-widget",

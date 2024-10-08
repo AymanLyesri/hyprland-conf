@@ -8,6 +8,6 @@ interface Options
         visibility: boolean,
         exclusivity: boolean,
         width: number,
-
+        widgets: string[],
     }
 }

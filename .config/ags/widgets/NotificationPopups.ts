@@ -1,5 +1,5 @@
 import { globalMargin, rightPanelExclusivity } from "variables";
-import { Notification_ } from "./components/notification"
+import { Notification_ } from "./rightPanel/components/notification"
 import { timeout } from "resource:///com/github/Aylur/ags/utils.js";
 
 const notifications = await Service.import("notifications")

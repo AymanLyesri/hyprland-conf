@@ -61,7 +61,9 @@ I use Arch BTW.. :)
 - Add tutorials for each part of the dot-files **(WIP)**
 - Continuous improvements and polishing **(INDEFINITELY)**
 
-# [KeyBinds](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/configs/keybinds.conf)
+# KeyBinds
+
+KeyBinds are displayed and organized [Here](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/configs/keybinds.conf), be sure to check them out!
 
 # Installation Guide
 

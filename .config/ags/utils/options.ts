@@ -11,7 +11,8 @@ const options = Variable<Options>({
   "rightPanel": {
     "exclusivity": true,
     "width": 300,
-    "visibility": true
+    "visibility": true,
+    "widgets": []
   }
 });
 
