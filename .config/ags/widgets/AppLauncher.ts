@@ -69,7 +69,6 @@ function Entry()
                         try {
                             if (text == "" || text == " " || text == null) {
                                 Results.value = [];
-                                Utils.notify("hhh")
                             } else if (text.includes("translate")) {
                                 let language = text.includes(">") ? text.split(">")[1].trim() : "en";
                                 Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/translate.sh '${text.split(">")[0].replace("translate", "").trim()}' '${language}'`));
