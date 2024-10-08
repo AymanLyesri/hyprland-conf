@@ -31,56 +31,58 @@ const update = (action, database) => Utils.subprocess(
 var updateSubprocess: Subprocess
 
 
-const Top = Widget.Box({
-    hexpand: true,
-    children: [
-        Widget.Label({ label: "Update" }),
-        Widget.Box({
-            hexpand: true,
-            hpack: "end",
-            children: [
-                Widget.Button({
-                    label: "repo",
-                    on_clicked: () => updateSubprocess = update("--update", "repo"),
-                }),
-                Widget.Button({
-                    label: "system",
-                    on_clicked: () => updateSubprocess = update("--update", "system"),
-                }),
-                Widget.Button({
-                    label: "cancel",
-                    on_clicked: () =>
-                    {
-                        updateSubprocess.force_exit();
-                        Bottom.children[0].label = "No updates running";
-                        Bottom.children[1].child.destroy();
-                    },
-                }),
-            ]
-        }),
-    ]
-})
+export default () =>
+{
+    const Top = Widget.Box({
+        hexpand: true,
+        children: [
+            Widget.Label({ label: "Update" }),
+            Widget.Box({
+                hexpand: true,
+                hpack: "end",
+                children: [
+                    Widget.Button({
+                        label: "repo",
+                        on_clicked: () => updateSubprocess = update("--update", "repo"),
+                    }),
+                    Widget.Button({
+                        label: "system",
+                        on_clicked: () => updateSubprocess = update("--update", "system"),
+                    }),
+                    Widget.Button({
+                        label: "cancel",
+                        on_clicked: () =>
+                        {
+                            updateSubprocess.force_exit();
+                            Bottom.children[0].label = "No updates running";
+                            Bottom.children[1].child.destroy();
+                        },
+                    }),
+                ]
+            }),
+        ]
+    })
 
-const Bottom = Widget.Box({
-    visible: true,
-    hexpand: true,
-    children: [
-        Widget.Label({ label: "No updates running" }),
-        Widget.Box({
-            hexpand: true,
-            hpack: "end",
-            visible: false,
+    const Bottom = Widget.Box({
+        visible: true,
+        hexpand: true,
+        children: [
+            Widget.Label({ label: "No updates running" }),
+            Widget.Box({
+                hexpand: true,
+                hpack: "end",
+                visible: false,
 
-        }),
-    ],
-})
+            }),
+        ],
+    })
 
-
-export default () => Widget.Box({
-    class_name: "update",
-    vertical: true,
-    children: [
-        Top,
-        Bottom,
-    ]
-})
+    return Widget.Box({
+        class_name: "update",
+        vertical: true,
+        children: [
+            Top,
+            Bottom,
+        ]
+    })
+}

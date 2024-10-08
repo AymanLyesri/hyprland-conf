@@ -22,6 +22,17 @@
     }
   }
 
+  .selectors {
+    @extend .module;
+    padding: 0px;
+    margin: 0px;
+    // border-left: 1px solid $secondary;
+    button {
+      border-radius: 0px;
+      padding: 10px;
+    }
+  }
+
   .notification-history {
     // @extend .module;
     margin: 0px 10px;

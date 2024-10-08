@@ -6,6 +6,7 @@ import { setOption } from "utils/options";
 import Calendar from "widgets/Calendar";
 import Update from "widgets/Update";
 import NotificationHistory from "./NotificationHistory";
+import Gtk from "gi://Gtk?version=3.0";
 
 
 
@@ -45,23 +46,84 @@ function WindowActions()
 
 }
 
+const Widgets = Variable<Gtk.Widget[]>([]);
+const widgetLimit = 4
+
+interface WidgetSelector
+{
+    name: string;
+    icon: string;
+    widget: () => Gtk.Widget;
+    widgetInstance?: Gtk.Widget;  // To track the active widget instance
+}
+
+const WidgetSelectors: WidgetSelector[] = [{
+    name: "Waifu",
+    icon: "󰐃",
+    widget: () => waifu()
+}, {
+    name: "Calendar",
+    icon: "󰐓",
+    widget: () => Calendar()
+}, {
+    name: "Update",
+    icon: "󰐕",
+    widget: () => Update()
+}, {
+    name: "Notification History",
+    icon: "󰐖",
+    widget: () => NotificationHistory()
+}]
+
+const Selectors = Widget.Box({
+    class_name: "selectors",
+    vertical: true,
+    spacing: 5,
+    children: WidgetSelectors.map(selector =>
+        Widget.ToggleButton({
+            class_name: "selector",
+            label: selector.icon,
+            on_toggled: (self) =>
+            {
+                // If the button is active, create and store a new widget instance
+                if (self.active) {
+                    // Limit the number of widgets to 3
+                    if (Widgets.value.length >= widgetLimit) {
+                        self.active = false;
+                        return;
+                    }
+                    // Create widget only if it's not already created
+                    if (!selector.widgetInstance) {
+                        selector.widgetInstance = selector.widget();
+                    }
+                    // Add the widget instance to Widgets if it's not already added
+                    if (!Widgets.value.includes(selector.widgetInstance)) {
+                        Widgets.value = [...Widgets.value, selector.widgetInstance];
+                    }
+                }
+                // If the button is deactivated, remove the widget from the array
+                else if (!self.active) {
+                    Widgets.value = Widgets.value.filter(w => w != selector.widgetInstance);  // Remove it from the array
+                    selector.widgetInstance = undefined;  // Reset the widget instance
+                }
+            }
+        })
+    )
+
+})
+
 
 function Panel()
 {
     return Widget.Box({
-        css: rightPanelWidth.bind().as(width => `*{min-width: ${width}px}`),
-        vertical: true,
-        // spacing: 5,
-        children: [
-            WindowActions(),
-            waifu(),
-            Separator(),
-            Resources(),
-            Separator(),
-            Update(),
-            Separator(),
-            NotificationHistory()
-        ],
+        children: [Widget.Box({
+            css: rightPanelWidth.bind().as(width => `*{min-width: ${width}px}`),
+            vertical: true,
+            spacing: 5,
+            children: Widgets.bind(),
+        })
+            , Selectors
+        ]
     })
 }
 
