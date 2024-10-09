@@ -41,17 +41,37 @@ install_yay() {
     fi
 }
 
-cp -a $CONF_DIR/. $HOME
+# Function to remove certain packages
+remove_packages() {
+    # List of packages to remove (space-separated)
+    packages_to_remove=("dunst")  # Replace with actual package names
+    
+    # Check if packages are installed and remove them
+    if pacman -Q "${packages_to_remove[@]}" &>/dev/null; then
+        echo "Removing packages: ${packages_to_remove[*]}"
+        sudo pacman -Rns --noconfirm "${packages_to_remove[@]}"
+    else
+        echo "One or more packages are not installed."
+    fi
+}
 
+
+sudo cp -a $CONF_DIR/. $HOME
 echo "Configuration files have been copied to $HOME."
+
+# Install yay
 echo "Installing yay..."
-
 install_yay
+echo "yay is installed."
 
+# remove_packages
+echo "Removing unwanted packages..."
+remove_packages
+echo "Unwanted packages have been removed."
+
+# Install packages
 echo "Installing packages..."
-
 $HOME/.config/hypr/pacman/install-pkgs.sh yay
-
 echo "Installation complete. Rebooting the system..."
 
 # reboot
