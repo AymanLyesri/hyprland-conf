@@ -95,7 +95,7 @@ alias drun='sudo docker run -it --network=host --device=/dev/kfd --device=/dev/d
 eval $(thefuck --alias)
 
 # navi
-eval "$(navi widget zsh)"
+# eval "$(navi widget zsh)"
 
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)

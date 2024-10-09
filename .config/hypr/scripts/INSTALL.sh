@@ -41,8 +41,6 @@ install_yay() {
     fi
 }
 
-echo $CONF_DIR
-
 cp -a $CONF_DIR/. $HOME
 
 echo "Configuration files have been copied to $HOME."
