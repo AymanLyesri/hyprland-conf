@@ -86,7 +86,7 @@ git clone --depth 1 https://github.com/AymanLyesri/hyprland-conf.git
 > Move the Repository to Your Home Directory
 
 ```bash
-mv <repository_folder>/* $HOME/
+cp -a hyprland-conf/. $HOME
 ```
 
 ### Install necessary Packages

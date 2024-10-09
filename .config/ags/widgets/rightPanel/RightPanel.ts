@@ -8,6 +8,8 @@ import { WidgetSelector } from "interfaces/widgetSelector.interface";
 import { Resources } from "widgets/Resources";
 
 
+const Notifications = await Service.import("notifications")
+// Name need to match the name of the widget()
 export const WidgetSelectors: WidgetSelector[] = [{
     name: "Waifu",
     icon: "",
@@ -64,8 +66,6 @@ function WindowActions()
             on_clicked: () => rightPanelVisibility.value = false,
         }),
     )
-
-
 }
 
 const WidgetActions = () => Widget.Box({
@@ -82,7 +82,7 @@ const WidgetActions = () => Widget.Box({
                     // Limit the number of widgets to 3
                     if (Widgets.value.length >= widgetLimit) {
                         self.active = false;
-                        return;
+                        return
                     }
                     // Create widget only if it's not already created
                     if (!selector.widgetInstance) {
@@ -94,14 +94,17 @@ const WidgetActions = () => Widget.Box({
                     }
                 }
                 // If the button is deactivated, remove the widget from the array
-                else if (!self.active) {
-                    Widgets.value = Widgets.value.filter(w => w != selector);  // Remove it from the array
+                else {
+                    let newWidgets = Widgets.value.filter(w => w != selector);  // Remove it from the array
+                    if (Widgets.value.length == newWidgets.length) return;
+
+                    Widgets.value = newWidgets;
                     selector.widgetInstance = undefined;  // Reset the widget instance
                 }
             }
         })
     )
-})
+});
 
 const Actions = () => Widget.Box({
     class_name: "right-panel-actions",
@@ -109,7 +112,6 @@ const Actions = () => Widget.Box({
     children: [WidgetActions(), WindowActions()]
 
 })
-
 
 function Panel()
 {

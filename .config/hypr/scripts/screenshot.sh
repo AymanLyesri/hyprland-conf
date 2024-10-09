@@ -51,15 +51,16 @@ if [[ "$1" == "--now" ]]; then
     
     grim - | wl-copy && wl-paste >$file
     
-    notify-send 'Clipboard' 'Screenshot taken and copied to clipboard.' --hint=string:actions:"[[\"Preview\",\"feh $file \"],[\"Edit\",\"gimp $file \"],[\"Delete\",\"rm $file \"]]"
+    notify-send -i $file 'Clipboard' 'Screenshot taken and copied to clipboard.' --hint=string:actions:"[[\"Preview\",\"feh $file \"],[\"Edit\",\"gimp $file \"],[\"Delete\",\"rm $file \"]]"
     
     elif [[ "$1" == "--area" ]]; then
     
     grim -g "$(slurp)" - | wl-copy && wl-paste >$file
     
-    notify-send 'Clipboard' 'Screenshot taken and copied to clipboard.' --hint=string:actions:"[[\"Preview\",\"feh $file \"],[\"Edit\",\"gimp $file \"],[\"Delete\",\"rm $file \"]]"
+    notify-send -i $file 'Clipboard' 'Screenshot taken and copied to clipboard.' --hint=string:actions:"[[\"Preview\",\"feh $file \"],[\"Edit\",\"gimp $file \"],[\"Delete\",\"rm $file \"]]"
     
     elif [[ "$1" == "--all" ]]; then
+    
     screenshotAll
 else
     
