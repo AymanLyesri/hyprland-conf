@@ -49,6 +49,7 @@ remove_packages() {
     # Check if packages are installed and remove them
     if pacman -Q "${packages_to_remove[@]}" &>/dev/null; then
         echo "Removing packages: ${packages_to_remove[*]}"
+        killall ${packages_to_remove[@]} 2>/dev/null
         sudo pacman -Rns --noconfirm "${packages_to_remove[@]}"
     else
         echo "One or more packages are not installed."
