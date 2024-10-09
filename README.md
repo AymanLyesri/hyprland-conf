@@ -83,7 +83,9 @@ git clone --depth 1 https://github.com/AymanLyesri/hyprland-conf.git
 mv <repository_folder>/* $HOME/
 ```
 
-### Step 3: Install necessary [Packages](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/pacman/pkglist.txt)
+### Step 3: Install necessary Packages
+
+[Packages](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/pacman/pkglist.txt)
 
 > **Warning:** [Yay](https://github.com/Jguer/yay) or another pacman wrapper should be installed for this to work properly.
 
@@ -114,9 +116,6 @@ sudo reboot
 
 ### Application Launcher
 
-<details>
-  <summary>SCREENSHOTS</summary>
-
 #### Apps
 
 ![1727169030_grim](https://github.com/user-attachments/assets/1de43c71-da3c-495c-885f-0b5b0f2f73a2)
@@ -133,49 +132,27 @@ sudo reboot
 
 ![1727169383_grim](https://github.com/user-attachments/assets/6d3ffd8e-8693-4e04-952e-a6d54d707c77)
 
-</details>
-
 ### Right Panel
 
-<details>
-  <summary>SCREENSHOTS</summary>
-  <img src="https://github.com/user-attachments/assets/52d5ea0c-fd64-4890-8bcb-b4832819ce2a" alt="Right Panel">
-</details>
+![screenshot](https://github.com/user-attachments/assets/52d5ea0c-fd64-4890-8bcb-b4832819ce2a)
 
 ### Media Player
 
-<details>
-  <summary>SCREENSHOTS</summary>
-  <img src="https://github.com/user-attachments/assets/1c56869d-8b83-457a-8f28-b6006ae83fdb" alt="Media Player">
-</details>
+![screenshot](https://github.com/user-attachments/assets/1c56869d-8b83-457a-8f28-b6006ae83fdb)
 
 ### Wallpaper Switcher
 
-<details>
-  <summary>SCREENSHOTS</summary>
-
 ![1727169881_grim](https://github.com/user-attachments/assets/821dc6b8-386c-4fb2-9223-05f44e0ba046)
-
-</details>
 
 ### Theme Switching
 
-<details>
-  <summary>SCREENSHOTS</summary>
-  <img src="https://github.com/user-attachments/assets/f3321fb4-9992-4133-b860-c2e7b8f246d6" alt="Theme Switching 1">
-  <img src="https://github.com/user-attachments/assets/87da3faa-fbc4-47d8-9901-354e54f5452e" alt="Theme Switching 2">
-</details>
+![screenshot](https://github.com/user-attachments/assets/f3321fb4-9992-4133-b860-c2e7b8f246d6)
+![screenshot](https://github.com/user-attachments/assets/87da3faa-fbc4-47d8-9901-354e54f5452e)
 
 ### Screenshot of All Workspaces
 
-<details>
-  <summary>SCREENSHOTS</summary>
-  <img src="https://github.com/user-attachments/assets/3166118e-3023-4434-985b-23ae02b8aed2" alt="All Workspaces">
-</details>
+![screenshot](https://github.com/user-attachments/assets/3166118e-3023-4434-985b-23ae02b8aed2)
 
 ### Screenshot of All Workspaces ("Old")
 
-<details>
-  <summary>SCREENSHOTS</summary>
-  <img src="https://github.com/AymanLyesri/hyprland-conf/assets/80812811/c84884a7-ce5b-4363-a2fb-8a6ccebc05c5" alt="Old Workspaces">
-</details>
+![screenshot](https://github.com/AymanLyesri/hyprland-conf/assets/80812811/c84884a7-ce5b-4363-a2fb-8a6ccebc05c5)
