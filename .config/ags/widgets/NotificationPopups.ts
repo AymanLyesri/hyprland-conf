@@ -32,7 +32,7 @@ function onDismissed(_, /** @type {number} */ id)
 
     if (!notification) return;
 
-    notification.reveal_child = false;
+    notification.child.attribute.hide();
 
     timeout(200, () => notification?.destroy())
 }

@@ -7,6 +7,10 @@
   // opacity: 0;
   transition: opacity 0.5s ease-out; /* Adjust timing */
 
+  &.Spotify {
+    background: $spotify-background;
+  }
+
   .icon {
     min-width: 50px;
     min-height: 50px;
@@ -30,9 +34,6 @@
     color: $foreground;
     font-size: 1.4em;
     font-weight: 900;
-  }
-
-  .close {
   }
 
   .body {

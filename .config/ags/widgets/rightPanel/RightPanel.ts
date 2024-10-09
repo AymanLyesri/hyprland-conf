@@ -5,6 +5,7 @@ import Calendar from "widgets/Calendar";
 import Update from "widgets/Update";
 import NotificationHistory from "./NotificationHistory";
 import { WidgetSelector } from "interfaces/widgetSelector.interface";
+import { Resources } from "widgets/Resources";
 
 
 export const WidgetSelectors: WidgetSelector[] = [{
@@ -23,9 +24,11 @@ export const WidgetSelectors: WidgetSelector[] = [{
     name: "NotificationHistory",
     icon: "",
     widget: () => NotificationHistory()
+}, {
+    name: "Resources",
+    icon: "",
+    widget: () => Resources()
 }]
-
-
 
 const maxRightPanelWidth = 600;
 const minRightPanelWidth = 200;
@@ -33,8 +36,10 @@ const minRightPanelWidth = 200;
 function WindowActions()
 {
     return Widget.Box({
-        class_name: "window-actions",
+        vexpand: true,
         hpack: "end",
+        vpack: "end",
+        vertical: true,
         spacing: 5
     }, Widget.Button({
         label: "",
@@ -63,10 +68,8 @@ function WindowActions()
 
 }
 
-const Selectors = () => Widget.Box({
-    class_name: "selectors",
-    vertical: true,
-    spacing: 5,
+const WidgetActions = () => Widget.Box({
+    vertical: true, spacing: 5,
     children: WidgetSelectors.map(selector =>
         Widget.ToggleButton({
             class_name: "selector",
@@ -98,6 +101,12 @@ const Selectors = () => Widget.Box({
             }
         })
     )
+})
+
+const Actions = () => Widget.Box({
+    class_name: "right-panel-actions",
+    vertical: true,
+    children: [WidgetActions(), WindowActions()]
 
 })
 
@@ -110,8 +119,7 @@ function Panel()
             vertical: true,
             spacing: 5,
             children: Widgets.bind().as(widgets => widgets.map(widget => widget.widget())),
-        })
-            , Selectors()
+        }), Actions()
         ]
     })
 }
