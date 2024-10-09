@@ -83,7 +83,7 @@ git clone --depth 1 https://github.com/AymanLyesri/hyprland-conf.git
 
 ### The Install Script
 
-> Change directory into the repo and run the install script
+> Change to the repository directory and run the install script
 
 ```bash
 cd hyprland-conf
