@@ -81,30 +81,13 @@ KeyBinds are displayed and organized [Here](https://github.com/AymanLyesri/hyprl
 git clone --depth 1 https://github.com/AymanLyesri/hyprland-conf.git
 ```
 
-### Move the Repository
+### The Install Script
 
-> Move the Repository to Your Home Directory
-
-```bash
-mv <repository_folder>/* $HOME/
-```
-
-### Install necessary Packages
-
-Here are the [Packages](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/pacman/pkglist.txt) necessary
-
-> **Warning:** [Yay](https://github.com/Jguer/yay) or another pacman wrapper should be installed for this to work properly.
-
-> Some packages may be missing or added unnecessarily.
+> Change to the repository directory and run the install script
 
 ```bash
-bash $HOME/.config/hypr/pacman/update.sh [yay,paru...]
-```
-
-### Reboot Your System
-
-```bash
-sudo reboot
+cd hyprland-conf
+bash .config/hypr/scripts/INSTALL.sh
 ```
 
 # Tips

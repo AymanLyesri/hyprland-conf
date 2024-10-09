@@ -3,7 +3,8 @@
 #| |  _ / _ \ '_ \ / _ \ '__/ _` | | | | | | __| | | | __| |/ _ \/ __|
 #| |_| |  __/ | | |  __/ | | (_| | | | |_| | |_| | | | |_| |  __/\__ \
 # \____|\___|_| |_|\___|_|  \__,_|_|  \__,_|\__|_|_|_|\__|_|\___||___/
-#                                                                     
+#            
+firefox                                                         
 armcord-bin
 aylurs-gtk-shell
 bat
@@ -28,11 +29,13 @@ lsd
 #| __/ _ \ / _ \| / __|
 #| || (_) | (_) | \__ \
 # \__\___/ \___/|_|___/
-#                      
+#          
+socat            
 btop
 dart-sass
 fd
 lazygit
+python2-bin
 python-colorthief
 python-pywal
 python-setuptools
@@ -42,6 +45,7 @@ zsh-auto-notify
 zsh-directory-history
 zsh-history-substring-search
 zsh-syntax-highlighting
+zsh-autosuggestions-git
 zsh-sudo-git
 fzf-tab-git
 
@@ -66,9 +70,7 @@ fzf-tab-git
 bluez
 bluez-utils
 blueman
-dnsmasq
 evremap-git
-iwd
 network-manager-applet
 networkmanager
 pamixer
@@ -94,7 +96,6 @@ kitty
 light
 lolcat
 spotify-launcher
-xava-git
 # _____ _                                                _   _   _ ___ 
 #|_   _| |__   ___ _ __ ___   ___  ___    __ _ _ __   __| | | | | |_ _|
 #  | | | '_ \ / _ \ '_ ` _ \ / _ \/ __|  / _` | '_ \ / _` | | | | || | 
@@ -106,7 +107,9 @@ xava-git
 # / _ \ '_ \| '_ \ / _` | '_ \ / __/ _ \ '_ ` _ \ / _ \ '_ \| __/ __|
 #|  __/ | | | | | | (_| | | | | (_|  __/ | | | | |  __/ | | | |_\__ \
 # \___|_| |_|_| |_|\__,_|_| |_|\___\___|_| |_| |_|\___|_| |_|\__|___/
-#                                                                    
+#          
+fastfetch
+starship
 gtk4
 gnome-themes-extra
 gvfs
