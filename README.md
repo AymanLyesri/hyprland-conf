@@ -6,6 +6,10 @@ I use Arch BTW.. :)
 
 > **Feel free to open an issue ♡ (anything you can think of)!**
 
+# See Wiki
+
+> The full and organized [WIKI](https://hyprland-conf-wiki.vercel.app/)
+
 # Design Philosophy
 
 - Enhanced productivity
@@ -87,7 +91,7 @@ mv <repository_folder>/* $HOME/
 
 ### Install necessary Packages
 
-[Packages](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/pacman/pkglist.txt)
+Here are the [Packages](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/pacman/pkglist.txt) necessary
 
 > **Warning:** [Yay](https://github.com/Jguer/yay) or another pacman wrapper should be installed for this to work properly.
 
@@ -97,7 +101,7 @@ mv <repository_folder>/* $HOME/
 bash $HOME/.config/hypr/pacman/update.sh [yay,paru...]
 ```
 
-### Step 4: Reboot Your System
+### Reboot Your System
 
 ```bash
 sudo reboot
