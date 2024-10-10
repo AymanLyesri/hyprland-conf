@@ -40,6 +40,7 @@ python2-bin
 python-colorthief
 python-pywal
 python-setuptools
+python-requests
 rclone
 zsh
 zsh-auto-notify
