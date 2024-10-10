@@ -33,6 +33,7 @@ lsd
 socat
 btop
 dart-sass
+sassc
 fd
 lazygit
 python2-bin
