@@ -35,6 +35,7 @@ btop
 dart-sass
 sassc
 fd
+jq
 lazygit
 python2-bin
 python-colorthief

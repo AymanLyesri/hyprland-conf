@@ -13,12 +13,12 @@ function getTemperatureColor(value: number): string
     return `rgb(${red}, ${green}, ${blue})`;
 }
 
-const CircularProgress = (binding, class_name) => Widget.CircularProgress({
+const CircularProgress = (value, class_name) => Widget.CircularProgress({
     class_name: "circular-progress " + class_name,
     rounded: true,
     startAt: 0.75,
-    css: binding.bind().as(value => `color: ${getTemperatureColor(value)}`),
-    value: binding.bind()
+    css: `color: ${getTemperatureColor(value)}`,
+    value: value,
 })
 
 
@@ -51,30 +51,74 @@ export function Resources()
         hexpand: true,
         hpack: "center",
         children: [Widget.Label({ label: "CPU" }),
-        CircularProgress(cpu, "cpu")]
+        CircularProgress(cpu.bind(), "cpu")]
     })
 
     const ramProgress = Widget.Box({
         hexpand: true,
         hpack: "center",
         children: [Widget.Label({ label: "RAM" }),
-        CircularProgress(ram, "ram")]
+        CircularProgress(ram.bind(), "ram")]
     })
 
     const diskProgress = Widget.Box({
         hexpand: true,
         hpack: "center",
         children: [Widget.Label({ label: "Disk" }),
-        CircularProgress(disk, "disk")]
+        CircularProgress(disk.bind(), "disk")]
     })
 
-    return Widget.Box({
-        class_name: "resources",
+    const cpuTemperature = Variable<number[]>([], {
+        poll: [2000, ["bash", "-c", "awk '{print $1 / 100000}' /sys/class/thermal/thermal_zone*/temp | jq -s ."],
+            out => { let json = JSON.parse(out); print(json.length); return json }],
+    })
+
+    const cpuTempDisplay = Widget.Box({
+        hexpand: true,
+        hpack: "center",
+        children: cpuTemperature.bind().as(temps => temps.map((temp, i) =>
+        {
+            return CircularProgress(temp, `cpu-temp-${i}`);
+        }
+        ))
+    })
+
+    const temperatures = Widget.Box({
+        hexpand: true,
+        hpack: "center",
+        children: [Widget.Label({ label: "Temperatures" }),
+        Widget.Box({
+            hexpand: true,
+            vertical: true,
+            hpack: "center",
+            children: [
+                cpuTempDisplay
+                // Widget.Box({
+                //     hexpand: true,
+                //     hpack: "center",
+                //     children: [Widget.Label({ label: "CPU" }), cpuTempDisplay]
+                // })
+            ]
+        })]
+    })
+
+    const resources = Widget.Box({
         hexpand: true,
         children: [
             cpuProgress,
             ramProgress,
-            diskProgress
+            diskProgress,
+        ]
+    })
+
+
+    return Widget.Box({
+        class_name: "resources",
+        hexpand: true,
+        vertical: true,
+        children: [
+            resources,
+            temperatures
         ],
     })
 }
