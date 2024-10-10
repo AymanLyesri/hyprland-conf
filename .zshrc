@@ -6,21 +6,9 @@ eval "$(starship init zsh)"
 # fetch system information
 source $HOME/.config/fastfetch/fastfetch.sh
 
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-# if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-#   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-# fi
-
-# # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-# [[ ! -f $HOME/.p10k.zsh ]] || source $HOME/.p10k.zsh
-
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh # Autosuggestions for commands
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh # Syntax Highlighting and colors
 source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh # Substring history search using up and down arrow keys
-# source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
-# source /usr/share/zsh/plugins/zsh-directory-history/zsh-directory-history.zsh
 source /usr/share/zsh/plugins/zsh-sudo/sudo.plugin.zsh
 source /usr/share/zsh/plugins/zsh-auto-notify/auto-notify.plugin.zsh
 source /usr/share/zsh/plugins/fzf-tab-git/fzf-tab.plugin.zsh
@@ -30,7 +18,9 @@ source /usr/share/zsh/plugins/fzf-tab-git/fzf-tab.plugin.zsh
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#696969,bold"
 HISTSIZE=10000                # Maximum events for internal history
 SAVEHIST=10000                # Maximum events in history file
-HISTFILE=~/.cache/zsh/history # History filepath
+HISTDIR=~/.cache/zsh          # History directory
+HISTFILE=$HISTDIR/history # History filepath
+HISTDIR=~/.cache/zsh && mkdir -p "$HISTDIR" && touch "$HISTDIR/history" # Create history file if it doesn't exist
 
 # Zsh Tab Complete
 autoload -U compinit

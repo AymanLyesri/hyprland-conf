@@ -9,6 +9,7 @@ else
     package_manager=$1
 fi
 
-sudo grep -vE '^\s*#|^\s*$' $HOME/.config/hypr/pacman/pkglist.txt | $package_manager -S - --noconfirm
+sudo grep -vE '^\s*#|^\s*$' $HOME/.config/hypr/pacman/pkglist.txt | $package_manager -S - --noconfirm --needed
+
 
 

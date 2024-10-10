@@ -4,7 +4,7 @@
 #| |_| |  __/ | | |  __/ | | (_| | | | |_| | |_| | | | |_| |  __/\__ \
 # \____|\___|_| |_|\___|_|  \__,_|_|  \__,_|\__|_|_|_|\__|_|\___||___/
 #            
-firefox                                                         
+firefox
 armcord-bin
 aylurs-gtk-shell
 bat
@@ -30,15 +30,17 @@ lsd
 #| || (_) | (_) | \__ \
 # \__\___/ \___/|_|___/
 #          
-socat            
+socat
 btop
 dart-sass
+sassc
 fd
 lazygit
 python2-bin
 python-colorthief
 python-pywal
 python-setuptools
+python-requests
 rclone
 zsh
 zsh-auto-notify
