@@ -60,6 +60,7 @@ remove_packages() {
 sudo cp -a $CONF_DIR/. $HOME
 echo "Configuration files have been copied to $HOME."
 
+
 $SCRIPT_DIR/CONFIGURE.sh
 
 # Install yay
@@ -75,6 +76,7 @@ echo "Unwanted packages have been removed."
 # Install packages
 echo "Installing packages..."
 $HOME/.config/hypr/pacman/install-pkgs.sh yay
-echo "Installation complete. Please Reboot the system..."
+
+echo "Installation complete. Please Reboot the system."
 
 # reboot
