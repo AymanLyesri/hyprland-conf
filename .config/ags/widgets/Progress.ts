@@ -17,28 +17,29 @@ const levelBar = Widget.LevelBar({
     max_value: 100,
     widthRequest: 333,
     value: progressValue.bind(),
-    setup: async (self) =>
-    {
-        while (true) {
-            progressValue.value += progressIncrement.value;
-            await sleep(); // Wait for 2 seconds before continuing
-            if (progressValue.value >= 100) {
-                App.closeWindow("progress");
-            }
-        }
-    }
 })
 
-export function openProgress()
+async function RunningProgress()
 {
     progressValue.value = 0;
     progressIncrement.value = INCREMENT;
+
+    while (progressValue.value <= 100) {
+        progressValue.value += progressIncrement.value;
+        await sleep(); // Wait for 2 seconds before continuing
+    }
+    App.closeWindow("progress");
+}
+
+export function openProgress()
+{
     App.openWindow("progress");
+    RunningProgress();
 }
 
 export function closeProgress()
 {
-    progressIncrement.value = 1;
+    progressIncrement.value = 1; // to speed up the progress bar
 }
 
 const Spinner = Widget.Spinner()

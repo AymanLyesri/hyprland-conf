@@ -108,10 +108,7 @@ entry {
 }
 
 separator {
-  // padding: 0px 10px;
-  margin: 5px 5px;
-  background: transparent;
-  border-top: 1px dashed $module-foreground;
+  border-top: 1px solid $module-secondary;
 }
 
 menu {
@@ -124,6 +121,27 @@ menu {
     border-radius: 0px;
     padding: 5px 0px;
     margin: 2.5px 0px;
+  }
+}
+
+levelbar {
+  margin: 0px;
+  padding: 0px;
+  trough {
+    @extend .module;
+    min-height: 6.9px;
+    margin: 0px;
+    padding: 10px;
+    * {
+      border: unset;
+    }
+
+    .filled {
+      box-shadow: 0px 0px 5px 0px $secondary;
+      background: $secondary;
+      border-radius: 10px;
+      border: unset;
+    }
   }
 }
 

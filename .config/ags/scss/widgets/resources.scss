@@ -1,10 +1,54 @@
 .resources {
   @extend .module;
-  padding: 5px 10px;
+  padding: 10px;
   margin: 0px 10px;
-  .circular-progress {
-    // min-width: 100px;
-    min-height: 10px;
-    font-size: 5px;
+
+  .resource {
+    // min-height: px;
+    label {
+      margin-right: 5px;
+      min-width: 15px;
+    }
+    levelbar {
+      trough {
+        border-radius: 10px 0px 0px 10px;
+        min-height: 1px;
+
+        .filled {
+          box-shadow: 0px 0px 5px 0px $secondary;
+          background: $foreground;
+          border-radius: 10px;
+          border: unset;
+        }
+      }
+    }
+
+    .temp {
+      margin: 0px;
+      padding: 5px 0px;
+      border-radius: 5px;
+      background: $module-background;
+
+      .circular-progress {
+        margin: 0px;
+        padding: 0px;
+        // min-width: 100px;
+        min-height: 20px;
+        font-size: 1px;
+
+        label {
+          font-size: 10px;
+          font-weight: 800;
+          color: $foreground;
+        }
+      }
+    }
+    &.disk {
+      levelbar {
+        trough {
+          border-radius: 10px;
+        }
+      }
+    }
   }
 }
