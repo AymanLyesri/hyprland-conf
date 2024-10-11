@@ -26,12 +26,18 @@ if [ -z "$2" ]; then
     new_wallpaper=$(find $HOME/wallpapers/normal -type f | shuf -n 1 | sed "s|$HOME|\\\$HOME|") # get random wallpaper
 else
     echo "Setting wallpaper $2 for workspace $workspace_id"
-    new_wallpaper=$2
+    new_wallpaper=$(echo $2 | sed "s|$HOME|\\\$HOME|") # get wallpaper
 fi
 
 #############################################
 
 old_wallpaper=$(grep "w-${workspace_id}" $current_config | cut -d'=' -f2)
+
+#check if wallpaper is the same
+if [ "$old_wallpaper" = "$new_wallpaper" ]; then
+    echo "Wallpaper is already set to $new_wallpaper"
+    exit 0
+fi
 
 hyprctl hyprpaper preload "$new_wallpaper" # preload wallpaper
 

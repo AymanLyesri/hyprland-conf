@@ -2,7 +2,7 @@
 
 # Define the file that contains the wallpaper paths
 defaults="$HOME/.config/hypr/hyprpaper/config/defaults.conf"
-all="$HOME/wallpapers/normal"
+all="$HOME/.config/wallpapers/normal"
 
 # Initialize an empty array for the wallpaper paths
 wallpaper_paths=()
