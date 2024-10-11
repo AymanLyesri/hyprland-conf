@@ -87,7 +87,7 @@ git clone --depth 1 https://github.com/AymanLyesri/hyprland-conf.git
 
 ```bash
 cd hyprland-conf
-bash .config/hypr/scripts/INSTALL.sh
+bash .config/hypr/maintenance/INSTALL.sh
 ```
 
 # Tips

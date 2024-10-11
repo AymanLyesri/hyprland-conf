@@ -2,31 +2,7 @@
 
 GENERAL_CONF_FILE="$HOME/.config/hypr/configs/general.conf"
 
-# Function to check if a command exists
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
 
-install_fzf() {
-    if command_exists fzf; then
-        echo "fzf is already installed."
-    else
-        echo "fzf is not installed. Installing fzf..."
-        
-        # Clone fzf repository from GitHub
-        sudo pacman -S fzf
-    fi
-}
-
-install_figlet() {
-    if command_exists figlet; then
-        echo "figlet is already installed."
-    else
-        echo "figlet is not installed. Installing figlet..."
-        # Install figlet
-        sudo pacman -S figlet
-    fi
-}
 
 configure_keybord() {
     figlet "Keyboard"
@@ -57,11 +33,6 @@ configure_keybord() {
     fi
     sed -i "s/kb_variant=.*/kb_variant=$new_variant,/" "$GENERAL_CONF_FILE"
 }
-
-install_fzf
-
-install_figlet
-
 configure_keybord
 
 

@@ -1,11 +1,13 @@
 #!/bin/bash
 
+figlet "Backup"
+
 backup_dotfiles() {
     local date=$(date +%Y%m%d)
     local backup_dir="$HOME/dotfiles_backup_$date"
     mkdir -p "$backup_dir"
     
-    mv $HOME/.config ~/$backup_dir
+    mv $HOME/.config $backup_dir
     
     echo "Dotfiles have been moved to $backup_dir."
 }

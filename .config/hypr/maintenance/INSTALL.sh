@@ -4,67 +4,45 @@
 MAINTENANCE_DIR=$(dirname $(realpath $BASH_SOURCE))
 CONF_DIR=$(dirname $(dirname $(dirname $MAINTENANCE_DIR)))
 
-# Function to check if a command exists
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
+source $MAINTENANCE_DIR/ESSENTIALS.sh
 
-# Function to install yay
-install_yay() {
-    if command_exists yay; then
-        echo "yay is already installed."
-    else
-        echo "yay is not installed. Installing yay..."
-        
-        # Update system packages
-        sudo pacman -Syu --noconfirm
-        
-        # Install base-devel and git if not already installed
-        sudo pacman -S --needed --noconfirm base-devel git
-        
-        # Clone yay repository from the AUR
-        git clone https://aur.archlinux.org/yay.git
-        
-        # Change directory to yay folder
-        cd yay
-        
-        # Build and install yay
-        makepkg -si --noconfirm
-        
-        # Go back to the original directory
-        cd ..
-        
-        # Clean up by removing the yay directory
-        rm -rf yay
-        
-        echo "yay has been successfully installed."
-    fi
-}
-
-# Function to remove certain packages
-remove_packages() {
-    # List of packages to remove (space-separated)
-    packages_to_remove=("dunst")  # Replace with actual package names
+continue_prompt() {
+    # Color variables
+    GREEN="\e[32m"
+    RED="\e[31m"
+    CYAN="\e[36m"
+    BOLD="\e[1m"
+    RESET="\e[0m"
     
-    # Check if packages are installed and remove them
-    if pacman -Q "${packages_to_remove[@]}" &>/dev/null; then
-        echo "Removing packages: ${packages_to_remove[*]}"
-        killall ${packages_to_remove[@]} 2>/dev/null
-        sudo pacman -Rns --noconfirm "${packages_to_remove[@]}"
-    else
-        echo "One or more packages are not installed."
-    fi
+    while true; do
+        echo -e "${CYAN}${BOLD}Would you like to proceed $1?${RESET} ${GREEN}[Y]${RESET}/${RED}[N]${RESET}: "
+        read -p "" choice
+        case "$choice" in
+            [Yy]* ) echo -e "${GREEN}Great! Continuing $1...${RESET}";
+                bash $2;
+            break;;
+            [Nn]* ) echo -e "${RED}Okay, exiting $1...${RESET}";
+            exit;;
+            * ) echo -e "${RED}Please answer with Y or N.${RESET}";;
+        esac
+    done
 }
+
+install_fzf
+
+install_figlet
+
+install_yay
+
+
+# # Backup dotfiles
+echo "Backing up dotfiles from .config ..."
+continue_prompt "backup" $MAINTENANCE_DIR/BACKUP.sh
+
+continue_prompt "keyboard configuration" $MAINTENANCE_DIR/CONFIGURE.sh
 
 sudo cp -a $CONF_DIR/. $HOME
 echo "Configuration files have been copied to $HOME."
-
-$MAINTENANCE_DIR/CONFIGURE.sh
-
-# Install yay
-echo "Installing yay..."
-install_yay
-echo "yay is installed."
 
 # remove_packages
 echo "Removing unwanted packages..."
