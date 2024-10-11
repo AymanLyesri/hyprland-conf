@@ -1,13 +1,13 @@
 import { WidgetSelector } from "interfaces/widgetSelector.interface";
-import Gtk from "types/@girs/gtk-3.0/gtk-3.0";
 import { getOption, setOption } from "utils/options";
-import waifu from "widgets/rightPanel/components/waifu";
 import { WidgetSelectors } from "widgets/rightPanel/RightPanel";
 
 const hyprland = await Service.import("hyprland");
 
 export const globalMargin = 15
 export const globalTransition = 500
+
+export const barPin = Variable(true)
 
 export const waifuPath = App.configDir + "/assets/waifu/waifu.jpg"
 export const waifuVisibility = Variable(getOption("waifu.visibility"))

@@ -1,5 +1,5 @@
 import brightness from "brightness";
-import { rightPanelVisibility, waifuPath, waifuVisibility } from "variables";
+import { barPin, rightPanelVisibility, waifuPath, waifuVisibility } from "variables";
 import { closeProgress, openProgress } from "widgets/Progress";
 import { custom_revealer } from "widgets/revealer";
 
@@ -138,6 +138,16 @@ function SysTray()
     });
 }
 
+function PinBar()
+{
+    return Widget.ToggleButton({
+        active: barPin.value,
+        onToggled: ({ active }) => barPin.value = active,
+        class_name: "panel-trigger icon",
+        label: "󰐃"
+    })
+}
+
 function RightPanel()
 {
     return Widget.ToggleButton({
@@ -162,6 +172,7 @@ export function Right()
             Volume(),
             SysTray(),
             Theme(),
+            PinBar(),
             RightPanel(),
         ],
     });
