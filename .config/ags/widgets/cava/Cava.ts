@@ -1,14 +1,9 @@
-
-import { getDominantColor } from "utils/image";
 import cavaService from "./cavaService";
 import { globalTransition } from "variables";
-// import options from "options"
+import { Hyprland } from "types/service/hyprland";
 
 const mpris = await Service.import("mpris")
-
-// const {
-//     palette,
-// } = options.theme
+const hyprland = await Service.import("hyprland")
 
 const primary = "white"
 const secondary = "gray"
@@ -60,6 +55,7 @@ export default (pos: string) =>
 {
     const btn = Widget.Button({
         class_name: "cava",
+        on_primary_click: () => hyprland.messageAsync(`dispatch exec kitty cava`),
         setup: self =>
         {
             if (pos != null)

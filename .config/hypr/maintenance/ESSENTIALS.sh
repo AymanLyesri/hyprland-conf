@@ -1,13 +1,29 @@
-#!/bin/bash
-
-# Get the directory where the script is located
-SCRIPT_DIR=$(dirname $(realpath $BASH_SOURCE))
-CONF_DIR=$(dirname $(dirname $(dirname $SCRIPT_DIR)))
-
 # Function to check if a command exists
 command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
+
+install_fzf() {
+    if command_exists fzf; then
+        echo "fzf is already installed."
+    else
+        echo "fzf is not installed. Installing fzf..."
+        
+        # Clone fzf repository from GitHub
+        sudo pacman -S fzf
+    fi
+}
+
+install_figlet() {
+    if command_exists figlet; then
+        echo "figlet is already installed."
+    else
+        echo "figlet is not installed. Installing figlet..."
+        # Install figlet
+        sudo pacman -S figlet
+    fi
+}
+
 
 # Function to install yay
 install_yay() {
@@ -55,28 +71,3 @@ remove_packages() {
         echo "One or more packages are not installed."
     fi
 }
-
-
-sudo cp -a $CONF_DIR/. $HOME
-echo "Configuration files have been copied to $HOME."
-
-
-$SCRIPT_DIR/CONFIGURE.sh
-
-# Install yay
-echo "Installing yay..."
-install_yay
-echo "yay is installed."
-
-# remove_packages
-echo "Removing unwanted packages..."
-remove_packages
-echo "Unwanted packages have been removed."
-
-# Install packages
-echo "Installing packages..."
-$HOME/.config/hypr/pacman/install-pkgs.sh yay
-
-echo "Installation complete. Please Reboot the system."
-
-# reboot

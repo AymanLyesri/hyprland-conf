@@ -21,19 +21,14 @@
 !.config/aria2/
 # include pipwire config
 !.config/pipewire/
-# include xava config
-!.config/xava/
 # include ags
 !.config/ags/
 # include wayvnc config
 !.config/wayvnc/
 # include fastfetch config
 !.config/fastfetch/
-# include cursor themes
-!.icons/
-
 # wallpapers
-!wallpapers/
+!.config/wallpapers/
 
 # include zsh config
 !.zshrc

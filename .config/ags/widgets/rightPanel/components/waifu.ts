@@ -30,7 +30,7 @@ const CopyImage = () => Utils.execAsync(`bash -c "wl-copy --type image/png < ${w
     .then(() => Utils.notify({ summary: 'Clipboard', body: 'waifu copied to clipboard' }))
     .catch(err => Utils.notify({ summary: 'Error', body: err }))
 
-const OpenImage = () => Hyprland.sendMessage("dispatch exec [float;size 50%] feh --scale-down " + waifuPath)
+const OpenImage = () => Hyprland.messageAsync("dispatch exec [float;size 50%] feh --scale-down " + waifuPath)
 
 const FavoriteImage = () => Utils.execAsync(`bash -c "cp ${App.configDir}/assets/waifu/waifu.json ${App.configDir}/assets/waifu/favorite.json"`)
     .then(() => Utils.notify({ summary: 'Waifu', body: 'Added to favorite' }))

@@ -137,7 +137,7 @@ const organizeResults = (results: Result[]) =>
                     .catch(err => Utils.notify({ summary: "Error", body: err }));
             }
 
-            Hyprland.sendMessage(`dispatch exec ${element.app_exec} ${element.app_arg || ""}`)
+            Hyprland.messageAsync(`dispatch exec ${element.app_exec} ${element.app_arg || ""}`)
                 .then(() =>
                 {
                     switch (element.app_type) {

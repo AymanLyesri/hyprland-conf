@@ -1,17 +1,17 @@
 .progress-widget {
-  .progress-bar {
-    trough {
-      @extend .module;
-      min-height: 6.9px;
-      margin: 0px;
-      padding: 10px;
+  // .progress-bar {
+  //   trough {
+  //     @extend .module;
+  //     min-height: 6.9px;
+  //     margin: 0px;
+  //     padding: 10px;
 
-      .filled {
-        box-shadow: 0px 0px 5px 0px $secondary;
-        background: $foreground;
-        border-radius: 10px;
-        border: unset;
-      }
-    }
-  }
+  //     .filled {
+  //       box-shadow: 0px 0px 5px 0px $secondary;
+  //       background: $foreground;
+  //       border-radius: 10px;
+  //       border: unset;
+  //     }
+  //   }
+  // }
 }
