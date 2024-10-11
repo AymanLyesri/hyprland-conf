@@ -4,7 +4,7 @@
 #| |_| |  __/ | | |  __/ | | (_| | | | |_| | |_| | | | |_| |  __/\__ \
 # \____|\___|_| |_|\___|_|  \__,_|_|  \__,_|\__|_|_|_|\__|_|\___||___/
 #            
-firefox
+zen-browser-bin
 armcord-bin
 aylurs-gtk-shell
 bat
@@ -38,8 +38,6 @@ fd
 jq
 lazygit
 python2-bin
-python-colorthief
-python-pywal
 python-setuptools
 python-requests
 rclone
@@ -112,6 +110,9 @@ cava
 #|  __/ | | | | | | (_| | | | | (_|  __/ | | | | |  __/ | | | |_\__ \
 # \___|_| |_|_| |_|\__,_|_| |_|\___\___|_| |_| |_|\___|_| |_|\__|___/
 #          
+pywalfox
+python-colorthief
+python-pywal
 fastfetch
 starship
 gtk4
