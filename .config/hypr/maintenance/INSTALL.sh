@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Get the directory where the script is located
-SCRIPT_DIR=$(dirname $(realpath $BASH_SOURCE))
-CONF_DIR=$(dirname $(dirname $(dirname $SCRIPT_DIR)))
+MAINTENANCE_DIR=$(dirname $(realpath $BASH_SOURCE))
+CONF_DIR=$(dirname $(dirname $(dirname $MAINTENANCE_DIR)))
 
 # Function to check if a command exists
 command_exists() {
@@ -56,12 +56,10 @@ remove_packages() {
     fi
 }
 
-
 sudo cp -a $CONF_DIR/. $HOME
 echo "Configuration files have been copied to $HOME."
 
-
-$SCRIPT_DIR/CONFIGURE.sh
+$MAINTENANCE_DIR/CONFIGURE.sh
 
 # Install yay
 echo "Installing yay..."

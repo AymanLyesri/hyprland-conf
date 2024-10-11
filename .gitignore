@@ -29,11 +29,8 @@
 !.config/wayvnc/
 # include fastfetch config
 !.config/fastfetch/
-# include cursor themes
-!.icons/
-
 # wallpapers
-!wallpapers/
+!.config/wallpapers/
 
 # include zsh config
 !.zshrc
