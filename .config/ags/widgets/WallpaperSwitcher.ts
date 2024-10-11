@@ -99,7 +99,7 @@ function Wallpapers()
                 children: [allWallpapers(), Widget.Button({
                     vpack: "center",
                     class_name: "stop-selection",
-                    label: "X",
+                    label: "",
                     on_primary_click: () =>
                     {
                         bottom.child.reveal_child = false

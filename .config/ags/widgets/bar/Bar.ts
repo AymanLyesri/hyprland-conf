@@ -1,4 +1,4 @@
-import { emptyWorkspace, globalMargin } from "variables";
+import { barPin, emptyWorkspace, globalMargin } from "variables";
 import { Left } from "./components/barLeft";
 import { Center } from "./components/barMiddle";
 import { Right } from "./components/barRight";
@@ -11,12 +11,18 @@ export default () =>
         exclusivity: "exclusive",
         margins: emptyWorkspace.as(margin => [margin * 69 + 5, margin * 50 + globalMargin, 0, margin * 50 + globalMargin]),// [top, right, bottom, left]
         layer: "top",
-
-        child: Widget.CenterBox({
-            class_name: emptyWorkspace.as(empty => !!empty ? "bar empty" : "bar full"),
-            start_widget: Left(),
-            center_widget: Center(),
-            end_widget: Right(),
-        }),
+        visible: barPin.value,
+        child: Widget.Box({
+            css: `padding-bottom: 1px;`,
+            child: Widget.EventBox({
+                on_hover_lost: () => !barPin.value ? App.closeWindow("bar") : null,
+                child: Widget.CenterBox({
+                    class_name: emptyWorkspace.as(empty => !!empty ? "bar empty" : "bar full"),
+                    start_widget: Left(),
+                    center_widget: Center(),
+                    end_widget: Right(),
+                }),
+            }),
+        })
     });
 }

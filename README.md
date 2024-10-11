@@ -101,6 +101,10 @@ bash .config/hypr/maintenance/INSTALL.sh
 
 - I use **Dvorak**, so QWERTY users might face some issues.
 
+# Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=aymanlyesri/hyprland-conf&type=Date)](https://star-history.com/#aymanlyesri/hyprland-conf&Date)
+
 # Visuals
 
 ### Application Launcher

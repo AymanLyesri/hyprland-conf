@@ -20,6 +20,6 @@ Utils.monitorFile(
 
 Utils.monitorFile(
     // directory that contains pywal colors
-    `$../../.cache/wal/colors.scss`,
+    `${App.configDir}/../../.cache/wal/colors.scss`,
     () => refreshCss()
 )

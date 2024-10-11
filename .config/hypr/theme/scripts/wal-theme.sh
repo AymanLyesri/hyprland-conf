@@ -22,3 +22,5 @@ if [ "$current_theme" = "dark" ]; then
     wal --backend colorthief -e -n -i "$current_wallpaper" -l &
     
 fi
+
+pywalfox update

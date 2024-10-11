@@ -3,11 +3,6 @@ $background: $color0; // Example background color
 $foreground: $color7; // Example foreground color
 $secondary: $color13; // Example selected background color
 
-// $red: rgb(255, 102, 77); /* Muted red-orange */
-// $green: rgb(153, 255, 153); /* Soft pastel green */
-// $blue: rgb(102, 153, 255); /* Light desaturated blue */
-// $orange: rgb(255, 191, 128); /* Muted peachy orange */
-
 $red: rgb(255, 102, 77); /* Muted red-orange, with less opacity */
 $green: rgb(153, 255, 153); /* Softer pastel green */
 $blue: rgb(102, 153, 255); /* Lighter desaturated blue */
@@ -27,8 +22,8 @@ $module-foreground: mix($foreground, $color1, 69%);
 $module-secondary: mix($secondary, $foreground, 69%);
 
 $background: rgba($background, 0.69);
-$module-background: rgba($module-background, 0.5);
-$module-foreground: rgba($module-foreground, 0.5);
+$module-background: rgba($module-background, 0.69);
+$module-foreground: rgba($module-foreground, 0.69);
 
 * {
   font-family: "JetBrainsMono NFP", "Noto Font";
@@ -37,31 +32,29 @@ $module-foreground: rgba($module-foreground, 0.5);
 
 .module {
   background: $module-background;
-  // color: mix($foreground, $secondary, 50%);
   color: $foreground;
   min-height: 1px;
-  // border: 1px solid $color15;
   border: none;
   box-shadow: none;
   border-radius: 10px;
   font-size: 0.8rem;
   font-weight: 700;
   text-shadow: none;
-  padding: 0px 10px;
-  margin: 0px;
+  padding: 0 10px;
+  margin: 0;
 }
 
 button,
 .button {
   @extend .module;
   min-height: 20px;
-  text-shadow: $background 0px 0px 1px;
-  ////////////////////////////
+  text-shadow: $background 0 0 1px;
   &:hover {
     background: $background;
-    text-shadow: $foreground 0px 0px 1px;
+    text-shadow: $foreground 0 0 1px;
   }
-  &:focus {
+  &:focus,
+  &:checked {
     outline: none;
     border-color: transparent;
     box-shadow: none;
@@ -73,17 +66,15 @@ button,
 }
 
 .danger {
-  background: rgba($red, 0.5);
+  background: $red;
   color: $foreground;
-  &:hover {
-    background: rgba($red, 0.8);
-  }
+  &:hover,
   &:checked {
-    background: rgba($red, 0.8);
+    background: rgba($red, 0.8); // Pre-calculated hover and checked state
   }
 }
 
-icon,
+.icon,
 image {
   font-size: 12px;
   color: $foreground;
@@ -96,11 +87,6 @@ image {
 entry {
   background: transparent;
   border: unset;
-  .left,
-  .right {
-    border-color: $secondary;
-    // background: white;
-  }
   &:focus {
     box-shadow: none;
     background: $module-background;
@@ -113,31 +99,26 @@ separator {
 
 menu {
   @extend .module;
-  border-radius: 0px;
+  border-radius: 0;
   background: $background;
-  padding: 0px;
+  padding: 0;
   menuitem {
-    @extend .button;
-    border-radius: 0px;
-    padding: 5px 0px;
-    margin: 2.5px 0px;
+    border-radius: 0;
+    padding: 5px 0;
+    margin: 2.5px 0;
   }
 }
 
 levelbar {
-  margin: 0px;
-  padding: 0px;
+  margin: 0;
+  padding: 0;
   trough {
-    @extend .module;
+    background: $module-background;
+    border: unset;
     min-height: 6.9px;
-    margin: 0px;
     padding: 10px;
-    * {
-      border: unset;
-    }
-
     .filled {
-      box-shadow: 0px 0px 5px 0px $secondary;
+      box-shadow: 0 0 5px 0 $secondary;
       background: $secondary;
       border-radius: 10px;
       border: unset;
@@ -147,66 +128,47 @@ levelbar {
 
 .switch {
   @extend .module;
-  margin: 0px;
-  padding: 0px;
+  margin: 0;
+  padding: 0;
   slider {
     border-radius: 10px;
     font-size: 0.8rem;
-    min-height: 1px;
-    min-width: 1px;
     margin: 5px;
     background: mix($foreground, $secondary, 50%);
-    // color: $foreground;
   }
 }
 
 .custom-revealer {
+  @extend .module;
   label {
-    margin: 0px 10px;
-    // padding: 0px;
+    margin: 0 10px;
   }
   .icon {
     font-size: 1.5em;
     all: unset;
-    margin: 0px 15px;
+    margin: 0 15px;
   }
-  @extend .module;
 
   .slider {
-    // margin: 0px 5px;
     margin-right: 10px;
     margin-left: 5px;
-    padding: 0px;
+    padding: 0;
     min-width: 100px;
 
     trough {
       min-height: 2px;
       min-width: 69px;
-      // padding-left: 5px;
       border-radius: 10px;
-    }
-
-    highlight {
-      min-width: 10px;
-      background-color: $color4;
     }
 
     slider {
       min-height: 1px;
       min-width: 10px;
       margin: -5px;
-      background-color: $color1;
-      color: $color7;
     }
 
-    &:hover {
-      highlight {
-        background-color: mix($color4, #000000, 50%);
-      }
-      slider {
-        background-color: mix($color2, #000000, 50%);
-        color: mix($color2, #000000, 50%);
-      }
+    &:hover highlight {
+      background-color: mix($color4, #ffffff, 50%);
     }
   }
 }

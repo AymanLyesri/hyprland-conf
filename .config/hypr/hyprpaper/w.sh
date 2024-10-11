@@ -14,8 +14,5 @@ done
 
 sleep 1 # Wait for wallpaper to be set (removes stuttering)
 
-# Call the script with the expanded full path of $wallpaper
-echo "$hyprdir/theme/scripts/wal-theme.sh" "$wallpaper"
-
 # Set wallpaper theme
 "$hyprdir/theme/scripts/wal-theme.sh" "$wallpaper"
