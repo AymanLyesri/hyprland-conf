@@ -21,8 +21,6 @@
 !.config/aria2/
 # include pipwire config
 !.config/pipewire/
-# include xava config
-!.config/xava/
 # include ags
 !.config/ags/
 # include wayvnc config
