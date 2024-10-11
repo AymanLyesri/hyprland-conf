@@ -8,10 +8,6 @@ new_wallpaper=""
 
 #############################################
 
-killall "w.sh" # kill w.sh
-
-#############################################
-
 if [ -z "$1" ]; then
     echo "Usage: set-wallpaper.sh <workspace_id>"
     workspace_id=$current_workspace
