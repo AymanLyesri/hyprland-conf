@@ -14,7 +14,7 @@ I use Arch BTW.. :)
 
 - Enhanced productivity
 - Faster responsiveness
-- [Wallpapers galore](https://github.com/AymanLyesri/hyprland-conf/tree/master/wallpapers)
+- [Wallpapers galore](https://github.com/AymanLyesri/hyprland-conf/tree/master/.config/wallpapers)
 - Smooth animations
 - Vibrant color schemes
 
