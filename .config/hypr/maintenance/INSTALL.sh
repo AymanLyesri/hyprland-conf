@@ -43,7 +43,8 @@ install_yay
 echo "Backing up dotfiles from .config ..."
 continue_prompt "backup" $MAINTENANCE_DIR/BACKUP.sh
 
-sudo cp -a . $HOME
+echo "Copying configuration files to $HOME..."
+cp -a . $HOME
 echo "Configuration files have been copied to $HOME."
 
 continue_prompt "keyboard configuration" $MAINTENANCE_DIR/CONFIGURE.sh
