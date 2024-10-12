@@ -71,8 +71,10 @@ KeyBinds are displayed and organized [Here](https://github.com/AymanLyesri/hyprl
 
 # Installation Guide
 
+> run this one liner in the terminal
+
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/AymanLyesri/hyprland-conf/refs/heads/dev/.config/hypr/maintenance/INSTALL.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/AymanLyesri/hyprland-conf/refs/heads/master/.config/hypr/maintenance/INSTALL.sh)"
 ```
 
 # Tips
