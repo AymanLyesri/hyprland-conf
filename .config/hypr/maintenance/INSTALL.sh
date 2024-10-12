@@ -1,32 +1,37 @@
 #!/bin/bash
 
 # Get the directory where the script is located
-MAINTENANCE_DIR=$(dirname $(realpath $BASH_SOURCE))
-CONF_DIR=$(dirname $(dirname $(dirname $MAINTENANCE_DIR)))
+# MAINTENANCE_DIR=$(dirname $(realpath $BASH_SOURCE))
+# CONF_DIR=$(dirname $(dirname $(dirname $MAINTENANCE_DIR)))
+
+# specify the repo branch
+if [ -z "$1" ]; then
+    BRANCH="master"
+else
+    BRANCH=$1
+fi
+
+CONF_DIR="hyprland-conf"
+
+if [ -d "$CONF_DIR" ]; then
+    echo "$CONF_DIR directory exists."
+else
+    echo "$CONF_DIR directory does not exist. Cloning the repository..."
+    git clone https://github.com/AymanLyesri/hyprland-conf.git --depth 1
+fi
+
+# Change branch to the specified branch
+cd $CONF_DIR
+git checkout $BRANCH
+git pull
+
+MAINTENANCE_DIR=".config/hypr/maintenance"
 
 source $MAINTENANCE_DIR/ESSENTIALS.sh
 
-continue_prompt() {
-    # Color variables
-    GREEN="\e[32m"
-    RED="\e[31m"
-    CYAN="\e[36m"
-    BOLD="\e[1m"
-    RESET="\e[0m"
-    
-    while true; do
-        echo -e "${CYAN}${BOLD}Would you like to proceed $1?${RESET} ${GREEN}[Y]${RESET}/${RED}[N]${RESET}: "
-        read -p "" choice
-        case "$choice" in
-            [Yy]* ) echo -e "${GREEN}Great! Continuing $1...${RESET}";
-                bash $2;
-            break;;
-            [Nn]* ) echo -e "${RED}Okay, exiting $1...${RESET}";
-            exit;;
-            * ) echo -e "${RED}Please answer with Y or N.${RESET}";;
-        esac
-    done
-}
+# Install the required packages
+
+install_git
 
 install_fzf
 
@@ -39,10 +44,11 @@ install_yay
 echo "Backing up dotfiles from .config ..."
 continue_prompt "backup" $MAINTENANCE_DIR/BACKUP.sh
 
-continue_prompt "keyboard configuration" $MAINTENANCE_DIR/CONFIGURE.sh
-
-sudo cp -a $CONF_DIR/. $HOME
+echo "Copying configuration files to $HOME..."
+sudo cp -a . $HOME
 echo "Configuration files have been copied to $HOME."
+
+continue_prompt "keyboard configuration" $MAINTENANCE_DIR/CONFIGURE.sh
 
 # remove_packages
 echo "Removing unwanted packages..."

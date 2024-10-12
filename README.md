@@ -71,23 +71,10 @@ KeyBinds are displayed and organized [Here](https://github.com/AymanLyesri/hyprl
 
 # Installation Guide
 
-### Clone the Repository
-
-> **Notice:** Repo has been Cleaned up from 2Gb to 90Mb, sorry for the inconvenience.
-
-> Clone latest commit (less download size)
+> run this one liner in the terminal
 
 ```bash
-git clone --depth 1 https://github.com/AymanLyesri/hyprland-conf.git
-```
-
-### The Install Script
-
-> Change to the repository directory and run the install script
-
-```bash
-cd hyprland-conf
-bash .config/hypr/maintenance/INSTALL.sh
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/AymanLyesri/hyprland-conf/refs/heads/master/.config/hypr/maintenance/INSTALL.sh)"
 ```
 
 # Tips
