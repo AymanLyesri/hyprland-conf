@@ -20,7 +20,7 @@ else
     git clone https://github.com/AymanLyesri/hyprland-conf.git --depth 1
 fi
 
-# Change branch
+# Change branch to the specified branch
 cd $CONF_DIR
 git checkout $BRANCH
 
@@ -43,10 +43,10 @@ install_yay
 echo "Backing up dotfiles from .config ..."
 continue_prompt "backup" $MAINTENANCE_DIR/BACKUP.sh
 
-continue_prompt "keyboard configuration" $MAINTENANCE_DIR/CONFIGURE.sh
-
 sudo cp -a . $HOME
 echo "Configuration files have been copied to $HOME."
+
+continue_prompt "keyboard configuration" $MAINTENANCE_DIR/CONFIGURE.sh
 
 # remove_packages
 echo "Removing unwanted packages..."
