@@ -23,6 +23,7 @@ fi
 # Change branch to the specified branch
 cd $CONF_DIR
 git checkout $BRANCH
+git pull
 
 MAINTENANCE_DIR=".config/hypr/maintenance"
 
@@ -44,7 +45,7 @@ echo "Backing up dotfiles from .config ..."
 continue_prompt "backup" $MAINTENANCE_DIR/BACKUP.sh
 
 echo "Copying configuration files to $HOME..."
-cp -a . $HOME
+sudo cp -a . $HOME
 echo "Configuration files have been copied to $HOME."
 
 continue_prompt "keyboard configuration" $MAINTENANCE_DIR/CONFIGURE.sh
