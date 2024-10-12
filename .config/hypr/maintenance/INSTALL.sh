@@ -4,6 +4,13 @@
 # MAINTENANCE_DIR=$(dirname $(realpath $BASH_SOURCE))
 # CONF_DIR=$(dirname $(dirname $(dirname $MAINTENANCE_DIR)))
 
+# specify the repo branch
+if [ -z "$1" ]; then
+    BRANCH="dev"
+else
+    BRANCH=$1
+fi
+
 CONF_DIR="hyprland-conf"
 
 if [ -d "$CONF_DIR" ]; then
@@ -13,7 +20,11 @@ else
     git clone https://github.com/AymanLyesri/hyprland-conf.git --depth 1
 fi
 
-MAINTENANCE_DIR="$CONF_DIR/.config/hypr/maintenance"
+# Change branch
+cd $CONF_DIR
+git checkout $BRANCH
+
+MAINTENANCE_DIR=".config/hypr/maintenance"
 
 source $MAINTENANCE_DIR/ESSENTIALS.sh
 
@@ -34,7 +45,7 @@ continue_prompt "backup" $MAINTENANCE_DIR/BACKUP.sh
 
 continue_prompt "keyboard configuration" $MAINTENANCE_DIR/CONFIGURE.sh
 
-sudo cp -a $CONF_DIR/. $HOME
+sudo cp -a . $HOME
 echo "Configuration files have been copied to $HOME."
 
 # remove_packages
