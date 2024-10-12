@@ -6,7 +6,7 @@
 
 # specify the repo branch
 if [ -z "$1" ]; then
-    BRANCH="dev"
+    BRANCH="master"
 else
     BRANCH=$1
 fi
