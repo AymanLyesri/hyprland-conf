@@ -19,7 +19,7 @@ fi
 # check for $2
 if [ -z "$2" ]; then
     echo "Setting random wallpaper for workspace $workspace_id"
-    new_wallpaper=$(find $HOME/wallpapers/normal -type f | shuf -n 1 | sed "s|$HOME|\\\$HOME|") # get random wallpaper
+    new_wallpaper=$(find $HOME/.config/wallpapers/normal -type f | shuf -n 1 | sed "s|$HOME|\\\$HOME|") # get random wallpaper
 else
     echo "Setting wallpaper $2 for workspace $workspace_id"
     new_wallpaper=$(echo $2 | sed "s|$HOME|\\\$HOME|") # get wallpaper
