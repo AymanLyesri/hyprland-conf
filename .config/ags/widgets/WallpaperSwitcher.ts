@@ -26,11 +26,10 @@ function Wallpapers()
                             .then(() => bottom.child.reveal_child = false)
                             .finally(() =>
                             {
-
                                 let new_wallpaper = JSON.parse(Utils.exec(App.configDir + '/scripts/get-wallpapers.sh --current'))[selectedWorkspace - 1]
                                 top.children[selectedWorkspace - 1].css = `background-image: url('${new_wallpaper}');`
                             })
-                            .catch(err => print(err));
+                            .catch(err => Utils.notify(err));
                     }
                 })
             }),

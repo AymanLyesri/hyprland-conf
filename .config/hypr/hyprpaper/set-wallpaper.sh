@@ -25,9 +25,10 @@ else
     new_wallpaper=$(echo $2 | sed "s|$HOME|\\\$HOME|") # get wallpaper
 fi
 
+
 #############################################
 
-old_wallpaper=$(grep "w-${workspace_id}" $current_config | cut -d'=' -f2)
+old_wallpaper=$(grep "^w-${workspace_id}=" "$current_config" | cut -d'=' -f2 | head -n 1)
 
 #check if wallpaper is the same
 if [ "$old_wallpaper" = "$new_wallpaper" ]; then
