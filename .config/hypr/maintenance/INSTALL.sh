@@ -1,32 +1,25 @@
 #!/bin/bash
 
 # Get the directory where the script is located
-MAINTENANCE_DIR=$(dirname $(realpath $BASH_SOURCE))
-CONF_DIR=$(dirname $(dirname $(dirname $MAINTENANCE_DIR)))
+# MAINTENANCE_DIR=$(dirname $(realpath $BASH_SOURCE))
+# CONF_DIR=$(dirname $(dirname $(dirname $MAINTENANCE_DIR)))
+
+CONF_DIR="hyprland-conf"
+
+if [ -d "$CONF_DIR" ]; then
+    echo "$CONF_DIR directory exists."
+else
+    echo "$CONF_DIR directory does not exist. Cloning the repository..."
+    git clone https://github.com/AymanLyesri/hyprland-conf.git --depth 1
+fi
+
+MAINTENANCE_DIR="$CONF_DIR/.config/hypr/maintenance"
 
 source $MAINTENANCE_DIR/ESSENTIALS.sh
 
-continue_prompt() {
-    # Color variables
-    GREEN="\e[32m"
-    RED="\e[31m"
-    CYAN="\e[36m"
-    BOLD="\e[1m"
-    RESET="\e[0m"
-    
-    while true; do
-        echo -e "${CYAN}${BOLD}Would you like to proceed $1?${RESET} ${GREEN}[Y]${RESET}/${RED}[N]${RESET}: "
-        read -p "" choice
-        case "$choice" in
-            [Yy]* ) echo -e "${GREEN}Great! Continuing $1...${RESET}";
-                bash $2;
-            break;;
-            [Nn]* ) echo -e "${RED}Okay, exiting $1...${RESET}";
-            exit;;
-            * ) echo -e "${RED}Please answer with Y or N.${RESET}";;
-        esac
-    done
-}
+# Install the required packages
+
+install_git
 
 install_fzf
 

@@ -24,6 +24,16 @@ install_figlet() {
     fi
 }
 
+install_git() {
+    if command_exists git; then
+        echo "git is already installed."
+    else
+        echo "git is not installed. Installing git..."
+        # Install git
+        sudo pacman -S git
+    fi
+}
+
 
 # Function to install yay
 install_yay() {
@@ -71,3 +81,26 @@ remove_packages() {
         echo "One or more packages are not installed."
     fi
 }
+
+continue_prompt() {
+    # Color variables
+    GREEN="\e[32m"
+    RED="\e[31m"
+    CYAN="\e[36m"
+    BOLD="\e[1m"
+    RESET="\e[0m"
+    
+    while true; do
+        echo -e "${CYAN}${BOLD}Would you like to proceed $1?${RESET} ${GREEN}[Y]${RESET}/${RED}[N]${RESET}: "
+        read -p "" choice
+        case "$choice" in
+            [Yy]* ) echo -e "${GREEN}Great! Continuing $1...${RESET}";
+                bash $2;
+            break;;
+            [Nn]* ) echo -e "${RED}Okay, exiting $1...${RESET}";
+            exit;;
+            * ) echo -e "${RED}Please answer with Y or N.${RESET}";;
+        esac
+    done
+}
+
