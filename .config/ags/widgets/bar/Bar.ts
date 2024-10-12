@@ -13,7 +13,7 @@ export default () =>
         layer: "top",
         visible: barPin.value,
         child: Widget.Box({
-            css: `padding-bottom: 1px;`,
+            css: `padding-bottom: 5px;`,
             child: Widget.EventBox({
                 on_hover_lost: () => !barPin.value ? App.closeWindow("bar") : null,
                 child: Widget.CenterBox({

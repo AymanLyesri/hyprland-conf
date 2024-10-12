@@ -11,8 +11,7 @@
 
 .media-widget {
   all: unset;
-  margin: 1px;
-  padding: 1px;
+  padding: 0px 10px 10px 10px;
 
   .player {
     @extend .module;
