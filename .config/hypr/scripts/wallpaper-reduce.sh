@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Directory containing images
-input_directory="$HOME/wallpapers/normal"  # Change to your directory path
-output_directory="$HOME/wallpapers/compressed"  # Change to your desired output path
+input_directory="$HOME/.config/wallpapers/normal"  # Change to your directory path
+output_directory="$HOME/.config/wallpapers/compressed"  # Change to your desired output path
 target_size=$((2 * 1024 * 1024))  # Target size in bytes (2MB)
 
 # Create the output directory if it doesn't exist
