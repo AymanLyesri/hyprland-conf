@@ -23,8 +23,8 @@ else
     gaps_in="7"           # Inner Gaps for the windows
     gaps_out="5,15,15,15" # Outer Gaps for the windows, top, right, bottom, left
     border_size="2"       # Border size for the windows
-    size="2"              # Size of the blur
-    passes="4"            # Number of passes for the blur
+    size="10"              # Size of the blur
+    passes="3"            # Number of passes for the blur
 fi
 
 # echo -e "general { \n\tsensitivity=$sensitivity \n}" >$sens_file                              # Write the sensitivity to the file
