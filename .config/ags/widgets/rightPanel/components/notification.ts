@@ -51,7 +51,7 @@ export function Notification_(n: Notification, new_Notification = false, popup =
         justification: "left",
         hexpand: true,
         max_width_chars: 24,
-        truncate: "end",
+        // truncate: "end",
         wrap: true,
         label: n.summary,
         use_markup: true,
@@ -105,6 +105,8 @@ export function Notification_(n: Notification, new_Notification = false, popup =
     // })
 
     const close = Widget.Button({
+        hpack: "end",
+        vpack: "start",
         class_name: "close",
         on_clicked: async () =>
         {
@@ -112,6 +114,18 @@ export function Notification_(n: Notification, new_Notification = false, popup =
             timeout(TRANSITION, () => { n.close(); Revealer.destroy() })
         },
         child: Widget.Icon("window-close-symbolic"),
+    })
+
+    const expand = Widget.ToggleButton({
+        hpack: "end",
+        vpack: "end",
+        class_name: "expand",
+        on_toggled: (self) =>
+        {
+            body.truncate = self.active ? "none" : "end"
+            self.label = self.active ? "" : ""
+        },
+        label: "",
     })
 
     const Box = Widget.Box(
@@ -128,12 +142,18 @@ export function Notification_(n: Notification, new_Notification = false, popup =
         Widget.Box([
             icon,
             Widget.Box(
-                { vertical: true },
+                {
+                    vertical: true,
+                    spacing: 5,
+                },
                 Widget.Box({
                     hexpand: true,
                     children: popup ? [title] : [title, close],
                 }),
-                body,
+                Widget.Box({
+                    hexpand: true,
+                    children: popup ? [body] : [body, expand],
+                }),
             ),
         ]),
         Actions,
