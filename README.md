@@ -22,7 +22,7 @@ I use Arch BTW.. :)
 
 - **Dynamic wallpapers** based on workspaces: Custom scripts & [Hyprpaper](https://github.com/hyprwm/hyprpaper)
 - **Screenshot all active workspaces** into one image: Custom script
-- **Dynamic color themes**: Custom scripts & [PyWal](https://github.com/dylanaraps/pywal)
+- **Dynamic color themes** based on current wallpaper: Custom scripts & [PyWal](https://github.com/dylanaraps/pywal)
 - **Global Theme switcher (Light/Dark)**: Custom scripts
 - **Ags widgets** ~~(Eww replaced)~~:
   - Color scheme based on current wallpaper
@@ -31,6 +31,7 @@ I use Arch BTW.. :)
     - Bandwidth speed monitor
   - Application launcher ~~(Rofi replaced)~~
     - App launcher
+    - Emojis
     - Arithmetics
     - Url forwarding to default browser
   - Wallpaper switcher for each workspace
@@ -39,6 +40,8 @@ I use Arch BTW.. :)
     - Waifu display
     - System resource monitor
     - Notification history - filter
+    - Calendar
+    - System Updater (WIP)
 - **Machine-based configuration** (laptop/desktop):
   - Blur
   - Mouse sensitivity
@@ -71,7 +74,7 @@ KeyBinds are displayed and organized [Here](https://github.com/AymanLyesri/hyprl
 
 # Installation Guide
 
-> run this one liner in the terminal
+> Run this one liner in the terminal
 
 ```bash
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/AymanLyesri/hyprland-conf/refs/heads/master/.config/hypr/maintenance/INSTALL.sh)"
@@ -96,27 +99,17 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/AymanLyesri/hyprland-con
 
 ### Application Launcher
 
-#### Apps
-
-![clipboard_image_20241013_132106](https://github.com/user-attachments/assets/20f9ed91-79cf-41e7-bf5e-dacad8f3933b)
-
-#### Emojis
-
-![image](https://github.com/user-attachments/assets/a0ee2cb8-129a-4f38-b4f2-0636351a0c69)
-
-#### Arithmetics
-
-![image](https://github.com/user-attachments/assets/8449ae19-0d81-4505-9d58-7241da8dfd48)
-
-#### URLs
-
-![image](https://github.com/user-attachments/assets/77cabaf7-1233-4f5f-9f56-c27e6e5e1ea5)
+| Apps                                                                                                                | Emojis                                                                                    | Arithmetics                                                                               | URLs                                                                                      |
+| ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| ![clipboard_image_20241013_132106](https://github.com/user-attachments/assets/20f9ed91-79cf-41e7-bf5e-dacad8f3933b) | ![image](https://github.com/user-attachments/assets/a0ee2cb8-129a-4f38-b4f2-0636351a0c69) | ![image](https://github.com/user-attachments/assets/8449ae19-0d81-4505-9d58-7241da8dfd48) | ![image](https://github.com/user-attachments/assets/77cabaf7-1233-4f5f-9f56-c27e6e5e1ea5) |
 
 ### Right Panel
 
-![image](https://github.com/user-attachments/assets/c33d0f4e-a3bb-48e1-8f1b-d66abeaf3ddb)
-![image](https://github.com/user-attachments/assets/a75cf5c3-e397-40c2-b3e9-e12722e5d148)
+> You can customize the widget layout however you want!
 
+| Example Layout                                                                            | Example Layout                                                                            |
+| ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| ![image](https://github.com/user-attachments/assets/c33d0f4e-a3bb-48e1-8f1b-d66abeaf3ddb) | ![image](https://github.com/user-attachments/assets/a75cf5c3-e397-40c2-b3e9-e12722e5d148) |
 
 ### Media Player
 
@@ -127,8 +120,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/AymanLyesri/hyprland-con
 ![image](https://github.com/user-attachments/assets/822cda83-f316-4742-95e5-485fa16234b0)
 ![image](https://github.com/user-attachments/assets/cfc2509d-08df-457a-89f1-247a9c5f6b65)
 
-
-### Theme Switching
+### Theme Switching (old screenshots)
 
 ![screenshot](https://github.com/user-attachments/assets/f3321fb4-9992-4133-b860-c2e7b8f246d6)
 ![screenshot](https://github.com/user-attachments/assets/87da3faa-fbc4-47d8-9901-354e54f5452e)
