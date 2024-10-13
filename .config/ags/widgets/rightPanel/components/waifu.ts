@@ -27,7 +27,6 @@ const SearchImage = () => Utils.execAsync(`bash -c "xdg-open 'https://danbooru.d
     .catch(err => Utils.notify({ summary: 'Error', body: err }))
 
 const CopyImage = () => Utils.execAsync(`bash -c "wl-copy --type image/png < ${waifuPath}"`)
-    .then(() => Utils.notify({ summary: 'Clipboard', body: 'waifu copied to clipboard' }))
     .catch(err => Utils.notify({ summary: 'Error', body: err }))
 
 const OpenImage = () => Hyprland.messageAsync("dispatch exec [float;size 50%] feh --scale-down " + waifuPath)

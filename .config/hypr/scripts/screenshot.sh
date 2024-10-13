@@ -40,8 +40,8 @@ screenshotAll(){
     # merge screenshots
     convert -append ${screenshots[@]} $ScreenshotsDir/$(date +'%s_grim_result.jpg')
     
-    # notify
-    notify-send 'Clipboard' 'Screenshots taken and merged.' --hint=string:actions:"[[\"Preview\",\"feh $ScreenshotsDir/$(date +'%s_grim_result.jpg') \"],[\"Edit\",\"gimp $ScreenshotsDir/$(date +'%s_grim_result.jpg') \"],[\"Delete\",\"rm $ScreenshotsDir/$(date +'%s_grim_result.jpg') \"]]"
+    # copy to clipboard
+    wl-copy -t image/png < $ScreenshotsDir/$(date +'%s_grim_result.jpg')
     
 }
 
@@ -51,13 +51,9 @@ if [[ "$1" == "--now" ]]; then
     
     grim - | wl-copy && wl-paste >$file
     
-    notify-send -i $file 'Clipboard' 'Screenshot taken and copied to clipboard.' --hint=string:actions:"[[\"Preview\",\"feh $file \"],[\"Edit\",\"gimp $file \"],[\"Delete\",\"rm $file \"]]"
-    
     elif [[ "$1" == "--area" ]]; then
     
     grim -g "$(slurp)" - | wl-copy && wl-paste >$file
-    
-    notify-send -i $file 'Clipboard' 'Screenshot taken and copied to clipboard.' --hint=string:actions:"[[\"Preview\",\"feh $file \"],[\"Edit\",\"gimp $file \"],[\"Delete\",\"rm $file \"]]"
     
     elif [[ "$1" == "--all" ]]; then
     
