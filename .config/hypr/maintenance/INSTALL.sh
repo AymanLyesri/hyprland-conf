@@ -23,7 +23,8 @@ fi
 # Change branch to the specified branch
 cd $CONF_DIR
 git checkout $BRANCH
-git pull
+git fetch origin/$BRANCH
+git reset --hard origin/$BRANCH
 
 MAINTENANCE_DIR=".config/hypr/maintenance"
 
