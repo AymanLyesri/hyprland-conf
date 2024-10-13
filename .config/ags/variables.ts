@@ -9,7 +9,7 @@ export const globalTransition = 500
 
 export const barPin = Variable(true)
 
-export const waifuPath = App.configDir + "/assets/waifu/waifu.jpg"
+export const waifuPath = App.configDir + "/assets/waifu/waifu.png"
 export const waifuVisibility = Variable(getOption("waifu.visibility"))
 waifuVisibility.connect("changed", ({ value }) => setOption("waifu.visibility", value));
 
