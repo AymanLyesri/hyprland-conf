@@ -70,7 +70,7 @@ fzf-tab-git
 #                             |___/                               
 bluez
 bluez-utils
-blueman
+blueman-git
 evremap-git
 network-manager-applet
 networkmanager
@@ -98,6 +98,7 @@ light
 lolcat
 spotify-launcher
 cava
+
 # _____ _                                                _   _   _ ___ 
 #|_   _| |__   ___ _ __ ___   ___  ___    __ _ _ __   __| | | | | |_ _|
 #  | | | '_ \ / _ \ '_ ` _ \ / _ \/ __|  / _` | '_ \ / _` | | | | || | 
