@@ -127,6 +127,13 @@ levelbar {
   }
 }
 
+scrolledwindow {
+  box-shadow: $background 0px -50px 10px -10px inset;
+  slider {
+    background: $module-secondary;
+  }
+}
+
 .switch {
   @extend .module;
   margin: 0;

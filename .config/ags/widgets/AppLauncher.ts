@@ -4,7 +4,6 @@ import { emptyWorkspace, globalMargin, newAppWorkspace } from "variables";
 import { closeProgress, openProgress } from "./Progress";
 import { containsProtocolOrTLD, formatToURL, getDomainFromURL } from "utils/url";
 import { arithmetic, containsOperator } from "utils/arithmetic";
-import { getArgumentAfterSpace, getArgumentBeforeSpace } from "utils/string";
 const Hyprland = await Service.import('hyprland')
 
 interface Result
@@ -67,16 +66,21 @@ function Entry()
                     debounceTimer = setTimeout(async () =>
                     {
                         try {
+
                             if (text == "" || text == " " || text == null) {
                                 Results.value = [];
-                            } else if (text.includes("translate")) {
+                                return;
+                            }
+                            const args: string[] = text.split(" ");
+
+                            if (args[0].includes("translate")) {
                                 let language = text.includes(">") ? text.split(">")[1].trim() : "en";
                                 Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/translate.sh '${text.split(">")[0].replace("translate", "").trim()}' '${language}'`));
-                            } else if (text.includes("emoji")) {
+                            } else if (args[0].includes("emoji")) {
                                 Results.value = readJSONFile(`${App.configDir}/assets/emojis/emojis.json`).filter(emoji => emoji.app_tags.toLowerCase().includes(text.replace("emoji", "").trim()));
-                            } else if (containsProtocolOrTLD(getArgumentBeforeSpace(text))) {
+                            } else if (containsProtocolOrTLD(args[0])) {
                                 Results.value = [{ app_name: getDomainFromURL(text), app_exec: `xdg-open ${formatToURL(text)}`, app_type: 'url' }];
-                            } else if (containsOperator(getArgumentBeforeSpace(text))) {
+                            } else if (containsOperator(args[0])) {
                                 Results.value = [{ app_name: arithmetic(text), app_exec: `wl-copy ${arithmetic(text)}`, app_type: 'calc' }];
                             } else {
                                 Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/app-search.sh ${text}`));
@@ -86,7 +90,7 @@ function Entry()
                         } catch (err) {
                             print(err);
                         }
-                    }, 10);  // 300ms delay
+                    }, 100);  // 300ms delay
                 },
                 on_accept: () =>
                 {

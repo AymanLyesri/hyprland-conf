@@ -198,10 +198,11 @@ function Actions()
 function Image()
 {
     return Widget.EventBox({
-        class_name: "image",
+
         on_primary_click: async () => OpenImage(),
         on_secondary_click: async () => SearchImage(),
         child: Widget.Box({
+            class_name: "image",
             hexpand: false,
             vexpand: false,
             child: Actions(),
@@ -210,7 +211,7 @@ function Image()
                 return `
                 background-image: url("${waifuPath}");
                 min-height: ${Number(imageDetails.image_height) / Number(imageDetails.image_width) * width}px;
-                box-shadow: 0 0 5px 0 ${getDominantColor(waifuPath)};
+
                 `
             }),
         }),

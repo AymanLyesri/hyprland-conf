@@ -1,98 +1,98 @@
-.waifu {
-  .image > * {
-    margin: 0px 10px;
-    padding: 0px;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    border-radius: 10px;
+.waifu .image {
+  margin: 0px 10px;
+  padding: 0px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  border-radius: 10px;
 
-    .actions {
-      .top {
+  // box-shadow: rgb(0, 0, 0) 0px 0px 50px -30px inset;
+
+  .actions {
+    .top {
+      margin: 5px;
+    }
+    .bottom {
+      // margin: 5px;
+      .action-trigger.action-trigger {
+        // font-size: 15px;
         margin: 5px;
+        min-width: 30px;
+        // min-height: 25px;
+        padding: 0px;
+        border-radius: 10px;
       }
-      .bottom {
-        // margin: 5px;
-        .action-trigger.action-trigger {
-          // font-size: 15px;
-          margin: 5px;
-          min-width: 30px;
-          // min-height: 25px;
-          padding: 0px;
-          border-radius: 10px;
-        }
+    }
+
+    .input {
+      @extend .button;
+      border-radius: 0px 0px 0px 0px;
+    }
+
+    button,
+    .button {
+      min-height: 0px;
+      min-width: 0px;
+      border-radius: 0px;
+
+      &.pin {
+        border-radius: 10px;
       }
 
-      .input {
-        @extend .button;
-        border-radius: 0px 0px 0px 0px;
+      &.favorite {
+        // border-radius: 0px 0px 10px 0px;
       }
 
-      button,
-      .button {
-        min-height: 0px;
-        min-width: 0px;
+      &.random {
+        // border-radius: 0px;
+      }
+
+      &.browser {
+        // border-radius: 0px;
+      }
+
+      &.copy {
+        // border-radius: 0px;
+      }
+
+      &.entry-search {
+        border-radius: 0px 0px 0px 10px;
+      }
+
+      &.nsfw {
+        @extend .danger;
+        border-radius: 0px 0px 10px 0px;
+      }
+
+      // &:first-child {
+      //   border-radius: 10px 0px 0px 10px;
+      // }
+
+      // &:last-child {
+      //   border-radius: 0px 10px 10px 0px;
+      // }
+
+      // &:only-child {
+      //   border-radius: 10px;
+      // }
+    }
+
+    .input {
+      & > * {
+        @extend .module;
+        background: transparent;
         border-radius: 0px;
-
-        &.pin {
-          border-radius: 10px;
-        }
-
-        &.favorite {
-          // border-radius: 0px 0px 10px 0px;
-        }
-
-        &.random {
-          // border-radius: 0px;
-        }
-
-        &.browser {
-          // border-radius: 0px;
-        }
-
-        &.copy {
-          // border-radius: 0px;
-        }
-
-        &.entry-search {
-          border-radius: 0px 0px 0px 10px;
-        }
-
-        &.nsfw {
-          @extend .danger;
-          border-radius: 0px 0px 10px 0px;
-        }
-
-        // &:first-child {
-        //   border-radius: 10px 0px 0px 10px;
-        // }
-
-        // &:last-child {
-        //   border-radius: 0px 10px 10px 0px;
-        // }
-
-        // &:only-child {
-        //   border-radius: 10px;
-        // }
+        margin: 0px;
+        padding: 0px;
+        min-width: 1px;
+        min-height: 20px;
+        border-color: transparent;
+        border: unset;
       }
+    }
 
-      .input {
-        & > * {
-          @extend .module;
-          background: transparent;
-          border-radius: 0px;
-          margin: 0px;
-          padding: 0px;
-          min-width: 1px;
-          min-height: 20px;
-          border-color: transparent;
-          border: unset;
-        }
-      }
-
-      .switch {
-        border-radius: 0px 10px 10px 0px;
-      }
+    .switch {
+      border-radius: 0px 10px 10px 0px;
     }
   }
 }

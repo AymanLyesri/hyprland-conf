@@ -11,12 +11,12 @@ blur_file="$HOME/.config/hypr/configs/custom/blur.conf"               # Path to 
 
 touch -c $sens_file $gap_file $border_size_file $blur_file # Create the files if they don't exist
 
-if [ $chassis_type == "1366×768" ]; then
+if [ "$resolution" = "1366x768" ]; then
     sensitivity="0.4"     # Sensitivity for the touchpad
     gaps_in="5"           # Inner Gaps for the windows
     gaps_out="5,10,10,10" # Outer Gaps for the windows, top, right, bottom, left
     border_size="1"       # Border size for the windows
-    size="6"              # Size of the blur
+    size="10"              # Size of the blur
     passes="2"            # Number of passes for the blur
 else
     sensitivity="0.2"     # Sensitivity for the mouse
