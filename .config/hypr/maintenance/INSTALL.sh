@@ -1,9 +1,9 @@
 # #!/bin/bash
+source $MAINTENANCE_DIR/ESSENTIALS.sh
 
 export FZF_HEIGHT="40%"
-
-# Get the directory where the scripts are located
 MAINTENANCE_DIR=".config/hypr/maintenance"
+CONF_DIR="hyprland-conf"
 
 # specify the repo branch
 if [ -z "$1" ]; then
@@ -11,8 +11,6 @@ if [ -z "$1" ]; then
 else
     BRANCH=$1
 fi
-
-CONF_DIR="hyprland-conf"
 
 if [ -d "$CONF_DIR" ]; then
     echo "$CONF_DIR directory exists."
@@ -27,9 +25,8 @@ git checkout $BRANCH
 git fetch origin $BRANCH
 git reset --hard origin/$BRANCH
 
-source $MAINTENANCE_DIR/ESSENTIALS.sh
 
-# Install the required packages
+
 install_git
 
 install_fzf
@@ -50,23 +47,15 @@ case $aur_helper in
     ;;
 esac
 
-# Backup dotfiles
-echo "Backing up dotfiles from .config ..."
-continue_prompt "backup" $MAINTENANCE_DIR/BACKUP.sh
 
-echo "Copying configuration files to $HOME..."
-sudo cp -a . $HOME
-echo "Configuration files have been copied to $HOME."
+continue_prompt "Backing up dotfiles from .config ..." "$MAINTENANCE_DIR/BACKUP.sh"
 
-continue_prompt "keyboard configuration" $MAINTENANCE_DIR/CONFIGURE.sh
+continue_prompt "Copying configuration files to $HOME..." "sudo cp -a . $HOME"
 
-# remove_packages
-echo "Removing unwanted packages..."
-remove_packages
-echo "Unwanted packages have been removed."
+continue_prompt "keyboard configuration" "$MAINTENANCE_DIR/CONFIGURE.sh"
 
-# Install packages
-echo "Installing packages..."
-$HOME/.config/hypr/pacman/install-pkgs.sh yay
+continue_prompt "Do you want to remove unwanted packages?" remove_packages
+
+continue_prompt "Do you want to install necessary packages?" "$HOME/.config/hypr/pacman/install-pkgs.sh yay"
 
 echo "Installation complete. Please Reboot the system."

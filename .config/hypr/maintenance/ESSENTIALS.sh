@@ -123,14 +123,14 @@ continue_prompt() {
     RESET="\e[0m"
     
     while true; do
-        echo -e "${CYAN}${BOLD}Would you like to proceed $1?${RESET} ${GREEN}[Y]${RESET}/${RED}[N]${RESET}: "
+        echo -e "${CYAN}${BOLD}$1${RESET} ${GREEN}[Y]${RESET}/${RED}[N]${RESET}: "
         read -p "" choice
         case "$choice" in
-            [Yy]* ) echo -e "${GREEN}Great! Continuing $1...${RESET}";
-                bash $2;
+            [Yy]* ) echo -e "${GREEN}Great! Continuing...${RESET}";
+                $2;
             break;;
-            [Nn]* ) echo -e "${RED}Okay, exiting $1...${RESET}";
-            exit;;
+            [Nn]* ) echo -e "${RED}Okay, exiting...${RESET}";
+            break;;
             * ) echo -e "${RED}Please answer with Y or N.${RESET}";;
         esac
     done
