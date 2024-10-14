@@ -90,6 +90,9 @@ eval $(thefuck --alias)
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
 
+# MongoDb
+# source <(mongocli completion zsh)
+
 # Waifu Chat Bot and Assistant
 alias waifu='source $HOME/linux-chat-bot/main.sh "$(pwd)"'
 
