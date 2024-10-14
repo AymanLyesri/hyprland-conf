@@ -1,8 +1,8 @@
-#!/bin/bash
+# #!/bin/bash
 
-# Get the directory where the script is located
-# MAINTENANCE_DIR=$(dirname $(realpath $BASH_SOURCE))
-# CONF_DIR=$(dirname $(dirname $(dirname $MAINTENANCE_DIR)))
+export FZF_HEIGHT="40%"
+MAINTENANCE_DIR=".config/hypr/maintenance"
+CONF_DIR="hyprland-conf"
 
 # specify the repo branch
 if [ -z "$1" ]; then
@@ -10,8 +10,6 @@ if [ -z "$1" ]; then
 else
     BRANCH=$1
 fi
-
-CONF_DIR="hyprland-conf"
 
 if [ -d "$CONF_DIR" ]; then
     echo "$CONF_DIR directory exists."
@@ -26,11 +24,7 @@ git checkout $BRANCH
 git fetch origin $BRANCH
 git reset --hard origin/$BRANCH
 
-MAINTENANCE_DIR=".config/hypr/maintenance"
-
-source $MAINTENANCE_DIR/ESSENTIALS.sh
-
-# Install the required packages
+source $MAINTENANCE_DIR/ESSENTIALS.sh # source the essentials file INSIDE the repository
 
 install_git
 
@@ -38,28 +32,29 @@ install_fzf
 
 install_figlet
 
-install_yay
+# choose Pacman Wrapper
+echo "Choose an AUR helper to install packages:"
+aur_helpers=("yay" "paru")
+aur_helper=$(echo "${aur_helpers[@]}"| tr ' ' '\n' | fzf --height $FZF_HEIGHT)
+echo "AUR helper selected: $aur_helper"
+case $aur_helper in
+    yay)
+        install_yay
+    ;;
+    paru)
+        install_paru
+    ;;
+esac
 
 
-# # Backup dotfiles
-echo "Backing up dotfiles from .config ..."
-continue_prompt "backup" $MAINTENANCE_DIR/BACKUP.sh
+continue_prompt "Backing up dotfiles from .config ..." "$MAINTENANCE_DIR/BACKUP.sh"
 
-echo "Copying configuration files to $HOME..."
-sudo cp -a . $HOME
-echo "Configuration files have been copied to $HOME."
+continue_prompt "Copying configuration files to $HOME..." "sudo cp -a . $HOME"
 
-continue_prompt "keyboard configuration" $MAINTENANCE_DIR/CONFIGURE.sh
+continue_prompt "keyboard configuration" "$MAINTENANCE_DIR/CONFIGURE.sh"
 
-# remove_packages
-echo "Removing unwanted packages..."
-remove_packages
-echo "Unwanted packages have been removed."
+continue_prompt "Do you want to remove unwanted packages?" remove_packages
 
-# Install packages
-echo "Installing packages..."
-$HOME/.config/hypr/pacman/install-pkgs.sh yay
+continue_prompt "Do you want to install necessary packages? (using $aur_helper)" "$HOME/.config/hypr/pacman/install-pkgs.sh $aur_helper"
 
 echo "Installation complete. Please Reboot the system."
-
-# reboot

@@ -67,6 +67,38 @@ install_yay() {
     fi
 }
 
+# Function to install paru
+install_paru() {
+    if command_exists paru; then
+        echo "paru is already installed."
+    else
+        echo "paru is not installed. Installing paru..."
+        
+        # Update system packages
+        sudo pacman -Syu --noconfirm
+        
+        # Install base-devel and git if not already installed
+        sudo pacman -S --needed --noconfirm base-devel git
+        
+        # Clone paru repository from the AUR
+        git clone https://aur.archlinux.org/paru.git
+        
+        # Change directory to paru folder
+        cd paru
+        
+        # Build and install paru
+        makepkg -si --noconfirm
+        
+        # Go back to the original directory
+        cd ..
+        
+        # Clean up by removing the paru directory
+        rm -rf paru
+        
+        echo "paru has been successfully installed."
+    fi
+}
+
 # Function to remove certain packages
 remove_packages() {
     # List of packages to remove (space-separated)
@@ -91,14 +123,14 @@ continue_prompt() {
     RESET="\e[0m"
     
     while true; do
-        echo -e "${CYAN}${BOLD}Would you like to proceed $1?${RESET} ${GREEN}[Y]${RESET}/${RED}[N]${RESET}: "
+        echo -e "${CYAN}${BOLD}$1${RESET} ${GREEN}[Y]${RESET}/${RED}[N]${RESET}: "
         read -p "" choice
         case "$choice" in
-            [Yy]* ) echo -e "${GREEN}Great! Continuing $1...${RESET}";
-                bash $2;
+            [Yy]* ) echo -e "${GREEN}Great! Continuing...${RESET}";
+                $2;
             break;;
-            [Nn]* ) echo -e "${RED}Okay, exiting $1...${RESET}";
-            exit;;
+            [Nn]* ) echo -e "${RED}Okay, exiting...${RESET}";
+            break;;
             * ) echo -e "${RED}Please answer with Y or N.${RESET}";;
         esac
     done

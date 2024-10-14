@@ -2,8 +2,8 @@
   // min-width: 1000px;
   min-height: 150px;
   @extend .module;
-  padding: 10px 10px 10px 50px;
-  border-radius: 20px;
+  padding: 10px;
+  border-radius: 50px;
   border: 1px solid $secondary;
 
   scrolledwindow {
@@ -37,23 +37,24 @@
     &.focused {
       min-height: 150px;
       min-width: 150px;
+      &:hover {
+        min-height: 150px;
+        min-width: 300px;
+        border-radius: 50px;
+      }
     }
 
     &:hover {
-      min-height: 200px;
-      min-width: 350px;
+      min-height: 100px;
+      min-width: 200px;
       background-position: center;
       background-size: 400px;
       background-repeat: no-repeat;
-
       border-radius: 20px;
     }
 
     &:active {
-      min-height: 150px;
-      min-width: 300px;
-
-      border-radius: 10px;
+      box-shadow: 0px 0px 20px 100px $background inset;
       transition: all 0.2s;
     }
   }
@@ -79,8 +80,11 @@
       &:hover {
         min-width: 125px;
         background-position: center;
-
         border-radius: 20px;
+      }
+      &:active {
+        box-shadow: 0px 0px 20px 100px $background inset;
+        transition: all 0.2s;
       }
     }
   }

@@ -45,7 +45,7 @@ function Wallpapers()
         })
     }
 
-    const get_wallpapers: any = (self) =>
+    const get_wallpapers = () =>
     {
         const activeId = hyprland.active.workspace.bind("id");
 
@@ -61,7 +61,6 @@ function Wallpapers()
                 label: `${key}`,
                 on_primary_click: (_, event) =>
                 {
-                    // allWallpapers().popup_at_pointer(event)
                     bottom.child.reveal_child = true
                     selectedWorkspace = key
                 },
@@ -69,20 +68,21 @@ function Wallpapers()
         })
     }
 
+    const reset = Widget.Button({
+        vpack: "center",
+        class_name: "reload-wallpapers",
+        label: "󰑐",
+        on_primary_click: () =>
+        {
+            Utils.execAsync(`bash -c "$HOME/.config/hypr/hyprpaper/reload.sh"`).catch(err => print(err));
+        }
+    })
+
     const top = Widget.Box({
         hexpand: true,
         vexpand: true,
         spacing: 10,
-        children: [...get_wallpapers(), Widget.Button({
-            vpack: "center",
-            class_name: "reload-wallpapers",
-            label: "󰑐",
-            on_primary_click: () =>
-            {
-                Utils.execAsync(`bash -c "$HOME/.config/hypr/hyprpaper/reload.sh"`).catch(err => print(err));
-            }
-        })
-        ]
+        children: [...get_wallpapers(), reset]
     });
 
     const random = Widget.Button({
