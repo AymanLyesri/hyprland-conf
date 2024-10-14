@@ -1,8 +1,9 @@
-#!/bin/bash
+# #!/bin/bash
 
-# Get the directory where the script is located
-# MAINTENANCE_DIR=$(dirname $(realpath $BASH_SOURCE))
-# CONF_DIR=$(dirname $(dirname $(dirname $MAINTENANCE_DIR)))
+export FZF_HEIGHT="40%"
+
+# Get the directory where the scripts are located
+MAINTENANCE_DIR=".config/hypr/maintenance"
 
 # specify the repo branch
 if [ -z "$1" ]; then
@@ -26,22 +27,30 @@ git checkout $BRANCH
 git fetch origin $BRANCH
 git reset --hard origin/$BRANCH
 
-MAINTENANCE_DIR=".config/hypr/maintenance"
-
 source $MAINTENANCE_DIR/ESSENTIALS.sh
 
 # Install the required packages
-
 install_git
 
 install_fzf
 
 install_figlet
 
-install_yay
+# choose Pacman Wrapper
+echo "Choose an AUR helper to install packages:"
+aur_helpers=("yay" "paru")
+aur_helper=$(echo "${aur_helpers[@]}"| tr ' ' '\n' | fzf --height $FZF_HEIGHT)
+echo "AUR helper selected: $aur_helper"
+case $aur_helper in
+    yay)
+        install_yay
+    ;;
+    paru)
+        install_paru
+    ;;
+esac
 
-
-# # Backup dotfiles
+# Backup dotfiles
 echo "Backing up dotfiles from .config ..."
 continue_prompt "backup" $MAINTENANCE_DIR/BACKUP.sh
 
@@ -61,5 +70,3 @@ echo "Installing packages..."
 $HOME/.config/hypr/pacman/install-pkgs.sh yay
 
 echo "Installation complete. Please Reboot the system."
-
-# reboot

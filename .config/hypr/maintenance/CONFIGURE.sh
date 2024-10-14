@@ -12,7 +12,7 @@ configure_keybord() {
     kb_variants=$(localectl list-x11-keymap-variants)
     
     echo "Configuring keyboard layout for hyprland... (eg: us, es, fr, de, etc)"
-    new_layout=$(echo "$kb_layouts" | fzf --height 40%)
+    new_layout=$(echo "$kb_layouts" | fzf --height $FZF_HEIGHT)
     # Check if the selection was canceled
     if [ -z "$new_layout" ]; then
         echo "No layout selected. Defaulting to 'us'."
@@ -24,7 +24,7 @@ configure_keybord() {
     
     
     echo "Configuring keyboard variant for hyprland... (eg: intl, dvorak, etc)"
-    new_variant=$(echo "$kb_variants" | fzf --height 40%)
+    new_variant=$(echo "$kb_variants" | fzf --height $FZF_HEIGHT)
     # Check if the selection was canceled
     if [ -z "$new_variant" ]; then
         echo "No variant selected. Leaving it empty."

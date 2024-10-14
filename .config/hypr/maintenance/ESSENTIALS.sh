@@ -67,6 +67,38 @@ install_yay() {
     fi
 }
 
+# Function to install paru
+install_paru() {
+    if command_exists paru; then
+        echo "paru is already installed."
+    else
+        echo "paru is not installed. Installing paru..."
+        
+        # Update system packages
+        sudo pacman -Syu --noconfirm
+        
+        # Install base-devel and git if not already installed
+        sudo pacman -S --needed --noconfirm base-devel git
+        
+        # Clone paru repository from the AUR
+        git clone https://aur.archlinux.org/paru.git
+        
+        # Change directory to paru folder
+        cd paru
+        
+        # Build and install paru
+        makepkg -si --noconfirm
+        
+        # Go back to the original directory
+        cd ..
+        
+        # Clean up by removing the paru directory
+        rm -rf paru
+        
+        echo "paru has been successfully installed."
+    fi
+}
+
 # Function to remove certain packages
 remove_packages() {
     # List of packages to remove (space-separated)
