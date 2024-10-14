@@ -4,9 +4,6 @@ export FZF_HEIGHT="40%"
 MAINTENANCE_DIR=".config/hypr/maintenance"
 CONF_DIR="hyprland-conf"
 
-source $MAINTENANCE_DIR/ESSENTIALS.sh
-
-
 # specify the repo branch
 if [ -z "$1" ]; then
     BRANCH="master"
@@ -27,7 +24,7 @@ git checkout $BRANCH
 git fetch origin $BRANCH
 git reset --hard origin/$BRANCH
 
-
+source $MAINTENANCE_DIR/ESSENTIALS.sh # source the essentials file INSIDE the repository
 
 install_git
 
