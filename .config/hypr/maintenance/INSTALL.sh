@@ -5,24 +5,24 @@ MAINTENANCE_DIR=".config/hypr/maintenance"
 CONF_DIR="hyprland-conf"
 
 # specify the repo branch
-if [ -z "$1" ]; then
-    BRANCH="master"
-else
-    BRANCH=$1
-fi
+# if [ -z "$1" ]; then
+#     BRANCH="master"
+# else
+#     BRANCH=$1
+# fi
 
-if [ -d "$CONF_DIR" ]; then
-    echo "$CONF_DIR directory exists."
-else
-    echo "$CONF_DIR directory does not exist. Cloning the repository..."
-    git clone https://github.com/AymanLyesri/hyprland-conf.git --depth 1
-fi
+# if [ -d "$CONF_DIR" ]; then
+#     echo "$CONF_DIR directory exists."
+# else
+#     echo "$CONF_DIR directory does not exist. Cloning the repository..."
+#     git clone https://github.com/AymanLyesri/hyprland-conf.git --depth 1
+# fi
 
-# Change branch to the specified branch
-cd $CONF_DIR
-git checkout $BRANCH
-git fetch origin $BRANCH
-git reset --hard origin/$BRANCH
+# # Change branch to the specified branch
+# cd $CONF_DIR
+# git checkout $BRANCH
+# git fetch origin $BRANCH
+# git reset --hard origin/$BRANCH
 
 source $MAINTENANCE_DIR/ESSENTIALS.sh # source the essentials file INSIDE the repository
 
@@ -55,6 +55,6 @@ continue_prompt "keyboard configuration" "$MAINTENANCE_DIR/CONFIGURE.sh"
 
 continue_prompt "Do you want to remove unwanted packages?" remove_packages
 
-continue_prompt "Do you want to install necessary packages?" "$HOME/.config/hypr/pacman/install-pkgs.sh yay"
+continue_prompt "Do you want to install necessary packages? (using $aur_helper)" "$HOME/.config/hypr/pacman/install-pkgs.sh $aur_helper"
 
 echo "Installation complete. Please Reboot the system."
