@@ -1,9 +1,11 @@
 # #!/bin/bash
-source $MAINTENANCE_DIR/ESSENTIALS.sh
 
 export FZF_HEIGHT="40%"
 MAINTENANCE_DIR=".config/hypr/maintenance"
 CONF_DIR="hyprland-conf"
+
+source $MAINTENANCE_DIR/ESSENTIALS.sh
+
 
 # specify the repo branch
 if [ -z "$1" ]; then
