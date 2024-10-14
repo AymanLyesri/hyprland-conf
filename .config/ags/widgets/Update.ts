@@ -1,4 +1,4 @@
-import { Cancellable, Subprocess } from "types/@girs/gio-2.0/gio-2.0.cjs"
+import { Subprocess } from "types/@girs/gio-2.0/gio-2.0.cjs"
 import { timeout } from "types/utils/timeout";
 
 const maxLabelLength = 50;
@@ -37,7 +37,6 @@ export default () =>
     // )
 
     var updateSubprocess: Subprocess
-    const cancellable = new Cancellable();
 
     const Password = Widget.Entry({
         placeholder_text: "Password",
@@ -73,7 +72,7 @@ export default () =>
 
                             updateSubprocess.force_exit();
 
-                            updateSubprocess.wait_async(cancellable, () =>
+                            updateSubprocess.wait_async(null, () =>
                             {
                                 setTimeout(() =>
                                 {
