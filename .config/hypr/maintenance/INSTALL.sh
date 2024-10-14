@@ -5,24 +5,24 @@ MAINTENANCE_DIR=".config/hypr/maintenance"
 CONF_DIR="hyprland-conf"
 
 # specify the repo branch
-# if [ -z "$1" ]; then
-#     BRANCH="master"
-# else
-#     BRANCH=$1
-# fi
+if [ -z "$1" ]; then
+    BRANCH="master"
+else
+    BRANCH=$1
+fi
 
-# if [ -d "$CONF_DIR" ]; then
-#     echo "$CONF_DIR directory exists."
-# else
-#     echo "$CONF_DIR directory does not exist. Cloning the repository..."
-#     git clone https://github.com/AymanLyesri/hyprland-conf.git --depth 1
-# fi
+if [ -d "$CONF_DIR" ]; then
+    echo "$CONF_DIR directory exists."
+else
+    echo "$CONF_DIR directory does not exist. Cloning the repository..."
+    git clone https://github.com/AymanLyesri/hyprland-conf.git --depth 1
+fi
 
-# # Change branch to the specified branch
-# cd $CONF_DIR
-# git checkout $BRANCH
-# git fetch origin $BRANCH
-# git reset --hard origin/$BRANCH
+# Change branch to the specified branch
+cd $CONF_DIR
+git checkout $BRANCH
+git fetch origin $BRANCH
+git reset --hard origin/$BRANCH
 
 source $MAINTENANCE_DIR/ESSENTIALS.sh # source the essentials file INSIDE the repository
 
