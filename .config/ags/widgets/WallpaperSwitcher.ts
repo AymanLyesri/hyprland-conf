@@ -85,6 +85,33 @@ function Wallpapers()
         ]
     });
 
+    const random = Widget.Button({
+        vpack: "center",
+        class_name: "random-wallpaper",
+        label: "",
+        on_primary_click: () =>
+        {
+            Utils.execAsync(`bash -c "$HOME/.config/hypr/hyprpaper/set-wallpaper.sh ${selectedWorkspace}"`)
+                .then(() => bottom.child.reveal_child = false)
+                .finally(() =>
+                {
+                    let new_wallpaper = JSON.parse(Utils.exec(App.configDir + '/scripts/get-wallpapers.sh --current'))[selectedWorkspace - 1]
+                    top.children[selectedWorkspace - 1].css = `background-image: url('${new_wallpaper}');`
+                })
+                .catch(err => Utils.notify(err));
+        }
+    })
+
+    const hide = Widget.Button({
+        vpack: "center",
+        class_name: "stop-selection",
+        label: "",
+        on_primary_click: () =>
+        {
+            bottom.child.reveal_child = false
+        }
+    })
+
     const bottom = Widget.Box({
         hexpand: true,
         vexpand: true,
@@ -95,16 +122,7 @@ function Wallpapers()
             transition: "slide_down",
             transition_duration: globalTransition * 2,
             child: Widget.Box({
-                children: [allWallpapers(), Widget.Button({
-                    vpack: "center",
-                    class_name: "stop-selection",
-                    label: "",
-                    on_primary_click: () =>
-                    {
-                        bottom.child.reveal_child = false
-                    }
-                })
-                ]
+                children: [random, allWallpapers(), hide]
             }),
         })
     });
