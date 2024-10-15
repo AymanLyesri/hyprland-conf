@@ -1,3 +1,5 @@
+
+import { timeout } from "resource:///com/github/Aylur/ags/utils.js";
 import { globalTransition } from "variables";
 
 const hyprland = await Service.import("hyprland");
@@ -81,6 +83,7 @@ function Wallpapers()
     const top = Widget.Box({
         hexpand: true,
         vexpand: true,
+        hpack: "center",
         spacing: 10,
         children: [...get_wallpapers(), reset]
     });
@@ -120,10 +123,11 @@ function Wallpapers()
             visible: true,
             reveal_child: false,
             transition: "slide_down",
-            transition_duration: globalTransition * 2,
+            transition_duration: globalTransition,
             child: Widget.Box({
                 children: [random, allWallpapers(), hide]
             }),
+            // setup: (self) => timeout(1, () => self.reveal_child = false)
         })
     });
 

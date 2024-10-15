@@ -14,19 +14,18 @@
     }
     .bottom {
       // margin: 5px;
-      .action-trigger.action-trigger {
+      .action-trigger {
         // font-size: 15px;
         margin: 5px;
         min-width: 30px;
-        // min-height: 25px;
         padding: 0px;
         border-radius: 10px;
       }
     }
 
-    .input {
-      @extend .button;
-      border-radius: 0px 0px 0px 0px;
+    entry {
+      background: $module-background;
+      border-radius: 0px;
     }
 
     button,
@@ -63,18 +62,6 @@
         @extend .danger;
         border-radius: 0px 0px 10px 0px;
       }
-
-      // &:first-child {
-      //   border-radius: 10px 0px 0px 10px;
-      // }
-
-      // &:last-child {
-      //   border-radius: 0px 10px 10px 0px;
-      // }
-
-      // &:only-child {
-      //   border-radius: 10px;
-      // }
     }
 
     .input {

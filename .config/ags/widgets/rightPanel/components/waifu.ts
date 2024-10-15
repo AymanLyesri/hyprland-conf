@@ -62,20 +62,18 @@ function Actions()
         ],
     })
 
-    const Entry = Widget.EventBox({
+    const Entry = Widget.Entry({
         class_name: "input",
-        child: Widget.Entry({
-            placeholder_text: 'Tags/ID',
-            text: getOption("waifu.input_history"),
-            on_accept: (self) =>
-            {
-                if (self.text == null || self.text == "") {
-                    return
-                }
-                setOption("waifu.input_history", self.text)
-                GetImageFromApi(self.text)
-            },
-        }),
+        placeholder_text: 'Tags/ID',
+        text: getOption("waifu.input_history"),
+        on_accept: (self) =>
+        {
+            if (self.text == null || self.text == "") {
+                return
+            }
+            setOption("waifu.input_history", self.text)
+            GetImageFromApi(self.text)
+        },
     })
 
     const favoriteMenu = Widget.Menu({
@@ -139,7 +137,7 @@ function Actions()
                     label: "",
                     class_name: "entry-search",
                     hexpand: true,
-                    on_clicked: () => Entry.child.activate(),
+                    on_clicked: () => Entry.activate(),
                 }),
                 Entry,
                 Widget.ToggleButton({

@@ -22,6 +22,10 @@ export default () =>
                     center_widget: Center(),
                     end_widget: Right(),
                 }),
+                // setup: self => self.on("leave-notify-event", () =>
+                // {
+                //     !barPin.value ? App.closeWindow("bar") : null
+                // }),
             }),
         })
     });
