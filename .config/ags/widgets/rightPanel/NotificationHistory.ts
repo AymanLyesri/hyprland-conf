@@ -1,4 +1,6 @@
+import { timeout } from "types/utils/timeout";
 import { Notification_ } from "./components/notification";
+import { Notification } from "types/service/notifications"
 
 const Notifications = await Service.import("notifications")
 
@@ -43,15 +45,14 @@ export default () =>
     }
 
 
-
-
-
-    function FilterNotifications(notifications: any[], filter: string): any[]
+    function FilterNotifications(notifications: Notification[], filter: string): any[]
     {
-        const filtered: any[] = [];
-        const others: any[] = [];
+        const MAX_NOTIFICATIONS = 50;
 
-        notifications.forEach((notification: any) =>
+        const filtered: Notification[] = [];
+        const others: Notification[] = [];
+
+        notifications.forEach((notification: Notification) =>
         {
             if (notification.app_name.includes(filter) || notification.summary.includes(filter)) {
                 filtered.unshift(notification);
@@ -59,7 +60,19 @@ export default () =>
                 others.unshift(notification);
             }
         });
-        return [...filtered, ...others].slice(0, 33); // Limit to the last 50 notifications DEFAULT, higher number will slow down the UI
+
+        // Combine filtered and others
+        const combinedNotifications = [...filtered, ...others];
+
+        // Notifications to keep
+        const keptNotifications = combinedNotifications.slice(0, MAX_NOTIFICATIONS);
+
+        // Close notifications outside the kept 33
+        combinedNotifications.slice(MAX_NOTIFICATIONS).forEach((notification: Notification) =>
+        {
+            notification.close();
+        });
+        return keptNotifications; // Limit to the last 50 notifications DEFAULT, higher number will slow down the UI
     }
 
     const NotificationHistory = () => Widget.Box({
@@ -94,12 +107,11 @@ export default () =>
             label: "Clear",
             on_clicked: () =>
             {
-                NotificationsDisplay.child = Widget.Box({
-                    vertical: true,
-                    children: [],
-                });
+                // NotificationsDisplay.child.destroy()
+                // setTimeout(() => Notifications.clear(), 500)
                 Notifications.clear()
-                // .finally(() => NotificationsDisplay.child = NotificationHistory())
+
+                // NotificationsDisplay.child = NotificationHistory()
             },
         })
     }

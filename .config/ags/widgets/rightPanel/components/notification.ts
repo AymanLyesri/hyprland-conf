@@ -40,7 +40,7 @@ function NotificationIcon({ app_entry, app_icon, image })
 export function Notification_(n: Notification, new_Notification = false, popup = false)
 {
     const icon = Widget.Box({
-        vpack: "center",
+        vpack: "start",
         hpack: "center",
         class_name: "icon",
         child: NotificationIcon(n),
@@ -63,6 +63,7 @@ export function Notification_(n: Notification, new_Notification = false, popup =
         hexpand: true,
         use_markup: true,
         truncate: popup ? "none" : "end",
+        max_width_chars: 24,
         xalign: 0,
         justification: "left",
         label: n.body,
