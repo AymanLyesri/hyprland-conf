@@ -17,6 +17,8 @@ $blue-background: rgba($blue, 0.69);
 $orange: mix($background, $orange, 69%);
 $orange-background: rgba($orange, 0.69);
 
+$red: mix($background, $red, 50%);
+
 $module-background: mix($background, $color1, 69%);
 $module-foreground: mix($foreground, $color1, 69%);
 $module-secondary: mix($secondary, $foreground, 69%);
@@ -128,7 +130,6 @@ levelbar {
 }
 
 scrolledwindow {
-  box-shadow: $background 0px -50px 10px -10px inset;
   slider {
     background: $module-secondary;
   }

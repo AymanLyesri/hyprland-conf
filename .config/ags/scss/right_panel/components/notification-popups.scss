@@ -2,11 +2,12 @@ window.notification-popups {
   padding: 0px;
   margin: 0px;
   border-radius: 10px;
-}
+  .notifications {
+    padding: 0px;
+    margin: 0px;
 
-.notifications {
-  padding: 0px;
-  margin: 0px;
-  min-width: 2px;
-  min-height: 2px;
+    .notification {
+      margin-bottom: 10px;
+    }
+  }
 }
