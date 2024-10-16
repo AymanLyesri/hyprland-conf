@@ -7,8 +7,6 @@ export default () => Widget.Box({
         showDetails: true,
         showHeading: true,
         showWeekNumbers: false,
-        // detail_height_rows: 15,
-        detail_width_chars: 5,
         detail: (self, y, m, d) =>
         {
             return `<span color="white">${d}</span>`

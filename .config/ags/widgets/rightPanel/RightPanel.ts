@@ -1,11 +1,13 @@
 
 import waifu, { WaifuVisibility } from "./components/waifu";
-import { globalMargin, rightPanelExclusivity, rightPanelVisibility, rightPanelWidth, widgetLimit, Widgets } from "variables";
+import { globalMargin, rightPanelExclusivity, rightPanelLock, rightPanelVisibility, rightPanelWidth, widgetLimit, Widgets } from "variables";
 import Calendar from "widgets/Calendar";
 import Update from "widgets/Update";
 import NotificationHistory from "./NotificationHistory";
 import { WidgetSelector } from "interfaces/widgetSelector.interface";
 import { Resources } from "widgets/Resources";
+import { exportSettings } from "utils/settings";
+import MediaWidget from "widgets/MediaWidget";
 
 
 const Notifications = await Service.import("notifications")
@@ -15,22 +17,27 @@ export const WidgetSelectors: WidgetSelector[] = [{
     icon: "",
     widget: () => waifu()
 }, {
-    name: "Calendar",
-    icon: "",
-    widget: () => Calendar()
-}, {
-    name: "Update",
-    icon: "󰚰",
-    widget: () => Update()
+    name: "Media",
+    icon: "",
+    widget: () => MediaWidget()
 }, {
     name: "NotificationHistory",
     icon: "",
     widget: () => NotificationHistory()
 }, {
+    name: "Calendar",
+    icon: "",
+    widget: () => Calendar()
+}, {
     name: "Resources",
     icon: "",
     widget: () => Resources()
+}, {
+    name: "Update",
+    icon: "󰚰",
+    widget: () => Update()
 }]
+
 
 const maxRightPanelWidth = 600;
 const minRightPanelWidth = 200;
@@ -44,6 +51,10 @@ function WindowActions()
         vertical: true,
         spacing: 5
     }, Widget.Button({
+        label: "󰈇",
+        class_name: "export-settings",
+        on_clicked: () => exportSettings()
+    }), Widget.Button({
         label: "",
         class_name: "expand-window",
         on_clicked: () => rightPanelWidth.value = rightPanelWidth.value < maxRightPanelWidth ? rightPanelWidth.value + 50 : maxRightPanelWidth,
@@ -53,13 +64,23 @@ function WindowActions()
         on_clicked: () => rightPanelWidth.value = rightPanelWidth.value > minRightPanelWidth ? rightPanelWidth.value - 50 : minRightPanelWidth,
     }), WaifuVisibility(),
         Widget.ToggleButton({
-            label: "󰐃",
+            label: "",
             class_name: "exclusivity",
             onToggled: ({ active }) =>
             {
                 rightPanelExclusivity.value = active;
             },
         }).hook(rightPanelExclusivity, (self) => self.active = rightPanelExclusivity.value, "changed"),
+        Widget.ToggleButton({
+            label: rightPanelLock.value ? "" : "",
+            class_name: "lock",
+            active: rightPanelLock.value,
+            onToggled: (self) =>
+            {
+                rightPanelLock.value = self.active;
+                self.label = self.active ? "" : "";
+            },
+        }),
         Widget.Button({
             label: "",
             class_name: "close",
@@ -116,17 +137,25 @@ const Actions = () => Widget.Box({
 function Panel()
 {
     return Widget.Box({
-        children: [Widget.Box({
-            css: rightPanelWidth.bind().as(width => `*{min-width: ${width}px}`),
-            vertical: true,
-            spacing: 5,
-            children: Widgets.bind().as(widgets => widgets.map(widget => widget.widget())),
-        }), Actions()
-        ]
+        css: `padding-left: 5px;`,
+        child: Widget.EventBox({
+            on_hover_lost: () =>
+            {
+                if (!rightPanelLock.value) rightPanelVisibility.value = false;
+            },
+            child: Widget.Box({
+                children: [Widget.Box({
+                    class_name: "main-content",
+                    css: rightPanelWidth.bind().as(width => `*{min-width: ${width}px}`),
+                    vertical: true,
+                    spacing: 5,
+                    children: Widgets.bind().as(widgets => widgets.map(widget => widget.widget())),
+                }), Actions()
+                ]
+            }),
+        })
     })
 }
-
-// const Separator = () => Widget.Separator({ vertical: false });
 
 const Window = () => Widget.Window({
     name: `right-panel`,

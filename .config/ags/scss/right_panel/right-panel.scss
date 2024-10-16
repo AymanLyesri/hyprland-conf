@@ -1,16 +1,19 @@
 .right-panel {
   &.exclusive {
     border-radius: 0px;
+    border-left: 1px solid $secondary;
   }
   &.normal {
     border-radius: 15px;
     margin: 10px 15px;
+    border: 1px solid $secondary;
   }
 
   @extend .module;
-  border-radius: 0px 0px 0px 0px;
-  // border: 1px solid $secondary;
-  padding: 0px;
+
+  .main-content {
+    padding: 5px 10px 5px 5px;
+  }
 
   .right-panel-actions {
     @extend .module;
@@ -26,7 +29,6 @@
 
   .notification-history {
     // @extend .module;
-    margin: 0px 10px;
 
     .filter {
       margin-bottom: 5px;

@@ -1,0 +1,76 @@
+.player {
+  @extend .module;
+  padding: 1rem;
+  border-radius: 1rem;
+
+  &.popup {
+    min-width: 400px;
+  }
+
+  &.widget {
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0px 0px 50px 69px rgba(0, 0, 0, 0.69) inset,
+      0px 0px 15px 15px rgba(0, 0, 0, 0.69) inset;
+  }
+
+  .img {
+    min-width: 100px;
+    min-height: 100px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    margin-right: 10px;
+
+    // box-shadow: 0px 0px 5px rgba($foreground, 0.5);
+  }
+
+  .title {
+    margin: 5px 0px;
+    color: $secondary;
+  }
+
+  .artist {
+    margin: 5px 0px;
+  }
+
+  .icon {
+    margin: 0px;
+    padding: 0px;
+    // font-size: 1px;
+  }
+
+  button {
+    min-height: 1em;
+    min-width: 1em;
+    // padding: 0.3em;
+  }
+
+  button.play-pause {
+    margin: 0 0.3em;
+  }
+
+  scale.slider {
+    // padding: 0;
+    margin-bottom: 0.3em;
+  }
+
+  scale.slider trough {
+    min-height: 5px;
+    background: $background;
+  }
+
+  scale.slider highlight {
+    background: $secondary;
+  }
+
+  scale.slider slider {
+    all: unset;
+    border: none;
+    min-height: 10px;
+    min-width: 20px;
+    margin: -5px;
+    border-radius: 10px;
+    background: $foreground;
+  }
+}

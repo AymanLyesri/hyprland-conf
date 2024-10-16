@@ -7,7 +7,7 @@ const notifications = await Service.import("notifications")
 notifications.popupTimeout = 3000;
 notifications.forceTimeout = false;
 notifications.cacheActions = false;
-// notifications.clearDelay = 100;
+notifications.clearDelay = 100;
 
 
 

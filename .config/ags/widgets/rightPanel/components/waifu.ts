@@ -1,24 +1,27 @@
 import { readJSONFile } from "utils/json";
 import { Waifu } from "../../../interfaces/waifu.interface";
-import { globalTransition, rightPanelWidth, waifuPath, waifuVisibility } from "variables";
-import { getDominantColor } from "utils/image";
+import { globalTransition, rightPanelWidth, waifuCurrent, waifuFavorites, waifuVisibility } from "variables";
 import { closeProgress, openProgress } from "../../Progress";
-import { getOption, setOption } from "utils/options";
+import { getSetting, setSetting } from "utils/settings";
 import { timeout } from "resource:///com/github/Aylur/ags/utils/timeout.js";
 const Hyprland = await Service.import('hyprland')
 
+const waifuPath = App.configDir + "/assets/waifu/waifu.png"
+const jsonPath = App.configDir + "/assets/waifu/waifu.json"
+
+
 const imageDetails = Variable<Waifu>(readJSONFile(`${App.configDir}/assets/waifu/waifu.json`))
-const favoriteImageDetails = () => readJSONFile(`${App.configDir}/assets/waifu/favorite.json`)
 const nsfw = Variable<boolean>(false)
 const terminalWaifuPath = `${App.configDir}/assets/terminal/icon.jpg`
 
-function GetImageFromApi(param = "")
+const GetImageFromApi = (param = "") =>
 {
     openProgress()
     Utils.execAsync(`python ${App.configDir}/scripts/get-waifu.py ${nsfw.value} "${param}"`).finally(() =>
     {
         closeProgress()
         imageDetails.value = JSON.parse(Utils.readFile(`${App.configDir}/assets/waifu/waifu.json`))
+        waifuCurrent.value = String(imageDetails.value.id)
     }).catch((error) => Utils.notify({ summary: "Error", body: error }))
 }
 
@@ -31,11 +34,17 @@ const CopyImage = () => Utils.execAsync(`bash -c "wl-copy --type image/png < ${w
 
 const OpenImage = () => Hyprland.messageAsync("dispatch exec [float;size 50%] feh --scale-down " + waifuPath)
 
-const FavoriteImage = () => Utils.execAsync(`bash -c "cp ${App.configDir}/assets/waifu/waifu.json ${App.configDir}/assets/waifu/favorite.json"`)
-    .then(() => Utils.notify({ summary: 'Waifu', body: 'Added to favorite' }))
-    .catch(err => Utils.notify({ summary: 'Error', body: err }))
+const addToFavorites = () =>
+{
+    if (!waifuFavorites.value.some(favorite => favorite === waifuCurrent.value)) {
+        waifuFavorites.value = [...waifuFavorites.value, waifuCurrent.value];
+        Utils.notify({ summary: 'Waifu', body: `${waifuCurrent.value} Favorite added` })
+    }
+    else {
+        Utils.notify({ summary: 'Waifu', body: `${waifuCurrent.value} Already favored` })
+    }
 
-const FavoriteToImage = async () => GetImageFromApi(favoriteImageDetails().id)
+}
 
 const PinImageToTerminal = () =>
 {
@@ -47,12 +56,10 @@ const PinImageToTerminal = () =>
 
 function Actions()
 {
-
-
     const top = Widget.Box({
         class_name: "top",
         vpack: "start",
-        vexpand: true,
+        hpack: "start",
         children: [
             Widget.Button({
                 label: "Pin",
@@ -65,40 +72,15 @@ function Actions()
     const Entry = Widget.Entry({
         class_name: "input",
         placeholder_text: 'Tags/ID',
-        text: getOption("waifu.input_history"),
+        text: getSetting("waifu.input_history"),
         on_accept: (self) =>
         {
             if (self.text == null || self.text == "") {
                 return
             }
-            setOption("waifu.input_history", self.text)
+            setSetting("waifu.input_history", self.text)
             GetImageFromApi(self.text)
         },
-    })
-
-    const favoriteMenu = Widget.Menu({
-        children: [
-            Widget.MenuItem({
-                child: Widget.Label({
-                    label: "Favorite this",
-                }),
-                on_activate: () => FavoriteImage()
-
-
-            }),
-            Widget.MenuItem({
-                child: Widget.Label({
-                    label: "Get Favorite",
-                }),
-                on_activate: () => FavoriteToImage().then(() => Utils.notify({ summary: 'Waifu', body: 'Favorite Enabled' }))
-                    .catch(err =>
-                    {
-                        Utils.notify({ summary: "Error", body: err });
-                        Utils.notify({ summary: "Waifu", body: "No favorite is found, Please right click to create one" })
-                    }),
-
-            }),
-        ]
     })
 
     const actions = Widget.Revealer({
@@ -108,25 +90,31 @@ function Actions()
         child: Widget.Box({ vertical: true },
             Widget.Box([
                 Widget.Button({
-                    label: "",
-                    class_name: "favorite",
+                    label: "",
+                    class_name: "open",
                     hexpand: true,
-                    on_primary_click: (_, event) => favoriteMenu.popup_at_pointer(event),
+                    on_primary_click: async () => OpenImage(),
                 }),
                 Widget.Button({
-                    label: "Random",
+                    label: "",
+                    class_name: "favorite",
+                    hexpand: true,
+                    on_primary_click: () => left.reveal_child = !left.reveal_child,
+                }),
+                Widget.Button({
+                    label: "",
                     hexpand: true,
                     class_name: "random",
                     on_clicked: async () => GetImageFromApi(),
                 }),
                 Widget.Button({
-                    label: "browser",
+                    label: "",
                     hexpand: true,
                     class_name: "browser",
                     on_clicked: async () => SearchImage(),
                 }),
                 Widget.Button({
-                    label: "Copy",
+                    label: "",
                     hexpand: true,
                     class_name: "copy",
                     on_clicked: async () => CopyImage(),
@@ -155,6 +143,53 @@ function Actions()
             ])
         )
     })
+    const left = Widget.Revealer({
+        vexpand: true,
+        hexpand: true,
+        hpack: "start",
+        transition: "slide_right",
+        transition_duration: globalTransition,
+        reveal_child: false,
+        child: Widget.Scrollable({
+            hscroll: 'never',
+            css: "min-width: 100px",
+            child: Widget.Box({
+                class_name: "favorites",
+                vertical: true,
+                children: waifuFavorites.bind().as((favorites) =>
+                {
+                    return [...favorites.map((favorite) =>
+                        Widget.EventBox({
+                            class_name: "favorite-event",
+                            child: Widget.Box({
+                                class_name: "favorite",
+                                spacing: 10,
+                                children: [Widget.Label({
+                                    label: String(favorite),
+                                }), Widget.Button({
+                                    hexpand: true,
+                                    hpack: "end",
+                                    class_name: "delete",
+                                    label: "",
+                                    on_primary_click: () => waifuFavorites.value = waifuFavorites.value.filter(fav => fav !== favorite)
+                                })],
+                            }),
+                            on_primary_click: () =>
+                            {
+                                GetImageFromApi(String(favorite))
+                                left.reveal_child = false
+                            },
+                        })
+                    ), Widget.Button({
+                        label: "",
+                        class_name: "add",
+                        on_primary_click: () => addToFavorites()
+                    })]
+                })
+            })
+        })
+    })
+
     const bottom = Widget.Box({
         class_name: "bottom",
         vertical: true,
@@ -174,7 +209,10 @@ function Actions()
                             actions.reveal_child = false;
                             self.label = ""
                             self.active = false
+
+                            left.reveal_child = false
                         })
+                    else left.reveal_child = false
                 },
             }),
             actions
@@ -187,6 +225,7 @@ function Actions()
         vertical: true,
         children: [
             top,
+            left,
             bottom,
         ],
 
@@ -196,8 +235,6 @@ function Actions()
 function Image()
 {
     return Widget.EventBox({
-
-        on_primary_click: async () => OpenImage(),
         on_secondary_click: async () => SearchImage(),
         child: Widget.Box({
             class_name: "image",
@@ -209,9 +246,9 @@ function Image()
                 return `
                 background-image: url("${waifuPath}");
                 min-height: ${Number(imageDetails.image_height) / Number(imageDetails.image_width) * width}px;
-
                 `
             }),
+            setup: () => { if (Utils.readFile(waifuPath) == '' || Utils.readFile(jsonPath) == '') GetImageFromApi(waifuCurrent.value) },
         }),
     })
 }

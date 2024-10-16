@@ -25,27 +25,28 @@ check_system_updates() {
 
 # Function to update the system
 update_system() {
-    echo "Updating system..."
+    hyprctl dispatch exec "[float] kitty bash -c 'sudo pacman -Syu --noconfirm'"
+    # echo "Updating system..."
     
-    # Start pkexec with pacman in the background
-    pkexec pacman -Syu &
+    # # Start pkexec with pacman in the background
+    # pkexec pacman -Syu &
     
-    # Get the PID of the pkexec process
-    PKEXEC_PID=$!
+    # # Get the PID of the pkexec process
+    # PKEXEC_PID=$!
     
-    # Function to clean up when the script is terminated
-    cleanup() {
-        echo "Terminating pkexec and pacman..."
-        kill $PKEXEC_PID
-        wait $PKEXEC_PID 2>/dev/null
-        exit
-    }
+    # # Function to clean up when the script is terminated
+    # cleanup() {
+    #     echo "Terminating pkexec and pacman..."
+    #     kill $PKEXEC_PID
+    #     wait $PKEXEC_PID 2>/dev/null
+    #     exit
+    # }
     
-    # Trap signals (SIGINT and SIGTERM) to call cleanup
-    trap cleanup SIGINT SIGTERM
+    # # Trap signals (SIGINT and SIGTERM) to call cleanup
+    # trap cleanup SIGINT SIGTERM
     
-    # Wait for the pkexec process to exit
-    wait $PKEXEC_PID
+    # # Wait for the pkexec process to exit
+    # wait $PKEXEC_PID
 }
 
 # Function to check if a Git repo is behind (compared to the remote)

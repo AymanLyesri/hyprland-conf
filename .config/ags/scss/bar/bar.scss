@@ -1,6 +1,7 @@
 .bar {
   padding: 5px 10px;
   transition: background 0s;
+  // border: 1px solid $secondary;
   &.full {
     background: $module-background;
     border-radius: 50px 50px 10px 10px;

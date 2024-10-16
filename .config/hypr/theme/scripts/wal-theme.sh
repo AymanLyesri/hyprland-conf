@@ -4,6 +4,8 @@ hyprDir=$HOME/.config/hypr
 current_wallpaper=$(cat $hyprDir/hyprpaper/config/current.conf)
 current_theme=$(bash $hyprDir/theme/scripts/system-theme.sh get)
 
+killall wal
+
 # check if $1 is provided
 if [ $1 ]; then
     current_wallpaper=$1

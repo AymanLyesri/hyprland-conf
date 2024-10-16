@@ -9,8 +9,8 @@ assets/images/*
 assets/terminal/*
 !assets/terminal/
 
-assets/options/*
-!assets/options/
+assets/settings/*
+!assets/settings/
 
 assets/waifu/*
 !assets/waifu/

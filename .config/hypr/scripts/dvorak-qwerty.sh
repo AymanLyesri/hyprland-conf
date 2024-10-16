@@ -1,4 +1,4 @@
-file=$HOME/.config/hypr/configs/general.conf
+file=$HOME/.config/hypr/configs/custom/keyboard.conf
 
 # sed -i 's/kb_variant=dvorak/kb_variant=new_variant/g' $file
 

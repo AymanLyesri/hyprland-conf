@@ -2,6 +2,7 @@
 
 HYPR_DIR="$HOME/.config/hypr"
 GENERAL_CONF_FILE="$HYPR_DIR/configs/general.conf"
+KEYBOARD_CONF="$HYPR_DIR/configs/custom/keyboard.conf"
 
 FZF_HEIGHT="40%"
 
@@ -29,7 +30,7 @@ configure_keybord() {
         fi
         selected_layouts="$selected_layouts$new_layout,"
         # Variant selection
-        echo "Configuring keyboard variant for Hyprland... (eg: qwerty, intl, dvorak, etc)"
+        echo "Configuring keyboard variant for Hyprland... (eg: qwerty, intl, dvorak, etc) or leave it empty (.)"
         new_variant=$(echo "$kb_variants" | fzf --height $FZF_HEIGHT)
         
         # Ensure variant is selected
@@ -51,11 +52,13 @@ configure_keybord() {
     selected_variants=$(echo "$selected_variants" | sed 's/,$//')
     
     # Apply the changes to the config file
-    sed -i "s/kb_layout=.*/kb_layout=$selected_layouts/" "$GENERAL_CONF_FILE"
-    sed -i "s/kb_variant=.*/kb_variant=$selected_variants/" "$GENERAL_CONF_FILE"
+    echo -e "input { \n\tkb_layout=$selected_layouts \n\tkb_variant=$selected_variants \n}" >$KEYBOARD_CONF
     
     echo "Keyboard layouts have been configured to: $selected_layouts"
     echo "Keyboard variants have been configured to: $selected_variants"
+    
+    # reload the configuration
+    hyprctl reload
 }
 
 continue_prompt() {
