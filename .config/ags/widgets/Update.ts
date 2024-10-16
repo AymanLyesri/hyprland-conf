@@ -65,24 +65,24 @@ export default () =>
                             updateSubprocess = update(action, database);
                         },
                     }),
-                    Widget.Button({
-                        label: "cancel",
-                        on_clicked: () =>
-                        {
+                    // Widget.Button({
+                    //     label: "cancel",
+                    //     on_clicked: () =>
+                    //     {
 
-                            updateSubprocess.force_exit();
+                    //         updateSubprocess.force_exit();
 
-                            updateSubprocess.wait_async(null, () =>
-                            {
-                                setTimeout(() =>
-                                {
-                                    info.label = "No updates running";
-                                    spinner.child.destroy();
-                                }, 1000);
-                            });
+                    //         updateSubprocess.wait_async(null, () =>
+                    //         {
+                    //             setTimeout(() =>
+                    //             {
+                    //                 info.label = "No updates running";
+                    //                 spinner.child.destroy();
+                    //             }, 1000);
+                    //         });
 
-                        },
-                    }),
+                    //     },
+                    // }),
                 ]
             }),
         ]
@@ -117,7 +117,7 @@ export default () =>
         spacing: 5,
         children: [
             Top("Pacman", "--update", "system"),
-            Bottom,
+            // Bottom,
         ]
     })
 

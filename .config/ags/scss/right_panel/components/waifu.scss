@@ -14,17 +14,22 @@
       border-radius: 0px 10px 10px 0px;
       .favorite-event:hover {
         background: $module-background;
-      }
-
-      .favorite {
-        padding: 10px;
-
-        .danger {
+        .delete {
           padding: 0px 10px;
         }
       }
+
+      .favorite {
+        padding: 10px 0px 10px 10px;
+        font-size: 10px;
+
+        .delete {
+          padding: 1px;
+          border-radius: 10px 0px 0px 10px;
+        }
+      }
       .add {
-        @extend .success;
+        margin-top: 10px;
         border-radius: 0px;
       }
     }

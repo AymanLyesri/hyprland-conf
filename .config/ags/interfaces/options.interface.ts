@@ -1,4 +1,4 @@
-interface Options
+interface Settings
 {
     waifu: {
         visibility: boolean,

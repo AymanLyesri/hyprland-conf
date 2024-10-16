@@ -2,7 +2,7 @@ import { readJSONFile } from "utils/json";
 import { Waifu } from "../../../interfaces/waifu.interface";
 import { globalTransition, rightPanelWidth, waifuCurrent, waifuFavorites, waifuVisibility } from "variables";
 import { closeProgress, openProgress } from "../../Progress";
-import { getOption, setOption } from "utils/options";
+import { getSetting, setSetting } from "utils/settings";
 import { timeout } from "resource:///com/github/Aylur/ags/utils/timeout.js";
 const Hyprland = await Service.import('hyprland')
 
@@ -72,13 +72,13 @@ function Actions()
     const Entry = Widget.Entry({
         class_name: "input",
         placeholder_text: 'Tags/ID',
-        text: getOption("waifu.input_history"),
+        text: getSetting("waifu.input_history"),
         on_accept: (self) =>
         {
             if (self.text == null || self.text == "") {
                 return
             }
-            setOption("waifu.input_history", self.text)
+            setSetting("waifu.input_history", self.text)
             GetImageFromApi(self.text)
         },
     })
@@ -152,9 +152,7 @@ function Actions()
         reveal_child: true,
         child: Widget.Scrollable({
             hscroll: 'never',
-            vexpand: true,
-            hexpand: true,
-            // css: "min-height:100px; min-width: 150px",
+            css: "min-width: 100px",
             child: Widget.Box({
                 class_name: "favorites",
                 vertical: true,
@@ -169,7 +167,9 @@ function Actions()
                                 children: [Widget.Label({
                                     label: String(favorite),
                                 }), Widget.Button({
-                                    class_name: "danger",
+                                    hexpand: true,
+                                    hpack: "end",
+                                    class_name: "delete",
                                     label: "",
                                     on_primary_click: () => waifuFavorites.value = waifuFavorites.value.filter(fav => fav !== favorite)
                                 })],

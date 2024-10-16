@@ -6,6 +6,7 @@ import Update from "widgets/Update";
 import NotificationHistory from "./NotificationHistory";
 import { WidgetSelector } from "interfaces/widgetSelector.interface";
 import { Resources } from "widgets/Resources";
+import { exportSettings } from "utils/settings";
 
 
 const Notifications = await Service.import("notifications")
@@ -44,6 +45,10 @@ function WindowActions()
         vertical: true,
         spacing: 5
     }, Widget.Button({
+        label: "󰈇",
+        class_name: "export-settings",
+        on_clicked: () => exportSettings()
+    }), Widget.Button({
         label: "",
         class_name: "expand-window",
         on_clicked: () => rightPanelWidth.value = rightPanelWidth.value < maxRightPanelWidth ? rightPanelWidth.value + 50 : maxRightPanelWidth,
