@@ -80,6 +80,14 @@ KeyBinds are displayed and organized [Here](https://github.com/AymanLyesri/hyprl
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/AymanLyesri/hyprland-conf/refs/heads/master/.config/hypr/maintenance/INSTALL.sh)"
 ```
 
+# Update Guide
+
+> Simply run `update`
+
+```bash
+update
+```
+
 # Tips
 
 - Most functionalities have associated [keybinds](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/configs/keybinds.conf). Check them out!

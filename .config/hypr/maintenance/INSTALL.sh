@@ -1,4 +1,4 @@
-# #!/bin/bash
+#!/bin/bash
 
 export FZF_HEIGHT="40%"
 MAINTENANCE_DIR=".config/hypr/maintenance"

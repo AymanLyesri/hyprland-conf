@@ -6,21 +6,21 @@ eval "$(starship init zsh)"
 # fetch system information
 source $HOME/.config/fastfetch/fastfetch.sh
 
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh # Autosuggestions for commands
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh # Syntax Highlighting and colors
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh                   # Autosuggestions for commands
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh           # Syntax Highlighting and colors
 source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh # Substring history search using up and down arrow keys
 source /usr/share/zsh/plugins/zsh-sudo/sudo.plugin.zsh
 source /usr/share/zsh/plugins/zsh-auto-notify/auto-notify.plugin.zsh
 source /usr/share/zsh/plugins/fzf-tab-git/fzf-tab.plugin.zsh
 
-
 #Zsh Auto-Suggestions
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#696969,bold"
-HISTSIZE=10000                # Maximum events for internal history
-SAVEHIST=10000                # Maximum events in history file
-HISTDIR=~/.cache/zsh          # History directory
+HISTSIZE=10000            # Maximum events for internal history
+SAVEHIST=10000            # Maximum events in history file
+HISTDIR=~/.cache/zsh      # History directory
 HISTFILE=$HISTDIR/history # History filepath
-HISTDIR=~/.cache/zsh && mkdir -p "$HISTDIR" && touch "$HISTDIR/history" # Create history file if it doesn't exist
+mkdir -p "$HISTDIR"       # Create history directory if it doesn't exist
+touch "$HISTDIR/history"  # Create history file if it doesn't exist
 
 # Zsh Tab Complete
 autoload -U compinit
@@ -33,15 +33,11 @@ autoload -U compinit
 # zstyle ':completion:*:warnings' format ' %F{9}-- no matches found --%f'
 compinit
 
-
 #Zsh Substring History Search
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 
 ############################################################
-
-# Aliases for neovide
-# alias v="neovide"
 
 # Aliases for ls
 alias ls='lsd'
@@ -56,8 +52,7 @@ alias f='clear && source $HOME/.config/fastfetch/fastfetch.sh'
 function code() {
     /bin/code $1 && exit
 }
-function v()
-{
+function v() {
     /bin/neovide --fork $1 && exit
 }
 alias cpdir='pwd | tr -d "\r\n" | wl-copy'
@@ -66,26 +61,14 @@ alias cpdir='pwd | tr -d "\r\n" | wl-copy'
 TEST_CONNECTION="/home/ayman/.config/hypr/scripts/test-connection.sh"
 alias conn=$TEST_CONNECTION
 
-# Aliases for angular
-# source <(ng completion script)
-
 # Aliases for neofetch
 alias n=$NEOFETCH
 
 # Aliases for logout
 alias logout='hyprctl dispatch exit'
 
-# Docker
-alias drun='sudo docker run -it --network=host --device=/dev/kfd --device=/dev/dri --ipc=host --shm-size 16G --group-add video --cap-add=SYS_PTRACE --security-opt seccomp=unconfined -v $HOME/dockerx:/dockerx'
-
-# # Yay skip validation
-# alias yayskip='yay -S --mflags --skipinteg'
-
 # The fuck
 eval $(thefuck --alias)
-
-# navi
-# eval "$(navi widget zsh)"
 
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
@@ -93,17 +76,8 @@ source <(fzf --zsh)
 # MongoDb
 # source <(mongocli completion zsh)
 
+# Configuration Update
+alias update='$HOME/.config/hypr/maintenance/UPDATE.sh'
+
 # Waifu Chat Bot and Assistant
 alias waifu='source $HOME/linux-chat-bot/main.sh "$(pwd)"'
-
-export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
-
-# export HADOOP_HOME=/etc/hadoop
-# export PATH=$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH
-# export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
-# export HADOOP_HDFS_HOME=$HADOOP_HOME
-# export HADOOP_MAPRED_HOME=$HADOOP_HOME
-# export YARN_HOME=$HADOOP_HOME
-# export HADOOP_COMMON_HOME=$HADOOP_HOME
-
-# export QT_QPA_PLATFORMTHEME=qt5ct
