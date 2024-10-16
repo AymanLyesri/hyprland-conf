@@ -7,7 +7,8 @@ const hyprland = await Service.import("hyprland");
 export const globalMargin = 15
 export const globalTransition = 500
 
-export const barPin = Variable(true)
+export const barLock = Variable(getOption("bar.lock"))
+barLock.connect("changed", ({ value }) => setOption("bar.lock", value));
 
 export const waifuPath = App.configDir + "/assets/waifu/waifu.png"
 export const waifuVisibility = Variable(getOption("waifu.visibility"))
@@ -23,6 +24,8 @@ export const rightPanelExclusivity = Variable(getOption("rightPanel.exclusivity"
 rightPanelExclusivity.connect("changed", ({ value }) => { setOption("rightPanel.exclusivity", value) });
 export const rightPanelWidth = Variable<number>(getOption("rightPanel.width"))
 rightPanelWidth.connect("changed", ({ value }) => setOption("rightPanel.width", value));
+export const rightPanelLock = Variable(getOption("rightPanel.lock"))
+rightPanelLock.connect("changed", ({ value }) => setOption("rightPanel.lock", value));
 
 export const widgetLimit = 4
 export const Widgets = Variable<WidgetSelector[]>(getOption("rightPanel.widgets").map((name: string) => WidgetSelectors.find(widget => widget.name === name)))

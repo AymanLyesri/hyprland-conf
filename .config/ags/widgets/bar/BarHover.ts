@@ -1,4 +1,3 @@
-import { barPin } from "variables";
 
 export default () =>
 {

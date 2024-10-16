@@ -1,5 +1,5 @@
 import brightness from "brightness";
-import { barPin, rightPanelVisibility, waifuPath, waifuVisibility } from "variables";
+import { barLock, rightPanelVisibility, waifuPath, waifuVisibility } from "variables";
 import { closeProgress, openProgress } from "widgets/Progress";
 import { custom_revealer } from "widgets/revealer";
 
@@ -141,10 +141,14 @@ function SysTray()
 function PinBar()
 {
     return Widget.ToggleButton({
-        active: barPin.value,
-        onToggled: ({ active }) => barPin.value = active,
+        active: barLock.value,
+        onToggled: (self) =>
+        {
+            barLock.value = self.active
+            self.label = self.active ? "" : "";
+        },
         class_name: "panel-trigger icon",
-        label: "󰐃"
+        label: barLock.value ? "" : "",
     })
 }
 

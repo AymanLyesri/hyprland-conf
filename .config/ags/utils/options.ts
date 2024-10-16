@@ -3,12 +3,16 @@ import { readJSONFile, writeJSONFile } from "./json";
 const optionsPath = App.configDir + "/assets/options/options.json";
 
 const defaultOptions = {
+  "bar": {
+    "lock": true
+  },
   "waifu": {
     "input_history": "",
     "visibility": true
   },
   "rightPanel": {
     "exclusivity": true,
+    "lock": true,
     "width": 300,
     "visibility": true,
     "widgets": []
