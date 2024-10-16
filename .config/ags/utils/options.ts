@@ -8,7 +8,9 @@ const defaultOptions = {
   },
   "waifu": {
     "input_history": "",
-    "visibility": true
+    "visibility": true,
+    "current": "",
+    "favorite": ""
   },
   "rightPanel": {
     "exclusivity": true,

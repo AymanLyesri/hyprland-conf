@@ -1,6 +1,6 @@
 local mlsp = require("mason-lspconfig")
 mlsp.setup({
-    ensure_installed = { "lua_ls", "tsserver", "bashls", "html" }
+    ensure_installed = { "lua_ls", "ts_ls", "bashls", "html" }
 })
 --auto completion
 local capabilities = require('cmp_nvim_lsp').default_capabilities()

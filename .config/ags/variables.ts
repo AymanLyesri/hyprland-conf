@@ -10,9 +10,13 @@ export const globalTransition = 500
 export const barLock = Variable(getOption("bar.lock"))
 barLock.connect("changed", ({ value }) => setOption("bar.lock", value));
 
-export const waifuPath = App.configDir + "/assets/waifu/waifu.png"
 export const waifuVisibility = Variable(getOption("waifu.visibility"))
 waifuVisibility.connect("changed", ({ value }) => setOption("waifu.visibility", value));
+export const waifuFavorite = Variable(getOption("waifu.favorite"))
+waifuFavorite.connect("changed", ({ value }) => setOption("waifu.favorite", value));
+export const waifuCurrent = Variable(getOption("waifu.current"))
+print(waifuCurrent.value)
+waifuCurrent.connect("changed", ({ value }) => setOption("waifu.current", value));
 
 export const emptyWorkspace = hyprland.active.client.bind("title").as(title => title ? 0 : 1)
 

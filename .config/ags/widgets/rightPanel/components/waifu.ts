@@ -1,24 +1,27 @@
 import { readJSONFile } from "utils/json";
 import { Waifu } from "../../../interfaces/waifu.interface";
-import { globalTransition, rightPanelWidth, waifuPath, waifuVisibility } from "variables";
-import { getDominantColor } from "utils/image";
+import { globalTransition, rightPanelWidth, waifuCurrent, waifuFavorite, waifuVisibility } from "variables";
 import { closeProgress, openProgress } from "../../Progress";
 import { getOption, setOption } from "utils/options";
 import { timeout } from "resource:///com/github/Aylur/ags/utils/timeout.js";
 const Hyprland = await Service.import('hyprland')
 
+const waifuPath = App.configDir + "/assets/waifu/waifu.png"
+const jsonPath = App.configDir + "/assets/waifu/waifu.json"
+
+
 const imageDetails = Variable<Waifu>(readJSONFile(`${App.configDir}/assets/waifu/waifu.json`))
-const favoriteImageDetails = () => readJSONFile(`${App.configDir}/assets/waifu/favorite.json`)
 const nsfw = Variable<boolean>(false)
 const terminalWaifuPath = `${App.configDir}/assets/terminal/icon.jpg`
 
-function GetImageFromApi(param = "")
+const GetImageFromApi = (param = "") =>
 {
     openProgress()
     Utils.execAsync(`python ${App.configDir}/scripts/get-waifu.py ${nsfw.value} "${param}"`).finally(() =>
     {
         closeProgress()
         imageDetails.value = JSON.parse(Utils.readFile(`${App.configDir}/assets/waifu/waifu.json`))
+        waifuCurrent.value = imageDetails.value.id
     }).catch((error) => Utils.notify({ summary: "Error", body: error }))
 }
 
@@ -31,11 +34,9 @@ const CopyImage = () => Utils.execAsync(`bash -c "wl-copy --type image/png < ${w
 
 const OpenImage = () => Hyprland.messageAsync("dispatch exec [float;size 50%] feh --scale-down " + waifuPath)
 
-const FavoriteImage = () => Utils.execAsync(`bash -c "cp ${App.configDir}/assets/waifu/waifu.json ${App.configDir}/assets/waifu/favorite.json"`)
-    .then(() => Utils.notify({ summary: 'Waifu', body: 'Added to favorite' }))
-    .catch(err => Utils.notify({ summary: 'Error', body: err }))
+const FavoriteImage = () => { waifuFavorite.value = waifuCurrent.value; Utils.notify({ summary: 'Waifu', body: 'Favorite Added' }) }
 
-const FavoriteToImage = async () => GetImageFromApi(favoriteImageDetails().id)
+const DisplayFavorite = async () => GetImageFromApi(waifuFavorite.value)
 
 const PinImageToTerminal = () =>
 {
@@ -83,14 +84,12 @@ function Actions()
                     label: "Favorite this",
                 }),
                 on_activate: () => FavoriteImage()
-
-
             }),
             Widget.MenuItem({
                 child: Widget.Label({
                     label: "Get Favorite",
                 }),
-                on_activate: () => FavoriteToImage().then(() => Utils.notify({ summary: 'Waifu', body: 'Favorite Enabled' }))
+                on_activate: () => DisplayFavorite().finally(() => Utils.notify({ summary: 'Waifu', body: 'Favorite Enabled' }))
                     .catch(err =>
                     {
                         Utils.notify({ summary: "Error", body: err });
@@ -212,6 +211,7 @@ function Image()
 
                 `
             }),
+            setup: () => { if (Utils.readFile(waifuPath) == '' || Utils.readFile(jsonPath) == '') GetImageFromApi(waifuCurrent.value) },
         }),
     })
 }
