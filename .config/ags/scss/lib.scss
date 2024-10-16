@@ -19,6 +19,8 @@ $orange-background: rgba($orange, 0.69);
 
 $red: mix($background, $red, 50%);
 
+$green: mix($background, $green, 69%);
+
 $module-background: mix($background, $color1, 69%);
 $module-foreground: mix($foreground, $color1, 69%);
 $module-secondary: mix($secondary, $foreground, 69%);
@@ -73,6 +75,15 @@ button,
   &:hover,
   &:checked {
     background: rgba($red, 0.8); // Pre-calculated hover and checked state
+  }
+}
+
+.success {
+  background: $green;
+  color: $foreground;
+  &:hover,
+  &:checked {
+    background: rgba($green, 0.8); // Pre-calculated hover and checked state
   }
 }
 

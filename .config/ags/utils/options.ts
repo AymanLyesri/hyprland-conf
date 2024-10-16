@@ -10,7 +10,7 @@ const defaultOptions = {
     "input_history": "",
     "visibility": true,
     "current": "",
-    "favorite": ""
+    "favorites": []
   },
   "rightPanel": {
     "exclusivity": true,

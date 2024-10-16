@@ -4,11 +4,29 @@
   background-position: center;
   border-radius: 10px;
 
-  // box-shadow: rgb(0, 0, 0) 0px 0px 50px -30px inset;
-
   .actions {
     .top {
       margin: 5px;
+    }
+    .favorites {
+      @extend .module;
+      padding: 0px;
+      border-radius: 0px 10px 10px 0px;
+      .favorite-event:hover {
+        background: $module-background;
+      }
+
+      .favorite {
+        padding: 10px;
+
+        .danger {
+          padding: 0px 10px;
+        }
+      }
+      .add {
+        @extend .success;
+        border-radius: 0px;
+      }
     }
     .bottom {
       // margin: 5px;
@@ -19,65 +37,48 @@
         padding: 0px;
         border-radius: 10px;
       }
-    }
-
-    entry {
-      background: $module-background;
-      border-radius: 0px;
-    }
-
-    button,
-    .button {
-      min-height: 0px;
-      min-width: 0px;
-      border-radius: 0px;
-
-      &.pin {
-        border-radius: 10px;
-      }
-
-      &.favorite {
-        // border-radius: 0px 0px 10px 0px;
-      }
-
-      &.random {
-        // border-radius: 0px;
-      }
-
-      &.browser {
-        // border-radius: 0px;
-      }
-
-      &.copy {
-        // border-radius: 0px;
-      }
-
-      &.entry-search {
-        border-radius: 0px 0px 0px 10px;
-      }
-
-      &.nsfw {
-        @extend .danger;
-        border-radius: 0px 0px 10px 0px;
-      }
-    }
-
-    .input {
-      & > * {
-        @extend .module;
-        background: transparent;
+      entry {
+        background: $module-background;
         border-radius: 0px;
-        margin: 0px;
         padding: 0px;
-        min-width: 1px;
-        min-height: 20px;
-        border-color: transparent;
-        border: unset;
+        margin: 0px;
       }
-    }
 
-    .switch {
-      border-radius: 0px 10px 10px 0px;
+      button,
+      .button {
+        min-height: 0px;
+        min-width: 0px;
+        border-radius: 0px;
+
+        &.pin {
+          border-radius: 10px;
+        }
+
+        &.favorite {
+          // border-radius: 0px 0px 10px 0px;
+        }
+
+        &.random {
+          // border-radius: 0px;
+        }
+
+        &.browser {
+          // border-radius: 0px;
+        }
+
+        &.copy {
+          // border-radius: 0px;
+        }
+
+        &.entry-search {
+          border-radius: 0px 0px 0px 10px;
+        }
+
+        &.nsfw {
+          @extend .danger;
+          border-radius: 0px 0px 10px 0px;
+        }
+      }
     }
   }
 }
