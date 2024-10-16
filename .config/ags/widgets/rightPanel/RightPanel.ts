@@ -7,6 +7,7 @@ import NotificationHistory from "./NotificationHistory";
 import { WidgetSelector } from "interfaces/widgetSelector.interface";
 import { Resources } from "widgets/Resources";
 import { exportSettings } from "utils/settings";
+import MediaWidget from "widgets/MediaWidget";
 
 
 const Notifications = await Service.import("notifications")
@@ -16,22 +17,27 @@ export const WidgetSelectors: WidgetSelector[] = [{
     icon: "",
     widget: () => waifu()
 }, {
-    name: "Calendar",
-    icon: "",
-    widget: () => Calendar()
-}, {
-    name: "Update",
-    icon: "󰚰",
-    widget: () => Update()
+    name: "Media",
+    icon: "",
+    widget: () => MediaWidget()
 }, {
     name: "NotificationHistory",
     icon: "",
     widget: () => NotificationHistory()
 }, {
+    name: "Calendar",
+    icon: "",
+    widget: () => Calendar()
+}, {
     name: "Resources",
     icon: "",
     widget: () => Resources()
+}, {
+    name: "Update",
+    icon: "󰚰",
+    widget: () => Update()
 }]
+
 
 const maxRightPanelWidth = 600;
 const minRightPanelWidth = 200;

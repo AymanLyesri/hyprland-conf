@@ -149,7 +149,7 @@ function Actions()
         hpack: "start",
         transition: "slide_right",
         transition_duration: globalTransition,
-        reveal_child: true,
+        reveal_child: false,
         child: Widget.Scrollable({
             hscroll: 'never',
             css: "min-width: 100px",

@@ -2,7 +2,7 @@ import NotificationPopups from "widgets/NotificationPopups";
 import RightPanel from "widgets/rightPanel/RightPanel";
 import Bar from "widgets/bar/Bar";
 import AppLauncher from "widgets/AppLauncher";
-import Media from "widgets/Media";
+import MediaPopups from "widgets/MediaPopups";
 import Progress from "widgets/Progress";
 import WallpaperSwitcher from "widgets/WallpaperSwitcher";
 
@@ -28,7 +28,7 @@ App.config({
     RightPanelHover(),
 
     WallpaperSwitcher(),
-    Media(),
+    MediaPopups(),
     AppLauncher(),
     Progress(),
   ],
