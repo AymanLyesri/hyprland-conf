@@ -6,6 +6,7 @@ import { globalTransition } from "variables";
 import Gtk from "types/@girs/gtk-3.0/gtk-3.0";
 
 const Hyprland = await Service.import('hyprland')
+const notifications = await Service.import("notifications")
 
 const TRANSITION = 200;
 
@@ -99,15 +100,32 @@ export function Notification_(n: Notification, new_Notification = false, popup =
         label: "",
     })
 
+    let timeoutId;
+
     const lock = Widget.ToggleButton({
         class_name: "lock",
         label: "",
         on_toggled: ({ active }) =>
         {
-            Revealer.reveal_child = true
-            Revealer.attribute.locked = active
-        },
-    })
+            Revealer.attribute.locked = active;
+
+            // If there is an existing timeout, clear it when the button is clicked again
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+                timeoutId = null;  // Reset timeout ID
+            }
+
+            if (!Revealer.attribute.locked) {
+                timeoutId = setTimeout(() =>
+                {
+                    Revealer.reveal_child = false;
+                    Parent.destroy();
+                    timeoutId = null;  // Clear timeout ID after execution
+                }, notifications.popupTimeout);
+            }
+        }
+    });
+
 
     const copy = Widget.Button({
         class_name: "copy",
@@ -190,7 +208,7 @@ export function Notification_(n: Notification, new_Notification = false, popup =
         }
     })
 
-    const EventBox = Widget.Box({
+    const Parent = Widget.Box({
         visible: true,
         css: "padding:1px;",
         child: Widget.EventBox({
@@ -212,5 +230,5 @@ export function Notification_(n: Notification, new_Notification = false, popup =
         })
     })
 
-    return EventBox
+    return Parent
 }
