@@ -17,10 +17,10 @@ function NotificationIcon({ app_entry, app_icon, image })
     if (image) {
         return Widget.Box({
             css: `background-image: url("${image}");`
-                + "background-size: contain;"
+                + "background-size: cover;"
                 + "background-repeat: no-repeat;"
                 + "background-position: center;"
-                + `box-shadow: 0 0 5px 0 ${getDominantColor(image)};`
+            // + `box-shadow: 0 0 5px 0 ${getDominantColor(image)};`
         })
     }
 
@@ -52,7 +52,7 @@ export function Notification_(n: Notification, new_Notification = false, popup =
         justification: "left",
         hexpand: true,
         max_width_chars: 24,
-        // truncate: "end",
+        truncate: "end",
         wrap: true,
         label: n.summary,
         use_markup: true,
@@ -88,23 +88,6 @@ export function Notification_(n: Notification, new_Notification = false, popup =
         ),
     });
 
-
-    // const actions = Widget.Box({
-    //     class_name: "actions",
-    //     children: n.actions.map(({ id, label }) => Widget.Button({
-    //         on_clicked: () =>
-    //         {
-    //             const [command, action] = label.split(':');
-    //             Hyprland.messageAsync(`dispatch exec ${command}`).then(() => Utils.execAsync('killall notify-send'))
-
-    //             // n.invoke(id)
-
-    //         },
-    //         hexpand: true,
-    //         child: Widget.Label(label.split(':')[1]),
-    //     })),
-    // })
-
     const close = Widget.Button({
         hpack: "end",
         vpack: "start",
@@ -123,6 +106,7 @@ export function Notification_(n: Notification, new_Notification = false, popup =
         class_name: "expand",
         on_toggled: (self) =>
         {
+            title.truncate = self.active ? "none" : "end"
             body.truncate = self.active ? "none" : "end"
             self.label = self.active ? "" : ""
         },

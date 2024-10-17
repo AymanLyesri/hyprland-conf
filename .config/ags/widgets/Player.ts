@@ -1,5 +1,6 @@
 import { MprisPlayer } from "types/service/mpris"
 import { getDominantColor } from "utils/image"
+import { rightPanelWidth } from "variables"
 
 const mpris = await Service.import("mpris")
 
@@ -132,9 +133,12 @@ export function Player(player: MprisPlayer, playerType: "popup" | "widget")
 
     return Widget.EventBox({ class_name: "player-event" }, Widget.Box(
         {
+            vexpand: false,
             class_name: `player ${playerType}`,
             css: playerType == "widget" ? `
-            background-image: url('${player.cover_path}');
+            min-height:${rightPanelWidth.value - 50}px;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url('${player.cover_path}');
             `: ``,
         },
         playerType == 'popup' ? img : Widget.Box(),

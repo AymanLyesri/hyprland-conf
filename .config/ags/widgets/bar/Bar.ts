@@ -9,7 +9,7 @@ export default () =>
         name: `bar`, // name has to be unique
         anchor: ["top", "left", "right"],
         exclusivity: "exclusive",
-        margins: emptyWorkspace.as(margin => [margin * 69 + 5, margin * 50 + globalMargin, 0, margin * 50 + globalMargin]),// [top, right, bottom, left]
+        margins: emptyWorkspace.as(margin => [margin * 69, margin * 50, 0, margin * 50]),// [top, right, bottom, left]
         layer: "top",
         visible: barLock.value,
         child: Widget.Box({
