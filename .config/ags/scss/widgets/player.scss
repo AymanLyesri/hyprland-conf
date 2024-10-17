@@ -51,17 +51,19 @@
   }
 
   scale.slider {
-    // padding: 0;
     margin-bottom: 0.3em;
+    padding: 10px 0px;
   }
 
   scale.slider trough {
     min-height: 5px;
     background: $background;
+    border: unset;
   }
 
   scale.slider highlight {
-    background: $secondary;
+    border: unset;
+    // background: $secondary;
   }
 
   scale.slider slider {

@@ -1,10 +1,9 @@
-import { Util } from "types/@girs/atk-1.0/atk-1.0.cjs"
 import { Notification } from "types/service/notifications"
-import { getDominantColor } from "utils/image"
 import { readJson } from "utils/json"
 
 import { timeout } from "resource:///com/github/Aylur/ags/utils.js";
 import { globalTransition } from "variables";
+import Gtk from "types/@girs/gtk-3.0/gtk-3.0";
 
 const Hyprland = await Service.import('hyprland')
 
@@ -87,19 +86,6 @@ export function Notification_(n: Notification, new_Notification = false, popup =
         })
         ),
     });
-
-    const close = Widget.Button({
-        hpack: "end",
-        vpack: "start",
-        class_name: "close",
-        on_clicked: async () =>
-        {
-            Revealer.reveal_child = false;
-            timeout(TRANSITION, () => { n.close(); Revealer.destroy() })
-        },
-        label: "",
-    })
-
     const expand = Widget.ToggleButton({
         hpack: "end",
         vpack: "end",
@@ -113,14 +99,41 @@ export function Notification_(n: Notification, new_Notification = false, popup =
         label: "",
     })
 
-    const lockRevealer = Widget.Revealer({
+    const lock = Widget.ToggleButton({
+        class_name: "lock",
+        label: "",
+        on_toggled: ({ active }) =>
+        {
+            Revealer.reveal_child = true
+            Revealer.attribute.locked = active
+        },
+    })
+
+    const copy = Widget.Button({
+        class_name: "copy",
+        label: "",
+        on_clicked: () => Utils.execAsync(`wl-copy "${n.body}"`).catch(err => print(err)),
+    })
+
+    const leftRevealer = Widget.Revealer({
         reveal_child: false,
         transition: "slide_left",
         transition_duration: globalTransition,
+        setup: (self) => self.child = popup ? lock : copy
+    })
+
+    const closeRevealer = Widget.Revealer({
+        reveal_child: false,
+        transition: "slide_right",
+        transition_duration: globalTransition,
         child: Widget.Button({
-            class_name: "lock",
-            label: "",
-            on_primary_click: () => Revealer.reveal_child = false,
+            class_name: "close",
+            label: "",
+            on_clicked: () =>
+            {
+                Revealer.reveal_child = false;
+                timeout(TRANSITION, () => { n.close(); Revealer.destroy() })
+            },
         }),
     })
 
@@ -128,7 +141,7 @@ export function Notification_(n: Notification, new_Notification = false, popup =
         {
             class_name: `notification ${n.urgency} ${n.app_name}`,
         },
-        lockRevealer,
+        leftRevealer,
         Widget.Box({
             class_name: "main-content",
             vertical: true,
@@ -143,17 +156,15 @@ export function Notification_(n: Notification, new_Notification = false, popup =
                             },
                             Widget.Box({
                                 hexpand: true,
-                                children: popup ? [title] : [title, close],
+                                children: popup ? [title] : [title, expand],
                             }),
-                            Widget.Box({
-                                hexpand: true,
-                                children: popup ? [body] : [body, expand],
-                            })
+                            body
                         ),
                     ]
                 }),
                 Actions]
         }),
+        closeRevealer
 
     )
 
@@ -161,11 +172,8 @@ export function Notification_(n: Notification, new_Notification = false, popup =
     const Revealer = Widget.Revealer({
         attribute: {
             id: n.id,
-            hide: () =>
-            {
-                Revealer.reveal_child = false;
-            },
-            lock: () => lockRevealer.reveal_child = true,
+            locked: false,
+            hide: () => Revealer.reveal_child = false,
 
         },
         child: Box,
@@ -182,5 +190,27 @@ export function Notification_(n: Notification, new_Notification = false, popup =
         }
     })
 
-    return Revealer
+    const EventBox = Widget.Box({
+        visible: true,
+        css: "padding:1px;",
+        child: Widget.EventBox({
+            visible: true,
+            child: Revealer,
+            on_hover: () =>
+            {
+                leftRevealer.reveal_child = true
+                closeRevealer.reveal_child = true
+            },
+            on_hover_lost: () =>
+            {
+                if (!Revealer.attribute.locked) leftRevealer.reveal_child = false
+                closeRevealer.reveal_child = false
+            },
+
+            on_primary_click: () => leftRevealer.child.activate(),
+            on_secondary_click: () => closeRevealer.child.activate(),
+        })
+    })
+
+    return EventBox
 }

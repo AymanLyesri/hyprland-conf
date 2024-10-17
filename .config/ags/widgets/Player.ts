@@ -51,7 +51,7 @@ export function Player(player: MprisPlayer, playerType: "popup" | "widget")
     const positionSlider = Widget.Slider({
         class_name: "slider",
         draw_value: false,
-        css: dominantColor.as(c => `highlight{background: ${c}}`),
+        css: dominantColor.as(c => `highlight{background: ${c}00}`),
         on_change: ({ value }) => player.position = value * player.length,
         visible: player.bind("length").as(l => l > 0),
         setup: self =>
@@ -94,7 +94,7 @@ export function Player(player: MprisPlayer, playerType: "popup" | "widget")
         class_name: "icon",
         hexpand: true,
         hpack: "end",
-        vpack: "start",
+        vpack: "center",
         tooltip_text: player.identity || "",
         icon: player.bind("entry").transform(entry =>
         {
@@ -136,7 +136,7 @@ export function Player(player: MprisPlayer, playerType: "popup" | "widget")
             vexpand: false,
             class_name: `player ${playerType}`,
             css: playerType == "widget" ? `
-            min-height:${rightPanelWidth.value - 50}px;
+            min-height:${rightPanelWidth.value}px;
             background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
                 url('${player.cover_path}');
             `: ``,
