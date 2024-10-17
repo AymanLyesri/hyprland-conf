@@ -4,48 +4,85 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
   .workspaces {
     button {
       padding: 0px 10px;
+      border-radius: 0px;
       ////////////////////////////
       &.focused {
-        // padding: 0px 20px;
         background-image: linear-gradient(to bottom right, $gradient-Colors);
-        // animation: workspace-focus 0.3s ease;
+        // padding: 0px 20px;
+        // animation: workspace-focus 1s;
       }
       &.same-focused {
-        // padding: 0px 20px;
-
-        //no transition for margin
-        transition: all 0s;
         background-image: linear-gradient(to bottom right, $gradient-Colors);
+        // padding: 0px 20px;
+      }
+      &.unfocused {
+        animation: workspace-unfocus 1s;
       }
       &.new-app {
         @extend .danger;
       }
-      ////////////////////////////
-      // $special: mix(mix($color5, $color6, 50%), $foreground, 69%);
-      // &.special {
-      //   color: $background;
-      //   background-image: linear-gradient(
-      //     to bottom right,
-      //     rgba($special, 0.5),
-      //     rgba($special, 1),
-      //     rgba($special, 0.5)
-      //   );
-      //   font-weight: bolder;
-      // }
+      &.first {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+      }
+      &.last {
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+      }
+      &.between {
+        border-radius: 0px;
+      }
+      &.only {
+        border-radius: 10px;
+      }
+      &.inactive {
+        background: transparent;
+      }
     }
   }
 }
 
 @keyframes workspace-focus {
   0% {
-    padding-right: 0px;
-    padding-left: 0px;
+    padding-right: 10px;
+    padding-left: 10px;
   }
   100% {
     padding-right: 20px;
     padding-left: 20px;
   }
 }
+
+@keyframes workspace-unfocus {
+  0% {
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+  100% {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+}
+
+// Loop to generate styles for each unique active class (active-1, active-2, etc.)
+// @for $i from 0 through 10 {
+//   .active-#{$i} {
+//     border-radius: 0px;
+//     transition: border-radius 0s;
+//   }
+
+//   .active-#{$i}:first-child {
+//     border-radius: 10px 0px 0px 10px;
+//   }
+
+//   .active-#{$i}:last-child {
+//     border-radius: 0px 10px 10px 0px;
+//   }
+
+//   .active-#{$i}:only-child {
+//     border-radius: 10px;
+//   }
+// }
 
 // @keyframes workspace-unfocus {
 //   0% {

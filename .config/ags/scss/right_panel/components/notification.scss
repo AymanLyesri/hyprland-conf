@@ -45,12 +45,13 @@
   }
 
   .body {
-    color: $secondary;
+    color: $module-secondary;
     font-size: 1em;
   }
 
   .close {
     @extend .danger;
+    padding: 0px 5px;
   }
 
   .actions {

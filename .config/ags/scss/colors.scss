@@ -1,0 +1,26 @@
+$background: $color0; // Example background color
+$foreground: $color7; // Example foreground color
+$secondary: $color13; // Example selected background color
+
+$red: rgb(255, 102, 77); /* Muted red-orange, with less opacity */
+$green: rgb(153, 255, 153); /* Softer pastel green */
+$blue: rgb(102, 153, 255); /* Lighter desaturated blue */
+$orange: rgb(255, 139, 23); /* Muted peachy orange */
+
+$spotify: mix($background, rgb(30, 215, 95), 69%);
+$spotify-background: rgba($spotify, 0.69);
+
+$blue: mix($background, $blue, 69%);
+$blue-background: rgba($blue, 0.69);
+$orange: mix($background, $orange, 69%);
+$orange-background: rgba($orange, 0.69);
+$red: mix($background, $red, 50%);
+$green: mix($background, $green, 69%);
+
+$module-background: mix($background, $color1, 69%);
+$module-foreground: mix($foreground, $color1, 69%);
+$module-secondary: mix($secondary, $foreground, 50%);
+
+$background: rgba($background, 0.69);
+$module-background: rgba($module-background, 0.69);
+$module-foreground: rgba($module-foreground, 0.69);

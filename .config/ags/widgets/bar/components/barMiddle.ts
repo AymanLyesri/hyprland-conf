@@ -75,17 +75,6 @@ function Media()
         }),
         setup: self => self.hook(mpris, () => self.reveal_child = mpris.players.length > 0, "changed")
     })
-
-    // return Widget.EventBox({
-    //     class_name: "media-event",
-    //     on_primary_click: () => hyprland.messageAsync("dispatch workspace 4").catch(err => print(err)),
-    //     on_hover: () => App.openWindow("media"),
-
-    //     child: Utils.watch(mpris.players.length > 0 ? _activePlayer_() : Widget.Box(),
-    //         mpris, "changed",
-    //         () => _activePlayer_()),
-
-    // })
 }
 
 function Clock()

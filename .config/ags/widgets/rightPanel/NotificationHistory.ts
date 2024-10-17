@@ -82,15 +82,7 @@ export default () =>
         {
             if (!notifications) return [];
             return FilterNotifications(notifications, filter.name)
-                .map(notification =>
-                {
-                    return Widget.EventBox(
-                        {
-                            class_name: "notification-event",
-                            on_primary_click: () => Utils.execAsync(`wl-copy "${notification.body}"`).catch(err => print(err)),
-                            child: Notification_(notification),
-                        });
-                })
+                .map(notification => Notification_(notification))
         }),
     })
 

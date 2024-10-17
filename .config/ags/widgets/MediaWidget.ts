@@ -14,11 +14,6 @@ const Media = () => Widget.EventBox({
         child: Utils.watch(mpris.players.length > 0 ? activePlayer() : Widget.Box(),
             mpris, "changed",
             () => activePlayer()),
-        setup: (self) =>
-        {
-
-            print(1)
-        }
     })
 
 })
