@@ -1,5 +1,5 @@
 import brightness from "brightness";
-import { barLock, rightPanelVisibility, waifuPath, waifuVisibility } from "variables";
+import { barLock, rightPanelVisibility, waifuVisibility } from "variables";
 import { closeProgress, openProgress } from "widgets/Progress";
 import { custom_revealer } from "widgets/revealer";
 
@@ -7,14 +7,12 @@ const audio = await Service.import("audio");
 const battery = await Service.import("battery");
 const SystemTray = await Service.import("systemtray");
 
-
 // widgets can be only assigned as a child in one container
 // so to make a reuseable widget, make it a function
 // then you can simply instantiate one by calling it
 
 function Theme()
 {
-
     function getIcon()
     {
         return Utils.execAsync(['bash', '-c', '$HOME/.config/hypr/theme/scripts/system-theme.sh get']).then(theme => theme.includes('dark') ? "" : "")
@@ -36,7 +34,6 @@ function Theme()
 
 }
 
-
 function Brightness()
 {
     const slider = Widget.Slider({
@@ -49,39 +46,52 @@ function Brightness()
 
     const label = Widget.Label({
         class_name: "icon",
-        label: "",
-        // brightness.bind('screen-value').as(v => `${Math.round(v * 100)}%`),
+        label:
+            brightness.bind('screen_value').as(v =>
+            {
+                `${Math.round(v * 100)}%`
+                switch (true) {
+                    case v > 0.75:
+                        return "󰃠";
+                    case v > 0.5:
+                        return "󰃟";
+                    case v > 0:
+                        return "󰃞";
+                    default:
+                        return "";
+                }
+            }),
     });
 
     return brightness.screen_value == 0 ? Widget.Box() : custom_revealer(label, slider);
 }
 
-
 function Volume()
 {
     const icons = {
-        101: "overamplified",
-        67: "high",
-        34: "medium",
-        1: "low",
-        0: "muted",
+        75: "",
+        50: "",
+        25: "",
+        0: "",
     };
 
     function getIcon()
     {
-        const icon: any = audio.speaker.is_muted
-            ? 0
-            : [101, 67, 34, 1, 0].find(
-                (threshold) => threshold <= audio.speaker.volume * 100
-            );
+        if (audio.speaker.is_muted) {
+            return icons[0]; // Return mute icon
+        }
 
-        return `audio-volume-${icons[icon]}-symbolic`;
+        const volumeLevel: number = [75, 50, 25, 0].find(
+            (threshold) => threshold <= audio.speaker.volume * 100
+        ) ?? 0;  // If find() returns undefined, default to 0
+
+        return icons[volumeLevel];
     }
 
-    const icon = Widget.Icon({
-        class_name: "icon",
-        icon: Utils.watch(getIcon(), audio.speaker, getIcon)
 
+    const label = Widget.Label({
+        class_name: "icon",
+        label: Utils.watch(getIcon(), audio.speaker, getIcon)
     })
 
     const slider = Widget.Slider({
@@ -94,7 +104,7 @@ function Volume()
         self.value = audio.speaker.volume || 0;
     });
 
-    return custom_revealer(icon, slider, '', () => Utils.execAsync(`pavucontrol`).catch(err => print(err)));
+    return custom_revealer(label, slider, '', () => Utils.execAsync(`pavucontrol`).catch(err => print(err)));
 }
 
 function BatteryLabel()
@@ -109,13 +119,36 @@ function BatteryLabel()
         class_name: "icon",
     });
 
+    const label = Widget.Label({
+        class_name: "icon",
+        label: battery.bind("percent").as((p) =>
+        {
+            switch (true) {
+                case p == 100:
+                    return "";
+                case p > 75:
+                    return "";
+                case p > 50:
+                    return "";
+                case p > 25:
+                    return "";
+                case p > 10:
+                    return "";
+                case p > 0:
+                    return "";
+                default:
+                    return "";
+            }
+        }),
+    });
+
     const slider = Widget.LevelBar({
         class_name: "slider",
         widthRequest: 69,
         value,
     });
 
-    return battery.percent <= 0 ? Widget.Box() : custom_revealer(icon, slider);
+    return battery.percent <= 0 ? Widget.Box() : custom_revealer(label, slider);
 }
 
 function SysTray()
