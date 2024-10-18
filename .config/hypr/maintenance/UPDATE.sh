@@ -2,18 +2,20 @@
 
 figlet "Updating Config"
 
-if [ "$1" = "keep" ]; then
-    git stash
+source $HOME/.config/hypr/maintenance/ESSENTIALS.sh # source the essentials file INSIDE the repository
 
-    # Change branch to the specified branch
-    git checkout master
-    git fetch origin master
-    git reset --hard origin/master
-
-    git stash pop
+# specify the repo branch
+if [ -z "$1" ]; then
+    BRANCH="master"
 else
-    # Change branch to the specified branch
-    git checkout master
-    git fetch origin master
-    git reset --hard origin/master
+    BRANCH=$1
 fi
+
+git checkout $BRANCH
+git fetch origin $BRANCH
+git reset --hard origin/$BRANCH
+
+aur_helpers=("yay" "paru")
+aur_helper=$(echo "${aur_helpers[@]}" | tr ' ' '\n' | fzf --height "40%")
+
+continue_prompt "Do you want to install necessary packages? (using $aur_helper)" "$HOME/.config/hypr/pacman/install-pkgs.sh $aur_helper"

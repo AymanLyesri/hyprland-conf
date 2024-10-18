@@ -2,7 +2,7 @@
 
 # Define variables
 hyprdir=$HOME/.config/hypr
-wallpaper=$1  # This is passed as an argument to the script
+wallpaper=$1 # This is passed as an argument to the script
 
 # Get list of monitors
 monitors=($(hyprctl monitors | awk '/Monitor/ {print $2}'))

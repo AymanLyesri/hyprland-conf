@@ -9,6 +9,8 @@ if [ "$1" ]; then
 
 fi
 
+$hyprDir/theme/scripts/cursor-theme.sh &
+
 $hyprDir/theme/scripts/wal-theme.sh &
 
 $hyprDir/theme/scripts/gtk-theme.sh &

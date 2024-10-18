@@ -7,8 +7,9 @@ function Workspaces()
     let previousWorkspace: number = 0; // Variable to store the previous workspace ID
 
     // Add the "." icon for empty workspaces
-    const workspaceToIcon = ["", "", "", "", "", "", "󰙯", "󰓓", "", "", ""];
+    const workspaceToIcon = ["", "", "", "", "", "", "󰙯", "󰓓", "", "", ""];
     const emptyIcon = ""; // Icon for empty workspaces
+    const extraWorkspaceIcon = ""; // Icon for workspaces after 10
     const maxWorkspaces = 10; // Set the maximum number of workspaces
 
     const workspaces = Utils.merge(
@@ -17,17 +18,19 @@ function Workspaces()
         {
             // Get the IDs of active workspaces and fill in empty slots
             const workspaceIds = workspaces.map((w) => w.id);
-            const allWorkspaces = Array.from({ length: maxWorkspaces }, (_, i) => i + 1); // Create all workspace slots from 1 to maxWorkspaces
+            const totalWorkspaces = Math.max(...workspaceIds, maxWorkspaces); // Get the total number of workspaces, accounting for more than 10
+            const allWorkspaces = Array.from({ length: totalWorkspaces }, (_, i) => i + 1); // Create all workspace slots from 1 to totalWorkspaces
 
             let inActiveGroup = false; // Flag to track if we're in an active group
+            let previousWorkspace_ = currentWorkspace; // Store the previous workspace ID
 
-            return allWorkspaces.map((id) =>
+            const results = allWorkspaces.map((id) =>
             {
                 const isActive = workspaceIds.includes(id); // Check if this workspace ID is active
-                const icon = isActive ? workspaceToIcon[id] : emptyIcon; // Use the specified icon for active workspaces or empty icon
+                const icon = id > maxWorkspaces ? extraWorkspaceIcon : (isActive ? workspaceToIcon[id] : emptyIcon); // Icon for extra workspaces beyond 10
                 const isFocused = currentWorkspace == id; // Determine if the current ID is focused
 
-                let class_names: string[] = ["button"];
+                let class_names: string[] = ["button"]; // Default class names
 
                 if (isFocused) {
                     if (previousWorkspace !== currentWorkspace) {
@@ -37,30 +40,30 @@ function Workspaces()
                         // Same workspace remains focused, mark as `same-focused`
                         class_names.push("same-focused");
                     }
-
                     // Update the `previousWorkspace` to reflect the current one
-                    previousWorkspace = currentWorkspace;
+                    previousWorkspace_ = currentWorkspace;
+                } else {
+                    // Add the `unfocused` class if the workspace was previously focused
+                    if (id == previousWorkspace) {
+                        class_names.push("unfocused");
+                    }
                 }
-                // else {
-                //     // Add the `unfocused` class if the workspace was previously focused
-                //     if (previousWorkspace == id) {
-                //         class_names.push("unfocused");
-                //     }
-                // }
-
 
                 // Handle active groups
                 if (isActive) {
                     if (!inActiveGroup) {
-                        inActiveGroup = true; // Set the flag to indicate we're in an active group
-                        if (workspaceIds.includes(id + 1)) class_names.push("first");
-                        else class_names.push("only");
+                        if (workspaceIds.includes(id + 1)) {
+                            class_names.push("first");
+                            inActiveGroup = true; // Set the flag to indicate we're in an active group
+                        } else {
+                            class_names.push("only");
+                        }
                     } else {
                         if (workspaceIds.includes(id + 1)) {
                             class_names.push("between");
                         } else {
-                            inActiveGroup = false;
                             class_names.push("last");
+                            inActiveGroup = false;
                         }
                     }
                 } else {
@@ -78,11 +81,22 @@ function Workspaces()
                 }
 
                 return Widget.Button({
-                    on_clicked: () => hyprland.messageAsync(id == -99 ? `dispatch togglespecialworkspace` : `dispatch workspace ${id}`).catch((err) => print(err)),
+                    on_clicked: () => hyprland.messageAsync(`dispatch workspace ${id}`).catch((err) => print(err)),
                     child: Widget.Label({ class_name: "icon", label: icon }), // Show icon for workspace
                     class_names: class_names,
                 });
             });
+
+            results.unshift(Widget.Button({
+                class_name: "special",
+                on_clicked: () => hyprland.messageAsync(`dispatch togglespecialworkspace`).catch((err) => print(err)),
+                child: Widget.Label({
+                    label: workspaceToIcon[0],
+                }),
+            }));
+
+            previousWorkspace = previousWorkspace_;
+            return results;
         }
     );
 

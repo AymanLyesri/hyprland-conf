@@ -6,7 +6,7 @@ import { Right } from "./components/barRight";
 export default () =>
 {
     return Widget.Window({
-        name: `bar`, // name has to be unique
+        name: `bar`,
         anchor: ["top", "left", "right"],
         exclusivity: "exclusive",
         margins: emptyWorkspace.as(margin => [margin * 69, margin * 50, 0, margin * 50]),// [top, right, bottom, left]

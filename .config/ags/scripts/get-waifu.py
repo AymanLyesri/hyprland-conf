@@ -25,7 +25,7 @@ def main():
     tags = (tags + ["", ""])[:2]
     
     # Variables
-    api_url = f"https://danbooru.donmai.us/posts/{post_id}.json?tags={nsfw}rating%3Aexplicit+{tags[0]}+{tags[1]}&ratio=%3C%3D1/10"
+    api_url = f"https://danbooru.donmai.us/posts/{post_id}.json?tags={nsfw}rating%3Aexplicit+{tags[0]}+{tags[1]}&ratio%3A>%3D1%2F3"
     print(api_url)
     api_key = "tYWBHV2Pv5dKKmRBsQaMHtFH"  # Replace with your own API key
     user_name = "lilayman"  # Replace with your own username
