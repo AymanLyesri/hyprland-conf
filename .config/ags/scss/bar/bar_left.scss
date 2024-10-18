@@ -8,15 +8,20 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
       ////////////////////////////
       &.focused {
         background-image: linear-gradient(to bottom right, $gradient-Colors);
-        // padding: 0px 20px;
-        // animation: workspace-focus 1s;
+        padding: 0px 20px;
+        animation: workspace-focus 0.3s;
       }
       &.same-focused {
         background-image: linear-gradient(to bottom right, $gradient-Colors);
-        // padding: 0px 20px;
+        padding: 0px 20px;
       }
       &.unfocused {
-        animation: workspace-unfocus 1s;
+        animation: workspace-unfocus 0.3s;
+      }
+      &.special {
+        // background: $color0;
+        border-radius: 10px;
+        margin-right: 5px;
       }
       &.new-app {
         @extend .danger;
@@ -37,6 +42,7 @@ $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
       }
       &.inactive {
         background: transparent;
+        padding: 0px;
       }
     }
   }
