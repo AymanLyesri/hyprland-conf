@@ -30,5 +30,8 @@
 # wallpapers
 !.config/wallpapers/
 
+# include icons (cursort theme)
+!.icons/
+
 # include zsh config
 !.zshrc
