@@ -23,10 +23,9 @@ export default () =>
             }),
             setup: (self) => self.on('leave-notify-event', (self, event: Gdk.Event) =>
             {
-
                 const [_, x, y] = event.get_root_coords();
                 print(x, y)
-                if (y >= 28 && !barLock.value) App.closeWindow("bar")
+                if (y >= 25 && !barLock.value) App.closeWindow("bar")
             })
         })
 
