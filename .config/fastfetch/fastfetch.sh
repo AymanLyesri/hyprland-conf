@@ -24,9 +24,9 @@ ARGUMENTS=""
 if (($(echo "$RATIO >= 1" | bc -l))); then
     ARGUMENTS="--logo-width $(echo "$COLUMNS / 2.5" | bc)"
 else
-    ARGUMENTS="--logo-height 20"
+    ARGUMENTS="--logo-height 21"
 fi
 
 # Fetch system information with adjusted logo size
-FETCH="fastfetch --logo-recache $ARGUMENTS --logo-padding 1 --logo-padding-top 1 --logo $HOME/.config/ags/assets/terminal/icon.jpg"
+FETCH="fastfetch --logo-recache $ARGUMENTS --logo $HOME/.config/ags/assets/terminal/icon.jpg"
 eval "$FETCH"
