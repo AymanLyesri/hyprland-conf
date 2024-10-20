@@ -1,8 +1,16 @@
 import { WidgetSelector } from "interfaces/widgetSelector.interface";
+import { refreshCss } from "utils/scss";
 import { getSetting, setSetting } from "utils/settings";
 import { WidgetSelectors } from "widgets/rightPanel/RightPanel";
 
 const hyprland = await Service.import("hyprland");
+
+export const globalOpacity = Variable<number>(getSetting("globalOpacity"))
+globalOpacity.connect("changed", ({ value }) =>
+{
+    setSetting("globalOpacity", value)
+    refreshCss()
+});
 
 export const globalMargin = 15
 export const globalTransition = 500

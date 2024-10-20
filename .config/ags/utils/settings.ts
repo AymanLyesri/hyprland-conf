@@ -3,6 +3,7 @@ import { readJSONFile, writeJSONFile } from "./json";
 const settingsPath = App.configDir + "/assets/settings/settings.json";
 
 const defaultSettings = {
+  "globalOpacity": 0.8,
   "bar": {
     "lock": true
   },

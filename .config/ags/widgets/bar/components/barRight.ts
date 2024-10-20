@@ -37,6 +37,7 @@ function Theme()
 function Brightness()
 {
     const slider = Widget.Slider({
+        width_request: 100,
         class_name: "slider",
         hexpand: true,
         draw_value: false,
@@ -58,7 +59,7 @@ function Brightness()
                     case v > 0:
                         return "󰃞";
                     default:
-                        return "";
+                        return "󰃞";
                 }
             }),
     });
@@ -95,6 +96,7 @@ function Volume()
     })
 
     const slider = Widget.Slider({
+        width_request: 100,
         hexpand: true,
         draw_value: false,
         class_name: "slider",

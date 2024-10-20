@@ -137,19 +137,15 @@ scrolledwindow {
   .icon {
     font-size: 1.5em;
     all: unset;
-    // margin: 0 15px;
+    // margin: 0 10px;
     min-width: 35px;
   }
 
   .slider {
-    margin-right: 10px;
-    margin-left: 5px;
+    margin: 5px;
     padding: 0;
-    min-width: 100px;
 
     trough {
-      min-height: 2px;
-      min-width: 69px;
       border-radius: 10px;
     }
 

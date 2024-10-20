@@ -1,6 +1,6 @@
 
 import waifu, { WaifuVisibility } from "./components/waifu";
-import { globalMargin, rightPanelExclusivity, rightPanelLock, rightPanelVisibility, rightPanelWidth, widgetLimit, Widgets } from "variables";
+import { globalMargin, globalOpacity, rightPanelExclusivity, rightPanelLock, rightPanelVisibility, rightPanelWidth, widgetLimit, Widgets } from "variables";
 import Calendar from "widgets/Calendar";
 import Update from "widgets/Update";
 import NotificationHistory from "./NotificationHistory";
@@ -8,6 +8,7 @@ import { WidgetSelector } from "interfaces/widgetSelector.interface";
 import { Resources } from "widgets/Resources";
 import { exportSettings } from "utils/settings";
 import MediaWidget from "widgets/MediaWidget";
+import { custom_revealer } from "widgets/revealer";
 
 
 const Notifications = await Service.import("notifications")
@@ -42,6 +43,28 @@ export const WidgetSelectors: WidgetSelector[] = [{
 const maxRightPanelWidth = 600;
 const minRightPanelWidth = 200;
 
+const opacitySlider = () =>
+{
+    const label = Widget.Label({
+        class_name: "icon",
+        css: `min-width: 0px;`,
+        label: "󱡓"
+    })
+
+    const slider = Widget.Slider({
+        hexpand: false,
+        vexpand: true,
+        vertical: true,
+        hpack: "center",
+        height_request: 100,
+        draw_value: false,
+        class_name: "slider",
+        on_change: ({ value }) => globalOpacity.value = value,
+    })
+
+    return custom_revealer(label, slider, '', () => { }, true);
+}
+
 function WindowActions()
 {
     return Widget.Box({
@@ -50,19 +73,22 @@ function WindowActions()
         vpack: "end",
         vertical: true,
         spacing: 5
-    }, Widget.Button({
-        label: "󰈇",
-        class_name: "export-settings",
-        on_clicked: () => exportSettings()
-    }), Widget.Button({
-        label: "",
-        class_name: "expand-window",
-        on_clicked: () => rightPanelWidth.value = rightPanelWidth.value < maxRightPanelWidth ? rightPanelWidth.value + 50 : maxRightPanelWidth,
-    }), Widget.Button({
-        label: "",
-        class_name: "shrink-window",
-        on_clicked: () => rightPanelWidth.value = rightPanelWidth.value > minRightPanelWidth ? rightPanelWidth.value - 50 : minRightPanelWidth,
-    }), WaifuVisibility(),
+    },
+        opacitySlider(),
+
+        Widget.Button({
+            label: "󰈇",
+            class_name: "export-settings",
+            on_clicked: () => exportSettings()
+        }), Widget.Button({
+            label: "",
+            class_name: "expand-window",
+            on_clicked: () => rightPanelWidth.value = rightPanelWidth.value < maxRightPanelWidth ? rightPanelWidth.value + 50 : maxRightPanelWidth,
+        }), Widget.Button({
+            label: "",
+            class_name: "shrink-window",
+            on_clicked: () => rightPanelWidth.value = rightPanelWidth.value > minRightPanelWidth ? rightPanelWidth.value - 50 : minRightPanelWidth,
+        }), WaifuVisibility(),
         Widget.ToggleButton({
             label: "",
             class_name: "exclusivity",
