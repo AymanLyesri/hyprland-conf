@@ -22,7 +22,7 @@ I use Arch BTW.. :)
 
 - **Dynamic wallpapers** based on workspaces: Custom scripts & [Hyprpaper](https://github.com/hyprwm/hyprpaper)
 - **Screenshot all active workspaces** into one image: Custom script
-- **Dynamic color themes** based on current wallpaper: Custom scripts & [PyWal](https://github.com/dylanaraps/pywal)
+- **Dynamic color schemes** based on current wallpaper: Custom scripts & [PyWal](https://github.com/dylanaraps/pywal)
 - **Global Theme switcher (Light/Dark)**: Custom scripts
 - **Ags widgets** ~~(Eww replaced)~~:
   - Color scheme based on current wallpaper
@@ -38,14 +38,11 @@ I use Arch BTW.. :)
   - Media player
   - Right panel
     - Waifu display
-    - System resource monitor
+    - Media Player
     - Notification history - filter
+    - System resource monitor
     - Calendar
     - System Updater (WIP)
-- **Machine-based configuration** (laptop/desktop):
-  - Blur
-  - Mouse sensitivity
-  - Gaps
 - **Customizable shaders**: Includes saturation & retro effects
 - **High-quality wallpapers** from [Danbooru](https://danbooru.donmai.us), [Yandere](https://yande.re), and [Gelbooru](https://gelbooru.com)
 
@@ -90,14 +87,14 @@ update
 
 # Tips
 
+- Custom wallpapers should be added in `$HOME/.config/wallpapers/custom`
 - Most functionalities have associated [keybinds](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/configs/keybinds.conf). Check them out!
-- When adding new wallpapers, be sure to run wallpaper reducer script to reduce there sizes.
 
-> **Important:** If you encountered any problem even if its small, be sure to open an issue am happy to help :)
+> **Important**: If you encounter any problems, no matter how small, please feel free to open an issue. I’m happy to help! :)
 
 # Additional Notes
 
-- I use **Dvorak**, so QWERTY users might face some issues.
+- Machines with batteries (aka: laptops) require `upower` to be installed for battery monitoring to work properly.
 
 # Star History
 

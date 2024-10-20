@@ -17,10 +17,10 @@ $orange-background: rgba($orange, 0.69);
 $red: mix($background, $red, 50%);
 $green: mix($background, $green, 69%);
 
-$module-background: mix($background, $color1, 69%);
-$module-foreground: mix($foreground, $color1, 69%);
+$module-background: mix($background, $color1, 50%);
+$module-foreground: mix($foreground, $color1, 50%);
 $module-secondary: mix($secondary, $foreground, 50%);
 
-$background: rgba($background, 0.69);
-$module-background: rgba($module-background, 0.69);
-$module-foreground: rgba($module-foreground, 0.69);
+$background: rgba($background, $OPACITY);
+$module-background: rgba($module-background, $OPACITY);
+// $module-foreground: rgba($module-foreground, $);

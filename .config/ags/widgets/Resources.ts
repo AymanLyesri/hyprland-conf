@@ -13,12 +13,12 @@ function getTemperatureColor(value: number): string
     return `rgb(${red}, ${green}, ${blue})`;
 }
 
-const CircularProgress = (value: number, class_name, icon: string = '') => Widget.CircularProgress({
+const CircularProgress = (value: any, class_name, icon: string = '') => Widget.CircularProgress({
     class_name: "circular-progress " + class_name,
     rounded: true,
     startAt: 0.75,
     css: `color: ${getTemperatureColor(value)}`,
-    value: value,
+    value: value.bind(),
     child: Widget.Label({ label: icon })
 })
 
@@ -70,13 +70,13 @@ export function Resources()
     const cpuTempDisplay = Widget.Box({
         class_name: "temp",
         hpack: "end",
-        child: cpuTemperature.bind().as(temp => CircularProgress(temp, `cpu`, "󰔄"))
+        child: CircularProgress(cpuTemperature, `cpu`, "󰔄")
     })
 
     const ramTempDisplay = Widget.Box({
         class_name: "temp",
         hpack: "end",
-        child: ramTemperature.bind().as(temp => CircularProgress(temp, `ram`, "󰔄"))
+        child: CircularProgress(ramTemperature, `ram`, "󰔄")
     })
 
     const cpuResource = Widget.Box({

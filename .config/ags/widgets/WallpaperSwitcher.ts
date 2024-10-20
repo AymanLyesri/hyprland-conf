@@ -1,21 +1,22 @@
 
-import { timeout } from "resource:///com/github/Aylur/ags/utils.js";
+
 import { globalTransition } from "variables";
 
 const hyprland = await Service.import("hyprland");
+
+const allWallpapers = Variable<string[]>(JSON.parse(Utils.exec(App.configDir + '/scripts/get-wallpapers.sh --all')))
 
 var selectedWorkspace = 0
 
 function Wallpapers()
 {
-    const allWallpapers = () =>
+    const getAllWallpapers = () =>
     {
-        const allWallpapers: any[] = JSON.parse(Utils.exec(App.configDir + '/scripts/get-wallpapers.sh --all'))
 
         const Box = Widget.Box({
             class_name: "all-wallpapers",
             spacing: 5,
-            children: allWallpapers.map((wallpaper, key) =>
+            children: allWallpapers.bind().as((wallpapers) => wallpapers.map((wallpaper, key) =>
             {
                 return Widget.Button({
                     class_name: "wallpaper",
@@ -34,7 +35,7 @@ function Wallpapers()
                             .catch(err => Utils.notify(err));
                     }
                 })
-            }),
+            }))
         })
 
         return Widget.Scrollable({
@@ -47,7 +48,9 @@ function Wallpapers()
         })
     }
 
-    const get_wallpapers = () =>
+
+
+    const getWallpapers = () =>
     {
         const activeId = hyprland.active.workspace.bind("id");
 
@@ -76,7 +79,9 @@ function Wallpapers()
         label: "󰑐",
         on_primary_click: () =>
         {
-            Utils.execAsync(`bash -c "$HOME/.config/hypr/hyprpaper/reload.sh"`).catch(err => print(err));
+            Utils.execAsync(`bash -c "$HOME/.config/hypr/hyprpaper/reload.sh"`)
+                .finally(() => allWallpapers.value = JSON.parse(Utils.exec(App.configDir + '/scripts/get-wallpapers.sh --all')))
+                .catch(err => print(err));
         }
     })
 
@@ -85,7 +90,7 @@ function Wallpapers()
         vexpand: true,
         hpack: "center",
         spacing: 10,
-        children: [...get_wallpapers(), reset]
+        children: [...getWallpapers(), reset]
     });
 
     const random = Widget.Button({
@@ -125,7 +130,7 @@ function Wallpapers()
             transition: "slide_down",
             transition_duration: globalTransition,
             child: Widget.Box({
-                children: [random, allWallpapers(), hide]
+                children: [random, getAllWallpapers(), hide]
             }),
             // setup: (self) => timeout(1, () => self.reveal_child = false)
         })

@@ -1,7 +1,7 @@
 #!/bin/bash
-hyprDir=$HOME/.config/hypr                                 # hypr directory
-current_config=$hyprDir/hyprpaper/config/defaults.conf           # config file
-previous_config=$hyprDir/hyprpaper/config/previous.conf          # previous config file
+hyprDir=$HOME/.config/hypr                                             # hypr directory
+current_config=$hyprDir/hyprpaper/config/defaults.conf                 # config file
+previous_config=$hyprDir/hyprpaper/config/previous.conf                # previous config file
 current_workspace=$(hyprctl monitors | grep active | awk '{print $3}') # get current workspace
 
 new_wallpaper=""
@@ -19,12 +19,11 @@ fi
 # check for $2
 if [ -z "$2" ]; then
     echo "Setting random wallpaper for workspace $workspace_id"
-    new_wallpaper=$(find $HOME/.config/wallpapers/normal -type f | shuf -n 1 | sed "s|$HOME|\\\$HOME|") # get random wallpaper
+    new_wallpaper=$(find $HOME/.config/wallpapers/all -type f | shuf -n 1 | sed "s|$HOME|\\\$HOME|") # get random wallpaper
 else
     echo "Setting wallpaper $2 for workspace $workspace_id"
     new_wallpaper=$(echo $2 | sed "s|$HOME|\\\$HOME|") # get wallpaper
 fi
-
 
 #############################################
 
@@ -47,7 +46,5 @@ if [ "$workspace_id" = "$current_workspace" ]; then
 fi
 
 #############################################
-
-sed -i "s|w-${workspace_id}=.*|w-${workspace_id}=${old_wallpaper}|" $previous_config # set wallpaper in previous config
 
 sed -i "s|w-${workspace_id}=.*|w-${workspace_id}=${new_wallpaper}|" $current_config # set wallpaper in config

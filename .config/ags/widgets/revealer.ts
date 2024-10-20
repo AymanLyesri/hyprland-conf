@@ -1,11 +1,11 @@
 import { globalTransition } from "variables";
 
-export function custom_revealer(trigger, slider, custom_class = '', on_primary_click = () => { })
+export function custom_revealer(trigger, slider, custom_class = '', on_primary_click = () => { }, vertical = false)
 {
     const revealer = Widget.Revealer({
         revealChild: false,
         transitionDuration: globalTransition,
-        transition: 'slide_right',
+        transition: vertical ? 'slide_up' : 'slide_right',
         child: slider,
     });
 
@@ -21,6 +21,7 @@ export function custom_revealer(trigger, slider, custom_class = '', on_primary_c
         },
         on_primary_click: on_primary_click,
         child: Widget.Box({
+            vertical: vertical,
             children: [trigger, revealer],
         }),
     });
