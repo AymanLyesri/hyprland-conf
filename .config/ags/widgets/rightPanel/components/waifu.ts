@@ -1,8 +1,8 @@
 import { readJSONFile } from "utils/json";
 import { Waifu } from "../../../interfaces/waifu.interface";
-import { globalTransition, rightPanelWidth, waifuCurrent, waifuFavorites, waifuVisibility } from "variables";
+import { globalTransition, rightPanelWidth, waifuCurrent, waifuFavorites } from "variables";
 import { closeProgress, openProgress } from "../../Progress";
-import { getSetting, setSetting } from "utils/settings";
+import { getSetting, globalSettings, setSetting } from "utils/settings";
 import { timeout } from "resource:///com/github/Aylur/ags/utils/timeout.js";
 const Hyprland = await Service.import('hyprland')
 
@@ -258,7 +258,7 @@ export default () =>
     return Widget.Revealer({
         transitionDuration: globalTransition,
         transition: 'slide_down',
-        reveal_child: waifuVisibility.bind(),
+        reveal_child: globalSettings.bind().as(s => s.waifu.visibility),
         child: Widget.EventBox({
             class_name: "waifu-event",
             child: Widget.Box(
@@ -275,8 +275,9 @@ export default () =>
 export function WaifuVisibility()
 {
     return Widget.ToggleButton({
-        onToggled: ({ active }) => { waifuVisibility.value = active },
+        active: globalSettings.value.waifu.visibility,
+        onToggled: ({ active }) => setSetting("waifu.visibility", active),
         label: "󱙣",
         class_name: "waifu icon",
-    }).hook(waifuVisibility, (self) => self.active = waifuVisibility.value, "changed")
+    })
 }

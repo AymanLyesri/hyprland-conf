@@ -1,0 +1,7 @@
+.settings-widget {
+  min-width: 300px;
+  @extend .module;
+  .setting {
+    @extend .module;
+  }
+}

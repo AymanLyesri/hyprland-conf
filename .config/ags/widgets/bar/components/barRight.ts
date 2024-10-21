@@ -1,15 +1,11 @@
 import brightness from "brightness";
-import { barLock, rightPanelVisibility, waifuVisibility } from "variables";
+import { barLock, rightPanelVisibility } from "variables";
 import { closeProgress, openProgress } from "widgets/Progress";
 import { custom_revealer } from "widgets/revealer";
 
 const audio = await Service.import("audio");
 const battery = await Service.import("battery");
 const SystemTray = await Service.import("systemtray");
-
-// widgets can be only assigned as a child in one container
-// so to make a reuseable widget, make it a function
-// then you can simply instantiate one by calling it
 
 function Theme()
 {
@@ -97,12 +93,12 @@ function Volume()
 
     const slider = Widget.Slider({
         width_request: 100,
-        hexpand: true,
         draw_value: false,
         class_name: "slider",
         on_change: ({ value }) => (audio.speaker.volume = value),
     }).hook(audio.speaker, (self) =>
     {
+        print("value", audio.speaker.volume)
         self.value = audio.speaker.volume || 0;
     });
 
