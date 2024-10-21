@@ -21,7 +21,7 @@ const GetImageFromApi = (param = "") =>
     {
         closeProgress()
         imageDetails.value = JSON.parse(Utils.readFile(`${App.configDir}/assets/waifu/waifu.json`))
-        waifuCurrent.value = String(imageDetails.value.id)
+        waifuCurrent.value = { id: String(imageDetails.value.id), preview: String(imageDetails.value.preview_file_url) }
     }).catch((error) => Utils.notify({ summary: "Error", body: error }))
 }
 
@@ -152,10 +152,10 @@ function Actions()
         reveal_child: false,
         child: Widget.Scrollable({
             hscroll: 'never',
-            css: "min-width: 100px",
             child: Widget.Box({
                 class_name: "favorites",
                 vertical: true,
+                spacing: 5,
                 children: waifuFavorites.bind().as((favorites) =>
                 {
                     return [...favorites.map((favorite) =>
@@ -163,20 +163,19 @@ function Actions()
                             class_name: "favorite-event",
                             child: Widget.Box({
                                 class_name: "favorite",
-                                spacing: 10,
-                                children: [Widget.Label({
-                                    label: String(favorite),
-                                }), Widget.Button({
+                                css: `background-image: url("${favorite.preview}");`,
+                                child: Widget.Button({
                                     hexpand: true,
+                                    vpack: "start",
                                     hpack: "end",
                                     class_name: "delete",
                                     label: "",
                                     on_primary_click: () => waifuFavorites.value = waifuFavorites.value.filter(fav => fav !== favorite)
-                                })],
+                                }),
                             }),
                             on_primary_click: () =>
                             {
-                                GetImageFromApi(String(favorite))
+                                GetImageFromApi(String(favorite.id))
                                 left.reveal_child = false
                             },
                         })

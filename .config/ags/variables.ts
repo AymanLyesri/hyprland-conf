@@ -20,9 +20,9 @@ barLock.connect("changed", ({ value }) => setSetting("bar.lock", value));
 
 export const waifuVisibility = Variable(getSetting("waifu.visibility"))
 waifuVisibility.connect("changed", ({ value }) => setSetting("waifu.visibility", value));
-export const waifuFavorites = Variable<string[]>(getSetting("waifu.favorites"))
+export const waifuFavorites = Variable<{ id: number, preview: string }[]>(getSetting("waifu.favorites"))
 waifuFavorites.connect("changed", ({ value }) => setSetting("waifu.favorites", value));
-export const waifuCurrent = Variable<string>(getSetting("waifu.current"))
+export const waifuCurrent = Variable(getSetting("waifu.current"))
 waifuCurrent.connect("changed", ({ value }) => setSetting("waifu.current", value));
 
 export const emptyWorkspace = hyprland.active.client.bind("title").as(title => title ? 0 : 1)

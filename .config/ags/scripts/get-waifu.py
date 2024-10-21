@@ -13,7 +13,7 @@ def main():
     nsfw = "" if sys.argv[1]=="true" else "-"
    # Check if ID or tag parameter is passed
     
-    for arg in sys.argv[2:]:
+    for arg in sys.argv[2].split():
         if arg.isdigit():
             post_id = arg
         elif arg != "":
@@ -21,16 +21,17 @@ def main():
             
     if len(tags) == 0:
         tags = ["~ass", "~breasts"]
+    else: tags=tags[:2]
 
-    tags = (tags + ["", ""])[:2]
     
     # Variables
-    api_url = f"https://danbooru.donmai.us/posts/{post_id}.json?tags={nsfw}rating%3Aexplicit+{tags[0]}+{tags[1]}&ratio%3A>%3D1%2F3"
-    print(api_url)
+    api_url = f"https://danbooru.donmai.us/posts/{post_id}.json?tags={nsfw}rating%3Aexplicit+{"+".join(tags)}&ratio%3A>%3D1%2F3"
     api_key = "tYWBHV2Pv5dKKmRBsQaMHtFH"  # Replace with your own API key
     user_name = "lilayman"  # Replace with your own username
     save_dir = os.path.expanduser("~/.config/ags/assets/waifu")  # Directory where the image will be saved
     image_name = "waifu.png"
+
+    print(f"Fetching waifu from {api_url}")
 
     # Create the directory if it doesn't exist
     os.makedirs(save_dir, exist_ok=True)
@@ -42,6 +43,10 @@ def main():
         data = response.json()
 
         # Check if the response contains the image URL
+        # if sys.argv[3] == "--preview":
+        #     image_url = data.get('preview_file_url')
+        #     print(image_url)
+        #     exit()
         image_url = data.get('file_url')
         if image_url:
             # Full path to save the image
