@@ -104,7 +104,7 @@ const windowActions = Widget.Box({
         }),
         Widget.Button({
             label: "󰑐",
-            on_primary_click: () => Hyprland.messageAsync("dispatch reload"),
+            on_primary_click: () => Utils.execAsync(`bash -c "hyprctl reload"`),
         }),
 
     ]
