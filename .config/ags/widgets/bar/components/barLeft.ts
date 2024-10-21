@@ -116,11 +116,20 @@ function AppLauncher()
     });
 }
 
+function Settings()
+{
+    return Widget.ToggleButton({
+        child: Widget.Label(""),
+        class_name: "settings",
+        on_toggled: ({ active }) => active ? App.openWindow("settings") : App.closeWindow("settings"),
+    });
+}
+
 export function Left()
 {
     return Widget.Box({
         class_name: "bar-left",
         spacing: 10,
-        children: [AppLauncher(), Workspaces()]
+        children: [Settings(), AppLauncher(), Workspaces()]
     });
 }

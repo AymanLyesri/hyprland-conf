@@ -14,13 +14,24 @@
       border-radius: 0px 10px 10px 0px;
       .favorite-event:hover {
         background: $module-background;
+        .favorite {
+          min-height: 100px;
+        }
         .delete {
           padding: 0px 10px;
         }
       }
 
       .favorite {
-        padding: 10px 0px 10px 10px;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+
+        // border-top: 5px solid $background;
+        // border-bottom: 5px solid $background;
+        border-radius: 10px;
+
+        min-width: 69px;
         font-size: 10px;
 
         .delete {

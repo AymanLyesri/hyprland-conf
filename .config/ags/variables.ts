@@ -1,6 +1,6 @@
 import { WidgetSelector } from "interfaces/widgetSelector.interface";
 import { refreshCss } from "utils/scss";
-import { getSetting, setSetting } from "utils/settings";
+import { getSetting, globalSettings, setSetting } from "utils/settings";
 import { WidgetSelectors } from "widgets/rightPanel/RightPanel";
 
 const hyprland = await Service.import("hyprland");
@@ -15,14 +15,14 @@ globalOpacity.connect("changed", ({ value }) =>
 export const globalMargin = 15
 export const globalTransition = 500
 
+
+
 export const barLock = Variable(getSetting("bar.lock"))
 barLock.connect("changed", ({ value }) => setSetting("bar.lock", value));
 
-export const waifuVisibility = Variable(getSetting("waifu.visibility"))
-waifuVisibility.connect("changed", ({ value }) => setSetting("waifu.visibility", value));
-export const waifuFavorites = Variable<string[]>(getSetting("waifu.favorites"))
+export const waifuFavorites = Variable<{ id: number, preview: string }[]>(getSetting("waifu.favorites"))
 waifuFavorites.connect("changed", ({ value }) => setSetting("waifu.favorites", value));
-export const waifuCurrent = Variable<string>(getSetting("waifu.current"))
+export const waifuCurrent = Variable(getSetting("waifu.current"))
 waifuCurrent.connect("changed", ({ value }) => setSetting("waifu.current", value));
 
 export const emptyWorkspace = hyprland.active.client.bind("title").as(title => title ? 0 : 1)

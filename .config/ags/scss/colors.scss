@@ -24,3 +24,5 @@ $module-secondary: mix($secondary, $foreground, 50%);
 $background: rgba($background, $OPACITY);
 $module-background: rgba($module-background, $OPACITY);
 // $module-foreground: rgba($module-foreground, $);
+
+$secondary-background: mix($background, $secondary, 69%);

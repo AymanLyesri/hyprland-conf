@@ -2,28 +2,38 @@ import { readJSONFile, writeJSONFile } from "./json";
 
 const settingsPath = App.configDir + "/assets/settings/settings.json";
 
-const defaultSettings = {
-  "globalOpacity": 0.8,
-  "bar": {
-    "lock": true
+const defaultSettings: Settings = {
+  hyprland: {
+    decoration: {
+      rounding: { value: 15, min: 0, max: 50, type: "int" },
+      active_opacity: { value: 0.8, min: 0, max: 1, type: "float" },
+      inactive_opacity: { value: 0.5, min: 0, max: 1, type: "float" },
+    }
   },
-  "waifu": {
-    "input_history": "",
-    "visibility": true,
-    "current": "",
-    "favorites": []
+  globalOpacity: 0.8,
+  bar: {
+    lock: true
   },
-  "rightPanel": {
-    "exclusivity": true,
-    "lock": true,
-    "width": 300,
-    "visibility": true,
-    "widgets": []
+  waifu: {
+    input_history: "",
+    visibility: true,
+    current: "",
+    favorites: [{
+      id: "",
+      preview: "",
+    }],
+  },
+  rightPanel: {
+    exclusivity: true,
+    lock: true,
+    width: 300,
+    visibility: true,
+    widgets: []
   }
 }
 
 // Settings are stored in a json file, containing all the settings, check if it exists, if not, create it
-const settings = Variable<Settings>(defaultSettings);
+export const globalSettings = Variable<Settings>(defaultSettings);
 
 function deepMerge(target: any, source: any): any
 {
@@ -42,29 +52,30 @@ function deepMerge(target: any, source: any): any
 
 // Settings are stored in a json file, containing all the settings, check if it exists, if not, create it
 if (Object.keys(readJSONFile(settingsPath)).length !== 0) {
-  settings.value = deepMerge(defaultSettings, readJSONFile(settingsPath));
+  globalSettings.value = deepMerge(defaultSettings, readJSONFile(settingsPath));
 } else {
-  writeJSONFile(settingsPath, settings.value);
+  writeJSONFile(settingsPath, globalSettings.value);
 }
 
 // When the settings change, write them to the json file
-settings.connect('changed', ({ value }) =>
+globalSettings.connect('changed', ({ value }) =>
 {
+  print("globalsetting changed");
   writeJSONFile(settingsPath, value);
 });
 
 
 export function setSetting(key: string, value: any): any
 {
-  let o = settings.value;
+  let o = globalSettings.value;
   key.split('.').reduce((o, k, i, arr) =>
     o[k] = (i === arr.length - 1 ? value : o[k] || {}), o);
-  settings.setValue(o);
+  globalSettings.setValue(o);
 }
 
 export function getSetting(key: string): any
 {
-  return key.split('.').reduce((o, k) => o?.[k], settings.value);
+  return key.split('.').reduce((o, k) => o?.[k], globalSettings.value);
 }
 
 export function exportSettings()

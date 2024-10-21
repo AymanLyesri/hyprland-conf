@@ -22,6 +22,7 @@
 button,
 .button {
   @extend .module;
+  // background: $secondary-background;
   min-height: 20px;
   text-shadow: $background 0 0 1px;
   &:hover {
@@ -129,6 +130,25 @@ scrolledwindow {
   }
 }
 
+.slider {
+  margin: 5px;
+  padding: 0;
+
+  trough {
+    border-radius: 10px;
+  }
+
+  slider {
+    min-height: 1px;
+    min-width: 10px;
+    margin: -5px;
+  }
+
+  &:hover highlight {
+    background-color: mix($color4, #ffffff, 50%);
+  }
+}
+
 .custom-revealer {
   @extend .module;
   label {
@@ -139,24 +159,5 @@ scrolledwindow {
     all: unset;
     // margin: 0 10px;
     min-width: 35px;
-  }
-
-  .slider {
-    margin: 5px;
-    padding: 0;
-
-    trough {
-      border-radius: 10px;
-    }
-
-    slider {
-      min-height: 1px;
-      min-width: 10px;
-      margin: -5px;
-    }
-
-    &:hover highlight {
-      background-color: mix($color4, #ffffff, 50%);
-    }
   }
 }
