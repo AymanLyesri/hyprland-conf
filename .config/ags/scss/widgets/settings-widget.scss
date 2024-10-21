@@ -1,7 +1,9 @@
 .settings-widget {
-  min-width: 300px;
+  min-width: 500px;
   @extend .module;
+  padding: 10px;
   .setting {
     @extend .module;
+    padding: 10px;
   }
 }

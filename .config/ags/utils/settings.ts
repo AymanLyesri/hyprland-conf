@@ -5,8 +5,9 @@ const settingsPath = App.configDir + "/assets/settings/settings.json";
 const defaultSettings: Settings = {
   hyprland: {
     decoration: {
-      active_opacity: 0.5,
-      inactive_opacity: 0.1,
+      rounding: { value: 15, min: 0, max: 50, type: "int" },
+      active_opacity: { value: 0.8, min: 0, max: 1, type: "float" },
+      inactive_opacity: { value: 0.5, min: 0, max: 1, type: "float" },
     }
   },
   globalOpacity: 0.8,

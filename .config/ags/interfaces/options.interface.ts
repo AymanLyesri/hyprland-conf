@@ -1,9 +1,19 @@
+
+interface HyprlandSetting
+{
+    value: any,
+    type: string,
+    min: number,
+    max: number,
+}
+
 interface Settings
 {
     hyprland: {
         decoration: {
-            active_opacity: number,
-            inactive_opacity: number,
+            rounding: HyprlandSetting,
+            active_opacity: HyprlandSetting,
+            inactive_opacity: HyprlandSetting
         }
     }
     globalOpacity: number,

@@ -22,6 +22,7 @@
 button,
 .button {
   @extend .module;
+  // background: $secondary-background;
   min-height: 20px;
   text-shadow: $background 0 0 1px;
   &:hover {
