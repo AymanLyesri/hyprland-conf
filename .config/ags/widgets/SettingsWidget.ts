@@ -1,6 +1,8 @@
 import { HyprlandSettings } from "interfaces/hyprlandSettings.interface"
 import { getSetting, globalSettings, setSetting } from "utils/settings";
-import { globalMargin } from "variables"
+import { globalMargin } from "variables";
+
+const Hyprland = await Service.import("hyprland");
 
 
 const hyprCustomDir: string = '$HOME/.config/hypr/configs/custom/'
@@ -56,39 +58,66 @@ const Setting = (key: string, setting: HyprlandSetting) =>
     })
 }
 
-const Category = (title) => Widget.Label({
-    label: title
+const Settings = Widget.Box({
+    vertical: true,
+    spacing: 5,
+    class_name: "settings",
+    setup: (self) =>
+    {
+        const Category = (title) => Widget.Label({
+            label: title
+        })
+
+        let settings: any[] = []
+        // Loop through the hyprlandSettings object
+        Object.keys(globalSettings.value.hyprland).forEach((key) =>
+        {
+            const value = globalSettings.value.hyprland[key as keyof typeof globalSettings.value.hyprland];
+
+            if (typeof value === 'object' && value !== null) {
+                settings.push(Category(key))
+                Object.keys(value).forEach((childKey) =>
+                {
+                    const childValue = value[childKey as keyof typeof value];
+                    settings.push(Setting(`hyprland.${key}.${childKey}`, childValue));
+                });
+            }
+        });
+        self.children = settings
+    }
+
 })
 
 
-const Settings = () =>
-{
-    return Widget.Box({
-        vertical: true,
-        class_name: "settings-widget",
-        spacing: 5,
-        setup: (self) =>
-        {
-            let settings: any[] = []
-            // Loop through the hyprlandSettings object
-            Object.keys(globalSettings.value.hyprland).forEach((key) =>
-            {
-                const value = globalSettings.value.hyprland[key as keyof typeof globalSettings.value.hyprland];
+const windowActions = Widget.Box({
+    hexpand: true,
+    class_name: "window-actions",
+    children: [
+        Widget.Box({
+            hexpand: true,
+            hpack: "start",
+            child: Widget.Button({
+                hpack: "end",
+                label: "",
+                on_primary_click: () => App.closeWindow("settings"),
+            }),
+        }),
+        Widget.Button({
+            label: "󰑐",
+            on_primary_click: () => Hyprland.messageAsync("dispatch reload"),
+        }),
 
-                if (typeof value === 'object' && value !== null) {
-                    settings.push(Category(key))
-                    Object.keys(value).forEach((childKey) =>
-                    {
-                        const childValue = value[childKey as keyof typeof value];
-                        settings.push(Setting(`hyprland.${key}.${childKey}`, childValue));
-                    });
-                }
-            });
-            self.children = settings
-        }
+    ]
+})
 
-    })
-}
+const Display = Widget.Box({
+    vertical: true,
+    class_name: "settings-widget",
+    children: [
+        windowActions,
+        Settings,
+    ]
+})
 
 
 export default () =>
@@ -97,8 +126,8 @@ export default () =>
         name: `settings`,
         class_name: "",
         anchor: ["bottom", "left"],
-        visible: true,
+        visible: false,
         margins: [globalMargin, globalMargin],
-        child: Settings(),
+        child: Display,
     })
 }
