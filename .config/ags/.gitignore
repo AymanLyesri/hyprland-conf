@@ -14,3 +14,5 @@ assets/settings/*
 
 assets/waifu/*
 !assets/waifu/
+assets/waifu/favorites/*
+!assets/waifu/favorites/
