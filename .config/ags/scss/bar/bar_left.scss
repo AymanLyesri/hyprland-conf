@@ -1,6 +1,14 @@
 $gradient-Colors: $color0, $color1, $color2, $color3, $color4, $color5, $color6;
 
 .bar-left {
+  .actions {
+    button {
+      border-radius: 0px;
+    }
+    button:last-child {
+      border-radius: 0px 10px 10px 0px;
+    }
+  }
   .workspaces {
     button {
       padding: 0px 10px;

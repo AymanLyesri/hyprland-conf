@@ -125,11 +125,29 @@ function Settings()
     });
 }
 
+function UserPanel()
+{
+    return Widget.ToggleButton({
+        child: Widget.Label(""),
+        class_name: "user-panel",
+        on_toggled: ({ active }) => active ? App.openWindow("user-panel") : App.closeWindow("user-panel"),
+    });
+}
+
+const Actions = () =>
+{
+
+    return Widget.Box({
+        class_name: "actions",
+        children: [UserPanel(), Settings(), AppLauncher()]
+    })
+}
+
 export function Left()
 {
     return Widget.Box({
         class_name: "bar-left",
-        spacing: 10,
-        children: [Settings(), AppLauncher(), Workspaces()]
+        spacing: 5,
+        children: [Actions(), Workspaces()]
     });
 }
