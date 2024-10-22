@@ -35,17 +35,16 @@ install_figlet
 # choose Pacman Wrapper
 echo "Choose an AUR helper to install packages:"
 aur_helpers=("yay" "paru")
-aur_helper=$(echo "${aur_helpers[@]}"| tr ' ' '\n' | fzf --height $FZF_HEIGHT)
+aur_helper=$(echo "${aur_helpers[@]}" | tr ' ' '\n' | fzf --height $FZF_HEIGHT)
 echo "AUR helper selected: $aur_helper"
 case $aur_helper in
-    yay)
-        install_yay
+yay)
+    install_yay
     ;;
-    paru)
-        install_paru
+paru)
+    install_paru
     ;;
 esac
-
 
 continue_prompt "Backing up dotfiles from .config ..." "$MAINTENANCE_DIR/BACKUP.sh"
 
@@ -56,5 +55,7 @@ continue_prompt "keyboard configuration" "$MAINTENANCE_DIR/CONFIGURE.sh"
 continue_prompt "Do you want to remove unwanted packages?" remove_packages
 
 continue_prompt "Do you want to install necessary packages? (using $aur_helper)" "$HOME/.config/hypr/pacman/install-pkgs.sh $aur_helper"
+
+continue_prompt "LightDM theme setup (sddm/gdm replacement)" "$MAINTENANCE_DIR/LIGHTDM.sh"
 
 echo "Installation complete. Please Reboot the system."

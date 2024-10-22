@@ -11,8 +11,11 @@ custom_wallpapers=$HOME/.config/wallpapers/custom   # custom wallpapers director
 all_wallpapers=$HOME/.config/wallpapers/all         # all wallpapers directory
 
 #################################################
+# copy default and custom wallpapers to all wallpapers directory
+rm -rf $all_wallpapers && mkdir -p $all_wallpapers && cp -r $default_wallpapers/* $custom_wallpapers/* $all_wallpapers
 
-rm -rf $all_wallpapers && mkdir -p $all_wallpapers && cp -r $default_wallpapers/* $custom_wallpapers/* $all_wallpapers # copy default and custom wallpapers to all wallpapers directory
+# overwrite /usr/share/backgrounds with all wallpapers
+rm -rf /usr/share/backgrounds/* && cp -r $all_wallpapers/* /usr/share/backgrounds
 
 #################################################
 
