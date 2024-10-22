@@ -3,3 +3,4 @@ configs/custom/*
 
 theme/theme.conf
 hyprpaper/config/current.conf
+hyprpaper/config/defaults.conf

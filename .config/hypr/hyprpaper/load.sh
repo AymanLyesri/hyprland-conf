@@ -2,8 +2,9 @@
 
 hyprDir=$HOME/.config/hypr                       # hypr directory
 defaults=$hyprDir/hyprpaper/config/defaults.conf # config file
-wallpapers=$(awk -F'=' '{print $2}' $defaults)   # get wallpapers
-hyprpaper_conf=$hyprDir/hyprpaper.conf           # hyprpaper config
+
+hyprpaper_conf=$hyprDir/hyprpaper.conf             # hyprpaper config
+backup=$hyprDir/hyprpaper/config/defaults.conf.bak # backup config
 
 default_wallpapers=$HOME/.config/wallpapers/default # default wallpapers directory
 custom_wallpapers=$HOME/.config/wallpapers/custom   # custom wallpapers directory
@@ -15,6 +16,13 @@ rm -rf $all_wallpapers && mkdir -p $all_wallpapers && cp -r $default_wallpapers/
 
 #################################################
 
+if [ ! -s "$defaults" ]; then
+    touch $defaults
+    cp $backup $defaults
+fi
+
+#################################################
+wallpapers=$(awk -F'=' '{print $2}' $defaults) # get wallpapers
 # loop through wallpapers
 for wallpaper in $wallpapers; do
     hyprctl hyprpaper preload "$wallpaper" # preload wallpaper
