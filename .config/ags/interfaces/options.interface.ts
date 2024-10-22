@@ -14,6 +14,9 @@ interface Settings
             rounding: HyprlandSetting,
             active_opacity: HyprlandSetting,
             inactive_opacity: HyprlandSetting
+            blur: {
+                enabled: HyprlandSetting,
+            }
         }
     }
     globalOpacity: number,

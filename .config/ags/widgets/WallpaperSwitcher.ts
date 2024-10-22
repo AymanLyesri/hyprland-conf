@@ -174,7 +174,7 @@ export default () =>
         name: `wallpaper-switcher`,
         class_name: "",
         anchor: [],
-        visible: true,
+        visible: false,
         child: Wallpapers(),
     })
 }

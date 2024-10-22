@@ -8,6 +8,9 @@ const defaultSettings: Settings = {
       rounding: { value: 15, min: 0, max: 50, type: "int" },
       active_opacity: { value: 0.8, min: 0, max: 1, type: "float" },
       inactive_opacity: { value: 0.5, min: 0, max: 1, type: "float" },
+      blur: {
+        enabled: { value: true, type: "bool", min: 0, max: 1 }
+      }
     }
   },
   globalOpacity: 0.8,
@@ -60,7 +63,6 @@ if (Object.keys(readJSONFile(settingsPath)).length !== 0) {
 // When the settings change, write them to the json file
 globalSettings.connect('changed', ({ value }) =>
 {
-  print("globalsetting changed");
   writeJSONFile(settingsPath, value);
 });
 

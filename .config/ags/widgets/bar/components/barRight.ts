@@ -98,7 +98,6 @@ function Volume()
         on_change: ({ value }) => (audio.speaker.volume = value),
     }).hook(audio.speaker, (self) =>
     {
-        print("value", audio.speaker.volume)
         self.value = audio.speaker.volume || 0;
     });
 
