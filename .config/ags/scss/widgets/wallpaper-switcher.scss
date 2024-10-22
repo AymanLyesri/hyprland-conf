@@ -10,13 +10,23 @@
     box-shadow: unset;
   }
 
-  .reload-wallpapers,
-  .random-wallpaper,
-  .stop-selection {
+  .reload-wallpapers {
     padding: 0px;
     min-height: 69px;
     min-width: 69px;
     border-radius: 50%;
+  }
+
+  .actions {
+    * {
+      border-radius: 0px;
+    }
+    *:first-child {
+      border-radius: 50px 0px 0px 50px;
+    }
+    *:last-child {
+      border-radius: 0px 50px 50px 0px;
+    }
   }
 
   .workspace-wallpaper {
