@@ -15,6 +15,8 @@ git checkout $BRANCH
 git fetch origin $BRANCH
 git reset --hard origin/$BRANCH
 
+$HOME/.config/hypr/maintenance/DEFAULTS.sh
+
 aur_helpers=("yay" "paru")
 aur_helper=$(echo "${aur_helpers[@]}" | tr ' ' '\n' | fzf --height "40%")
 

@@ -58,4 +58,6 @@ continue_prompt "Do you want to install necessary packages? (using $aur_helper)"
 
 continue_prompt "LightDM theme setup (sddm/gdm replacement)" "$MAINTENANCE_DIR/LIGHTDM.sh"
 
+$MAINTENANCE_DIR/DEFAULTS.sh
+
 echo "Installation complete. Please Reboot the system."
