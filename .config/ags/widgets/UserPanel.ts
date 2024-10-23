@@ -1,17 +1,23 @@
+import { date_less, date_more } from "variables";
 import MediaWidget from "./MediaWidget";
+import { Resources } from "./Resources";
+import NotificationHistory from "./rightPanel/NotificationHistory";
 
 const Hyprland = await Service.import("hyprland");
 
 const pfpPath = Utils.exec(`bash -c "echo $HOME/.face"`)
 const pfp = Variable<string>(pfpPath)
 const username = Utils.exec(`whoami`)
+const uptime = Variable(('-'), {
+    poll: [600000, 'uptime -p']
+})
+
 
 const UserPanel = () =>
 {
 
     const Profile = () =>
     {
-
         const UserName = Widget.Box({
             hpack: "center",
             class_name: "user-name",
@@ -26,13 +32,22 @@ const UserPanel = () =>
             ]
         })
 
+        const Uptime = Widget.Box({
+            hpack: "center",
+            class_name: "up-time",
+            child: Widget.Label({
+                class_name: "uptime",
+                label: uptime.bind()
+            })
+
+        })
+
         const ProfilePicture = Widget.Box({
             class_name: "profile-picture",
             css: `background-image: url('${pfpPath}');`,
             child: Widget.FileChooserButton({
                 hexpand: true,
                 vexpand: true,
-                title: "Select a profile picture",
                 usePreviewLabel: false,
                 onFileSet: ({ uri }) =>
                 {
@@ -51,7 +66,8 @@ const UserPanel = () =>
             vertical: true,
             children: [
                 ProfilePicture,
-                UserName
+                UserName,
+                Uptime
             ]
         })
     }
@@ -125,7 +141,7 @@ const UserPanel = () =>
         })
     }
 
-    const middle = Widget.Box({
+    const right = Widget.Box({
         hpack: "center",
         class_name: "bottom",
         vertical: true,
@@ -136,12 +152,38 @@ const UserPanel = () =>
         ]
     })
 
+
+    const Date = Widget.Box({
+        // hpack: "center",
+        class_name: "date",
+        child: Widget.Label({
+            hpack: "center",
+            hexpand: true,
+            label: date_less.bind()
+        })
+    })
+
+    const middle = Widget.Box({
+        class_name: "middle",
+        vertical: true,
+        hexpand: true,
+        vexpand: true,
+        spacing: 10,
+        children: [
+            Resources(),
+            NotificationHistory(),
+            Date
+
+        ]
+    })
+
     return Widget.Box({
         class_name: "user-panel",
         spacing: 10,
         children: [
             MediaWidget(),
             middle,
+            right,
         ]
     })
 }
@@ -186,8 +228,9 @@ export default () =>
 
         name: `user-panel`,
         class_name: "user-panel",
+        layer: "overlay",
         anchor: [],
-        visible: false,
+        visible: true,
         child: Display(),
     })
 }

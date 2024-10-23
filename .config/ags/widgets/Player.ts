@@ -24,12 +24,14 @@ export function Player(player: MprisPlayer, playerType: "popup" | "widget")
 {
     const dominantColor = player.bind("cover_path").as((path) => getDominantColor(path))
     const img = Widget.Box({
-        class_name: "img",
-        vpack: "start",
-        css: player.bind("cover_path").transform(p => `
+        vpack: "center",
+        child: Widget.Box({
+            class_name: "img",
+            css: player.bind("cover_path").transform(p => `
             background-image: url('${p}');
             box-shadow: 0 0 5px 0 ${getDominantColor(p)};
         `),
+        })
     })
 
     const title = Widget.Label({

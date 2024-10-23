@@ -15,6 +15,13 @@ globalOpacity.connect("changed", ({ value }) =>
 export const globalMargin = 15
 export const globalTransition = 500
 
+export const date_less = Variable("", {
+    poll: [1000, 'date "+%H:%M"'],
+});
+export const date_more = Variable("", {
+    poll: [1000, 'date "+:%S %b %e, %A."']
+});
+
 
 
 export const barLock = Variable(getSetting("bar.lock"))

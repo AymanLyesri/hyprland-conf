@@ -4,7 +4,7 @@ const mpris = await Service.import("mpris");
 import { MprisPlayer } from "types/service/mpris";
 import { playerToColor } from "utils/color";
 import { playerToIcon } from "utils/icon";
-import { emptyWorkspace, globalTransition } from "variables";
+import { date_less, date_more, emptyWorkspace, globalTransition } from "variables";
 import CavaWidget from "widgets/cava/Cava";
 import { custom_revealer } from "widgets/revealer";
 
@@ -79,12 +79,7 @@ function Media()
 
 function Clock()
 {
-    const date_less = Variable("", {
-        poll: [1000, 'date "+%H:%M"'],
-    });
-    const date_more = Variable("", {
-        poll: [1000, 'date "+:%S %b %e, %A."']
-    });
+
 
     const revealer = Widget.Label({
         css: "margin: 0px;",

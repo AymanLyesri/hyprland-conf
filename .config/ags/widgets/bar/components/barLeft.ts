@@ -7,7 +7,7 @@ function Workspaces()
     let previousWorkspace: number = 0; // Variable to store the previous workspace ID
 
     // Add the "." icon for empty workspaces
-    const workspaceToIcon = ["", "", "", "", "", "", "󰙯", "󰓓", "", "", ""];
+    const workspaceToIcon = ["", "", "", "", "", "", "󰙯", "󰓓", "", "", ""];
     const emptyIcon = ""; // Icon for empty workspaces
     const extraWorkspaceIcon = ""; // Icon for workspaces after 10
     const maxWorkspaces = 10; // Set the maximum number of workspaces

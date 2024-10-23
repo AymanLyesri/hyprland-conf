@@ -1,4 +1,7 @@
 .user-panel {
+  button {
+    background: $module-background;
+  }
   .close {
     padding: 10px 20px;
     font-size: 1.5rem;
@@ -6,15 +9,27 @@
   .player {
     min-width: 200px;
   }
+  .middle {
+    min-width: 300px;
+
+    .date {
+      @extend .module;
+      padding: 20px;
+      font-size: 3rem;
+    }
+  }
   .profile {
     @extend .module;
-    padding: 10px;
+    padding: 33px;
     .user-name {
       margin: 25px 0px;
       font-size: 1.5em;
       .name {
         color: $secondary;
       }
+    }
+    .up-time {
+      color: $tertiary;
     }
     .profile-picture {
       min-width: 200px;

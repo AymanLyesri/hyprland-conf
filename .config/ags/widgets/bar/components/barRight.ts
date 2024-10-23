@@ -169,7 +169,7 @@ function PinBar()
             barLock.value = self.active
             self.label = self.active ? "" : "";
         },
-        class_name: "panel-trigger icon",
+        class_name: "panel-lock icon",
         label: barLock.value ? "" : "",
     })
 }
@@ -191,7 +191,7 @@ function DndToggle()
     return Widget.ToggleButton({
         active: DND.value,
         on_toggled: ({ active }) => DND.value = active,
-        class_name: "DND icon",
+        class_name: "dnd-toggle icon",
     }).hook(DND, (self) =>
     {
         self.active = DND.value

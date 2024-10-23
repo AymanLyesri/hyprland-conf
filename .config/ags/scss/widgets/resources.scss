@@ -1,6 +1,7 @@
 .resources {
   @extend .module;
   padding: 10px;
+  min-height: 100px;
 
   .resource {
     // min-height: px;

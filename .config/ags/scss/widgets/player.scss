@@ -1,7 +1,7 @@
 .player {
   @extend .module;
-  padding: 1rem;
-  border-radius: 1rem;
+  padding: 10px;
+  border-radius: 10px;
 
   &.popup {
     min-width: 400px;
