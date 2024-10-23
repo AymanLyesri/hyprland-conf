@@ -19,6 +19,9 @@ interface Settings
             }
         }
     }
+    notifications: {
+        dnd: boolean,
+    }
     globalOpacity: number,
     bar: {
         lock: boolean,

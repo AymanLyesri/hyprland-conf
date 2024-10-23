@@ -1,5 +1,5 @@
 import brightness from "brightness";
-import { barLock, rightPanelVisibility } from "variables";
+import { barLock, DND, rightPanelVisibility } from "variables";
 import { closeProgress, openProgress } from "widgets/Progress";
 import { custom_revealer } from "widgets/revealer";
 
@@ -169,22 +169,36 @@ function PinBar()
             barLock.value = self.active
             self.label = self.active ? "" : "";
         },
-        class_name: "panel-trigger icon",
+        class_name: "panel-lock icon",
         label: barLock.value ? "" : "",
     })
 }
 
-function RightPanel()
+// function RightPanel()
+// {
+//     return Widget.ToggleButton({
+//         onToggled: ({ active }) => rightPanelVisibility.value = active,
+//         class_name: "panel-trigger icon",
+//     }).hook(rightPanelVisibility, (self) =>
+//     {
+//         self.active = rightPanelVisibility.value
+//         self.label = rightPanelVisibility.value ? "" : ""
+//     }, "changed");
+// }
+
+function DndToggle() 
 {
     return Widget.ToggleButton({
-        onToggled: ({ active }) => rightPanelVisibility.value = active,
-        class_name: "panel-trigger icon",
-    }).hook(rightPanelVisibility, (self) =>
+        active: DND.value,
+        on_toggled: ({ active }) => DND.value = active,
+        class_name: "dnd-toggle icon",
+    }).hook(DND, (self) =>
     {
-        self.active = rightPanelVisibility.value
-        self.label = rightPanelVisibility.value ? "" : ""
+        self.active = DND.value
+        self.label = DND.value ? "" : ""
     }, "changed");
 }
+
 
 export function Right()
 {
@@ -199,7 +213,8 @@ export function Right()
             SysTray(),
             Theme(),
             PinBar(),
-            RightPanel(),
+            DndToggle(),
+            // RightPanel(),
         ],
     });
 }

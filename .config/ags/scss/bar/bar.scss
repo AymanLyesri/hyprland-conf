@@ -1,54 +1,23 @@
 .bar {
-  padding: 5px 10px;
+  padding: 5px 0px;
   transition: background 0s;
+
   &.full {
     background: $module-background;
-    // border-radius: 50px 50px 10px 10px;
-    // border-radius: 0px 0px 10px 10px;
-
-    // .bar-left {
-    //   button {
-    //     // border-radius: 10px 50px 10px 50px;
-    //     border-radius: 50px 10px 50px 10px;
-    //   }
-    // }
-    // .bar-right {
-    //   button,
-    //   .button {
-    //     // border-radius: 50px 10px 50px 10px;
-    //     border-radius: 10px 50px 10px 50px;
-    //   }
-    //   .system-tray {
-    //     button {
-    //       border-radius: 0px;
-    //     }
-
-    //     button:first-child {
-    //       border-radius: 10px 0px 0px 50px;
-    //     }
-
-    //     button:last-child {
-    //       border-radius: 0px 50px 10px 0px;
-    //     }
-
-    //     button:only-child {
-    //       border-radius: 10px 50px 10px 50px;
-    //     }
-    //   }
-    // }
+    .bar-left {
+      .actions {
+        button:first-child {
+          border-radius: 0px;
+        }
+      }
+    }
+    .bar-right {
+      .dnd-toggle {
+        border-radius: 10px 0px 0px 10px;
+      }
+    }
   }
 
   &.empty {
-    // background: $background;
-    // padding: 0px 10px;
-
-    // .bar-left {
-    //   .module {
-    //   }
-    // }
-    // .bar-right {
-    //   .module {
-    //   }
-    // }
   }
 }

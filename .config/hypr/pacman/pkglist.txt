@@ -113,7 +113,9 @@ cava
 # / _ \ '_ \| '_ \ / _` | '_ \ / __/ _ \ '_ ` _ \ / _ \ '_ \| __/ __|
 #|  __/ | | | | | | (_| | | | | (_|  __/ | | | | |  __/ | | | |_\__ \
 # \___|_| |_|_| |_|\__,_|_| |_|\___\___|_| |_| |_|\___|_| |_|\__|___/
-#          
+#      
+lightdm-webkit2-greeter
+lightdm-webkit-theme-litarvan
 pywalfox
 python-colorthief
 python-pywal

@@ -1,6 +1,7 @@
 $background: $color0; // Example background color
 $foreground: $color7; // Example foreground color
 $secondary: $color13; // Example selected background color
+$tertiary: grey; // Example selected foreground color
 
 $red: rgb(255, 102, 77); /* Muted red-orange, with less opacity */
 $green: rgb(153, 255, 153); /* Softer pastel green */
@@ -25,4 +26,4 @@ $background: rgba($background, $OPACITY);
 $module-background: rgba($module-background, $OPACITY);
 // $module-foreground: rgba($module-foreground, $);
 
-$secondary-background: mix($background, $secondary, 69%);
+$secondary-background: mix($background, $secondary, 85%);

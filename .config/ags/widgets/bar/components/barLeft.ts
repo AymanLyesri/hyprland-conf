@@ -7,7 +7,7 @@ function Workspaces()
     let previousWorkspace: number = 0; // Variable to store the previous workspace ID
 
     // Add the "." icon for empty workspaces
-    const workspaceToIcon = ["", "", "", "", "", "", "󰙯", "󰓓", "", "", ""];
+    const workspaceToIcon = ["", "", "", "", "", "", "󰙯", "󰓓", "", "", ""];
     const emptyIcon = ""; // Icon for empty workspaces
     const extraWorkspaceIcon = ""; // Icon for workspaces after 10
     const maxWorkspaces = 10; // Set the maximum number of workspaces
@@ -125,11 +125,29 @@ function Settings()
     });
 }
 
+function UserPanel()
+{
+    return Widget.ToggleButton({
+        child: Widget.Label(""),
+        class_name: "user-panel",
+        on_toggled: ({ active }) => active ? App.openWindow("user-panel") : App.closeWindow("user-panel"),
+    });
+}
+
+const Actions = () =>
+{
+
+    return Widget.Box({
+        class_name: "actions",
+        children: [UserPanel(), Settings(), AppLauncher()]
+    })
+}
+
 export function Left()
 {
     return Widget.Box({
         class_name: "bar-left",
-        spacing: 10,
-        children: [Settings(), AppLauncher(), Workspaces()]
+        spacing: 5,
+        children: [Actions(), Workspaces()]
     });
 }

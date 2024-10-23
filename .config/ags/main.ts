@@ -10,6 +10,7 @@ import { getCssPath, refreshCss } from "utils/scss";
 import BarHover from "widgets/bar/BarHover";
 import RightPanelHover from "widgets/rightPanel/RightPanelHover";
 import SettingsWidget from "widgets/SettingsWidget";
+import UserPanel from "widgets/UserPanel";
 
 // required packages
 // gvfs is required for images
@@ -33,6 +34,7 @@ App.config({
     AppLauncher(),
     Progress(),
     SettingsWidget(),
+    UserPanel(),
   ],
   closeWindowDelay: {
     // "media": 5000, // milliseconds

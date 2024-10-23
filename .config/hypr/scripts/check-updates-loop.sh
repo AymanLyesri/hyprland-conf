@@ -8,17 +8,14 @@ check_updates() {
     # Check for updates without actually performing the upgrade
     updates=$(yay -Qu)
 
-    if [ -z "$updates" ]; then
-        message="Your system is up to date."
-        notify-send "System Update" "$message"
-    else
+    if [ -n "$updates" ]; then
         # Count the number of updates
         update_count=$(echo "$updates" | wc -l)
         message="There are $update_count updates available."
-        # notify-send "System Update" "$message" --action="kitty yay -Syu":"Update Now"
         notify-send "System Update" "$message" \
-            --hint=string:actions:'[["Update Now", "kitty yay -Syu"]]'
+            --hint=string:actions:'[["Update Now", "kitty sudo pacman -Syu"]]'
     fi
+
 }
 
 # Function to check if the repository needs a pull
@@ -36,9 +33,7 @@ check_pull_needed() {
         BEHIND=$(git rev-list --count $LOCAL..$REMOTE)
         # notify-send "Repository Update" "We are behind by $BEHIND commits. Please pull the latest changes." --action="kitty git pull":"Pull Now"
         notify-send "Repository Update" "We are behind by $BEHIND commits. Please pull the latest changes." \
-            --hint=string:actions:'[["Pull Now", "kitty git pull"]]'
-    else
-        notify-send "Repository Update" "No pull is needed."
+            --hint=string:actions:'[["Update now", "kitty update"]]'
     fi
 }
 # Call the function

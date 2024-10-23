@@ -1,6 +1,6 @@
 #!/bin/bash
-hyprDir=$HOME/.config/hypr                     # hypr directory
-config=$hyprDir/hyprpaper/config/defaults.conf # config file
+hyprDir=$HOME/.config/hypr                       # hypr directory
+defaults=$hyprDir/hyprpaper/config/defaults.conf # config file
 
 previous_workspace_id=0
 current_wallpaper=""
@@ -27,7 +27,7 @@ change_wallpaper() {
     fi
 
     # Get the wallpaper from the config only if needed
-    local wallpaper=$(awk -F= -v wsid="w-$workspace_id" '$1 == wsid {print $2}' $config)
+    local wallpaper=$(awk -F= -v wsid="w-$workspace_id" '$1 == wsid {print $2}' $defaults)
 
     # Check if wallpaper is valid and has changed
     if [ "$wallpaper" ] && [ "$wallpaper" != "$current_wallpaper" ]; then
