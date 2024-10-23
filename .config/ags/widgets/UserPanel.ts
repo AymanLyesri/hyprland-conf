@@ -187,7 +187,7 @@ export default () =>
         name: `user-panel`,
         class_name: "user-panel",
         anchor: [],
-        visible: true,
+        visible: false,
         child: Display(),
     })
 }

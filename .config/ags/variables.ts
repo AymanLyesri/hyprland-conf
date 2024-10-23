@@ -38,6 +38,9 @@ rightPanelWidth.connect("changed", ({ value }) => setSetting("rightPanel.width",
 export const rightPanelLock = Variable(getSetting("rightPanel.lock"))
 rightPanelLock.connect("changed", ({ value }) => setSetting("rightPanel.lock", value));
 
+export const DND = Variable(getSetting("notifications.dnd"))
+DND.connect("changed", ({ value }) => setSetting("notifications.dnd", value));
+
 export const widgetLimit = 5
 export const Widgets = Variable<WidgetSelector[]>(getSetting("rightPanel.widgets").map((name: string) => WidgetSelectors.find(widget => widget.name === name)))
 Widgets.connect("changed", ({ value }) => setSetting("rightPanel.widgets", value.map(widget => widget.name)));

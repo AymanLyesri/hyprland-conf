@@ -13,6 +13,9 @@ const defaultSettings: Settings = {
       }
     }
   },
+  notifications: {
+    dnd: false
+  },
   globalOpacity: 0.8,
   bar: {
     lock: true
