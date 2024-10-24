@@ -11,7 +11,11 @@ echo "Enabling sddm..."
 sudo systemctl enable sddm
 echo " Done."
 
+# Sddm theme setup
+echo "Setting up sddm theme..."
+sudo mkdir -p /etc/sddm.conf.d
 echo -e "[Theme]\nCurrent=where_is_my_sddm_theme" | sudo tee /etc/sddm.conf.d/theme.conf >/dev/null
+echo " Done."
 
 # /usr/share/backgrounds permission
 sudo chmod 777 -R /usr/share/backgrounds
