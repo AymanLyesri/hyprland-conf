@@ -56,7 +56,7 @@ continue_prompt "Do you want to remove unwanted packages?" remove_packages
 
 continue_prompt "Do you want to install necessary packages? (using $aur_helper)" "$HOME/.config/hypr/pacman/install-pkgs.sh $aur_helper"
 
-continue_prompt "LightDM theme setup (sddm/gdm replacement)" "$MAINTENANCE_DIR/LIGHTDM.sh"
+continue_prompt "Sddm theme setup" "$MAINTENANCE_DIR/SDDM.sh"
 
 $MAINTENANCE_DIR/DEFAULTS.sh
 
