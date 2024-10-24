@@ -6,6 +6,9 @@ const tmpScss = `/tmp/tmp-style.scss`
 const cache_dir = `${App.configDir}/../../.cache`
 const scss_dir = `${App.configDir}/scss`
 
+const walColors = `${App.configDir}/../../.cache/wal/colors.scss`
+const defaultColors = `${App.configDir}/scss/defaultColors.scss`
+
 export const getCssPath = () => tmpCss
 
 export function refreshCss()
@@ -13,7 +16,7 @@ export function refreshCss()
     // main scss file
     const scss = `${App.configDir}/scss/style.scss`
 
-    Utils.exec(`bash -c "echo '$OPACITY: ${globalOpacity.value};' | cat - ${scss} > ${tmpScss} | sassc ${tmpScss} ${tmpCss} -I ${scss_dir} -I ${cache_dir}"`)
+    Utils.exec(`bash -c "echo '$OPACITY: ${globalOpacity.value};' | cat - ${defaultColors} ${walColors} ${scss} > ${tmpScss} | sassc ${tmpScss} ${tmpCss} -I ${scss_dir} -I ${cache_dir}"`)
     App.resetCss()
     App.applyCss(tmpCss)
 }
