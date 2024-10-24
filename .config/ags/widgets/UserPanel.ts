@@ -230,7 +230,7 @@ export default () =>
         class_name: "user-panel",
         layer: "overlay",
         anchor: [],
-        visible: true,
+        visible: false,
         child: Display(),
     })
 }
