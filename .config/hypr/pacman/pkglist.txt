@@ -37,6 +37,7 @@ sassc
 fd
 jq
 lazygit
+translate-shell
 python2-bin
 python-setuptools
 python-requests
