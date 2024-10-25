@@ -104,7 +104,7 @@ function Volume()
     return custom_revealer(label, slider, '', () => Utils.execAsync(`pavucontrol`).catch(err => print(err)));
 }
 
-function BatteryLabel()
+function Battery()
 {
     const value: any = battery.bind("percent").as((p) => (p > 0 ? p / 100 : 0));
 
@@ -131,13 +131,23 @@ function BatteryLabel()
         }),
     });
 
+    const info = Widget.Label({
+        class_name: "icon",
+        label: battery.bind("percent").as((p) => `${p}%`),
+    })
+
     const slider = Widget.LevelBar({
         class_name: "slider",
         widthRequest: 69,
-        value,
+        value: value,
     });
 
-    return battery.percent <= 0 ? Widget.Box() : custom_revealer(label, slider);
+    const box = Widget.Box({
+        children: [info, slider],
+        class_name: "battery",
+    })
+
+    return battery.percent <= 0 ? Widget.Box() : custom_revealer(label, box);
 }
 
 function SysTray()
@@ -174,18 +184,6 @@ function PinBar()
     })
 }
 
-// function RightPanel()
-// {
-//     return Widget.ToggleButton({
-//         onToggled: ({ active }) => rightPanelVisibility.value = active,
-//         class_name: "panel-trigger icon",
-//     }).hook(rightPanelVisibility, (self) =>
-//     {
-//         self.active = rightPanelVisibility.value
-//         self.label = rightPanelVisibility.value ? "" : ""
-//     }, "changed");
-// }
-
 function DndToggle() 
 {
     return Widget.ToggleButton({
@@ -207,7 +205,7 @@ export function Right()
         hpack: "end",
         spacing: 5,
         children: [
-            BatteryLabel(),
+            Battery(),
             Brightness(),
             Volume(),
             SysTray(),

@@ -1,4 +1,4 @@
-import { date_less, date_more } from "variables";
+import { date_less, date_more, userPanelVisibility } from "variables";
 import MediaWidget from "./MediaWidget";
 import { Resources } from "./Resources";
 import NotificationHistory from "./rightPanel/NotificationHistory";
@@ -200,7 +200,8 @@ const WindowActions = () =>
                 label: "",
                 on_primary_click: () =>
                 {
-                    App.closeWindow('user-panel')
+                    userPanelVisibility.value = false
+                    App.closeWindow("user-panel")
                 }
             })
         ]
@@ -230,7 +231,7 @@ export default () =>
         class_name: "user-panel",
         layer: "overlay",
         anchor: [],
-        visible: false,
+        visible: userPanelVisibility.value,
         child: Display(),
-    })
+    }).hook(userPanelVisibility, (self) => self.visible = userPanelVisibility.value, "changed")
 }

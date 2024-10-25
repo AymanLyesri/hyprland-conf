@@ -1,6 +1,6 @@
 import { HyprlandSettings } from "interfaces/hyprlandSettings.interface"
 import { getSetting, globalSettings, setSetting } from "utils/settings";
-import { globalMargin } from "variables";
+import { globalMargin, settingsVisibility } from "variables";
 
 const Hyprland = await Service.import("hyprland");
 
@@ -165,7 +165,11 @@ const windowActions = Widget.Box({
             child: Widget.Button({
                 hpack: "end",
                 label: "",
-                on_primary_click: () => App.closeWindow("settings"),
+                on_primary_click: () =>
+                {
+                    settingsVisibility.value = false
+                    App.closeWindow("settings")
+                },
             }),
         }),
         Widget.Button({
@@ -192,8 +196,8 @@ export default () =>
         name: `settings`,
         class_name: "",
         anchor: ["bottom", "left"],
-        visible: false,
+        visible: settingsVisibility.value,
         margins: [globalMargin, globalMargin],
         child: Display,
-    })
+    }).hook(settingsVisibility, (self) => self.visible = settingsVisibility.value, "changed")
 }
