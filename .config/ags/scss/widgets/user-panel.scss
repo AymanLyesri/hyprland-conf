@@ -1,6 +1,10 @@
 .user-panel {
   button {
     background: $module-background;
+    &:hover {
+      background: $background;
+      text-shadow: $foreground 0 0 1px;
+    }
   }
   .close {
     padding: 10px 20px;

@@ -59,7 +59,6 @@ function Media()
 
     const _activePlayer_ = () => activePlayer(mpris.players.find(player => player.play_back_status === "Playing") || mpris.players[0])
 
-
     return Widget.Revealer({
         transitionDuration: globalTransition,
         transition: 'slide_left',
@@ -79,8 +78,6 @@ function Media()
 
 function Clock()
 {
-
-
     const revealer = Widget.Label({
         css: "margin: 0px;",
         label: date_more.bind()
@@ -90,7 +87,6 @@ function Clock()
     })
 
     return custom_revealer(trigger, revealer, "date");
-
 }
 
 function Bandwidth()

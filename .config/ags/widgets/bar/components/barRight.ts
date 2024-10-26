@@ -32,6 +32,8 @@ function Theme()
 
 function Brightness()
 {
+    if (brightness.screen_value == 0) return Widget.Box();
+
     const slider = Widget.Slider({
         width_request: 100,
         class_name: "slider",
@@ -60,7 +62,7 @@ function Brightness()
             }),
     });
 
-    return brightness.screen_value == 0 ? Widget.Box() : custom_revealer(label, slider);
+    return custom_revealer(label, slider);
 }
 
 function Volume()
@@ -106,7 +108,9 @@ function Volume()
 
 function Battery()
 {
-    const value: any = battery.bind("percent").as((p) => (p > 0 ? p / 100 : 0));
+    const value = battery.bind("percent").as((p) => p);
+
+    if (battery.percent < 0) return Widget.Box();
 
     const label = Widget.Label({
         class_name: "icon",
@@ -133,13 +137,13 @@ function Battery()
 
     const info = Widget.Label({
         class_name: "icon",
-        label: battery.bind("percent").as((p) => `${p}%`),
+        label: value.as(v => `${v}%`),
     })
 
     const slider = Widget.LevelBar({
         class_name: "slider",
         widthRequest: 69,
-        value: value,
+        value: value.as(v => v / 100),
     });
 
     const box = Widget.Box({
@@ -147,7 +151,7 @@ function Battery()
         class_name: "battery",
     })
 
-    return battery.percent <= 0 ? Widget.Box() : custom_revealer(label, box);
+    return custom_revealer(label, box);
 }
 
 function SysTray()
@@ -212,7 +216,6 @@ export function Right()
             Theme(),
             PinBar(),
             DndToggle(),
-            // RightPanel(),
         ],
     });
 }
