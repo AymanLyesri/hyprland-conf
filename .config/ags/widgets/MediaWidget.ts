@@ -9,16 +9,16 @@ const noPlayerFound = () => Widget.Box({
     hexpand: true,
     class_name: "module",
     child: Widget.Label({
-        label: "No player active",
+        label: "No player found",
     })
 })
 
 const activePlayer = () =>
 {
 
-    const player = mpris.players.find(player => player.play_back_status === "Playing")
+    if (mpris.players.length == 0) return noPlayerFound()
 
-    if (!player) return noPlayerFound()
+    const player = mpris.players.find(player => player.play_back_status === "Playing") || mpris.players[0]
 
     return Player(player, "widget")
 }

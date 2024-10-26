@@ -44,7 +44,7 @@ function Media()
         label: player.track_artists.join(" -- "),
     })
 
-    function activePlayer(player: MprisPlayer)
+    function Player(player: MprisPlayer)
     {
         return Widget.Box({
             class_name: "media",
@@ -57,7 +57,7 @@ function Media()
         })
     }
 
-    const _activePlayer_ = () => activePlayer(mpris.players.find(player => player.play_back_status === "Playing") || mpris.players[0])
+    const activePlayer = () => Player(mpris.players.find(player => player.play_back_status === "Playing") || mpris.players[0])
 
     return Widget.Revealer({
         transitionDuration: globalTransition,
@@ -67,9 +67,9 @@ function Media()
             on_primary_click: () => hyprland.messageAsync("dispatch workspace 4").catch(err => print(err)),
             on_hover: () => App.openWindow("media"),
 
-            child: Utils.watch(mpris.players.length > 0 ? _activePlayer_() : Widget.Box(),
+            child: Utils.watch(mpris.players.length > 0 ? activePlayer() : Widget.Box(),
                 mpris, "changed",
-                () => _activePlayer_()),
+                () => activePlayer()),
 
         }),
         setup: self => self.hook(mpris, () => self.reveal_child = mpris.players.length > 0, "changed")
