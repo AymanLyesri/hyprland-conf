@@ -32,6 +32,8 @@ function Theme()
 
 function Brightness()
 {
+    if (brightness.screen_value == 0) return Widget.Box();
+
     const slider = Widget.Slider({
         width_request: 100,
         class_name: "slider",
@@ -60,7 +62,7 @@ function Brightness()
             }),
     });
 
-    return brightness.screen_value == 0 ? Widget.Box() : custom_revealer(label, slider);
+    return custom_revealer(label, slider);
 }
 
 function Volume()
@@ -104,9 +106,11 @@ function Volume()
     return custom_revealer(label, slider, '', () => Utils.execAsync(`pavucontrol`).catch(err => print(err)));
 }
 
-function BatteryLabel()
+function Battery()
 {
-    const value: any = battery.bind("percent").as((p) => (p > 0 ? p / 100 : 0));
+    const value = battery.bind("percent").as((p) => p);
+
+    if (battery.percent < 0) return Widget.Box();
 
     const label = Widget.Label({
         class_name: "icon",
@@ -131,13 +135,23 @@ function BatteryLabel()
         }),
     });
 
+    const info = Widget.Label({
+        class_name: "icon",
+        label: value.as(v => `${v}%`),
+    })
+
     const slider = Widget.LevelBar({
         class_name: "slider",
         widthRequest: 69,
-        value,
+        value: value.as(v => v / 100),
     });
 
-    return battery.percent <= 0 ? Widget.Box() : custom_revealer(label, slider);
+    const box = Widget.Box({
+        children: [info, slider],
+        class_name: "battery",
+    })
+
+    return custom_revealer(label, box);
 }
 
 function SysTray()
@@ -174,18 +188,6 @@ function PinBar()
     })
 }
 
-// function RightPanel()
-// {
-//     return Widget.ToggleButton({
-//         onToggled: ({ active }) => rightPanelVisibility.value = active,
-//         class_name: "panel-trigger icon",
-//     }).hook(rightPanelVisibility, (self) =>
-//     {
-//         self.active = rightPanelVisibility.value
-//         self.label = rightPanelVisibility.value ? "" : ""
-//     }, "changed");
-// }
-
 function DndToggle() 
 {
     return Widget.ToggleButton({
@@ -207,14 +209,13 @@ export function Right()
         hpack: "end",
         spacing: 5,
         children: [
-            BatteryLabel(),
+            Battery(),
             Brightness(),
             Volume(),
             SysTray(),
             Theme(),
             PinBar(),
             DndToggle(),
-            // RightPanel(),
         ],
     });
 }

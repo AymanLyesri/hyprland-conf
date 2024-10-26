@@ -30,16 +30,13 @@ App.config({
     RightPanelHover(),
 
     WallpaperSwitcher(),
+
     MediaPopups(),
     AppLauncher(),
     Progress(),
     SettingsWidget(),
     UserPanel(),
-  ],
-  closeWindowDelay: {
-    // "media": 5000, // milliseconds
-    // "right-panel": 5000, // milliseconds
-  },
+  ]
 })
 
 

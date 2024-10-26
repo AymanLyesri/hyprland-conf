@@ -101,8 +101,8 @@ levelbar {
   trough {
     background: $module-background;
     border: unset;
-    min-height: 6.9px;
-    padding: 10px;
+    min-height: 0px;
+    padding: 5px;
     .filled {
       box-shadow: 0 0 5px 0 $secondary;
       background: $secondary;

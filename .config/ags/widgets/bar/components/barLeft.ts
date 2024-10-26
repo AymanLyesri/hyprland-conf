@@ -1,4 +1,4 @@
-import { newAppWorkspace } from "variables";
+import { newAppWorkspace, settingsVisibility, userPanelVisibility } from "variables";
 
 const hyprland = await Service.import("hyprland");
 
@@ -121,8 +121,8 @@ function Settings()
     return Widget.ToggleButton({
         child: Widget.Label(""),
         class_name: "settings",
-        on_toggled: ({ active }) => active ? App.openWindow("settings") : App.closeWindow("settings"),
-    });
+        on_toggled: ({ active }) => settingsVisibility.value = active,
+    }).hook(settingsVisibility, (self) => self.active = settingsVisibility.value, "changed");
 }
 
 function UserPanel()
@@ -130,8 +130,8 @@ function UserPanel()
     return Widget.ToggleButton({
         child: Widget.Label(""),
         class_name: "user-panel",
-        on_toggled: ({ active }) => active ? App.openWindow("user-panel") : App.closeWindow("user-panel"),
-    });
+        on_toggled: ({ active }) => userPanelVisibility.value = active,
+    }).hook(userPanelVisibility, (self) => self.active = userPanelVisibility.value, "changed");
 }
 
 const Actions = () =>

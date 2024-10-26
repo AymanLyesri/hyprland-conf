@@ -68,15 +68,18 @@ search_apps() {
             fi
         done < <(
             find "$app_dir" -name "*.desktop" -print0 | xargs -0 -n 1 -P 4 awk -v term="$search_term" '
-                BEGIN { IGNORECASE=1 }
-                /^Name=/ { app_name = substr($0, 6) }
-                /^Exec=/ { app_exec = substr($0, 6) }
-                /^Icon=/ { app_icon = substr($0, 6) }
-                app_name ~ term && app_name != "" && app_exec != "" && app_icon != "" {
-                    gsub(/ *%[A-Za-z]/, "", app_exec) # Remove placeholders like %U
-                    print app_name "|" app_exec "|" app_icon
-                }
-            '
+            BEGIN { IGNORECASE=1 }
+            /^Name=/ { app_name = substr($0, 6) }
+            /^Exec=/ {
+                app_exec = substr($0, 6)
+                gsub(/^"|"$/, "", app_exec) # Remove leading and trailing double quotes if present
+                gsub(/ *%[A-Za-z]/, "", app_exec) # Remove placeholders like %U
+            }
+            /^Icon=/ { app_icon = substr($0, 6) }
+            app_name ~ term && app_name != "" && app_exec != "" && app_icon != "" {
+                print app_name "|" app_exec "|" app_icon
+            }
+        '
         )
     done
 

@@ -2,15 +2,12 @@ import { MprisPlayer } from "types/service/mpris"
 import { getDominantColor } from "utils/image"
 import { rightPanelWidth } from "variables"
 
-const mpris = await Service.import("mpris")
-
 const FALLBACK_ICON = "audio-x-generic-symbolic"
 const PLAY_ICON = "media-playback-start-symbolic"
 const PAUSE_ICON = "media-playback-pause-symbolic"
 const PREV_ICON = "media-skip-backward-symbolic"
 const NEXT_ICON = "media-skip-forward-symbolic"
 
-/** @param {number} length */
 function lengthStr(length)
 {
     const min = Math.floor(length / 60)
@@ -23,20 +20,25 @@ function lengthStr(length)
 export function Player(player: MprisPlayer, playerType: "popup" | "widget")
 {
     const dominantColor = player.bind("cover_path").as((path) => getDominantColor(path))
-    const img = Widget.Box({
-        vpack: "center",
-        child: Widget.Box({
-            class_name: "img",
-            css: player.bind("cover_path").transform(p => `
+    const img = () =>
+    {
+        if (playerType == 'widget') return Widget.Box()
+
+        return Widget.Box({
+            vpack: "center",
+            child: Widget.Box({
+                class_name: "img",
+                css: player.bind("cover_path").transform(p => `
             background-image: url('${p}');
             box-shadow: 0 0 5px 0 ${getDominantColor(p)};
-        `),
+                `),
+            })
         })
-    })
+    }
 
     const title = Widget.Label({
         class_name: "title",
-        wrap: true,
+        truncate: "end",
         hexpand: true,
         hpack: "start",
         vpack: "start",
@@ -45,7 +47,7 @@ export function Player(player: MprisPlayer, playerType: "popup" | "widget")
 
     const artist = Widget.Label({
         class_name: "artist",
-        wrap: true,
+        truncate: "end",
         hpack: "start",
         label: player.bind("track_artists").transform(a => a.join(", ")),
     })
@@ -143,7 +145,7 @@ export function Player(player: MprisPlayer, playerType: "popup" | "widget")
                 url('${player.cover_path}');
             `: ``,
         },
-        playerType == 'popup' ? img : Widget.Box(),
+        img(),
         Widget.Box(
             {
                 vertical: true,

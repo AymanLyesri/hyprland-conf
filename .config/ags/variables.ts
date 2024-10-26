@@ -51,3 +51,7 @@ DND.connect("changed", ({ value }) => setSetting("notifications.dnd", value));
 export const widgetLimit = 5
 export const Widgets = Variable<WidgetSelector[]>(getSetting("rightPanel.widgets").map((name: string) => WidgetSelectors.find(widget => widget.name === name)))
 Widgets.connect("changed", ({ value }) => setSetting("rightPanel.widgets", value.map(widget => widget.name)));
+
+export const userPanelVisibility = Variable(false)
+
+export const settingsVisibility = Variable(false)

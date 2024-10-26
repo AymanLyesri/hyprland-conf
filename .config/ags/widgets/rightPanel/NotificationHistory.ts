@@ -15,35 +15,30 @@ const notificationFilter = Variable<Filter>({ name: "", class: "" });
 
 export default () =>
 {
+    const Filters: Filter[] = [{
+        name: "Spotify",
+        class: "spotify",
+    }, {
+        name: "Clipboard",
+        class: "clipboard",
+    }, {
+        name: "Update",
+        class: "update",
+    }];
 
-    function Filter()
-    {
-        const Filters: Filter[] = [{
-            name: "Spotify",
-            class: "spotify",
-        }, {
-            name: "Clipboard",
-            class: "clipboard",
-        }, {
-            name: "Update",
-            class: "update",
-        }];
-
-        return Widget.Box({
-            class_name: "filter",
-            hexpand: false,
-            children: Filters.map(filter =>
-            {
-                return Widget.Button({
-                    label: filter.name,
-                    hexpand: true,
-                    on_clicked: () => notificationFilter.value = (notificationFilter.value === filter ? { name: "", class: "" } : filter),
-                    class_name: notificationFilter.bind().as(filter => filter.class),
-                })
+    const Filter = Widget.Box({
+        class_name: "filter",
+        hexpand: false,
+        children: Filters.map(filter =>
+        {
+            return Widget.Button({
+                label: filter.name,
+                hexpand: true,
+                on_clicked: () => notificationFilter.value = (notificationFilter.value === filter ? { name: "", class: "" } : filter),
+                class_name: notificationFilter.bind().as(filter => filter.class),
             })
         })
-    }
-
+    })
 
     function FilterNotifications(notifications: Notification[], filter: string): any[]
     {
@@ -75,7 +70,7 @@ export default () =>
         return keptNotifications; // Limit to the last 50 notifications DEFAULT, higher number will slow down the UI
     }
 
-    const NotificationHistory = () => Widget.Box({
+    const NotificationHistory = Widget.Box({
         vertical: true,
         spacing: 5,
         children: Utils.merge([notificationFilter.bind(), Notifications.bind("notifications")], (filter, notifications) =>
@@ -89,28 +84,26 @@ export default () =>
     const NotificationsDisplay = Widget.Scrollable({
         hscroll: 'never',
         vexpand: true,
-        child: NotificationHistory(),
+        child: NotificationHistory,
     })
 
-    const ClearNotifications = () =>
-    {
-        return Widget.Button({
-            class_name: "clear",
-            label: "Clear",
-            on_clicked: () =>
-            {
-                // NotificationsDisplay.child.destroy()
-                // setTimeout(() => Notifications.clear(), 500)
-                Notifications.clear()
+    const ClearNotifications = Widget.Button({
+        class_name: "clear",
+        label: "Clear",
+        on_clicked: () =>
+        {
+            // NotificationsDisplay.child.destroy()
+            // setTimeout(() => Notifications.clear(), 500)
+            Notifications.clear()
 
-                // NotificationsDisplay.child = NotificationHistory()
-            },
-        })
-    }
+            // NotificationsDisplay.child = NotificationHistory()
+        },
+    })
+
 
     return Widget.Box({
         class_name: "notification-history",
         vertical: true,
-        children: [Filter(), NotificationsDisplay, ClearNotifications()],
+        children: [Filter, NotificationsDisplay, ClearNotifications],
     })
 }
