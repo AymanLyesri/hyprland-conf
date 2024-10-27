@@ -1,11 +1,14 @@
-restore_defaults() {
-    if [ ! -f "$2" ]; then
-        cp "$1" "$2"
-    fi
-}
+customDir="$HOME/.config/hypr/configs/custom"
+defaultsDir="$HOME/.config/hypr/configs/defaults"
+
+# restore_defaults() {
+#     if [ ! -f "$2" ]; then
+#         cp "$1" "$2"
+#     fi
+# }
 
 echo "Setting up default configuration files..."
 
-restore_defaults $HOME/.config/hypr/configs/defaults/exec.conf $HOME/.config/hypr/configs/custom/exec.conf
+cp $defaultsDir/* $customDir
 
-echo "Default configuration files are set up."
+echo " Done."

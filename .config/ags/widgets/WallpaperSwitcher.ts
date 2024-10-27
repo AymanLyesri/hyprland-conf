@@ -8,11 +8,12 @@ const allWallpapers = Variable<string[]>(JSON.parse(Utils.exec(App.configDir + '
 
 const selectedWorkspace = Variable<number>(0)
 
+const sddm = Variable<boolean>(false)
+
 function Wallpapers()
 {
     const getAllWallpapers = () =>
     {
-
         const Box = Widget.Box({
             class_name: "all-wallpapers",
             spacing: 5,
@@ -23,13 +24,25 @@ function Wallpapers()
                     css: `background-image: url('${wallpaper}');`,
                     on_primary_click: () =>
                     {
-                        Utils.execAsync(`bash -c "$HOME/.config/hypr/hyprpaper/set-wallpaper.sh ${selectedWorkspace.value} ${wallpaper}"`)
-                            .finally(() =>
-                            {
-                                let new_wallpaper = JSON.parse(Utils.exec(App.configDir + '/scripts/get-wallpapers.sh --current'))[selectedWorkspace.value - 1]
-                                top.children[selectedWorkspace.value - 1].css = `background-image: url('${new_wallpaper}');`
-                            })
-                            .catch(err => Utils.notify(err));
+                        if (sddm.value) {
+                            Utils.execAsync(`pkexec sh -c 'sed -i "s|^background=.*|background=\"${wallpaper}\"|" /usr/share/sddm/themes/where_is_my_sddm_theme/theme.conf'`)
+                                .then(() => sddm.value = false)
+                                .finally(() => Utils.notify({
+                                    summary: "SDDMs",
+                                    body: "SDDM wallpaper changed successfully!"
+                                }))
+                                .catch(err => Utils.notify(err));
+                            App.closeWindow("wallpaper-switcher")
+                        }
+                        else {
+                            Utils.execAsync(`bash -c "$HOME/.config/hypr/hyprpaper/set-wallpaper.sh ${selectedWorkspace.value} ${wallpaper}"`)
+                                .finally(() =>
+                                {
+                                    let new_wallpaper = JSON.parse(Utils.exec(App.configDir + '/scripts/get-wallpapers.sh --current'))[selectedWorkspace.value - 1]
+                                    top.children[selectedWorkspace.value - 1].css = `background-image: url('${new_wallpaper}');`
+                                })
+                                .catch(err => Utils.notify(err));
+                        }
                     }
                 })
             }))
@@ -44,8 +57,6 @@ function Wallpapers()
             child: Box,
         })
     }
-
-
 
     const getWallpapers = () =>
     {
@@ -63,6 +74,7 @@ function Wallpapers()
                 label: `${key}`,
                 on_primary_click: (_, event) =>
                 {
+                    sddm.value = false
                     bottom.child.reveal_child = true
                     selectedWorkspace.value = key
                 },
@@ -129,16 +141,26 @@ function Wallpapers()
         }
     })
 
+    const sddmToggle = Widget.ToggleButton({
+        vpack: "center",
+        class_name: "sddm",
+        label: "sddm",
+        on_toggled: ({ active }) =>
+        {
+            sddm.value = active
+        }
+    }).hook(sddm, (self) => self.active = sddm.value, "changed")
+
     const selectedWorkspaceLabel = Widget.Label({
         class_name: "button",
-        label: selectedWorkspace.bind().as((i) => `W -> ${i}`)
+        label: Utils.merge([selectedWorkspace.bind(), sddm.bind()], (workspace, sddm) => `Wallpaper -> ${sddm ? "sddm" : `Workspace ${workspace}`}`)
     })
 
     const actions = Widget.Box({
         class_name: "actions",
         hexpand: true,
         hpack: "center",
-        children: [selectedWorkspaceLabel, random, custom, hide]
+        children: [sddmToggle, selectedWorkspaceLabel, random, custom, hide]
     })
 
     const bottom = Widget.Box({
