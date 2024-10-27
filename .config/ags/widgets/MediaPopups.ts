@@ -14,7 +14,7 @@ export default () =>
         margins: [5, globalMargin, globalMargin, globalMargin],
         visible: false,
         child: Widget.Box({
-            // class_name: "media-popup",
+            class_name: "media-popup",
             child: Widget.EventBox({
                 on_hover_lost: () => App.closeWindow("media"),
                 child: Widget.Box({
