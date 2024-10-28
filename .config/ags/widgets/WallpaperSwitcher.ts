@@ -70,7 +70,12 @@ function Wallpapers()
             return Widget.Button({
                 vpack: "center",
                 css: `background-image: url('${wallpaper}');`,
-                class_name: activeId.as((i) => `${i == key ? "workspace-wallpaper focused" : "workspace-wallpaper"}`),
+                class_name: activeId.as((i) =>
+                {
+                    selectedWorkspace.value = i
+                    return `${i == key ? "workspace-wallpaper focused" : "workspace-wallpaper"}`
+
+                }),
                 label: `${key}`,
                 on_primary_click: (_, event) =>
                 {
