@@ -8,7 +8,7 @@
 
 # echo 1
 
-rclone --vfs-cache-mode writes mount OneDrive: ~/OneDrive &
+rclone --vfs-cache-mode writes mount onedrive: ~/OneDrive &
 /bin/zsh -c '(cat ~/.cache/wal/sequences &); ranger $HOME/OneDrive'
 
 # foot $script
