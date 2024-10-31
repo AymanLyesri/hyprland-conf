@@ -20,7 +20,6 @@ function NotificationIcon({ app_entry, app_icon, image })
                 + "background-size: cover;"
                 + "background-repeat: no-repeat;"
                 + "background-position: center;"
-            // + `box-shadow: 0 0 5px 0 ${getDominantColor(image)};`
         })
     }
 
