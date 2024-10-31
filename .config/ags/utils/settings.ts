@@ -9,9 +9,11 @@ const defaultSettings: Settings = {
       active_opacity: { value: 0.8, min: 0, max: 1, type: "float" },
       inactive_opacity: { value: 0.5, min: 0, max: 1, type: "float" },
       blur: {
-        enabled: { value: true, type: "bool", min: 0, max: 1 }
+        enabled: { value: true, type: "bool", min: 0, max: 1 },
+        size: { value: 3, type: "int", min: 0, max: 10 },
+        passes: { value: 3, type: "int", min: 0, max: 10 }
       }
-    }
+    },
   },
   notifications: {
     dnd: false
