@@ -7,13 +7,26 @@ const Hyprland = await Service.import("hyprland");
 
 const hyprCustomDir: string = '$HOME/.config/hypr/configs/custom/'
 
-const Setting = (key: string, setting: HyprlandSetting) =>
+function buildConfigString(keys: string[], value: any): string
 {
-    const keys = key.split('.')
+    if (keys.length === 1) return `${keys[0]}=${value}`;
+
+    const currentKey = keys[0];
+    const nestedConfig = buildConfigString(keys.slice(1), value);
+    return `${currentKey} {\n\t${nestedConfig.replace(/\n/g, '\n\t')}\n}`;
+}
+
+
+const Setting = (keys: string, setting: HyprlandSetting) =>
+{
+    const keyArray = keys.split('.')
+    const lastKey = keyArray.at(-1)
+    if (!lastKey) return
+
     const title = Widget.Label({
         hpack: "start",
         class_name: "",
-        label: keys[2].charAt(0).toUpperCase() + keys[2].slice(1),
+        label: lastKey.charAt(0).toUpperCase() + lastKey.slice(1),
     })
 
     const sliderWidget = () =>
@@ -28,7 +41,7 @@ const Setting = (key: string, setting: HyprlandSetting) =>
             draw_value: false,
             width_request: 169,
             class_name: "slider",
-            value: globalSettings.bind().as(s => getSetting(key + ".value") / (setting.max - setting.min)),
+            value: globalSettings.bind().as(s => getSetting(keys + ".value") / (setting.max - setting.min)),
             on_change: ({ value }) =>
             {
                 infoLabel.label = `${Math.round(value * 100)}%`;
@@ -43,11 +56,11 @@ const Setting = (key: string, setting: HyprlandSetting) =>
                         break;
                 }
 
-                setSetting(key + ".value", value)
-                Utils.execAsync(`bash -c "echo -e '${keys[1]} { \n\t${keys[2]}=${value} \n}' >${hyprCustomDir + keys[2]}.conf"`)
-                    .catch(err => Utils.notify(err))
+                setSetting(keys + ".value", value)
+                const configString = buildConfigString(keyArray.slice(1), value);
+                Utils.execAsync(`bash -c "echo -e '${configString}' >${hyprCustomDir + keyArray.at(-2) + "." + keyArray.at(-1)}.conf"`)
+                    .catch(err => Utils.notify(err));
             },
-            setup: (self) => self.step = 0.01
         })
 
         return Widget.Box({
@@ -71,17 +84,15 @@ const Setting = (key: string, setting: HyprlandSetting) =>
         })
 
         const switch_ = Widget.Switch({
-            active: globalSettings.bind().as(s => getSetting(key + ".value")),
+            active: globalSettings.bind().as(s => getSetting(keys + ".value")),
             on_activate: ({ active }) =>
             {
                 infoLabel.label = active ? "On" : "Off";
-                setSetting(key + ".value", active)
-                if (keys.length === 3)
-                    Utils.execAsync(`bash -c "echo -e '${keys[1]} { \n\t${keys[2]}=${active} \n}' >${hyprCustomDir + keys[2]}.conf"`)
-                        .catch(err => Utils.notify(err))
-                else if (keys.length === 4)
-                    Utils.execAsync(`bash -c "echo -e '${keys[1]} { \n\t${keys[2]} { \n\t\t${keys[3]}=${active} \n\t} \n}' >${hyprCustomDir + keys[2]}.conf"`)
-                        .catch(err => Utils.notify(err))
+                setSetting(keys + ".value", active)
+
+                const configString = buildConfigString(keyArray.slice(1), active);
+                Utils.execAsync(`bash -c "echo -e '${configString}' >${hyprCustomDir + keyArray.at(-2) + "." + keyArray.at(-1)}.conf"`)
+                    .catch(err => Utils.notify(err));
             }
         })
 

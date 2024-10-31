@@ -16,6 +16,8 @@ interface Settings
             inactive_opacity: HyprlandSetting
             blur: {
                 enabled: HyprlandSetting,
+                size: HyprlandSetting,
+                passes: HyprlandSetting,
             }
         }
     }
