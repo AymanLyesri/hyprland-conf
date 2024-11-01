@@ -55,10 +55,12 @@ const opacitySlider = () =>
         hexpand: false,
         vexpand: true,
         vertical: true,
+        inverted: true,
         hpack: "center",
         height_request: 100,
         draw_value: false,
         class_name: "slider",
+        value: globalOpacity.bind(),
         on_change: ({ value }) => globalOpacity.value = value,
     })
 

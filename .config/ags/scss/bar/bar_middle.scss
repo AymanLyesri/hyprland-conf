@@ -2,14 +2,25 @@
   // padding: 0px 5px;
   // background: black;
 
+  .clock {
+    &:hover {
+      .trigger {
+        margin-right: 0px;
+        transition: margin-right 0s;
+      }
+    }
+    .revealer {
+      margin-left: 0px;
+      transition: margin-left 0s;
+    }
+  }
+
   .media {
     @extend .module;
     background-size: cover;
     background-position: center;
     margin: 0px;
     padding: 0px 10px;
-
-    // font-size: 0.5rem;
 
     .progress {
       min-width: 15px; /* its size is min(min-height, min-width) */

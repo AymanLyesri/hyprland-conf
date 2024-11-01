@@ -18,6 +18,7 @@ export function refreshCss()
 
     const response = Utils.exec(`bash -c "echo '$OPACITY: ${globalOpacity.value};' | cat - ${defaultColors} ${walColors} ${scss} > ${tmpScss} | sassc ${tmpScss} ${tmpCss} -I ${scss_dir} -I ${cache_dir}"`)
     print(response)
+    if (response != "") Utils.notify(response)
     App.resetCss()
     App.applyCss(tmpCss)
 }

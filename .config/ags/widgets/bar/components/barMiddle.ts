@@ -79,14 +79,15 @@ function Media()
 function Clock()
 {
     const revealer = Widget.Label({
-        css: "margin: 0px;",
+        class_name: "revealer",
         label: date_more.bind()
     })
     const trigger = Widget.Label({
+        class_name: "trigger",
         label: date_less.bind()
     })
 
-    return custom_revealer(trigger, revealer, "date");
+    return custom_revealer(trigger, revealer, "clock");
 }
 
 function Bandwidth()

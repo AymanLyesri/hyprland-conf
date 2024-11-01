@@ -23,7 +23,6 @@ button,
 .button {
   @extend .module;
   background: $secondary-background;
-  text-shadow: $background 0 0 1px;
   &:hover {
     background: $background;
     text-shadow: $foreground 0 0 1px;
@@ -31,11 +30,10 @@ button,
   &:focus,
   &:checked {
     outline: none;
-    border-color: transparent;
-    box-shadow: none;
+    // border-color: transparent;
   }
   &:checked {
-    background: $color10;
+    background: $secondary;
     color: $color0;
   }
 }

@@ -10,7 +10,7 @@ export function custom_revealer(trigger, slider, custom_class = '', on_primary_c
     });
 
     const eventBox = Widget.EventBox({
-        class_name: "custom-revealer button" + custom_class,
+        class_names: ["custom-revealer", "button", custom_class],
         on_hover: async (self) =>
         {
             revealer.reveal_child = true
