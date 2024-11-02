@@ -118,14 +118,23 @@ update
 
 ### Media Player
 
-![screenshot](https://github.com/user-attachments/assets/1c56869d-8b83-457a-8f28-b6006ae83fdb)
+![image](https://github.com/user-attachments/assets/5de3ad0f-101c-49f0-ab17-1bde12c16257)
 
 ### Wallpaper Switcher
 
-![image](https://github.com/user-attachments/assets/822cda83-f316-4742-95e5-485fa16234b0)
-![image](https://github.com/user-attachments/assets/cfc2509d-08df-457a-89f1-247a9c5f6b65)
+![image](https://github.com/user-attachments/assets/8426a309-f088-4200-a8d5-7386496223b3)
 
-### Theme Switching (old screenshots)
+### Theme Switching
 
-![screenshot](https://github.com/user-attachments/assets/f3321fb4-9992-4133-b860-c2e7b8f246d6)
-![screenshot](https://github.com/user-attachments/assets/87da3faa-fbc4-47d8-9901-354e54f5452e)
+| Dark Theme + Custom colors based on wallpaper                                             | Light Theme + Custom colors based on wallpaper                                            |
+| ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| ![image](https://github.com/user-attachments/assets/f3ff78c1-5243-4c00-9e03-898c517cccac) | ![image](https://github.com/user-attachments/assets/7b158721-38fa-4405-9cda-7864c1bc7818)|
+
+### User Panel
+
+![image](https://github.com/user-attachments/assets/d88f9a5e-c7da-4e31-80db-38073dc0278c)
+
+
+
+
+
