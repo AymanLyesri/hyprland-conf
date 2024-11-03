@@ -1,4 +1,4 @@
-import cavaService from "./cavaService";
+import cavaService from "../services/cavaService";
 import { globalTransition } from "variables";
 import { Hyprland } from "types/service/hyprland";
 

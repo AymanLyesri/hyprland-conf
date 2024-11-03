@@ -1,6 +1,5 @@
 .bar {
   padding: 5px 0px;
-  transition: background 0s;
 
   &.full {
     background: $module-background;
@@ -19,5 +18,7 @@
   }
 
   &.empty {
+    transition: background 0s;
+    background: transparent;
   }
 }

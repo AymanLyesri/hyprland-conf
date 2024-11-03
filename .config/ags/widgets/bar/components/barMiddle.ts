@@ -5,7 +5,7 @@ import { MprisPlayer } from "types/service/mpris";
 import { playerToColor } from "utils/color";
 import { playerToIcon } from "utils/icon";
 import { date_less, date_more, emptyWorkspace, globalTransition } from "variables";
-import CavaWidget from "widgets/cava/Cava";
+import CavaWidget from "widgets/Cava";
 import { custom_revealer } from "widgets/revealer";
 
 

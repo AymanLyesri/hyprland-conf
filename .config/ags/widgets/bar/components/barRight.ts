@@ -1,4 +1,4 @@
-import brightness from "brightness";
+import brightness from "services/brightness";
 import { barLock, DND, rightPanelVisibility } from "variables";
 import { closeProgress, openProgress } from "widgets/Progress";
 import { custom_revealer } from "widgets/revealer";
