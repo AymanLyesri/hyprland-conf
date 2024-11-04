@@ -12,7 +12,7 @@ globalOpacity.connect("changed", ({ value }) =>
     refreshCss()
 });
 
-export const globalMargin = 15
+export const globalMargin = 14
 export const globalTransition = 500
 
 export const date_less = Variable("", {

@@ -128,20 +128,27 @@ scrolledwindow {
 }
 
 .slider {
-  padding: 0;
+  padding: 0px 2px;
 
   trough {
     border-radius: 10px;
-  }
+    background: $module-background;
+    color: black;
 
-  slider {
-    min-height: 1px;
-    min-width: 10px;
-    margin: -5px;
+    slider {
+      background: transparent;
+      min-height: 0px;
+      min-width: 0px;
+      margin: 5px;
+    }
+
+    highlight {
+      background: $secondary;
+    }
   }
 
   &:hover highlight {
-    background-color: mix($color4, #ffffff, 50%);
+    background: $tertiary;
   }
 }
 

@@ -11,6 +11,7 @@ import BarHover from "widgets/bar/BarHover";
 import RightPanelHover from "widgets/rightPanel/RightPanelHover";
 import SettingsWidget from "widgets/SettingsWidget";
 import UserPanel from "widgets/UserPanel";
+import OSD from "widgets/OSD";
 
 // required packages
 // gvfs is required for images
@@ -36,6 +37,8 @@ App.config({
     Progress(),
     SettingsWidget(),
     UserPanel(),
+
+    OSD(),
   ]
 })
 

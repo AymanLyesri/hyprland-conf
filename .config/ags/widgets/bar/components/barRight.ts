@@ -97,7 +97,7 @@ function Volume()
         width_request: 100,
         draw_value: false,
         class_name: "slider",
-        on_change: ({ value }) => (audio.speaker.volume = value),
+        on_change: ({ value }) => audio.speaker.volume = value,
     }).hook(audio.speaker, (self) =>
     {
         self.value = audio.speaker.volume || 0;

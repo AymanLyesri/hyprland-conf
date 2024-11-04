@@ -203,7 +203,7 @@ export default () =>
         exclusivity: "normal",
         keymode: "on-demand",
         layer: "top",
-        margins: [5, globalMargin, globalMargin, globalMargin], // top right bottom left
+        margins: [10, globalMargin, globalMargin, globalMargin], // top right bottom left
         visible: false,
 
         child: Widget.EventBox({
