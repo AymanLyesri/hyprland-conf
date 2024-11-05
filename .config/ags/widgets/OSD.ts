@@ -2,9 +2,7 @@ import { globalMargin } from "variables"
 import brightness from "services/brightness";
 const audio = await Service.import("audio")
 
-const DELAY = 2500
-
-
+const DELAY = 1500
 
 function OnScreenProgress(vertical: boolean)
 {
@@ -32,6 +30,9 @@ function OnScreenProgress(vertical: boolean)
         });
 
         const eventBox = Widget.EventBox({
+            attribute: {
+                debounceTimer: null,
+            },
             on_hover_lost: () => revealer.reveal_child = false,
             child: revealer,
         });
@@ -44,6 +45,11 @@ function OnScreenProgress(vertical: boolean)
         audio.speaker.volume = value;  // Update the volume directly
     });
 
+    const MicrophoneSlider = osdSlider(audio.microphone.volume, (value) =>
+    {
+        audio.microphone.volume = value;  // Update the volume directly
+    });
+
     // Usage for BrightnessSlider
     const BrightnessSlider = osdSlider(brightness.screen_value, (value) =>
     {
@@ -51,26 +57,23 @@ function OnScreenProgress(vertical: boolean)
     });
 
 
-    let debounceTimer: any;
-
     function show(osdSlider: any, value: number, icon: string)
     {
-        console.log("showing");
         osdSlider.child.reveal_child = true;
         osdSlider.child.child.set_value(value);
 
         // Clear the existing debounce timer to reset it
-        if (debounceTimer !== null) {
-            clearTimeout(debounceTimer);
+        if (osdSlider.debounceTimer !== null) {
+            clearTimeout(osdSlider.debounceTimer);
         }
 
         // Set a new debounce timer
-        debounceTimer = setTimeout(() =>
+        osdSlider.debounceTimer = setTimeout(() =>
         {
             if (!osdSlider.isHovered()) {
                 osdSlider.child.reveal_child = false;
             }
-            debounceTimer = null;  // Reset the debounce timer variable
+            osdSlider.debounceTimer = null;  // Reset the debounce timer variable
         }, DELAY);
     }
 
@@ -96,11 +99,12 @@ function OnScreenProgress(vertical: boolean)
     }
 
     return Widget.Box({
-        children: [VolumeSlider]
+        children: [VolumeSlider, MicrophoneSlider, BrightnessSlider],
     })
         .hook(brightness, () => show(BrightnessSlider, 10, ""), "notify::screen")
         .hook(brightness, () => show(BrightnessSlider, 10, ""), "notify::kbd")
         .hook(audio.speaker, () => show(VolumeSlider, audio.speaker.volume, getIcon()), "notify::volume")
+        .hook(audio.microphone, () => show(MicrophoneSlider, audio.microphone.volume, ""), "notify::volume")
 
 }
 
@@ -137,7 +141,7 @@ function MicrophoneMute()
 }
 
 export default () => Widget.Window({
-    name: `OSD`,
+    name: `osd`,
     class_name: "indicator",
     layer: "overlay",
     margins: [globalMargin, globalMargin],

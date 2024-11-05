@@ -110,7 +110,7 @@ function Workspaces()
 function AppLauncher()
 {
     return Widget.ToggleButton({
-        child: Widget.Icon("preferences-system-search-symbolic"),
+        child: Widget.Label(""),
         class_name: "app-search",
         on_toggled: ({ active }) => active ? App.openWindow("app-launcher") : App.closeWindow("app-launcher"),
     });

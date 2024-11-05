@@ -26,8 +26,8 @@ def main():
     
     # Variables
     api_url = f"https://danbooru.donmai.us/posts/{post_id}.json?tags={nsfw}rating%3Aexplicit+{"+".join(tags)}&ratio%3A>%3D1%2F3"
-    api_key = "tYWBHV2Pv5dKKmRBsQaMHtFH"  # Replace with your own API key
-    user_name = "lilayman"  # Replace with your own username
+    api_key = "Pr5ddYN7P889AnM6nq2nhgw1"  # Replace with your own API key
+    user_name = "publicapi"  # Replace with your own username
     save_dir = os.path.expanduser("~/.config/ags/assets/waifu")  # Directory where the image will be saved
     image_name = "waifu.png"
 
@@ -42,11 +42,6 @@ def main():
     if response.status_code == 200:
         data = response.json()
 
-        # Check if the response contains the image URL
-        # if sys.argv[3] == "--preview":
-        #     image_url = data.get('preview_file_url')
-        #     print(image_url)
-        #     exit()
         image_url = data.get('file_url')
         if image_url:
             # Full path to save the image

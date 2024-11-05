@@ -149,7 +149,7 @@ export function Notification_(n: Notification, new_Notification = false, popup =
             on_clicked: () =>
             {
                 Revealer.reveal_child = false;
-                timeout(TRANSITION, () => { n.close(); Revealer.destroy() })
+                timeout(globalTransition, () => { n.close(); Revealer.destroy() })
             },
         }),
     })
