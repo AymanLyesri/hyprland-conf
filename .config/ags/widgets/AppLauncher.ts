@@ -5,6 +5,7 @@ import { closeProgress, openProgress } from "./Progress";
 import { containsProtocolOrTLD, formatToURL, getDomainFromURL } from "utils/url";
 import { arithmetic, containsOperator } from "utils/arithmetic";
 const Hyprland = await Service.import('hyprland')
+const { query } = await Service.import("applications")
 
 interface Result
 {
@@ -83,7 +84,13 @@ function Entry()
                             } else if (containsOperator(args[0])) {
                                 Results.value = [{ app_name: arithmetic(text), app_exec: `wl-copy ${arithmetic(text)}`, app_type: 'calc' }];
                             } else {
-                                Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/app-search.sh ${text}`));
+                                Results.value = query(args.shift()).map((app) => ({
+                                    app_name: app.name,
+                                    app_exec: app.executable,
+                                    app_arg: args.join(""),
+                                    app_type: "app",
+                                    app_icon: app["icon-name"]
+                                }));
                                 if (Results.value.length == 0)
                                     Results.value = [{ app_name: `Try ${text}`, app_exec: text, app_icon: "󰋖" }];
                             }
