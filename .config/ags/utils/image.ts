@@ -9,6 +9,6 @@ export function getDominantColor(imagePath: string)
     //     }).catch(err => { print("err", err); return "" });
     // print("imagePath : ", imagePath)
     // return "black"
-    return Utils.exec(`${App.configDir}/scripts/get-image-color.sh ${imagePath}`)
+    return Utils.exec(`bash ${App.configDir}/scripts/get-image-color.sh ${imagePath}`)
     // return color
 }
