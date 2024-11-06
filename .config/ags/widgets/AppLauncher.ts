@@ -75,7 +75,8 @@ function Entry()
 
                             if (args[0].includes("translate")) {
                                 let language = text.includes(">") ? text.split(">")[1].trim() : "en";
-                                Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/translate.sh '${text.split(">")[0].replace("translate", "").trim()}' '${language}'`));
+                                let sentence = text.split(">")[0].replaceAll("translate", "").replaceAll("'", "\\'").replaceAll('"', "\\\"").trim();
+                                Results.value = readJson(await Utils.execAsync(`bash ${App.configDir}/scripts/translate.sh ${language} ${sentence}`));
                             } else if (args[0].includes("emoji")) {
                                 Results.value = readJSONFile(`${App.configDir}/assets/emojis/emojis.json`).filter(emoji => emoji.app_tags.toLowerCase().includes(text.replace("emoji", "").trim()));
                             } else if (containsProtocolOrTLD(args[0])) {

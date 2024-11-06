@@ -1,14 +1,11 @@
 #!/bin/bash
 
 # Translate a text to English
-text=$1
-launguage=$2
+language=$1
+shift
+text=$*
 
-if [ -z "$launguage" ]; then
-    launguage="en"
-fi
-
-result=$(trans -brief "$text" -t $launguage)
+result=$(trans -brief "$text" -t "$language")
 
 app_name=$result
 app_exec="wl-copy '$result'"
