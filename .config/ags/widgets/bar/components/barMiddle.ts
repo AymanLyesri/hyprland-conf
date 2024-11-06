@@ -94,7 +94,7 @@ function Bandwidth()
 {
     const bandwidth = Variable("", {
         // listen to an array of [up, down] values
-        listen: [App.configDir + '/scripts/bandwidth.sh', out =>
+        listen: [`bash ${App.configDir}/scripts/bandwidth.sh`, out =>
         {
             return "↑" + JSON.parse(out)[0] + " ↓" + JSON.parse(out)[1];
         }],

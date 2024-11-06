@@ -4,7 +4,7 @@ import { globalTransition } from "variables";
 
 const hyprland = await Service.import("hyprland");
 
-const allWallpapers = Variable<string[]>(JSON.parse(Utils.exec(App.configDir + '/scripts/get-wallpapers.sh --all')))
+const allWallpapers = Variable<string[]>(JSON.parse(Utils.exec(`bash ${App.configDir}/scripts/get-wallpapers.sh --all`)))
 
 const selectedWorkspace = Variable<number>(0)
 
@@ -38,7 +38,7 @@ function Wallpapers()
                             Utils.execAsync(`bash -c "$HOME/.config/hypr/hyprpaper/set-wallpaper.sh ${selectedWorkspace.value} ${wallpaper}"`)
                                 .finally(() =>
                                 {
-                                    let new_wallpaper = JSON.parse(Utils.exec(App.configDir + '/scripts/get-wallpapers.sh --current'))[selectedWorkspace.value - 1]
+                                    let new_wallpaper = JSON.parse(Utils.exec(`bash ${App.configDir}/scripts/get-wallpapers.sh --current`))[selectedWorkspace.value - 1]
                                     top.children[selectedWorkspace.value - 1].css = `background-image: url('${new_wallpaper}');`
                                 })
                                 .catch(err => Utils.notify(err));
@@ -62,7 +62,7 @@ function Wallpapers()
     {
         const activeId = hyprland.active.workspace.bind("id");
 
-        var wallpapers: any[] = JSON.parse(Utils.exec(App.configDir + '/scripts/get-wallpapers.sh --current'))
+        var wallpapers: any[] = JSON.parse(Utils.exec(`bash ${App.configDir}/scripts/get-wallpapers.sh --current`))
         return wallpapers.map((wallpaper, key) =>
         {
             key += 1
@@ -94,7 +94,7 @@ function Wallpapers()
         on_primary_click: () =>
         {
             Utils.execAsync(`bash -c "$HOME/.config/hypr/hyprpaper/reload.sh"`)
-                .finally(() => allWallpapers.value = JSON.parse(Utils.exec(App.configDir + '/scripts/get-wallpapers.sh --all')))
+                .finally(() => allWallpapers.value = JSON.parse(Utils.exec(`bash ${App.configDir}/scripts/get-wallpapers.sh --all`)))
                 .catch(err => print(err));
         }
     })
@@ -118,7 +118,7 @@ function Wallpapers()
             Utils.execAsync(`bash -c "$HOME/.config/hypr/hyprpaper/set-wallpaper.sh ${selectedWorkspace.value} ${randomWallpaper}"`)
                 .finally(() =>
                 {
-                    let new_wallpaper = JSON.parse(Utils.exec(App.configDir + '/scripts/get-wallpapers.sh --current'))[selectedWorkspace.value - 1]
+                    let new_wallpaper = JSON.parse(Utils.exec(`bash ${App.configDir}/scripts/get-wallpapers.sh --current`))[selectedWorkspace.value - 1]
                     top.children[selectedWorkspace.value - 1].css = `background-image: url('${new_wallpaper}');`
                 })
                 .catch(err => Utils.notify(err));
@@ -131,7 +131,7 @@ function Wallpapers()
         label: "all",
         on_toggled: (self) =>
         {
-            allWallpapers.value = JSON.parse(Utils.exec(App.configDir + `/scripts/get-wallpapers.sh ${self.active ? "--custom" : "--all"}`))
+            allWallpapers.value = JSON.parse(Utils.exec(`bash ${App.configDir}/scripts/get-wallpapers.sh ${self.active ? "--custom" : "--all"}`))
             self.label = self.active ? "custom" : "all"
         }
     })

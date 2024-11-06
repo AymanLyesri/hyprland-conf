@@ -76,7 +76,7 @@ function Entry()
 
                             if (args[0].includes("translate")) {
                                 let language = text.includes(">") ? text.split(">")[1].trim() : "en";
-                                Results.value = readJson(await Utils.execAsync(`${App.configDir}/scripts/translate.sh '${text.split(">")[0].replace("translate", "").trim()}' '${language}'`));
+                                Results.value = readJson(await Utils.execAsync(`bash ${App.configDir}/scripts/translate.sh '${text.split(">")[0].replace("translate", "").trim()}' '${language}'`));
                             } else if (args[0].includes("emoji")) {
                                 Results.value = readJSONFile(`${App.configDir}/assets/emojis/emojis.json`).filter(emoji => emoji.app_tags.toLowerCase().includes(text.replace("emoji", "").trim()));
                             } else if (containsProtocolOrTLD(args[0])) {
@@ -142,7 +142,7 @@ const organizeResults = (results: Result[]) =>
         {
             if (element.app_type == "app") {
                 openProgress()
-                Utils.execAsync(`${App.configDir}/scripts/app-loading-progress.sh ${element.app_name}`)
+                Utils.execAsync(`bash ${App.configDir}/scripts/app-loading-progress.sh ${element.app_name}`)
                     .then((workspace) => newAppWorkspace.value = Number(workspace))
                     .finally(() => closeProgress())
                     .catch(err => Utils.notify({ summary: "Error", body: err }));
