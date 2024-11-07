@@ -8,14 +8,16 @@
   .system-tray {
     button {
       border-radius: 0px;
-      padding: 0px 10px;
+      padding: 0px 5px;
     }
     button:first-child {
       border-radius: 10px 0px 0px 10px;
+      padding: 0px 5px 0px 10px;
     }
 
     button:last-child {
       border-radius: 0px 10px 10px 0px;
+      padding: 0px 10px 0px 5px;
     }
 
     button:only-child {

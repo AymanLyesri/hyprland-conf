@@ -9,7 +9,9 @@ function OnScreenProgress(vertical: boolean)
 
     const osdSlider = (initialValue, onChange) =>
     {
-        const indicator = Widget.Label("");
+        const indicator = Widget.Label({
+            visible: false,
+        });
 
         const Slider = Widget.Slider({
             vertical: true,
@@ -26,12 +28,19 @@ function OnScreenProgress(vertical: boolean)
 
         const revealer = Widget.Revealer({
             transition: "slide_left",
-            child: Slider,
+            child: Widget.Box({
+                vertical: true,
+                children: [Slider, indicator],
+            })
         });
 
         const eventBox = Widget.EventBox({
             attribute: {
                 debounceTimer: null,
+                setValue: (value) => Slider.value = value,
+                setIndicator: (text) => indicator.label = text,
+                show: () => revealer.reveal_child = true,
+                hide: () => revealer.reveal_child = false,
             },
             on_hover_lost: () => revealer.reveal_child = false,
             child: revealer,
@@ -59,51 +68,58 @@ function OnScreenProgress(vertical: boolean)
 
     function show(osdSlider: any, value: number, icon: string)
     {
-        osdSlider.child.reveal_child = true;
-        osdSlider.child.child.set_value(value);
+        osdSlider.attribute.show();
+        osdSlider.attribute.setValue(value);
+        osdSlider.attribute.setIndicator(icon);
 
         // Clear the existing debounce timer to reset it
-        if (osdSlider.debounceTimer !== null) {
-            clearTimeout(osdSlider.debounceTimer);
+        if (osdSlider.attribute.debounceTimer !== null) {
+            clearTimeout(osdSlider.attribute.debounceTimer);
         }
 
         // Set a new debounce timer
         osdSlider.debounceTimer = setTimeout(() =>
         {
             if (!osdSlider.isHovered()) {
-                osdSlider.child.reveal_child = false;
+                osdSlider.attribute.hide();
             }
-            osdSlider.debounceTimer = null;  // Reset the debounce timer variable
+            osdSlider.attribute.debounceTimer = null;  // Reset the debounce timer variable
         }, DELAY);
     }
 
-
-    const icons = {
-        75: "",
-        50: "",
-        25: "",
-        0: "",
-    };
-
-    function getIcon()
+    function getBrightnessIcon(v)
     {
-        if (audio.speaker.is_muted) {
-            return icons[0]; // Return mute icon
+        switch (true) {
+            case v > 0.75:
+                return "󰃠";
+            case v > 0.5:
+                return "󰃟";
+            case v > 0:
+                return "󰃞";
+            default:
+                return "󰃞";
         }
+    }
 
-        const volumeLevel: number = [75, 50, 25, 0].find(
-            (threshold) => threshold <= audio.speaker.volume * 100
-        ) ?? 0;  // If find() returns undefined, default to 0
-
-        return icons[volumeLevel];
+    function getVolumeIcon(v)
+    {
+        switch (true) {
+            case v > 0.75:
+                return "";
+            case v > 0.5:
+                return "";
+            case v > 0.25:
+                return "";
+            default:
+                return "";
+        }
     }
 
     return Widget.Box({
         children: [VolumeSlider, MicrophoneSlider, BrightnessSlider],
     })
-        .hook(brightness, () => show(BrightnessSlider, 10, ""), "notify::screen")
-        .hook(brightness, () => show(BrightnessSlider, 10, ""), "notify::kbd")
-        .hook(audio.speaker, () => show(VolumeSlider, audio.speaker.volume, getIcon()), "notify::volume")
+        .hook(brightness, () => show(BrightnessSlider, brightness.screen_value, getBrightnessIcon(brightness.screen_value)), "notify::screen-value")
+        .hook(audio.speaker, () => show(VolumeSlider, audio.speaker.volume, getVolumeIcon(audio.speaker.volume)), "notify::volume")
         .hook(audio.microphone, () => show(MicrophoneSlider, audio.microphone.volume, ""), "notify::volume")
 
 }
