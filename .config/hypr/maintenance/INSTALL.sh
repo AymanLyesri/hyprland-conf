@@ -56,6 +56,10 @@ continue_prompt "Do you want to remove unwanted packages?" remove_packages
 
 continue_prompt "Do you want to install necessary packages? (using $aur_helper)" "$HOME/.config/hypr/pacman/install-pkgs.sh $aur_helper"
 
+install_browser
+
+install_discord_client
+
 continue_prompt "Sddm theme setup" "$MAINTENANCE_DIR/SDDM.sh"
 
 $MAINTENANCE_DIR/DEFAULTS.sh
