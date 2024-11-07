@@ -116,7 +116,7 @@ const UserPanel = () =>
         })
 
         return Widget.Box({
-            class_name: "actions",
+            class_name: "system-actions",
             vertical: true,
             spacing: 10,
             children: [

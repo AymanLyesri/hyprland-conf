@@ -7,10 +7,13 @@
   // .profile {
   //   border: 1px solid $tertiary;
   // }
-  .close {
-    padding: 10px 20px;
-    font-size: 1.5rem;
+  .window-actions {
+    .close {
+      padding: 10px 20px;
+      font-size: 1.5rem;
+    }
   }
+
   .player {
     min-width: 200px;
   }
@@ -53,7 +56,7 @@
       }
     }
   }
-  .actions {
+  .system-actions {
     button {
       min-height: 69px;
       min-width: 69px;

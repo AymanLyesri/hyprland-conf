@@ -67,9 +67,6 @@ alias n=$NEOFETCH
 # Aliases for logout
 alias logout='hyprctl dispatch exit'
 
-# The fuck
-eval $(thefuck --alias)
-
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
 
