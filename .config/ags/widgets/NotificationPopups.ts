@@ -9,9 +9,6 @@ notifications.forceTimeout = false;
 notifications.cacheActions = false;
 notifications.clearDelay = 100;
 
-
-
-
 const Display = () =>
 {
     const list = Widget.Box({
