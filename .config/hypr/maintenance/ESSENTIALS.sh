@@ -140,9 +140,6 @@ install_discord_client() {
     echo -e "workspace = 6, gapsout:69, on-created-empty:$class \n windowrulev2 = workspace 6 silent, class:^($class)$" >$HOME/.config/hypr/configs/defaults/discord_client.conf
 }
 
-install_browser
-install_discord_client
-
 # Function to install paru
 install_paru() {
     if command_exists paru; then
