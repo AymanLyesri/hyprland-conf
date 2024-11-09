@@ -10,7 +10,7 @@ export default () =>
         name: `bar`,
         anchor: ["top", "left", "right"],
         exclusivity: "exclusive",
-        margins: emptyWorkspace.as(margin => [margin * 69, margin * 50, 0, margin * 50]),// [top, right, bottom, left]
+        margins: emptyWorkspace.as(margin => [margin * 25, margin * 25, 0, margin * 25]),// [top, right, bottom, left]
         layer: "top",
         visible: barLock.value,
         child: Widget.EventBox({

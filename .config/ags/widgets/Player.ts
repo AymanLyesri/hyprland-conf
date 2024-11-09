@@ -150,7 +150,7 @@ export function Player(player: MprisPlayer, playerType: "popup" | "widget")
             {
                 vertical: true,
                 hexpand: true,
-
+                spacing: 5,
             },
             Widget.Box({
                 children:
@@ -159,7 +159,6 @@ export function Player(player: MprisPlayer, playerType: "popup" | "widget")
                         icon,
                     ]
             }),
-
             Widget.Box({ vexpand: true }), // spacer
             title,
             positionSlider,
