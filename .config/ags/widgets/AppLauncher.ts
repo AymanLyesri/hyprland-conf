@@ -7,19 +7,18 @@ import { arithmetic, containsOperator } from "utils/arithmetic";
 const Hyprland = await Service.import('hyprland')
 const { query } = await Service.import("applications")
 
-interface Result
-{
+interface Result {
     app_name: string,
     app_exec: string,
     app_arg?: string,
     app_type?: string,
-    app_icon?: string
+    app_icon?: string,
+    desktop: string | null
 }
 
 const Results = Variable<Result[]>([])
 
-function Entry()
-{
+function Entry() {
     const help = Widget.Menu({
         children: [
             Widget.MenuItem({
@@ -56,16 +55,14 @@ function Entry()
                 hexpand: true,
                 placeholder_text: "Search for an app, emoji, translate, url, or do some math...",
 
-                on_change: async ({ text }) =>
-                {
+                on_change: async ({ text }) => {
                     // Clear any previously set timer
                     if (debounceTimer) {
                         clearTimeout(debounceTimer);
                     }
 
                     // Set a new timer with a delay (e.g., 300ms)
-                    debounceTimer = setTimeout(async () =>
-                    {
+                    debounceTimer = setTimeout(async () => {
                         try {
 
                             if (text == "" || text == " " || text == null) {
@@ -89,7 +86,8 @@ function Entry()
                                     app_exec: app.executable,
                                     app_arg: args.join(""),
                                     app_type: "app",
-                                    app_icon: app["icon-name"]
+                                    app_icon: app["icon-name"],
+                                    desktop: app["desktop"]
                                 }));
                                 if (Results.value.length == 0)
                                     Results.value = [{ app_name: `Try ${text}`, app_exec: text, app_icon: "󰋖" }];
@@ -99,13 +97,11 @@ function Entry()
                         }
                     }, 100);  // 300ms delay
                 },
-                on_accept: () =>
-                {
+                on_accept: () => {
                     // Utils.notify({ summary: "Enter", body: String(ResultsDisplay.child.child.child.children[0].child) });
                     (ResultsDisplay as any).child.child.child.children[0].child.clicked()
                 },
-            }).on("key-press-event", (self, event: Gdk.Event) =>
-            {
+            }).on("key-press-event", (self, event: Gdk.Event) => {
                 if (event.get_keyval()[1] == 65307) // Escape key
                 {
                     self.text = ""
@@ -114,8 +110,7 @@ function Entry()
             })
             , Widget.Button({
                 label: "󰋖",
-                on_primary_click: (_, event) =>
-                {
+                on_primary_click: (_, event) => {
                     help.popup_at_pointer(event)
                 },
             })
@@ -123,8 +118,7 @@ function Entry()
     })
 }
 
-const organizeResults = (results: Result[]) =>
-{
+const organizeResults = (results: Result[]) => {
     const buttonContent = (element: Result) => Widget.Box({
         spacing: 10,
         hpack: element.app_type == 'emoji' ? "center" : "start",
@@ -138,8 +132,7 @@ const organizeResults = (results: Result[]) =>
     const button = (element: Result) => Widget.Button({
         hexpand: true,
         child: buttonContent(element),
-        on_clicked: () =>
-        {
+        on_clicked: () => {
             if (element.app_type == "app") {
                 openProgress()
                 Utils.execAsync(`bash ${App.configDir}/scripts/app-loading-progress.sh ${element.app_name}`)
@@ -148,9 +141,16 @@ const organizeResults = (results: Result[]) =>
                     .catch(err => Utils.notify({ summary: "Error", body: err }));
             }
 
+            if (element.desktop != null) {
+                Utils.notify({ summary: "Desktop", body: `${element.desktop}` });
+                Hyprland.messageAsync(`dispatch exec gtk-launch ${element.desktop}`).then(() => {
+                    App.closeWindow("app-launcher")
+                }).catch(err => Utils.notfy({ summary: "Error", body: err }));
+                return;
+            }
+
             Hyprland.messageAsync(`dispatch exec ${element.app_exec} ${element.app_arg || ""}`)
-                .then(() =>
-                {
+                .then(() => {
                     switch (element.app_type) {
                         case 'app':
                             // Utils.notify({ summary: "App", body: `Opening ${element.app_name}` });
@@ -202,8 +202,7 @@ const ResultsDisplay = Widget.Box({
     child: Results.bind().as(organizeResults)
 })
 
-export default () =>
-{
+export default () => {
     return Widget.Window({
         name: `app-launcher`,
         anchor: emptyWorkspace.as(empty => empty == 1 ? [] : ["top", "left"]),
