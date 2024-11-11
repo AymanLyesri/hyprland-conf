@@ -16,8 +16,6 @@ import OSD from "widgets/OSD";
 // required packages
 // gvfs is required for images
 
-refreshCss()
-
 App.addIcons(`${App.configDir}/assets/icons`)
 App.config({
   style: getCssPath(),
@@ -42,4 +40,5 @@ App.config({
   ]
 })
 
+// refreshCss()
 
