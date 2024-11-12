@@ -39,6 +39,7 @@ python2-bin
 python-setuptools
 python-requests
 rclone
+visual-studio-code-bin
 zsh
 zsh-auto-notify
 zsh-directory-history

@@ -43,5 +43,13 @@ interface Settings
         width: number,
         widgets: string[],
         lock: boolean,
+    },
+    quickLauncher: {
+        apps: {
+            name: string,
+            app_name: string,
+            exec: string,
+            icon: string,
+        }[]
     }
 }

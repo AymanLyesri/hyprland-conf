@@ -12,6 +12,8 @@ import RightPanelHover from "widgets/rightPanel/RightPanelHover";
 import SettingsWidget from "widgets/SettingsWidget";
 import UserPanel from "widgets/UserPanel";
 import OSD from "widgets/OSD";
+import QuickLauncher from "widgets/quickLauncher/QuickLauncher";
+import QuickLauncherHover from "widgets/quickLauncher/QuickLauncherHover";
 
 // required packages
 // gvfs is required for images
@@ -37,6 +39,9 @@ App.config({
     UserPanel(),
 
     OSD(),
+
+    QuickLauncher(),
+    QuickLauncherHover(),
   ]
 })
 

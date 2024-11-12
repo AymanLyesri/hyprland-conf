@@ -6,7 +6,7 @@ export default () =>
         name: `right-panel-hover`, // name has to be unique
         anchor: ["right", "top", "bottom"],
         exclusivity: "ignore",
-        layer: "overlay",
+        layer: "top",
         child: Widget.EventBox({
             hexpand: true,
             vexpand: true,

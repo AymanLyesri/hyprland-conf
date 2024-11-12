@@ -69,7 +69,15 @@ I use Arch BTW.. :)
 
 KeyBinds are displayed and organized [Here](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/configs/keybinds.conf), be sure to check them out!
 
-# Installation Guide
+# Installation and Update
+
+### Required Dependencies and packages
+
+- **Arch Linux** (pretty obvious)
+- Hyprland
+- [Necessary packages](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/pacman/pkglist.txt) (dont worry they will be installed automatically)
+
+### Installation Guide
 
 > Run this one liner in the terminal
 
@@ -77,7 +85,7 @@ KeyBinds are displayed and organized [Here](https://github.com/AymanLyesri/hyprl
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/AymanLyesri/hyprland-conf/refs/heads/master/.config/hypr/maintenance/INSTALL.sh)"
 ```
 
-# Update Guide
+### Update Guide
 
 > Simply run `update`
 
@@ -128,13 +136,8 @@ update
 
 | Dark Theme + Custom colors based on wallpaper                                             | Light Theme + Custom colors based on wallpaper                                            |
 | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| ![image](https://github.com/user-attachments/assets/f3ff78c1-5243-4c00-9e03-898c517cccac) | ![image](https://github.com/user-attachments/assets/7b158721-38fa-4405-9cda-7864c1bc7818)|
+| ![image](https://github.com/user-attachments/assets/f3ff78c1-5243-4c00-9e03-898c517cccac) | ![image](https://github.com/user-attachments/assets/7b158721-38fa-4405-9cda-7864c1bc7818) |
 
 ### User Panel
 
 ![image](https://github.com/user-attachments/assets/d88f9a5e-c7da-4e31-80db-38073dc0278c)
-
-
-
-
-

@@ -49,7 +49,7 @@ export default () =>
     return Widget.Window({
         name: `progress`,
         anchor: ["bottom"],
-        margins: [globalMargin, globalMargin],
+        margins: [0, 0],
         visible: false,
         child: Widget.Box({
             class_name: "progress-widget",
