@@ -55,3 +55,5 @@ Widgets.connect("changed", ({ value }) => setSetting("rightPanel.widgets", value
 export const userPanelVisibility = Variable(false)
 
 export const settingsVisibility = Variable(false)
+
+export const quickLauncherVisibility = Variable(false)

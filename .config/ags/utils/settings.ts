@@ -37,6 +37,15 @@ const defaultSettings: Settings = {
     width: 300,
     visibility: true,
     widgets: []
+  },
+  quickLauncher: {
+    apps: [
+      { name: "Browser", app_name: "zen-browser", exec: "zen-browser", icon: "" },
+      { name: "Terminal", app_name: "kitty", exec: "kitty", icon: "" },
+      { name: "Files", app_name: "thunar", exec: "thunar", icon: "" },
+      { name: "Calculator", app_name: "kitty", exec: "kitty bc", icon: "" },
+      { name: "Text Editor", app_name: "code", exec: "code", icon: "" },
+    ]
   }
 }
 

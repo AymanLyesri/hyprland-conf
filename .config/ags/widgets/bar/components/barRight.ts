@@ -141,8 +141,9 @@ function Battery()
     })
 
     const slider = Widget.LevelBar({
-        class_name: "slider",
-        widthRequest: 69,
+        class_name: "",
+        widthRequest: 100,
+        min_value: 0,
         value: value.as(v => v / 100),
     });
 
