@@ -89,6 +89,9 @@ menu {
     border-radius: 0;
     padding: 5px 0;
     margin: 2.5px 0;
+    &:hover {
+      background: $secondary;
+    }
   }
 }
 

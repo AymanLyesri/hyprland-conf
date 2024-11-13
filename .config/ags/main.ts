@@ -18,6 +18,8 @@ import QuickLauncherHover from "widgets/quickLauncher/QuickLauncherHover";
 // required packages
 // gvfs is required for images
 
+refreshCss()
+
 App.addIcons(`${App.configDir}/assets/icons`)
 App.config({
   style: getCssPath(),
@@ -45,5 +47,4 @@ App.config({
   ]
 })
 
-// refreshCss()
 

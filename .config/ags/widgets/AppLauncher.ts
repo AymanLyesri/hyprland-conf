@@ -19,111 +19,106 @@ interface Result
 
 const Results = Variable<Result[]>([])
 
-function Entry()
-{
-    const help = Widget.Menu({
-        children: [
-            Widget.MenuItem({
-                child: Widget.Label({ xalign: 0, label: '... ... \t\t =>> \t open with argument' }),
-            }),
-            Widget.MenuItem({
-                child: Widget.Label({ xalign: 0, label: 'translate .. > .. \t =>> \t translate into (en,fr,es,de,pt,ru,ar...)' }),
-            }),
-            Widget.MenuItem({
-                child: Widget.Label({ xalign: 0, label: 'https://... \t\t =>> \t open link' }),
-            }),
-            Widget.MenuItem({
-                child: Widget.Label({ xalign: 0, label: '... .com \t\t =>> \t open link' }),
-            }),
-            Widget.MenuItem({
-                child: Widget.Label({ xalign: 0, label: '..*/+-.. \t\t =>> \t arithmetics' }),
-            }),
-            Widget.MenuItem({
-                child: Widget.Label({ xalign: 0, label: 'emoji ... \t\t =>> \t search emojis' }),
-            }),
-        ],
-    })
+const help = Widget.Menu({
+    children: [
+        Widget.MenuItem({
+            child: Widget.Label({ xalign: 0, label: 'Press <Escape> \t\t =>> \t to reset input' }),
+        }),
+        Widget.MenuItem({
+            child: Widget.Label({ xalign: 0, label: '... ... \t\t =>> \t open with argument' }),
+        }),
+        Widget.MenuItem({
+            child: Widget.Label({ xalign: 0, label: 'translate .. > .. \t =>> \t translate into (en,fr,es,de,pt,ru,ar...)' }),
+        }),
+        Widget.MenuItem({
+            child: Widget.Label({ xalign: 0, label: 'https://... \t\t =>> \t open link' }),
+        }),
+        Widget.MenuItem({
+            child: Widget.Label({ xalign: 0, label: '... .com \t\t =>> \t open link' }),
+        }),
+        Widget.MenuItem({
+            child: Widget.Label({ xalign: 0, label: '..*/+-.. \t\t =>> \t arithmetics' }),
+        }),
+        Widget.MenuItem({
+            child: Widget.Label({ xalign: 0, label: 'emoji ... \t\t =>> \t search emojis' }),
+        }),
+    ],
+})
 
-    let debounceTimer: any
+let debounceTimer: any
 
-    return Widget.Box({
-        spacing: 5,
-        children: [
-            Widget.Icon({
-                class_name: "icon",
-                icon: "preferences-system-search-symbolic"
-            }),
-            Widget.Entry({
-                hexpand: true,
-                placeholder_text: "Search for an app, emoji, translate, url, or do some math...",
 
-                on_change: async ({ text }) =>
-                {
-                    // Clear any previously set timer
-                    if (debounceTimer) {
-                        clearTimeout(debounceTimer);
-                    }
+const Entry = Widget.Box({
+    spacing: 5,
+    children: [
+        Widget.Icon({
+            class_name: "icon",
+            icon: "preferences-system-search-symbolic"
+        }),
+        Widget.Entry({
+            hexpand: true,
+            placeholder_text: "Search for an app, emoji, translate, url, or do some math...",
 
-                    // Set a new timer with a delay (e.g., 300ms)
-                    debounceTimer = setTimeout(async () =>
-                    {
-                        try {
-
-                            if (text == "" || text == " " || text == null) {
-                                Results.value = [];
-                                return;
-                            }
-                            const args: string[] = text.split(" ");
-
-                            if (args[0].includes("translate")) {
-                                let language = text.includes(">") ? text.split(">")[1].trim() : "en";
-                                Results.value = readJson(await Utils.execAsync(`bash ${App.configDir}/scripts/translate.sh '${text.split(">")[0].replace("translate", "").trim()}' '${language}'`));
-                            } else if (args[0].includes("emoji")) {
-                                Results.value = readJSONFile(`${App.configDir}/assets/emojis/emojis.json`).filter(emoji => emoji.app_tags.toLowerCase().includes(text.replace("emoji", "").trim()));
-                            } else if (containsProtocolOrTLD(args[0])) {
-                                Results.value = [{ app_name: getDomainFromURL(text), app_exec: `xdg-open ${formatToURL(text)}`, app_type: 'url' }];
-                            } else if (containsOperator(args[0])) {
-                                Results.value = [{ app_name: arithmetic(text), app_exec: `wl-copy ${arithmetic(text)}`, app_type: 'calc' }];
-                            } else {
-                                Results.value = query(args.shift()!).map((app) => ({
-                                    app_name: app.name,
-                                    app_exec: app.executable,
-                                    app_arg: args.join(""),
-                                    app_type: "app",
-                                    app_icon: app["icon-name"],
-                                    desktop: app["desktop"]
-                                }));
-                                if (Results.value.length == 0)
-                                    Results.value = [{ app_name: `Try ${text}`, app_exec: text, app_icon: "󰋖" }];
-                            }
-                        } catch (err) {
-                            print(err);
-                        }
-                    }, 100);  // 300ms delay
-                },
-                on_accept: () =>
-                {
-                    // Utils.notify({ summary: "Enter", body: String(ResultsDisplay.child.child.child.children[0].child) });
-                    (ResultsDisplay as any).child.child.child.children[0].child.clicked()
-                },
-            }).on("key-press-event", (self, event: Gdk.Event) =>
+            on_change: async ({ text }) =>
             {
-                if (event.get_keyval()[1] == 65307) // Escape key
-                {
-                    self.text = ""
-                    App.closeWindow("app-launcher")
+                // Clear any previously set timer
+                if (debounceTimer) {
+                    clearTimeout(debounceTimer);
                 }
-            })
-            , Widget.Button({
-                label: "󰋖",
-                on_primary_click: (_, event) =>
+
+                // Set a new timer with a delay (e.g., 300ms)
+                debounceTimer = setTimeout(async () =>
                 {
-                    help.popup_at_pointer(event)
-                },
-            })
-        ]
-    })
-}
+                    try {
+
+                        if (text == "" || text == " " || text == null) {
+                            Results.value = [];
+                            return;
+                        }
+                        const args: string[] = text.split(" ");
+
+                        if (args[0].includes("translate")) {
+                            let language = text.includes(">") ? text.split(">")[1].trim() : "en";
+                            Results.value = readJson(await Utils.execAsync(`bash ${App.configDir}/scripts/translate.sh '${text.split(">")[0].replace("translate", "").trim()}' '${language}'`));
+                        } else if (args[0].includes("emoji")) {
+                            Results.value = readJSONFile(`${App.configDir}/assets/emojis/emojis.json`).filter(emoji => emoji.app_tags.toLowerCase().includes(text.replace("emoji", "").trim()));
+                        } else if (containsProtocolOrTLD(args[0])) {
+                            Results.value = [{ app_name: getDomainFromURL(text), app_exec: `xdg-open ${formatToURL(text)}`, app_type: 'url' }];
+                        } else if (containsOperator(args[0])) {
+                            Results.value = [{ app_name: arithmetic(text), app_exec: `wl-copy ${arithmetic(text)}`, app_type: 'calc' }];
+                        } else {
+                            Results.value = query(args.shift()!).map((app) => ({
+                                app_name: app.name,
+                                app_exec: app.executable,
+                                app_arg: args.join(""),
+                                app_type: "app",
+                                app_icon: app["icon-name"],
+                                desktop: app["desktop"]
+                            }));
+                            if (Results.value.length == 0)
+                                Results.value = [{ app_name: `Try ${text}`, app_exec: text, app_icon: "󰋖" }];
+                        }
+                    } catch (err) {
+                        print(err);
+                    }
+                }, 100);  // 300ms delay
+            },
+            on_accept: () =>
+            {
+                // Utils.notify({ summary: "Enter", body: String(ResultsDisplay.child.child.child.children[0].child) });
+                (ResultsDisplay as any).child.child.child.children[0].child.clicked()
+            },
+        })
+        , Widget.Button({
+            label: "󰋖",
+            on_primary_click: (_, event) =>
+            {
+                help.popup_at_pointer(event)
+            },
+        })
+    ]
+})
+
 
 const organizeResults = (results: Result[]) =>
 {
@@ -222,12 +217,17 @@ export default () =>
         layer: "top",
         margins: [10, globalMargin, globalMargin, globalMargin], // top right bottom left
         visible: false,
+        setup: self => self.keybind("Escape", () =>
+        {
+            Entry.children[1].text = ""
+            Entry.children[1].grab_focus()
+        }),
 
         child: Widget.EventBox({
             child: Widget.Box({
                 vertical: true,
                 class_name: "app-launcher",
-                children: [Entry(), ResultsDisplay],
+                children: [Entry, ResultsDisplay],
             }),
         }),
     })
