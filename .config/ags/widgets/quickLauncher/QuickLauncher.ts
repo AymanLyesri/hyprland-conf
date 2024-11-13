@@ -94,13 +94,17 @@ export default () =>
         margins: [globalMargin, globalMargin], // top right bottom left
         visible: quickLauncherVisibility.value,
 
-        child: Widget.EventBox({
-            child: Display(),
-            setup: (self) => self.on('leave-notify-event', (self, event: Gdk.Event) =>
-            {
-                const [_, x, y] = event.get_root_coords();
-                if (y < 0) quickLauncherVisibility.value = false;
-            })
-        }),
+        child: Widget.Box({
+            css: "padding:10px",
+            child: Widget.EventBox({
+                child: Display(),
+                on_hover_lost: () => quickLauncherVisibility.value = false,
+                // setup: (self) => self.on('leave-notify-event', (self, event: Gdk.Event) =>
+                // {
+                //     const [_, x, y] = event.get_root_coords();
+                //     if (y < 0) quickLauncherVisibility.value = false;
+                // })
+            }),
+        })
     }).hook(quickLauncherVisibility, (self) => self.visible = quickLauncherVisibility.value, "changed");
 }
