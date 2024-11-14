@@ -24,13 +24,6 @@ touch "$HISTDIR/history"  # Create history file if it doesn't exist
 
 # Zsh Tab Complete
 autoload -U compinit
-# zstyle '*:compinit' arguments -D -i -u -C -w
-# zstyle ':completion:*' completer _extensions _complete _approximate
-# zstyle ':completion:*' menu select
-# zstyle ':completion:*:*:*:*:descriptions' format '%F{2}-- %d --%f'
-# zstyle ':completion:*:*:*:*:corrections' format '%F{208}!- %d (errors: %e) -!%f'
-# zstyle ':completion:*:messages' format ' %F{11} -- %d --%f'
-# zstyle ':completion:*:warnings' format ' %F{9}-- no matches found --%f'
 compinit
 
 #Zsh Substring History Search
@@ -69,9 +62,6 @@ alias logout='hyprctl dispatch exit'
 
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
-
-# MongoDb
-# source <(mongocli completion zsh)
 
 # Configuration Update
 alias update='$HOME/.config/hypr/maintenance/UPDATE.sh'

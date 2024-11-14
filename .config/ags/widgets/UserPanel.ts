@@ -111,6 +111,7 @@ const UserPanel = () =>
             label: "󰤄",
             on_primary_click: () =>
             {
+                App.closeWindow("user-panel")
                 Utils.execAsync(`bash -c "$HOME/.config/hypr/scripts/hyprlock.sh suspend "`)
             }
         })

@@ -15,14 +15,11 @@ export function refreshCss()
     // main scss file
     const scss = `${App.configDir}/scss/style.scss`
 
-    Utils.execAsync(`bash -c "echo '$OPACITY: ${globalOpacity.value};' | cat - ${defaultColors} ${walColors} ${scss} > ${tmpScss} && sassc ${tmpScss} ${tmpCss} -I ${scss_dir}"`)
-        .then((response) => { if (response != "") Utils.notify(response) })
-        .finally(() =>
-        {
-            App.resetCss()
-            App.applyCss(tmpCss)
-        })
-        .catch(err => Utils.notify(err))
+    const response = Utils.exec(`bash -c "echo '$OPACITY: ${globalOpacity.value};' | cat - ${defaultColors} ${walColors} ${scss} > ${tmpScss} && sassc ${tmpScss} ${tmpCss} -I ${scss_dir}"`)
+    if (response != "") Utils.notify(response)
+
+    App.resetCss()
+    App.applyCss(tmpCss)
 }
 
 Utils.monitorFile(

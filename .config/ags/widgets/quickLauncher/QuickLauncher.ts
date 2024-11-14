@@ -73,6 +73,8 @@ const Display = () =>
 
     return Widget.Box({
         class_name: "quick-launcher",
+        hexpand: true,
+        hpack: "center",
         spacing: 5,
         children: [
             apps,
@@ -87,7 +89,7 @@ export default () =>
 {
     return Widget.Window({
         name: `quick-launcher`,
-        anchor: ["bottom"],
+        anchor: ["bottom", "left", "right"],
         exclusivity: "normal",
         keymode: "on-demand",
         layer: "top",
