@@ -3,6 +3,9 @@ import { readJSONFile, writeJSONFile } from "./json";
 const settingsPath = App.configDir + "/assets/settings/settings.json";
 
 const defaultSettings: Settings = {
+  hyprsunset: {
+    kelvin: 6500
+  },
   hyprland: {
     decoration: {
       rounding: { value: 15, min: 0, max: 50, type: "int" },

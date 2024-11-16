@@ -149,7 +149,7 @@ export function Notification_(n: Notification, new_Notification = false, popup =
             on_clicked: () =>
             {
                 Revealer.reveal_child = false;
-                timeout(globalTransition, () => { n.close(); Revealer.destroy() })
+                timeout(globalTransition, () => { n.close(); })
             },
         }),
     })
@@ -209,7 +209,7 @@ export function Notification_(n: Notification, new_Notification = false, popup =
 
     const Parent = Widget.Box({
         visible: true,
-        css: "padding:1px;",
+        css: "padding:5px;",
         child: Widget.EventBox({
             visible: true,
             child: Revealer,

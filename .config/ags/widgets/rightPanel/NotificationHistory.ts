@@ -72,7 +72,6 @@ export default () =>
 
     const NotificationHistory = Widget.Box({
         vertical: true,
-        spacing: 5,
         children: Utils.merge([notificationFilter.bind(), Notifications.bind("notifications")], (filter, notifications) =>
         {
             if (!notifications) return [];

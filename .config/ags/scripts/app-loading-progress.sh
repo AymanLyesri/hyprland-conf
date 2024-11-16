@@ -31,12 +31,26 @@ get_workspace() {
 
 handle() {
     workspace=$(get_workspace "$1")
-    # check if workspace is greater than 0
+    # Check if workspace is greater than 0
     if [ "$workspace" -gt 0 ]; then
         echo $workspace
         exit 0
     fi
-
 }
 
-socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do handle "$app_name"; done
+# Set a timeout of 1 minute
+timeout=60
+start_time=$(date +%s)
+
+socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do
+    handle "$app_name"
+
+    # Check the elapsed time
+    current_time=$(date +%s)
+    elapsed=$((current_time - start_time))
+
+    if [ "$elapsed" -ge "$timeout" ]; then
+        echo "Timeout reached: Exiting"
+        exit 1
+    fi
+done

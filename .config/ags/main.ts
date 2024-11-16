@@ -15,14 +15,11 @@ import OSD from "widgets/OSD";
 import QuickLauncher from "widgets/quickLauncher/QuickLauncher";
 import QuickLauncherHover from "widgets/quickLauncher/QuickLauncherHover";
 
-// required packages
-// gvfs is required for images
-
 refreshCss()
 
 App.addIcons(`${App.configDir}/assets/icons`)
 App.config({
-  style: getCssPath(),
+  // style: getCssPath(),
   windows: [
     Bar(),
     BarHover(),

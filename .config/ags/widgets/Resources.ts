@@ -79,32 +79,20 @@ export function Resources()
         child: CircularProgress(ramTemperature, `ram`, "󰔄")
     })
 
-    const cpuResource = Widget.Box({
-        class_name: "resource cpu",
+    const Resource = (name: string, value: any, icon: string, temp: any = null) => Widget.Box({
+        class_names: ["resource", name],
         hexpand: true,
-        children: cpu.bind().as(value => [Widget.Label({ label: "" }), horizontalProgress(value, "cpu"), cpuTempDisplay])
-    })
-
-    const ramResource = Widget.Box({
-        class_name: "resource ram",
-        hexpand: true,
-        children: ram.bind().as(value => [Widget.Label({ label: "" }), horizontalProgress(value, "ram"), ramTempDisplay])
-    })
-
-    const diskResource = Widget.Box({
-        class_name: "resource disk",
-        hexpand: true,
-        children: disk.bind().as(value => [Widget.Label({ label: "" }), horizontalProgress(value, "disk")])
+        children: value.bind().as(value => [Widget.Label({ label: icon }), horizontalProgress(value, name), temp])
     })
 
     const resources = Widget.Box({
         hexpand: true,
         vertical: true,
-        spacing: 5,
+        spacing: 10,
         children: [
-            cpuResource,
-            ramResource,
-            diskResource,
+            Resource("cpu", cpu, "", cpuTempDisplay),
+            Resource("ram", ram, "", ramTempDisplay),
+            Resource("disk", disk, ""),
         ]
     })
 

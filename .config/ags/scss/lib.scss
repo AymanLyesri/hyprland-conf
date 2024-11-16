@@ -2,7 +2,7 @@
 
 * {
   font-family: "JetBrainsMono NFP", "Noto Font";
-  transition: all 1s, padding 0s, font-size 0s;
+  transition: all 0.5s;
 }
 
 .module {
@@ -101,10 +101,10 @@ levelbar {
   trough {
     background: $module-background;
     border: unset;
-    min-height: 0px;
+    min-height: 5px;
     padding: 5px;
     .filled {
-      box-shadow: 0 0 5px 0 $secondary;
+      box-shadow: 0 0 10px 0 $secondary;
       background: $secondary;
       border-radius: 10px;
       border: unset;

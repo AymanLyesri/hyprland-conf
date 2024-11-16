@@ -58,7 +58,7 @@ export default () =>
         anchor: rightPanelExclusivity.bind().as(exclusive => exclusive ? ["right", "top"] : ["left", "top"]),
         layer: "top",
         exclusivity: "normal",
-        margins: [5, globalMargin, globalMargin, globalMargin],
+        margins: [5, globalMargin - 5],
         child: Display(),
     })
 }

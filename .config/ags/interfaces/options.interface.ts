@@ -9,6 +9,9 @@ interface HyprlandSetting
 
 interface Settings
 {
+    hyprsunset: {
+        kelvin: number,
+    },
     hyprland: {
         decoration: {
             rounding: HyprlandSetting,

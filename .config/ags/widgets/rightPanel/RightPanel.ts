@@ -6,7 +6,7 @@ import Update from "widgets/Update";
 import NotificationHistory from "./NotificationHistory";
 import { WidgetSelector } from "interfaces/widgetSelector.interface";
 import { Resources } from "widgets/Resources";
-import { exportSettings } from "utils/settings";
+import { exportSettings, globalSettings, setSetting } from "utils/settings";
 import MediaWidget from "widgets/MediaWidget";
 import { custom_revealer } from "widgets/revealer";
 
@@ -40,6 +40,7 @@ export const WidgetSelectors: WidgetSelector[] = [{
 }]
 
 
+
 const maxRightPanelWidth = 600;
 const minRightPanelWidth = 200;
 
@@ -66,6 +67,90 @@ const opacitySlider = () =>
 
     return custom_revealer(label, slider, '', () => { }, true);
 }
+
+const WidgetActions = () => Widget.Box({
+    vertical: true,
+    vexpand: true,
+    spacing: 5,
+    children: WidgetSelectors.map(selector =>
+        Widget.ToggleButton({
+            class_name: "selector",
+            label: selector.icon,
+            active: Widgets.value.find(w => w.name == selector.name) ? true : false,
+            on_toggled: (self) =>
+            {
+                // If the button is active, create and store a new widget instance
+                if (self.active) {
+                    // Limit the number of widgets to 3
+                    if (Widgets.value.length >= widgetLimit) {
+                        self.active = false;
+                        return
+                    }
+                    // Create widget only if it's not already created
+                    if (!selector.widgetInstance) {
+                        selector.widgetInstance = selector.widget();
+                    }
+                    // Add the widget instance to Widgets if it's not already added
+                    if (!Widgets.value.includes(selector)) {
+                        Widgets.value = [...Widgets.value, selector];
+                    }
+                }
+                // If the button is deactivated, remove the widget from the array
+                else {
+                    let newWidgets = Widgets.value.filter(w => w != selector);  // Remove it from the array
+                    if (Widgets.value.length == newWidgets.length) return;
+
+                    Widgets.value = newWidgets;
+                    selector.widgetInstance = undefined;  // Reset the widget instance
+                }
+            }
+        })
+    )
+});
+
+
+const kelvinMin = 1000;
+const kelvinMax = 10000;
+
+
+const Utilities = () => Widget.Box({
+    vertical: true,
+    spacing: 5,
+    vexpand: true,
+    vpack: "center",
+    children: [
+        Widget.Button({
+            label: "󱁝",
+            class_name: "",
+            on_clicked: () =>
+            {
+                const kelvin = Math.min(kelvinMax, Math.max(kelvinMin, globalSettings.value.hyprsunset.kelvin + 1000));
+                Utils.execAsync(`bash -c 'killall hyprsunset; hyprsunset -t ${kelvin}'`)
+                    .catch(err =>
+                    {
+                        Utils.notify("Failed to change kelvin", err)
+                        return
+                    });
+                setSetting("hyprsunset.kelvin", kelvin)
+            },
+        }), Widget.Button({
+            label: "󱁞",
+            class_name: "",
+            on_clicked: () =>
+            {
+                const kelvin = Math.min(kelvinMax, Math.max(kelvinMin, globalSettings.value.hyprsunset.kelvin - 1000));
+                Utils.execAsync(`bash -c 'killall hyprsunset; hyprsunset -t ${kelvin}'`)
+                    .catch(err =>
+                    {
+                        Utils.notify("Failed to change kelvin", err)
+                        return
+                    });
+                setSetting("hyprsunset.kelvin", kelvin)
+            }
+        }),
+    ]
+})
+
 
 function WindowActions()
 {
@@ -117,48 +202,13 @@ function WindowActions()
     )
 }
 
-const WidgetActions = () => Widget.Box({
-    vertical: true, spacing: 5,
-    children: WidgetSelectors.map(selector =>
-        Widget.ToggleButton({
-            class_name: "selector",
-            label: selector.icon,
-            active: Widgets.value.find(w => w.name == selector.name) ? true : false,
-            on_toggled: (self) =>
-            {
-                // If the button is active, create and store a new widget instance
-                if (self.active) {
-                    // Limit the number of widgets to 3
-                    if (Widgets.value.length >= widgetLimit) {
-                        self.active = false;
-                        return
-                    }
-                    // Create widget only if it's not already created
-                    if (!selector.widgetInstance) {
-                        selector.widgetInstance = selector.widget();
-                    }
-                    // Add the widget instance to Widgets if it's not already added
-                    if (!Widgets.value.includes(selector)) {
-                        Widgets.value = [...Widgets.value, selector];
-                    }
-                }
-                // If the button is deactivated, remove the widget from the array
-                else {
-                    let newWidgets = Widgets.value.filter(w => w != selector);  // Remove it from the array
-                    if (Widgets.value.length == newWidgets.length) return;
 
-                    Widgets.value = newWidgets;
-                    selector.widgetInstance = undefined;  // Reset the widget instance
-                }
-            }
-        })
-    )
-});
+
 
 const Actions = () => Widget.Box({
     class_name: "right-panel-actions",
     vertical: true,
-    children: [WidgetActions(), WindowActions()]
+    children: [WidgetActions(), Utilities(), WindowActions()]
 
 })
 
