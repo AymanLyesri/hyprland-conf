@@ -1,17 +1,30 @@
-
-
 import { globalTransition } from "variables";
 
 const hyprland = await Service.import("hyprland");
-
-const allWallpapers = Variable<string[]>(JSON.parse(Utils.exec(`bash ${App.configDir}/scripts/get-wallpapers.sh --all`)))
 
 const selectedWorkspace = Variable<number>(0)
 
 const sddm = Variable<boolean>(false)
 
+const customWallpapers = Variable<boolean>(false)
+
+const allWallpapers = Variable<string[]>(JSON.parse(Utils.exec(`bash ${App.configDir}/scripts/get-wallpapers.sh --all`)))
+
+const FetchWallpapers = () =>
+{
+    allWallpapers.value = JSON.parse(Utils.exec(`bash ${App.configDir}/scripts/get-wallpapers.sh ${customWallpapers.value ? "--custom" : "--all"}`))
+}
+
+Utils.monitorFile(
+    // directory that contains the scss files
+    `${App.configDir}/../wallpapers/custom`,
+    () => { if (customWallpapers.value) FetchWallpapers() }
+)
+
 function Wallpapers()
 {
+
+
     const getAllWallpapers = () =>
     {
         const Box = Widget.Box({
@@ -131,7 +144,8 @@ function Wallpapers()
         label: "all",
         on_toggled: (self) =>
         {
-            allWallpapers.value = JSON.parse(Utils.exec(`bash ${App.configDir}/scripts/get-wallpapers.sh ${self.active ? "--custom" : "--all"}`))
+            customWallpapers.value = self.active
+            FetchWallpapers()
             self.label = self.active ? "custom" : "all"
         }
     })
