@@ -1,0 +1,31 @@
+.right-panel {
+  &.exclusive {
+    border-radius: 0px;
+    border-left: 1px solid $tertiary;
+  }
+  &.normal {
+    border-radius: 15px;
+    margin: 10px 15px;
+    border: 1px solid $secondary;
+  }
+
+  @extend .module;
+
+  .main-content {
+    padding: 5px 10px 5px 5px;
+  }
+
+  .right-panel-actions {
+    background: $background;
+    padding: 0px;
+    margin: 0px;
+    border-radius: 0px;
+    // border-left: 1px solid $secondary;
+    button,
+    .custom-revealer,
+    .icon {
+      border-radius: 0px;
+      padding: 5px 0px;
+    }
+  }
+}

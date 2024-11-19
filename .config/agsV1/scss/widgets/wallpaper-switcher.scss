@@ -1,0 +1,101 @@
+.wallpaper-switcher {
+  min-width: 1400px;
+  min-height: 150px;
+  @extend .module;
+  padding: 10px;
+  border-radius: 50px;
+  border: 1px solid $secondary;
+
+  scrolledwindow {
+    box-shadow: unset;
+  }
+
+  .reload-wallpapers {
+    padding: 0px;
+    min-height: 69px;
+    min-width: 69px;
+    border-radius: 50%;
+  }
+
+  .actions {
+    * {
+      border-radius: 0px;
+    }
+    *:first-child {
+      border-radius: 50px 0px 0px 50px;
+    }
+    *:last-child {
+      border-radius: 0px 50px 50px 0px;
+    }
+  }
+
+  .workspace-wallpaper {
+    transition: all 0.5s;
+    border: none;
+
+    background-size: 400px;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    min-width: 100px;
+    min-height: 100px;
+    border-radius: 50%;
+
+    padding: 0px;
+    margin: 0px;
+
+    &.focused {
+      min-height: 150px;
+      min-width: 150px;
+      &:hover {
+        min-height: 150px;
+        min-width: 300px;
+        border-radius: 50px;
+      }
+    }
+
+    &:hover {
+      min-height: 100px;
+      min-width: 200px;
+      background-position: center;
+      background-size: 400px;
+      background-repeat: no-repeat;
+      border-radius: 20px;
+    }
+
+    &:active {
+      box-shadow: 0px 0px 20px 100px $background inset;
+      transition: all 0.2s;
+    }
+  }
+
+  .all-wallpapers-scrollable {
+    margin: 25px 0px 0px 0px;
+    padding: 0px 50px;
+    min-height: 75px;
+  }
+
+  .all-wallpapers {
+    padding: 0px;
+    margin: 0px;
+    .wallpaper {
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+
+      min-width: 75px;
+      min-height: 75px;
+      border-radius: 10px;
+
+      &:hover {
+        min-width: 125px;
+        background-position: center;
+        border-radius: 20px;
+      }
+      &:active {
+        box-shadow: 0px 0px 20px 100px $background inset;
+        transition: all 0.2s;
+      }
+    }
+  }
+}

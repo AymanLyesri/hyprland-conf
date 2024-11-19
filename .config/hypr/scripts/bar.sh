@@ -1,5 +1,5 @@
 #!/bin/bash
 
-killall agsv1
+killall gjs
 
-agsv1
+ags run

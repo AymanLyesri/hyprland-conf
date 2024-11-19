@@ -1,10 +1,8 @@
-import { exec, readFile, writeFile } from "../../../../../usr/share/astal/gjs";
-
 export function readJSONFile(filePath: string): any
 {
-    if (readFile(filePath) == '') return {};
+    if (Utils.readFile(filePath) == '') return {};
     try {
-        const data = readFile(filePath);
+        const data = Utils.readFile(filePath);
         return data.trim() ? JSON.parse(data) : {};
     } catch (e) {
         console.error('Error:', e);
@@ -24,9 +22,9 @@ export function readJson(string: string)
 
 export function writeJSONFile(filePath: string, data: any)
 {
-    if (readFile(filePath) == '') exec(`mkdir -p ${filePath.split('/').slice(0, -1).join('/')}`);
+    if (Utils.readFile(filePath) == '') Utils.exec(`mkdir -p ${filePath.split('/').slice(0, -1).join('/')}`);
     try {
-        writeFile(JSON.stringify(data, null, 4), filePath);
+        Utils.writeFile(JSON.stringify(data, null, 4), filePath);
     } catch (e) {
         console.error('Error:', e);
     }

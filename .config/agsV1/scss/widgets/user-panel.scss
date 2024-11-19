@@ -1,0 +1,71 @@
+.user-panel {
+  // .player,
+  // .notification,
+  // .resources,
+  // .date,
+  // .actions button,
+  // .profile {
+  //   border: 1px solid $tertiary;
+  // }
+  .window-actions {
+    .close {
+      padding: 10px 20px;
+      font-size: 1.5rem;
+    }
+  }
+
+  .player {
+    min-width: 200px;
+  }
+  .middle {
+    min-width: 300px;
+  }
+  .date {
+    @extend .module;
+    padding: 20px;
+    font-size: 3rem;
+  }
+  .profile {
+    @extend .module;
+    padding: 33px;
+    .user-name {
+      margin: 25px 0px;
+      font-size: 1.5em;
+      .name {
+        color: $secondary;
+      }
+    }
+    .up-time {
+      color: $grey;
+    }
+    .profile-picture {
+      min-width: 200px;
+      min-height: 200px;
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      border-radius: 50%;
+      button {
+        all: unset;
+        font-size: 0px;
+        border-radius: 50%;
+
+        &:hover {
+          background: rgba(0, 0, 0, 0.5);
+        }
+      }
+    }
+  }
+  .system-actions {
+    button {
+      min-height: 69px;
+      min-width: 69px;
+      font-size: 3em;
+      background: $module-background;
+      &:hover {
+        background: $background;
+        text-shadow: $foreground 0 0 1px;
+      }
+    }
+  }
+}
