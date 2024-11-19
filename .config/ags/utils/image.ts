@@ -1,3 +1,4 @@
+import { exec } from "../../../../../usr/share/astal/gjs";
 
 export function getDominantColor(imagePath: string)
 {
@@ -9,6 +10,6 @@ export function getDominantColor(imagePath: string)
     //     }).catch(err => { print("err", err); return "" });
     // print("imagePath : ", imagePath)
     // return "black"
-    return Utils.exec(`bash ${App.configDir}/scripts/get-image-color.sh ${imagePath}`)
+    return exec(`bash ./scripts/get-image-color.sh ${imagePath}`)
     // return color
 }

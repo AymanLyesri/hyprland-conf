@@ -1,6 +1,7 @@
+import { execAsync, Variable } from "../../../../../usr/share/astal/gjs";
 import { readJSONFile, writeJSONFile } from "./json";
 
-const settingsPath = App.configDir + "/assets/settings/settings.json";
+const settingsPath = "./assets/settings/settings.json";
 
 const defaultSettings: Settings = {
   hyprsunset: {
@@ -72,32 +73,32 @@ function deepMerge(target: any, source: any): any
 
 // Settings are stored in a json file, containing all the settings, check if it exists, if not, create it
 if (Object.keys(readJSONFile(settingsPath)).length !== 0) {
-  globalSettings.value = deepMerge(defaultSettings, readJSONFile(settingsPath));
+  globalSettings.set(deepMerge(defaultSettings, readJSONFile(settingsPath)))
 } else {
-  writeJSONFile(settingsPath, globalSettings.value);
+  writeJSONFile(settingsPath, globalSettings.get());
 }
 
 // When the settings change, write them to the json file
-globalSettings.connect('changed', ({ value }) =>
-{
-  writeJSONFile(settingsPath, value);
-});
+// globalSettings.watch('changed', ({ self }) =>
+// {
+//   writeJSONFile(settingsPath, value);
+// });
 
 
 export function setSetting(key: string, value: any): any
 {
-  let o = globalSettings.value;
+  let o: any = globalSettings.get();
   key.split('.').reduce((o, k, i, arr) =>
     o[k] = (i === arr.length - 1 ? value : o[k] || {}), o);
-  globalSettings.setValue(o);
+  globalSettings.set(o);
 }
 
 export function getSetting(key: string): any
 {
-  return key.split('.').reduce((o, k) => o?.[k], globalSettings.value);
+  return key.split('.').reduce((o: any, k) => o?.[k], globalSettings.get());
 }
 
 export function exportSettings()
 {
-  Utils.execAsync(`bash -c 'cat ${settingsPath} | wl-copy'`)
+  execAsync(`bash -c 'cat ${settingsPath} | wl-copy'`)
 }
