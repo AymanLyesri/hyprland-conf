@@ -1,5 +1,7 @@
 #!/bin/bash
 
+MAINTENANCE_DIR="$HOME/.config/hypr/maintenance"
+
 figlet "Updating Config"
 
 source $HOME/.config/hypr/maintenance/ESSENTIALS.sh # source the essentials file INSIDE the repository
@@ -30,4 +32,6 @@ else
     continue_prompt "Do you want to install necessary packages? (using $aur_helper)" "$HOME/.config/hypr/pacman/install-pkgs.sh $aur_helper"
 fi
 
-continue_prompt "Do you want to set up default custom files" "$HOME/.config/hypr/maintenance/DEFAULTS.sh"
+$MAINTENANCE_DIR/AGSV1.sh
+
+continue_prompt "Do you want to set up default custom files" "$MAINTENANCE_DIR/DEFAULTS.sh"
