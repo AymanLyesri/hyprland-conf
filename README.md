@@ -1,3 +1,6 @@
+> # **Important**:
+>  I am migrating the ags code from V1 to the new version V2, all the code needs to be rewriten, so it might take sometime, as an alternative you could install the [previous ags version](https://github.com/kotontrion/PKGBUILDS/blob/main/agsv1/PKGBUILD) so the current configuration would work for you without issues
+
 # Description
 
 This is my daily driver configuration that I use on both my laptop and desktop for coding, gaming, trading, browsing the web, etc., with Dvorak in mind. I am constantly adding new features and improvements.
