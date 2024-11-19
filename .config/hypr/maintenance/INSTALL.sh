@@ -60,6 +60,8 @@ install_browser
 
 install_discord_client
 
+$MAINTENANCE_DIR/AGSV1.sh
+
 continue_prompt "Sddm theme setup" "$MAINTENANCE_DIR/SDDM.sh"
 
 $MAINTENANCE_DIR/DEFAULTS.sh
