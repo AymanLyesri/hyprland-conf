@@ -32,7 +32,7 @@ export default (gdkmonitor: Gdk.Monitor) => {
       >
         <centerbox className={emptyWorkspace ? "bar empty" : "bar full"}>
           <box name="start-widget">{Left()}</box>
-          <box name="center-widget">{}</box>
+          <box name="center-widget">{Center()}</box>
           <box name="end-widget">{}</box>
         </centerbox>
       </eventbox>

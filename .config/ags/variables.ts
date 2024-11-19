@@ -13,15 +13,11 @@ const hyprland = Hyprland.get_default();
 //     refreshCss()
 // });
 
-// export const globalMargin = 14
-// export const globalTransition = 500
+export const globalMargin = 14
+export const globalTransition = 500
 
-// export const date_less = Variable("", {
-//     poll: [1000, 'date "+%H:%M"'],
-// });
-// export const date_more = Variable("", {
-//     poll: [1000, 'date "+:%S %b %e, %A."']
-// });
+export const date_less = Variable("").poll(1000, 'date "+%H:%M"')
+export const date_more = Variable("").poll(1000, 'date "+%A %d %B %Y"')
 
 // export const barLock = Variable(getSetting("bar.lock"))
 // barLock.connect("changed", ({ value }) => setSetting("bar.lock", value));

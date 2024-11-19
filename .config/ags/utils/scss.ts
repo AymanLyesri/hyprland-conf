@@ -1,6 +1,7 @@
 
 import { App } from "../../../../../usr/share/astal/gjs/gtk3"
 import { exec, monitorFile } from "../../../../../usr/share/astal/gjs"
+import Astal from "gi://Astal?version=3.0"
 // import { globalOpacity } from "../variables"
 
 // target css file
@@ -21,7 +22,6 @@ export function refreshCss()
     const response = exec(`bash -c "echo '$OPACITY: ${1};' | cat - ${defaultColors} ${walColors} ${scss} > ${tmpScss} && sassc ${tmpScss} ${tmpCss} -I ${scss_dir}"`)
     // if (response != "") notify(response)
 
-    App.reset_css()
     App.apply_css(tmpCss)
 }
 
