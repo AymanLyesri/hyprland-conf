@@ -2,8 +2,8 @@ const hyprland = await Service.import("hyprland");
 const mpris = await Service.import("mpris");
 
 import { MprisPlayer } from "types/service/mpris";
-import { playerToColor } from "utils/color";
-import { playerToIcon } from "utils/icon";
+import { playerToColor } from "../../../utils/color";
+import { playerToIcon } from "../../../utils/icon";
 import { date_less, date_more, emptyWorkspace, globalTransition } from "variables";
 import CavaWidget from "widgets/Cava";
 import { custom_revealer } from "widgets/revealer";

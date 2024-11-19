@@ -1,0 +1,46 @@
+.bar-middle {
+  // padding: 0px 5px;
+  // background: black;
+
+  .clock {
+    &:hover {
+      .trigger {
+        margin-right: 0px;
+        transition: margin-right 0s;
+      }
+    }
+    .revealer {
+      margin-left: 0px;
+      transition: margin-left 0s;
+    }
+  }
+
+  .media {
+    @extend .module;
+    background-size: cover;
+    background-position: center;
+    margin: 0px;
+    padding: 0px 10px;
+
+    .progress {
+      min-width: 15px; /* its size is min(min-height, min-width) */
+      min-height: 1px;
+      font-size: 1px; /* to set its thickness set font-size on it */
+      margin: 0px; /* you can set margin on it */
+      padding: 0px;
+      label {
+        font-size: 15px;
+      }
+    }
+  }
+
+  .bandwidth {
+    //   padding: 0px;
+    // min-width: 100px;
+    @extend .module;
+  }
+
+  .client-title {
+    @extend .module;
+  }
+}

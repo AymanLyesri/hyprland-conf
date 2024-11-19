@@ -1,0 +1,25 @@
+.app-launcher {
+  @extend .module;
+  padding: 10px;
+  border-radius: 10px;
+  min-width: 500px;
+
+  .icon {
+    margin: 5px 10px;
+  }
+
+  .results {
+    .argument {
+      color: $secondary;
+      font-size: 0.69rem;
+    }
+    button {
+      border: unset;
+      margin-top: 10px;
+      padding: 10px;
+      &:focus {
+        background: $background;
+      }
+    }
+  }
+}

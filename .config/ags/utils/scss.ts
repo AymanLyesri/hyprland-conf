@@ -1,35 +1,38 @@
-import { globalOpacity } from "variables"
+
+import { App } from "../../../../../usr/share/astal/gjs/gtk3"
+import { exec, monitorFile } from "../../../../../usr/share/astal/gjs"
+// import { globalOpacity } from "../variables"
 
 // target css file
 const tmpCss = `/tmp/tmp-style.css`
 const tmpScss = `/tmp/tmp-style.scss`
-const scss_dir = `${App.configDir}/scss`
+const scss_dir = `./scss`
 
-const walColors = `${App.configDir}/../../.cache/wal/colors.scss`
-const defaultColors = `${App.configDir}/scss/defaultColors.scss`
+const walColors = `./../../.cache/wal/colors.scss`
+const defaultColors = `./scss/defaultColors.scss`
 
 export const getCssPath = () => tmpCss
 
 export function refreshCss()
 {
     // main scss file
-    const scss = `${App.configDir}/scss/style.scss`
+    const scss = `./scss/style.scss`
 
-    const response = Utils.exec(`bash -c "echo '$OPACITY: ${globalOpacity.value};' | cat - ${defaultColors} ${walColors} ${scss} > ${tmpScss} && sassc ${tmpScss} ${tmpCss} -I ${scss_dir}"`)
-    if (response != "") Utils.notify(response)
+    const response = exec(`bash -c "echo '$OPACITY: ${1};' | cat - ${defaultColors} ${walColors} ${scss} > ${tmpScss} && sassc ${tmpScss} ${tmpCss} -I ${scss_dir}"`)
+    // if (response != "") notify(response)
 
-    App.resetCss()
-    App.applyCss(tmpCss)
+    App.reset_css()
+    App.apply_css(tmpCss)
 }
 
-Utils.monitorFile(
+monitorFile(
     // directory that contains the scss files
-    `${App.configDir}/scss`,
+    `./scss`,
     () => refreshCss()
 )
 
-Utils.monitorFile(
+monitorFile(
     // directory that contains pywal colors
-    `${App.configDir}/../../.cache/wal/colors.scss`,
+    `./../../.cache/wal/colors.scss`,
     () => refreshCss()
 )

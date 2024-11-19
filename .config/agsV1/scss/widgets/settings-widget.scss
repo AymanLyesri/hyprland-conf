@@ -1,0 +1,19 @@
+.settings-widget {
+  // border: 1px solid $secondary;
+  min-width: 500px;
+  @extend .module;
+  padding: 0px;
+
+  .window-actions {
+    border-radius: 10px 10px 0px 0px;
+    background: $background;
+    padding: 10px;
+  }
+  .settings {
+    padding: 10px;
+  }
+  .setting {
+    @extend .module;
+    padding: 10px;
+  }
+}
