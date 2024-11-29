@@ -146,7 +146,8 @@ const organizeResults = (results: Result[]) =>
             }
 
             if (element.desktop != null) {
-                Hyprland.messageAsync(`dispatch exec gtk-launch ${element.desktop}`).then(() =>
+                // Utils.notify({ summary: "App", body: `gtk-launch ${element.desktop} ${element.app_arg || ""}` });
+                Hyprland.messageAsync(`dispatch exec gtk-launch ${element.desktop} ${element.app_arg || ""}`).then(() =>
                 {
                     App.closeWindow("app-launcher")
                 }).catch(err => Utils.notify({ summary: "Error", body: err }));

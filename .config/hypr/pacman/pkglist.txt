@@ -95,7 +95,7 @@ hyprsunset
 #| | | | | |  __/ (_| | | (_| |
 #|_| |_| |_|\___|\__,_|_|\__,_|
 #  
-grim       
+grim-git
 slurp
 feh
 kitty
@@ -118,7 +118,7 @@ cava
 #      
 sddm
 where-is-my-sddm-theme-git
-pywalfox
+python-pywalfox
 python-colorthief
 python-pywal
 fastfetch

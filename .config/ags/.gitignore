@@ -1,5 +1,6 @@
 .vscode
 types
+@girs
 
 !assets/
 

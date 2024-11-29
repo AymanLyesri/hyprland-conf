@@ -4,7 +4,6 @@ import { globalTransition, rightPanelWidth, waifuCurrent, waifuFavorites } from 
 import { closeProgress, openProgress } from "../../Progress";
 import { getSetting, globalSettings, setSetting } from "utils/settings";
 import { timeout } from "resource:///com/github/Aylur/ags/utils/timeout.js";
-import GLib from "types/@girs/glib-2.0/glib-2.0";
 const Hyprland = await Service.import('hyprland')
 
 const waifuPath = App.configDir + "/assets/waifu/waifu.png"
