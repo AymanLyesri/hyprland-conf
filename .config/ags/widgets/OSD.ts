@@ -78,7 +78,7 @@ function OnScreenProgress(vertical: boolean)
         }
 
         // Set a new debounce timer
-        osdSlider.debounceTimer = setTimeout(() =>
+        osdSlider.attribute.debounceTimer = setTimeout(() =>
         {
             if (!osdSlider.isHovered()) {
                 osdSlider.attribute.hide();
@@ -173,6 +173,5 @@ export default () => Widget.Window({
                 child: OnScreenProgress(true),
             }),
             ]
-
     }),
 })
