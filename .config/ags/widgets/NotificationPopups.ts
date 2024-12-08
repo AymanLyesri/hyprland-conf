@@ -1,6 +1,7 @@
 import { DND, globalMargin, globalTransition, rightPanelExclusivity } from "variables";
 import { Notification_ } from "./rightPanel/components/notification"
 import { timeout } from "resource:///com/github/Aylur/ags/utils.js";
+import Box from "types/widgets/box";
 
 const notifications = await Service.import("notifications")
 
@@ -12,6 +13,7 @@ notifications.clearDelay = 100;
 const Display = () =>
 {
     const list = Widget.Box({
+        spacing: 10,
         vertical: true,
         children: notifications.popups.map(id => Notification_(id, true, true)),
     }).hook(notifications, onNotified, "notified").hook(notifications, onDismissed, "dismissed") // it bugs when clear is triggered
@@ -33,7 +35,7 @@ const Display = () =>
 
     function onDismissed(_, /** @type {number} */ id)
     {
-        const notification = list.children.find(n => n.child.child.attribute.id === id)
+        const notification: any = list.children.find((n: any) => n.child.child.attribute.id === id)
 
         if (!notification || notification.child.child.attribute.locked) return;
 
@@ -58,7 +60,7 @@ export default () =>
         anchor: rightPanelExclusivity.bind().as(exclusive => exclusive ? ["right", "top"] : ["left", "top"]),
         layer: "top",
         exclusivity: "normal",
-        margins: [5, globalMargin - 5],
+        margins: [7, globalMargin],
         child: Display(),
     })
 }

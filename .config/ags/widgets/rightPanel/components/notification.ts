@@ -36,7 +36,7 @@ function NotificationIcon({ app_entry, app_icon, image })
 }
 
 /** @param {import('resource:///com/github/Aylur/ags/service/notifications.js').Notification} n */
-export function Notification_(n: Notification, new_Notification = false, popup = false)
+export function Notification_(n: Notification, new_Notification = false, popup = false): typeof Box
 {
     const icon = Widget.Box({
         vpack: "start",
@@ -186,7 +186,7 @@ export function Notification_(n: Notification, new_Notification = false, popup =
     )
 
 
-    const Revealer = Widget.Revealer({
+    const Revealer: any = Widget.Revealer({
         attribute: {
             id: n.id,
             locked: false,
@@ -209,7 +209,6 @@ export function Notification_(n: Notification, new_Notification = false, popup =
 
     const Parent = Widget.Box({
         visible: true,
-        css: "padding:5px;",
         child: Widget.EventBox({
             visible: true,
             child: Revealer,
