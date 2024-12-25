@@ -31,22 +31,15 @@
   }
 
   .icon {
-    min-width: 50px;
-    min-height: 50px;
+    min-width: 25px;
+    min-height: 25px;
     margin-right: 1em;
-  }
-
-  .icon image {
-    font-size: 40px;
-    /* to center the icon */
-    margin: 5px;
-    color: $secondary;
-  }
-
-  .icon box {
-    min-width: 50px;
-    min-height: 50px;
-    border-radius: 10px;
+    image {
+      font-size: 25px;
+      /* to center the icon */
+      margin: 5px;
+      color: $secondary;
+    }
   }
 
   .title {
@@ -56,7 +49,7 @@
   }
 
   .body {
-    color: $secondary;
+    color: $foreground-secondary;
     font-size: 1em;
   }
   .actions {
