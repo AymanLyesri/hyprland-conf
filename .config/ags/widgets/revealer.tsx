@@ -1,3 +1,4 @@
+import { Gtk } from "astal/gtk3";
 import {
   Box,
   EventBox,
@@ -22,9 +23,12 @@ export function custom_revealer(
   const revealer = (
     <Revealer
       revealChild={false}
-      transitionDuration={globalTransition}
-      //   transitionType={vertical ? "slide_up" : "slide_right"}
-    >
+      transitionDuration={500}
+      transitionType={
+        vertical
+          ? Gtk.RevealerTransitionType.SLIDE_UP
+          : Gtk.RevealerTransitionType.SLIDE_RIGHT
+      }>
       {slider}
     </Revealer>
   );
@@ -48,10 +52,10 @@ export function custom_revealer(
     <EventBox
       className={["custom-revealer", "button", custom_class].join(" ")}
       onHover={async (self) => {
-        // revealer.child = true;
+        revealer.revealChild = true;
       }}
       onHoverLost={async () => {
-        // revealer.revealChild = false;
+        revealer.revealChild = false;
       }}
       onClick={on_primary_click}>
       <Box vertical={vertical}>

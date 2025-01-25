@@ -17,6 +17,7 @@ import Battery from "gi://AstalBattery";
 const battery = Battery.get_default();
 
 import Tray from "gi://AstalTray";
+import ToggleButton from "../../toggleButton";
 const SystemTray = Tray.get_default();
 
 function Theme() {
@@ -41,47 +42,42 @@ function Theme() {
   //     class_name: "theme icon",
   //     setup: (self) => getIcon().then(icon => self.label = icon)
   // })
+
+  const btnProps = {
+    onToggled: (self: any) => {
+      execAsync([
+        "bash",
+        "-c",
+        "$HOME/.config/hypr/theme/scripts/system-theme.sh get",
+      ])
+        .then((theme) => {
+          if (theme.includes("dark")) {
+            self.label = "";
+          } else {
+            self.label = "";
+          }
+        })
+        .catch((err) => print(err));
+    },
+    label: "",
+    className: "theme icon",
+  };
+
+  return ToggleButton(btnProps);
 }
 
 function BrightnessWidget() {
   if (brightness.screen == 0) return <Box />;
 
-  //   const slider = Widget.Slider({
-  //     width_request: 100,
-  //     class_name: "slider",
-  //     hexpand: true,
-  //     draw_value: false,
-  //     on_change: (self) => (brightness.screen = self.value),
-  //     value: brightness.bind("screen" as any),
-  //   });
-
   const slider = (
     <Slider
       widthRequest={100}
       className="slider"
-      hexpand={true}
       drawValue={false}
-      onChange={(self) => (brightness.screen = self.value)}
+      onDragged={(self) => (brightness.screen = self.value)}
       value={bind(brightness, "screen")}
     />
   );
-
-  //   const label = Widget.Label({
-  //     class_name: "icon",
-  //     label: brightness.bind("screen").as((v) => {
-  //       `${Math.round(v * 100)}%`;
-  //       switch (true) {
-  //         case v > 0.75:
-  //           return "󰃠";
-  //         case v > 0.5:
-  //           return "󰃟";
-  //         case v > 0:
-  //           return "󰃞";
-  //         default:
-  //           return "󰃞";
-  //       }
-  //     }),
-  //   });
 
   const label = (
     <label
@@ -126,12 +122,15 @@ function Volume() {
     return icons[volumeLevel];
   }
 
-  const label = (
-    <label
-      className="icon"
-      //   label={Utils.watch(getIcon(), audio.speaker, getIcon)}
-    />
-  );
+  // const label = (
+  //   <label
+  //     className="icon"
+  //     // label={Utils.watch(getIcon(), audio.speakers[0], getIcon)}
+  //     setup={(self) =>
+  //       self.hook(audio, "changed", () => (self.label = getIcon()))
+  //     }
+  //   />
+  // );
 
   //   const slider = Widget.Slider({
   //     width_request: 100,
@@ -147,7 +146,7 @@ function Volume() {
       widthRequest={100}
       drawValue={false}
       className="slider"
-      // onChange={({ value }) => (audio.speakers[0].volume = value)}
+      onDragged={({ value }) => (audio.speakers[0].volume = value)}
     />
   );
   //     .hook(audio.speaker, (self) =>
@@ -155,9 +154,9 @@ function Volume() {
   //     self.value = audio.speaker.volume || 0;
   //   });
 
-  return custom_revealer(label, slider, "", () =>
-    execAsync(`pavucontrol`).catch((err) => print(err))
-  );
+  // return custom_revealer(label, slider, "", () =>
+  //   execAsync(`pavucontrol`).catch((err) => print(err))
+  // );
 }
 
 function BatteryWidget() {
@@ -226,7 +225,11 @@ function BatteryWidget() {
   // });
 
   const slider = (
-    <Slider className="" widthRequest={100} value={value.as((v) => v / 100)} />
+    <Slider
+      className="slider"
+      widthRequest={100}
+      value={value.as((v) => v / 100)}
+    />
   );
 
   // const box = Widget.Box({
@@ -337,7 +340,7 @@ export function Right() {
       <BrightnessWidget />
       <Volume />
       {/* <SysTray /> */}
-      {/* <Theme /> */}
+      <Theme />
       <PinBar />
       {/* <DndToggle /> */}
     </Box>
