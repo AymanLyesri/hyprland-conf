@@ -6,6 +6,10 @@
   padding: 0px;
   transition: opacity 0.5s ease-out; /* Adjust timing */
 
+  separator {
+    margin-bottom: 10px;
+  }
+
   .lock {
     padding: 5px;
     border-radius: 10px 0px 0px 10px;
@@ -30,16 +34,14 @@
     background: $spotify-background;
   }
 
+  .image,
   .icon {
-    min-width: 25px;
-    min-height: 25px;
-    margin-right: 1em;
-    image {
-      font-size: 25px;
-      /* to center the icon */
-      margin: 5px;
-      color: $secondary;
-    }
+    font-size: 25px;
+    min-width: 40px;
+    min-height: 40px;
+    /* to center the icon */
+    margin-right: 5px;
+    color: $secondary;
   }
 
   .title {

@@ -1,5 +1,5 @@
 import brightness from "services/brightness";
-import { barLock, DND, rightPanelVisibility } from "variables";
+import { barLock, DND, globalTransition, rightPanelLock, rightPanelVisibility } from "variables";
 import { closeProgress, openProgress } from "widgets/Progress";
 import { custom_revealer } from "widgets/revealer";
 
@@ -202,6 +202,22 @@ function DndToggle()
     }, "changed");
 }
 
+function RightPanel()
+{
+    return Widget.Revealer({
+        reveal_child: rightPanelLock.bind().as((lock) => lock),
+        transition: "slide_left",
+        transition_duration: globalTransition,
+        child: Widget.ToggleButton({
+            onToggled: ({ active }) => rightPanelVisibility.value = active,
+            class_name: "panel-trigger icon",
+        }).hook(rightPanelVisibility, (self) =>
+        {
+            self.active = rightPanelVisibility.value
+            self.label = rightPanelVisibility.value ? "" : ""
+        }, "changed")
+    })
+}
 
 export function Right()
 {
@@ -216,7 +232,8 @@ export function Right()
             SysTray(),
             Theme(),
             PinBar(),
+            RightPanel(),
             DndToggle(),
         ],
-    });
+    })
 }

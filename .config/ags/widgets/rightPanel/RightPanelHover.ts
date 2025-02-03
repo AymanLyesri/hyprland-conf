@@ -1,4 +1,4 @@
-import { rightPanelVisibility } from "variables";
+import { rightPanelLock, rightPanelVisibility } from "variables";
 
 export default () =>
 {
@@ -10,7 +10,7 @@ export default () =>
         child: Widget.EventBox({
             hexpand: true,
             vexpand: true,
-            on_hover: () => rightPanelVisibility.value = true,
+            on_hover: () => { if (!rightPanelLock.value) rightPanelVisibility.value = true },
             child: Widget.Box({ css: `min-width: 1px;` }),
         }),
     });

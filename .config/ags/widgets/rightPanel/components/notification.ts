@@ -4,6 +4,7 @@ import { readJson } from "utils/json"
 import { timeout } from "resource:///com/github/Aylur/ags/utils.js";
 import { globalTransition } from "variables";
 import Gtk from "types/@girs/gtk-3.0/gtk-3.0";
+import { time } from "utils/time";
 
 const Hyprland = await Service.import('hyprland')
 const notifications = await Service.import("notifications")
@@ -16,10 +17,14 @@ function NotificationIcon({ app_entry, app_icon, image })
 {
     if (image) {
         return Widget.Box({
+            hexpand: true,
+            vexpand: true,
+            class_name: "image",
             css: `background-image: url("${image}");`
                 + "background-size: cover;"
                 + "background-repeat: no-repeat;"
                 + "background-position: center;"
+                + "border-radius: 10px;"
         })
     }
 
@@ -41,6 +46,7 @@ export function Notification_(n: Notification, new_Notification = false, popup =
     const icon = Widget.Box({
         vpack: "start",
         hpack: "center",
+        hexpand: false,
         class_name: "icon",
         child: NotificationIcon(n),
     })
@@ -88,7 +94,6 @@ export function Notification_(n: Notification, new_Notification = false, popup =
     });
     const expand = Widget.ToggleButton({
         hpack: "end",
-        vpack: "end",
         class_name: "expand",
         on_toggled: (self) =>
         {
@@ -162,7 +167,28 @@ export function Notification_(n: Notification, new_Notification = false, popup =
         Widget.Box({
             class_name: "main-content",
             vertical: true,
+            spacing: 5,
             children: [
+                Widget.Box({
+                    class_name: "top-bar",
+                    hexpand: true,
+                    children: [
+                        Widget.Label({
+                            hexpand: true,
+                            xalign: 0,
+                            truncate: popup ? "none" : "end",
+                            class_name: "app-name",
+                            label: n.app_name,
+                        }),
+                        Widget.Label({
+                            hexpand: true,
+                            xalign: 1,
+                            class_name: "time",
+                            label: time(n.time),
+                        }),
+                    ]
+                }),
+                Widget.Separator(),
                 Widget.Box({
                     children: [
                         icon,
