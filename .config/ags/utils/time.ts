@@ -1,4 +1,4 @@
-import GLib from "types/@girs/glib-2.0/glib-2.0";
+import GLib from "gi://GLib?version=2.0";
 
 export function time(time: number, format = "%H:%M")
 {

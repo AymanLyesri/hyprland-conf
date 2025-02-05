@@ -36,7 +36,7 @@ function NotificationIcon({ app_entry, app_icon, image })
         icon = app_entry
 
     return Widget.Box({
-        child: Widget.Icon(icon),
+        child: Widget.Icon({ class_name: "icon", icon: icon }),
     })
 }
 
