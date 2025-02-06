@@ -97,7 +97,7 @@ hyprsunset
 #  
 grim-git
 slurp
-feh
+swayimg
 kitty
 light
 lolcat

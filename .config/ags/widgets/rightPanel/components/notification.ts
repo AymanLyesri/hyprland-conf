@@ -67,7 +67,7 @@ export function Notification_(n: Notification, new_Notification = false, popup =
         class_name: "body",
         hexpand: true,
         use_markup: true,
-        truncate: popup ? "none" : "end",
+        truncate: "end",
         max_width_chars: 24,
         xalign: 0,
         justification: "left",
@@ -94,6 +94,7 @@ export function Notification_(n: Notification, new_Notification = false, popup =
     });
     const expand = Widget.ToggleButton({
         hpack: "end",
+        vpack: "start",
         class_name: "expand",
         on_toggled: (self) =>
         {
@@ -172,6 +173,7 @@ export function Notification_(n: Notification, new_Notification = false, popup =
                 Widget.Box({
                     class_name: "top-bar",
                     hexpand: true,
+                    spacing: 5,
                     children: [
                         Widget.Label({
                             hexpand: true,
@@ -186,6 +188,7 @@ export function Notification_(n: Notification, new_Notification = false, popup =
                             class_name: "time",
                             label: time(n.time),
                         }),
+                        expand
                     ]
                 }),
                 Widget.Separator(),
@@ -199,7 +202,7 @@ export function Notification_(n: Notification, new_Notification = false, popup =
                             },
                             Widget.Box({
                                 hexpand: true,
-                                children: popup ? [title] : [title, expand],
+                                child: title,
                             }),
                             body
                         ),

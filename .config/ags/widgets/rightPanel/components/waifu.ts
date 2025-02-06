@@ -4,6 +4,7 @@ import { globalTransition, rightPanelWidth, waifuCurrent, waifuFavorites } from 
 import { closeProgress, openProgress } from "../../Progress";
 import { getSetting, globalSettings, setSetting } from "utils/settings";
 import { timeout } from "resource:///com/github/Aylur/ags/utils/timeout.js";
+import { previewFloatImage } from "utils/image";
 const Hyprland = await Service.import('hyprland')
 
 const waifuPath = App.configDir + "/assets/waifu/waifu.png"
@@ -33,7 +34,7 @@ const SearchImage = () => Utils.execAsync(`bash -c "xdg-open 'https://danbooru.d
 const CopyImage = () => Utils.execAsync(`bash -c "wl-copy --type image/png < ${waifuPath}"`)
     .catch(err => Utils.notify({ summary: 'Error', body: err }))
 
-const OpenImage = () => Hyprland.messageAsync("dispatch exec [float;size 50%] feh --scale-down " + waifuPath)
+const OpenImage = () => previewFloatImage(waifuPath)
 
 const addToFavorites = () =>
 {
