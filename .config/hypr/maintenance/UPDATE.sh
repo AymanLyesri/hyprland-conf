@@ -35,3 +35,7 @@ fi
 $MAINTENANCE_DIR/AGSV1.sh
 
 continue_prompt "Do you want to set up default custom files" "$MAINTENANCE_DIR/DEFAULTS.sh"
+
+echo "Checking if a color scheme is already present"
+
+[ -d "$HOME/.cache/wal" ] || wal -i "$(find ~/.config/wallpapers/default -type f | head -n 1)"
