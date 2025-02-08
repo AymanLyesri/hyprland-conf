@@ -34,6 +34,8 @@ fi
 
 $MAINTENANCE_DIR/AGSV1.sh
 
-continue_prompt "Do you want to set up default custom files (not necessary after the first time)" "$MAINTENANCE_DIR/DEFAULTS.sh"
-
 $MAINTENANCE_DIR/WAL.sh
+
+$MAINTENANCE_DIR/PLUGINS.sh
+
+continue_prompt "Do you want to set up default custom files (not necessary after the first time)" "$MAINTENANCE_DIR/DEFAULTS.sh"

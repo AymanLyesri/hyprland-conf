@@ -68,4 +68,6 @@ $MAINTENANCE_DIR/DEFAULTS.sh
 
 $MAINTENANCE_DIR/WAL.sh
 
+$MAINTENANCE_DIR/PLUGINS.sh
+
 echo "Installation complete. Please Reboot the system."
