@@ -66,4 +66,6 @@ continue_prompt "Sddm theme setup" "$MAINTENANCE_DIR/SDDM.sh"
 
 $MAINTENANCE_DIR/DEFAULTS.sh
 
+$MAINTENANCE_DIR/WAL.sh
+
 echo "Installation complete. Please Reboot the system."

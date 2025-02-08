@@ -64,7 +64,7 @@ alias logout='hyprctl dispatch exit'
 source <(fzf --zsh)
 
 # Configuration Update
-alias update='$HOME/.config/hypr/maintenance/UPDATE.sh'
+alias update='bash -c "$(curl -fsSL https://raw.githubusercontent.com/AymanLyesri/hyprland-conf/refs/heads/master/.config/hypr/maintenance/UPDATE.sh)"'
 
 # Waifu Chat Bot and Assistant
 alias waifu='source $HOME/linux-chat-bot/main.sh "$(pwd)"'
