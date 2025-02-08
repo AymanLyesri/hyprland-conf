@@ -7,38 +7,33 @@
   transition: opacity 0.5s ease-out; /* Adjust timing */
 
   separator {
-    margin-bottom: 10px;
+    margin-bottom: 5px;
   }
 
-  .lock {
-    padding: 5px;
-    border-radius: 10px 0px 0px 10px;
-  }
-
-  .copy {
-    padding: 0px;
-    min-width: 15px;
+  .lock,
+  .copy,
+  .expand {
+    padding: 0px 5px;
   }
 
   .close {
-    @extend .danger;
-    min-width: 15px;
     padding: 0px;
+    @extend .danger;
   }
 
   .main-content {
     padding: 10px;
   }
 
-  &.Spotify {
-    background: $spotify-background;
+  &.Spotify .app-name {
+    color: $spotify-foreground;
   }
 
   .image,
   .icon {
-    font-size: 25px;
-    min-width: 40px;
-    min-height: 40px;
+    font-size: 50px;
+    min-width: 50px;
+    min-height: 50px;
     /* to center the icon */
     margin-right: 5px;
     color: $secondary;

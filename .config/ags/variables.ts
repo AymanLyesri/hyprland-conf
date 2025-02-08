@@ -19,7 +19,7 @@ export const date_less = Variable("", {
     poll: [1000, 'date "+%H:%M"'],
 });
 export const date_more = Variable("", {
-    poll: [1000, 'date "+:%S %b %e, %A."']
+    poll: [1000, 'date "+:%S %b%e %A"']
 });
 
 export const barLock = Variable(getSetting("bar.lock"))

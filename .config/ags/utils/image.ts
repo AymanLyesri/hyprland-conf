@@ -15,6 +15,6 @@ export function getDominantColor(imagePath: string)
 
 export function previewFloatImage(imagePath: string)
 {
-    Utils.execAsync(`swayimg --class 'previewImage' ${imagePath}`)
+    Utils.execAsync(`swayimg -w 690,690 --class 'previewImage' ${imagePath}`)
         .catch(err => Utils.notify({ summary: 'Error', body: err }))
 }

@@ -42,7 +42,7 @@ export default () =>
 
     function FilterNotifications(notifications: Notification[], filter: string): any[]
     {
-        const MAX_NOTIFICATIONS = 50;
+        const MAX_NOTIFICATIONS = 25;
 
         const filtered: Notification[] = [];
         const others: Notification[] = [];
@@ -89,7 +89,7 @@ export default () =>
 
     const ClearNotifications = Widget.Button({
         class_name: "clear",
-        label: "Clear",
+        label: "",
         on_clicked: () =>
         {
             // NotificationsDisplay.child.destroy()
@@ -104,6 +104,7 @@ export default () =>
     return Widget.Box({
         class_name: "notification-history",
         vertical: true,
+        spacing: 5,
         children: [Filter, NotificationsDisplay, ClearNotifications],
     })
 }

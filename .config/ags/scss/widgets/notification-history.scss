@@ -1,6 +1,5 @@
 .notification-history {
   .filter {
-    margin-bottom: 5px;
     .spotify {
       background: $spotify-background;
     }
@@ -41,6 +40,6 @@
     }
   }
   .clear {
-    @extend .danger;
+    // @extend .danger;
   }
 }

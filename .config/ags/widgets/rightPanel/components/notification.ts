@@ -93,8 +93,6 @@ export function Notification_(n: Notification, new_Notification = false, popup =
         ),
     });
     const expand = Widget.ToggleButton({
-        hpack: "end",
-        vpack: "start",
         class_name: "expand",
         on_toggled: (self) =>
         {
@@ -107,7 +105,7 @@ export function Notification_(n: Notification, new_Notification = false, popup =
 
     let timeoutId;
 
-    const lock = Widget.ToggleButton({
+    const lockButton = Widget.ToggleButton({
         class_name: "lock",
         label: "",
         on_toggled: ({ active }) =>
@@ -132,7 +130,7 @@ export function Notification_(n: Notification, new_Notification = false, popup =
     });
 
 
-    const copy = Widget.Button({
+    const copyButton = Widget.Button({
         class_name: "copy",
         label: "",
         on_clicked: () => Utils.execAsync(`wl-copy "${n.body}"`).catch(err => print(err)),
@@ -142,7 +140,7 @@ export function Notification_(n: Notification, new_Notification = false, popup =
         reveal_child: false,
         transition: "slide_left",
         transition_duration: globalTransition,
-        setup: (self) => self.child = popup ? lock : copy
+        setup: (self) => self.child = popup ? lockButton : copyButton
     })
 
     const closeRevealer = Widget.Revealer({
@@ -160,37 +158,42 @@ export function Notification_(n: Notification, new_Notification = false, popup =
         }),
     })
 
+    const topBar = Widget.Box({
+        class_name: "top-bar",
+        hexpand: true,
+        spacing: 5,
+        children: [
+            leftRevealer,
+            Widget.Label({
+                hexpand: true,
+                xalign: 0,
+                truncate: popup ? "none" : "end",
+                class_name: "app-name",
+                label: n.app_name,
+            }),
+            Widget.Label({
+                hexpand: true,
+                xalign: 1,
+                class_name: "time",
+                label: time(n.time),
+            }),
+            expand,
+            closeRevealer
+        ]
+    })
+
     const Box = Widget.Box(
         {
             class_name: `notification ${n.urgency} ${n.app_name}`,
         },
-        leftRevealer,
+
         Widget.Box({
             class_name: "main-content",
             vertical: true,
             spacing: 5,
             children: [
-                Widget.Box({
-                    class_name: "top-bar",
-                    hexpand: true,
-                    spacing: 5,
-                    children: [
-                        Widget.Label({
-                            hexpand: true,
-                            xalign: 0,
-                            truncate: popup ? "none" : "end",
-                            class_name: "app-name",
-                            label: n.app_name,
-                        }),
-                        Widget.Label({
-                            hexpand: true,
-                            xalign: 1,
-                            class_name: "time",
-                            label: time(n.time),
-                        }),
-                        expand
-                    ]
-                }),
+                topBar
+                ,
                 Widget.Separator(),
                 Widget.Box({
                     children: [
@@ -210,7 +213,7 @@ export function Notification_(n: Notification, new_Notification = false, popup =
                 }),
                 Actions]
         }),
-        closeRevealer
+
 
     )
 

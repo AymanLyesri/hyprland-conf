@@ -146,7 +146,22 @@ function Actions()
                     label: "",
                     class_name: "entry-search",
                     hexpand: true,
-                    on_clicked: () => Entry.activate(),
+                    on_clicked: () =>
+                    {
+
+                        Entry.activate()
+
+                        clearTimeout(timeoutId);
+                        timeoutId = null;  // Reset timeout ID
+                        timeoutId = setTimeout(() =>
+                        {
+                            actions.reveal_child = false;
+                            bottom.children[0].label = ""
+                            bottom.children[0].active = false
+
+                            left.reveal_child = false
+                        }, 15000)
+                    },
                 }),
                 Entry,
                 Widget.ToggleButton({
@@ -211,6 +226,8 @@ function Actions()
         })
     })
 
+    let timeoutId;
+
     const bottom = Widget.Box({
         class_name: "bottom",
         vertical: true,
@@ -225,14 +242,14 @@ function Actions()
                     actions.reveal_child = self.active
                     self.label = self.active ? "" : ""
                     if (self.active)
-                        timeout(15000, () =>
+                        timeoutId = setTimeout(() =>
                         {
                             actions.reveal_child = false;
                             self.label = ""
                             self.active = false
 
                             left.reveal_child = false
-                        })
+                        }, 15000)
                     else left.reveal_child = false
                 },
             }),

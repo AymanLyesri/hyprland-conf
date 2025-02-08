@@ -11,6 +11,7 @@ $orange: rgb(255, 139, 23); /* Muted peachy orange */
 
 $spotify: mix($background, rgb(30, 215, 95), 69%);
 $spotify-background: rgba($spotify, 0.69);
+$spotify-foreground: mix($foreground, $spotify, 50%);
 
 $blue: mix($background, $blue, 69%);
 $blue-background: rgba($blue, 0.69);
