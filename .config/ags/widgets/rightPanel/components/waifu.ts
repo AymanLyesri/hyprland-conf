@@ -3,7 +3,6 @@ import { Waifu } from "../../../interfaces/waifu.interface";
 import { globalTransition, rightPanelWidth, waifuCurrent, waifuFavorites } from "variables";
 import { closeProgress, openProgress } from "../../Progress";
 import { getSetting, globalSettings, setSetting } from "utils/settings";
-import { timeout } from "resource:///com/github/Aylur/ags/utils/timeout.js";
 import { previewFloatImage } from "utils/image";
 const Hyprland = await Service.import('hyprland')
 
