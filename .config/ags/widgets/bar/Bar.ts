@@ -1,7 +1,7 @@
 import { barLock, emptyWorkspace, globalMargin } from "variables";
-import { Left } from "./components/barLeft";
-import { Center } from "./components/barMiddle";
-import { Right } from "./components/barRight";
+import BarLeft from "./components/BarLeft";
+import BarMiddle from "./components/BarMiddle";
+import BarRight from "./components/BarRight";
 import Gdk from "gi://Gdk?version=3.0";
 
 export default () =>
@@ -17,9 +17,9 @@ export default () =>
             // on_hover_lost: () => !barLock.value ? App.closeWindow("bar") : null,
             child: Widget.CenterBox({
                 class_name: emptyWorkspace.as(empty => !!empty ? "bar empty" : "bar full"),
-                start_widget: Left(),
-                center_widget: Center(),
-                end_widget: Right(),
+                start_widget: BarLeft(),
+                center_widget: BarMiddle(),
+                end_widget: BarRight(),
             }),
             setup: (self) => self.on('leave-notify-event', (self, event: Gdk.Event) =>
             {
