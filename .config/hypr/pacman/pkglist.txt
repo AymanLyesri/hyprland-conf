@@ -132,3 +132,10 @@ ttf-jetbrains-mono-nerd
 noto-fonts-emoji
 phinger-cursors
 whitesur-gtk-theme
+
+
+### Extra
+cmake
+meson
+cpio
+pkg-config
