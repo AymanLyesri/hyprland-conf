@@ -19,7 +19,7 @@ export const globalTransition = 500
 export const date_less = Variable("").poll(1000, 'date "+%H:%M"')
 export const date_more = Variable("").poll(1000, 'date "+%A %d %B %Y"')
 
-export const barLock = Variable(getSetting("bar.lock"))
+export const barLock: Variable<boolean> = Variable(getSetting("bar.lock"))
 bind(barLock).as((value) => setSetting("bar.lock", value));
 
 // export const waifuFavorites = Variable<{ id: number, preview: string }[]>(getSetting("waifu.favorites"))
@@ -48,8 +48,8 @@ bind(DND).as((value) => setSetting("notifications.dnd", value));
 // export const Widgets = Variable<WidgetSelector[]>(getSetting("rightPanel.widgets").map((name: string) => WidgetSelectors.find(widget => widget.name === name)))
 // Widgets.connect("changed", ({ value }) => setSetting("rightPanel.widgets", value.map(widget => widget.name)));
 
-// export const userPanelVisibility = Variable(false)
+export const userPanelVisibility = Variable(false)
 
-// export const settingsVisibility = Variable(false)
+export const settingsVisibility = Variable(false)
 
-// export const quickLauncherVisibility = Variable(false)
+export const quickLauncherVisibility = Variable(false)

@@ -18,6 +18,8 @@ const battery = Battery.get_default();
 
 import Tray from "gi://AstalTray";
 import ToggleButton from "../../toggleButton";
+import { Gtk } from "astal/gtk3";
+import { barLock, DND } from "../../../variables";
 const SystemTray = Tray.get_default();
 
 function Theme() {
@@ -102,61 +104,22 @@ function BrightnessWidget() {
 }
 
 function Volume() {
-  const icons: any = {
-    75: "",
-    50: "",
-    25: "",
-    0: "",
-  };
-
-  function getIcon() {
-    if (audio.speakers[0]) {
-      return icons[0]; // Return mute icon
-    }
-
-    const volumeLevel: number =
-      [75, 50, 25, 0].find(
-        (threshold) => threshold <= audio.speakers[0].volume * 100
-      ) ?? 0; // If find() returns undefined, default to 0
-
-    return icons[volumeLevel];
-  }
-
-  // const label = (
-  //   <label
-  //     className="icon"
-  //     // label={Utils.watch(getIcon(), audio.speakers[0], getIcon)}
-  //     setup={(self) =>
-  //       self.hook(audio, "changed", () => (self.label = getIcon()))
-  //     }
-  //   />
-  // );
-
-  //   const slider = Widget.Slider({
-  //     width_request: 100,
-  //     draw_value: false,
-  //     class_name: "slider",
-  //     on_change: ({ value }) => (audio.speaker.volume = value),
-  //   }).hook(audio.speaker, (self) => {
-  //     self.value = audio.speaker.volume || 0;
-  //   });
+  const speaker = Wp.get_default()?.audio.defaultSpeaker!;
+  const icon = <icon className="icon" icon={bind(speaker, "volumeIcon")} />;
 
   const slider = (
-    <Slider
-      widthRequest={100}
-      drawValue={false}
+    <slider
+      // hexpand
       className="slider"
-      onDragged={({ value }) => (audio.speakers[0].volume = value)}
+      widthRequest={100}
+      onDragged={({ value }) => (speaker.volume = value)}
+      value={bind(speaker, "volume")}
     />
   );
-  //     .hook(audio.speaker, (self) =>
-  //     {
-  //     self.value = audio.speaker.volume || 0;
-  //   });
 
-  // return custom_revealer(label, slider, "", () =>
-  //   execAsync(`pavucontrol`).catch((err) => print(err))
-  // );
+  return custom_revealer(icon, slider, "", () =>
+    execAsync(`pavucontrol`).catch((err) => print(err))
+  );
 }
 
 function BatteryWidget() {
@@ -248,33 +211,52 @@ function BatteryWidget() {
 }
 
 function SysTray() {
-  const items = bind(SystemTray, "items").as((items) =>
-    items.map((item) => (
-      // Widget.Button({
-      //   child: Widget.Icon({ icon: item.bind("icon") }),
-      //   on_primary_click: (_, event) => item.activate(event),
-      //   on_secondary_click: (_, event) => item.openMenu(event),
-      //   on_middle_click: (_, event) => item.secondaryActivate(event),
-      //   tooltip_markup: item.bind("tooltip_markup"),
-      // })
-
-      <button
-        child={<icon icon={bind(item, "iconName")} />}
-        onPrimaryClick={(_, event) => item.activate(event, event)}
-        // onSecondaryClick={(_, event) => item.openMenu(event)}
-        // onMiddleClick={(_, event) => item.secondaryActivate(event)}
-        tooltipMarkup={bind(item, "tooltip_markup")}
-      />
-    ))
-  );
-
-  // return Widget.Box({
-  //   children: items,
-  //   class_name: "system-tray",
-  // });
-
-  return <Box className="system-tray">{items}</Box>;
+  // const tray = Tray.get_default();
+  // return (
+  //   <box className="SysTray">
+  //     {bind(tray, "items").as((items) =>
+  //       items.map((item) => (
+  //         <menubutton
+  //           tooltipMarkup={bind(item, "tooltipMarkup")}
+  //           usePopover={false}
+  //           actionGroup={bind(item, "actionGroup").as((ag) => ["dbusmenu", ag])}
+  //           menuModel={bind(item, "menuModel")}>
+  //           <icon gicon={bind(item, "gicon")} />
+  //         </menubutton>
+  //       ))
+  //     )}
+  //   </box>
+  // );
 }
+
+// function SysTray() {
+//   const items = bind(SystemTray, "items").as((items) =>
+//     items.map((item) => (
+//       // Widget.Button({
+//       //   child: Widget.Icon({ icon: item.bind("icon") }),
+//       //   on_primary_click: (_, event) => item.activate(event),
+//       //   on_secondary_click: (_, event) => item.openMenu(event),
+//       //   on_middle_click: (_, event) => item.secondaryActivate(event),
+//       //   tooltip_markup: item.bind("tooltip_markup"),
+//       // })
+
+//       <button
+//         child={<icon icon={bind(item, "iconName")} />}
+//         onPrimaryClick={(_, event) => item.activate(event, event)}
+//         // onSecondaryClick={(_, event) => item.openMenu(event)}
+//         // onMiddleClick={(_, event) => item.secondaryActivate(event)}
+//         tooltipMarkup={bind(item, "tooltip_markup")}
+//       />
+//     ))
+//   );
+
+//   // return Widget.Box({
+//   //   children: items,
+//   //   class_name: "system-tray",
+//   // });
+
+//   return <Box className="system-tray">{items}</Box>;
+// }
 
 function PinBar() {
   // return Widget.ToggleButton({
@@ -288,14 +270,14 @@ function PinBar() {
   // });
 
   return (
-    <button
-      // active={barLock.value}
-      // onToggled={(self) => {
-      //   // barLock.value = self.active;
-      //   // self.label = self.active ? "" : "";
-      // }}
+    <ToggleButton
+      state={barLock.get()}
+      onToggled={(self, on) => {
+        barLock.set(on);
+        self.label = on ? "" : "";
+      }}
       className="panel-lock icon"
-      // label={barLock.get() ? "" : ""}
+      label={barLock.get() ? "" : ""}
     />
   );
 }
@@ -313,9 +295,17 @@ function DndToggle() {
   //   },
   //   "changed"
   // );
+
+  return (
+    <ToggleButton
+      state={DND.get()}
+      onToggled={(self, on) => DND.set(on)}
+      className="dnd-toggle icon"
+    />
+  );
 }
 
-export function Right() {
+export default () => {
   // return Widget.Box({
   //   class_name: "bar-right",
   //   hpack: "end",
@@ -332,17 +322,14 @@ export function Right() {
   // });
 
   return (
-    <Box
-      className="bar-right"
-      // hpack={"end"}
-      spacing={5}>
+    <Box className="bar-right" hexpand halign={Gtk.Align.END} spacing={5}>
       <BatteryWidget />
       <BrightnessWidget />
       <Volume />
       {/* <SysTray /> */}
       <Theme />
       <PinBar />
-      {/* <DndToggle /> */}
+      <DndToggle />
     </Box>
   );
-}
+};

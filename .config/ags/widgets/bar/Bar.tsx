@@ -1,8 +1,8 @@
 import { App, Astal, Gtk, Gdk } from "astal/gtk3";
 import { Variable } from "astal";
-import { Left } from "./components/barLeft";
-import { Center } from "./components/barMiddle";
-import { Right } from "./components/barRight";
+import barLeft from "./components/barLeft";
+import barMiddle from "./components/barMiddle";
+import barRight from "./components/barRight";
 import { emptyWorkspace } from "../../variables";
 
 const time = Variable("").poll(1000, "date");
@@ -18,11 +18,11 @@ export default (gdkmonitor: Gdk.Monitor) => {
         Astal.WindowAnchor.LEFT |
         Astal.WindowAnchor.RIGHT
       }
-      application={App}
-      marginTop={0}
-      marginRight={0}
-      marginLeft={0}
-      marginBottom={0}
+      // application={App}
+      // marginTop={0}
+      // marginRight={0}
+      // marginLeft={0}
+      // marginBottom={0}
       visible={true}>
       <eventbox
       // onLeaveNotifyEvent={(self, event: Gdk.Event) => {
@@ -31,9 +31,9 @@ export default (gdkmonitor: Gdk.Monitor) => {
       // }}
       >
         <centerbox className={emptyWorkspace ? "bar empty" : "bar full"}>
-          <box name="start-widget">{Left()}</box>
-          <box name="center-widget">{Center()}</box>
-          <box name="end-widget">{Right()}</box>
+          <box name="start-widget">{barLeft()}</box>
+          <box name="center-widget">{barMiddle()}</box>
+          <box name="end-widget">{barRight()}</box>
         </centerbox>
       </eventbox>
     </window>

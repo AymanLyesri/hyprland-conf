@@ -17,29 +17,10 @@ import {
   Revealer,
 } from "../../../../../../../usr/share/astal/gjs/gtk3/widget";
 import { bind, Variable } from "../../../../../../../usr/share/astal/gjs";
-import Astal from "gi://Astal?version=3.0";
 import { custom_revealer } from "../../revealer";
+import { Astal, Gtk } from "astal/gtk3";
 
 function Media() {
-  // const progress = (player: any) => Widget.CircularProgress({
-  //     class_name: "progress",
-  //     rounded: true,
-  //     inverted: false,
-  //     startAt: 0.75,
-  //     child: Widget.Label({
-  //         label: playerToIcon(player.name),
-  //     }),
-  //     setup: self =>
-  //     {
-  //         function update()
-  //         {
-  //             const value = player.position / player.length
-  //             self.value = value > 0 ? value : 0
-  //         }
-  //         self.poll(1000, update)
-  //     },
-  // })
-
   const progress = (player: Mpris.Player) => {
     const playerIcon = bind(player, "entry").as((e) =>
       Astal.Icon.lookup_icon(e) ? e : "audio-x-generic-symbolic"
@@ -49,74 +30,50 @@ function Media() {
         className="progress"
         rounded={true}
         inverted={false}
-        startAt={0.75}
-        value={player.position / player.length}>
+        // startAt={0.75}
+        value={bind(player, "position").as((p) =>
+          player.length > 0 ? p / player.length : 0
+        )}>
         <icon className="icon" icon={playerIcon} />
       </CircularProgress>
     );
   };
-
-  //   const title = (player: MprisPlayer) =>
-  //     Widget.Label({
-  //       class_name: "label",
-  //       max_width_chars: 20,
-  //       truncate: "end",
-  //       label: player.track_title + " -- ",
-  //     });
 
   const title = (player: Mpris.Player) => (
     <label
       className="label"
       max_width_chars={20}
       truncate={true}
-      label={player.title}></label>
+      label={bind(player, "title").as((t) => t || "Unknown Track")}></label>
   );
-
-  //   const artist = (player: MprisPlayer) =>
-  //     Widget.Label({
-  //       class_name: "label",
-  //       max_width_chars: 20,
-  //       truncate: "end",
-  //       label: player.track_artists.join(" -- "),
-  //     });
 
   const artist = (player: Mpris.Player) => (
     <label
       className="label"
       max_width_chars={20}
       truncate={true}
-      label={player.artist}></label>
+      label={bind(player, "artist").as((a) => a || "Unknown Artist")}></label>
   );
 
-  //   function Player(player: MprisPlayer) {
-  //     return Widget.Box({
-  //       class_name: "media",
-  //       spacing: 5,
-  //       children: [progress(player), title(player), artist(player)],
-  //       css: `
-  //             color: ${playerToColor(player.name)};
-  //             background-image:  linear-gradient(to right, #000000 , rgba(0, 0, 0, 0.5)), url('${
-  //               player.cover_path
-  //             }');
-  //             `,
-  //     });
-  //   }
-
-  function Player(player: Mpris.Player) {
-    return (
-      <box
-        className="media"
-        css={`
+  const coverArt = (player: Mpris.Player) =>
+    bind(player, "coverArt").as(
+      (c) => `
           color: ${playerToColor(player.entry)};
           background-image: linear-gradient(
               to right,
               #000000,
               rgba(0, 0, 0, 0.5)
             ),
-            url("${player.cover_art}");
-        `}>
+            url("${c}");
+        `
+    );
+
+  function Player(player: Mpris.Player) {
+    return (
+      <box className="media" css={coverArt(player)}>
         {progress(player)}
         {title(player)}
+        {" -- "}
         {artist(player)}
       </box>
     );
@@ -129,70 +86,30 @@ function Media() {
       ) || mpris.players[0]
     );
 
-  //   return Widget.Revealer({
-  //     transitionDuration: globalTransition,
-  //     transition: "slide_left",
-  //     child: Widget.EventBox({
-  //       class_name: "media-event",
-  //       on_primary_click: () =>
-  //         hyprland
-  //           .messageAsync("dispatch workspace 4")
-  //           .catch((err) => print(err)),
-  //       on_hover: () => App.openWindow("media"),
-
-  //       child: Utils.watch(
-  //         mpris.players.length > 0 ? activePlayer() : Widget.Box(),
-  //         mpris,
-  //         "changed",
-  //         () => activePlayer()
-  //       ),
-  //     }),
-  //     setup: (self) =>
-  //       self.hook(
-  //         mpris,
-  //         () => (self.reveal_child = mpris.players.length > 0),
-  //         "changed"
-  //       ),
-  //   });
-
   return (
     <Revealer
+      revealChild={bind(mpris, "players").as((arr) => arr.length > 0)}
       transitionDuration={globalTransition}
-      // transitionType={"slide_left"}
+      transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
+      // setup={(self) =>
+      //   bind(mpris, "players").as((arr) => (self.reveal_child = arr.length > 0))
+      // }
     >
       <EventBox
         className="media-event"
-        onClick={
-          () =>
-            hyprland.message_async("dispatch workspace 4", (res) => print(res))
-          // .catch((err) => print(err))
+        onClick={() =>
+          hyprland.message_async("dispatch workspace 4", (res) => print(res))
         }
         on_hover={() => {}}
-        // setup={
-        //   (self) =>
-        //     self.hook(
-        //       mpris,
-        //       "changed",
-        //       () => (self. = mpris.players.length > 0)
-        //     )
-        //   // self.hook(mpris, () => (self.reveal_child = mpris.players.length > 0), "changed")
-        // }
-      ></EventBox>
+        child={bind(mpris, "players").as((arr) =>
+          arr.length > 0 ? activePlayer() : <box />
+        )}></EventBox>
     </Revealer>
   );
 }
 
 function Clock() {
-  // const revealer = Widget.Label({
-  //   class_name: "revealer",
-  //   label: date_more.bind(),
-  // });
-
   const revealer = <label className="revealer" label={bind(date_more)}></label>;
-  // const trigger = Widget.Label({
-  //   class_name: "trigger",
-  //   label: date_less.bind(),
-  // });
 
   const trigger = <label className="trigger" label={bind(date_more)}></label>;
 
@@ -200,24 +117,6 @@ function Clock() {
 }
 
 function Bandwidth() {
-  // const bandwidth = Variable("", {
-  //   // listen to an array of [up, down] values
-  //   listen: [
-  //     `bash ${App.configDir}/scripts/bandwidth.sh`,
-  //     (out) => {
-  //       return "↑" + JSON.parse(out)[0] + " ↓" + JSON.parse(out)[1];
-  //     },
-  //   ],
-  // });
-  // // const icon = Widget.Icon({ icon: "network-wired-symbolic" });
-  // const label = Widget.Label({
-  //   label: bandwidth.bind(),
-  // });
-  // return Widget.Box({
-  //   class_name: "bandwidth",
-  //   child: label,
-  // });
-
   const bandwidth = Variable("").watch(
     `bash ./scripts/bandwidth.sh`,
     (out) => "↑" + JSON.parse(out)[0] + " ↓" + JSON.parse(out)[1]
@@ -235,45 +134,29 @@ function Bandwidth() {
 }
 
 function ClientTitle() {
-  // return Widget.Revealer({
-  //   revealChild: emptyWorkspace.as((empty) => !empty),
-  //   transitionDuration: globalTransition,
-  //   transition: "slide_right",
-  //   child: Widget.Label({
-  //     class_name: "client-title",
-  //     truncate: "end",
-  //     max_width_chars: 24,
-  //     label: hyprland.active.client.bind("title"),
-  //   }),
-  // });
+  const focused = bind(hyprland, "focusedClient");
 
   return (
     <Revealer
-      revealChild={true}
+      revealChild={focused.as(Boolean)}
       transitionDuration={globalTransition}
-      // transitionType={"slide_right"}
-    >
-      <label
-        className="client-title"
-        truncate={true}
-        max_width_chars={24}></label>
+      transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}>
+      {focused.as(
+        (client) =>
+          client && (
+            <label
+              className="client-title"
+              truncate={true}
+              max_width_chars={24}
+              label={bind(client, "title").as(String)}
+            />
+          )
+      )}
     </Revealer>
   );
 }
 
-export function Center() {
-  // return Widget.Box({
-  //   class_name: "bar-middle",
-  //   spacing: 5,
-  //   children: [
-  //     CavaWidget("middle"),
-  //     Media(),
-  //     Clock(),
-  //     Bandwidth(),
-  //     ClientTitle(),
-  //   ],
-  // });
-
+export default () => {
   return (
     <box className="bar-middle" spacing={5}>
       {/* <CavaWidget /> */}
@@ -283,4 +166,4 @@ export function Center() {
       <ClientTitle />
     </box>
   );
-}
+};
