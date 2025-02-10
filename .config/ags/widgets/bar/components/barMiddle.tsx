@@ -17,7 +17,7 @@ import {
   Revealer,
 } from "../../../../../../../usr/share/astal/gjs/gtk3/widget";
 import { bind, Variable } from "../../../../../../../usr/share/astal/gjs";
-import { custom_revealer } from "../../revealer";
+import { custom_revealer } from "../../CustomRevealer";
 import { Astal, Gtk } from "astal/gtk3";
 
 function Media() {

@@ -6,7 +6,7 @@ import { getSetting, setSetting } from "./utils/settings";
 import Hyprland from "gi://AstalHyprland";
 const hyprland = Hyprland.get_default();
 
-// export const globalOpacity = Variable<number>(getSetting("globalOpacity"))
+export const globalOpacity = Variable<number>(getSetting("globalOpacity"))
 // globalOpacity.connect("changed", ({ value }) =>
 // {
 //     setSetting("globalOpacity", value)
@@ -34,12 +34,12 @@ export const newAppWorkspace = Variable(0)
 
 export const rightPanelVisibility = Variable(getSetting("rightPanel.visibility"))
 bind(rightPanelVisibility).as((value) => setSetting("rightPanel.visibility", value));
-// export const rightPanelExclusivity = Variable(getSetting("rightPanel.exclusivity"))
-// rightPanelExclusivity.connect("changed", ({ value }) => { setSetting("rightPanel.exclusivity", value) });
-// export const rightPanelWidth = Variable<number>(getSetting("rightPanel.width"))
-// rightPanelWidth.connect("changed", ({ value }) => setSetting("rightPanel.width", value));
-// export const rightPanelLock = Variable(getSetting("rightPanel.lock"))
-// rightPanelLock.connect("changed", ({ value }) => setSetting("rightPanel.lock", value));
+export const rightPanelExclusivity = Variable(getSetting("rightPanel.exclusivity"))
+bind(rightPanelExclusivity).as((value) => setSetting("rightPanel.exclusivity", value));
+export const rightPanelWidth = Variable<number>(getSetting("rightPanel.width"))
+bind(rightPanelWidth).as((value) => setSetting("rightPanel.width", value));
+export const rightPanelLock = Variable(getSetting("rightPanel.lock"))
+bind(rightPanelLock).as((value) => setSetting("rightPanel.lock", value));
 
 export const DND = Variable(getSetting("notifications.dnd"))
 bind(DND).as((value) => setSetting("notifications.dnd", value));

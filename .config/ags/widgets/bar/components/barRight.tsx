@@ -2,7 +2,7 @@ import Brightness from "../../../services/brightness";
 const brightness = Brightness.get_default();
 // import { barLock, DND, rightPanelVisibility } from "../../../variables";
 // import { closeProgress, openProgress } from "widgets/Progress";
-import { custom_revealer } from "../../revealer";
+import { custom_revealer } from "../../CustomRevealer";
 import { bind, execAsync } from "../../../../../../../usr/share/astal/gjs";
 import {
   Box,
