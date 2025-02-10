@@ -32,6 +32,11 @@ bindkey '^[[B' history-substring-search-down
 
 ############################################################
 
+# # Informative Prompt
+# echo "Ctrl+F => fastfetch / clear"
+
+############################################################
+
 # Aliases for ls
 alias ls='lsd'
 
@@ -40,6 +45,14 @@ alias cat='bat'
 
 # Aliases for fastfetch
 alias f='clear && source $HOME/.config/fastfetch/fastfetch.sh'
+fastfetch() {
+    clear
+    $HOME/.config/fastfetch/fastfetch.sh
+    zle redisplay
+}
+
+zle -N fastfetch
+bindkey '^F' fastfetch
 
 # Aliase functions
 function code() {
