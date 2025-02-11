@@ -61,7 +61,6 @@ function code() {
 function v() {
     /bin/neovide --fork $1 && exit
 }
-alias cpdir='pwd | tr -d "\r\n" | wl-copy'
 
 # Test Connection
 TEST_CONNECTION="/home/ayman/.config/hypr/scripts/test-connection.sh"
