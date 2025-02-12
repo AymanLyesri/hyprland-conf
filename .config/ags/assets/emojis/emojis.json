@@ -412,5 +412,755 @@
     "app_exec": "`wl-copy 👋`",
     "app_name": "👋",
     "app_type": "emoji"
+  },
+  {
+    "app_tags": "Smiling Face with Smiling Eyes, happy, content, friendly, joy",
+    "app_exec": "`wl-copy 😊`",
+    "app_name": "😊",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Pleading Face, begging, puppy eyes, please, sad",
+    "app_exec": "`wl-copy 🥺`",
+    "app_name": "🥺",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Heart Eyes, love, crush, admiration, affection",
+    "app_exec": "`wl-copy 😻`",
+    "app_name": "😻",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Face with Steam from Nose, frustrated, angry, annoyed, determined",
+    "app_exec": "`wl-copy 😤`",
+    "app_name": "😤",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Smirking Face, smug, flirty, confident, playful",
+    "app_exec": "`wl-copy 😏`",
+    "app_name": "😏",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Face with Open Mouth, surprise, shock, awe, wow",
+    "app_exec": "`wl-copy 😮`",
+    "app_name": "😮",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Face with Cowboy Hat, yeehaw, wild west, playful, fun",
+    "app_exec": "`wl-copy 🤠`",
+    "app_name": "🤠",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Money Mouth Face, rich, greedy, money, desire",
+    "app_exec": "`wl-copy 🤑`",
+    "app_name": "🤑",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Sunglasses, cool, chill, relaxed, summer",
+    "app_exec": "`wl-copy 🕶️`",
+    "app_name": "🕶️",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Heart on Fire, passion, love, intense, desire",
+    "app_exec": "`wl-copy ❤️‍🔥`",
+    "app_name": "❤️‍🔥",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Broken Heart, sadness, heartbreak, loss, pain",
+    "app_exec": "`wl-copy 💔`",
+    "app_name": "💔",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Rainbow, pride, LGBTQ+, colorful, hope",
+    "app_exec": "`wl-copy 🌈`",
+    "app_name": "🌈",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Sun, sunny, warm, summer, bright",
+    "app_exec": "`wl-copy ☀️`",
+    "app_name": "☀️",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Moon, night, sleep, dreamy, calm",
+    "app_exec": "`wl-copy 🌙`",
+    "app_name": "🌙",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Cloud, weather, sky, fluffy, dreamy",
+    "app_exec": "`wl-copy ☁️`",
+    "app_name": "☁️",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Thunderstorm, weather, storm, lightning, rain",
+    "app_exec": "`wl-copy ⚡`",
+    "app_name": "⚡",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Snowflake, winter, cold, snow, frost",
+    "app_exec": "`wl-copy ❄️`",
+    "app_name": "❄️",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Pizza, food, Italian, yummy, delicious",
+    "app_exec": "`wl-copy 🍕`",
+    "app_name": "🍕",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Hamburger, food, fast food, tasty, meal",
+    "app_exec": "`wl-copy 🍔`",
+    "app_name": "🍔",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Beer, drink, alcohol, party, cheers",
+    "app_exec": "`wl-copy 🍺`",
+    "app_name": "🍺",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Coffee, drink, caffeine, morning, energy",
+    "app_exec": "`wl-copy ☕`",
+    "app_name": "☕",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Books, reading, education, knowledge, study",
+    "app_exec": "`wl-copy 📚`",
+    "app_name": "📚",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Light Bulb, idea, creativity, innovation, bright",
+    "app_exec": "`wl-copy 💡`",
+    "app_name": "💡",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Gift, present, celebration, birthday, surprise",
+    "app_exec": "`wl-copy 🎁`",
+    "app_name": "🎁",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Balloon, party, celebration, fun, festive",
+    "app_exec": "`wl-copy 🎈`",
+    "app_name": "🎈",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Camera, photography, memories, snap, picture",
+    "app_exec": "`wl-copy 📷`",
+    "app_name": "📷",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Film Projector, movies, cinema, entertainment, reel",
+    "app_exec": "`wl-copy 📽️`",
+    "app_name": "📽️",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Musical Notes, music, sound, melody, song",
+    "app_exec": "`wl-copy 🎵`",
+    "app_name": "🎵",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Video Game, gaming, fun, console, play",
+    "app_exec": "`wl-copy 🎮`",
+    "app_name": "🎮",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Basketball, sports, game, NBA, play",
+    "app_exec": "`wl-copy 🏀`",
+    "app_name": "🏀",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Soccer Ball, sports, football, game, play",
+    "app_exec": "`wl-copy ⚽`",
+    "app_name": "⚽",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Airplane, travel, flight, vacation, adventure",
+    "app_exec": "`wl-copy ✈️`",
+    "app_name": "✈️",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Car, vehicle, drive, road trip, travel",
+    "app_exec": "`wl-copy 🚗`",
+    "app_name": "🚗",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Bicycle, bike, exercise, ride, outdoors",
+    "app_exec": "`wl-copy 🚲`",
+    "app_name": "🚲",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Watch, time, clock, punctual, accessory",
+    "app_exec": "`wl-copy ⌚`",
+    "app_name": "⌚",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Mobile Phone, technology, communication, call, text",
+    "app_exec": "`wl-copy 📱`",
+    "app_name": "📱",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Laptop, computer, work, technology, productivity",
+    "app_exec": "`wl-copy 💻`",
+    "app_name": "💻",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Key, security, lock, secret, access",
+    "app_exec": "`wl-copy 🔑`",
+    "app_name": "🔑",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Lock, security, privacy, safe, protection",
+    "app_exec": "`wl-copy 🔒`",
+    "app_name": "🔒",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Unlock, freedom, access, open, security",
+    "app_exec": "`wl-copy 🔓`",
+    "app_name": "🔓",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Magnifying Glass, search, find, explore, detective",
+    "app_exec": "`wl-copy 🔍`",
+    "app_name": "🔍",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Shopping Bags, shopping, retail, bags, purchase",
+    "app_exec": "`wl-copy 🛍️`",
+    "app_name": "🛍️",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Credit Card, money, payment, finance, shopping",
+    "app_exec": "`wl-copy 💳`",
+    "app_name": "💳",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Money Bag, wealth, rich, cash, finance",
+    "app_exec": "`wl-copy 💰`",
+    "app_name": "💰",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Gem Stone, jewel, luxury, precious, shiny",
+    "app_exec": "`wl-copy 💎`",
+    "app_name": "💎",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Crown, king, queen, royalty, power",
+    "app_exec": "`wl-copy 👑`",
+    "app_name": "👑",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Trophy, award, win, success, achievement",
+    "app_exec": "`wl-copy 🏆`",
+    "app_name": "🏆",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Medal, award, honor, achievement, winner",
+    "app_exec": "`wl-copy 🏅`",
+    "app_name": "🏅",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Flag, country, nation, pride, symbol",
+    "app_exec": "`wl-copy 🏳️`",
+    "app_name": "🏳️",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Rainbow Flag, pride, LGBTQ+, diversity, love",
+    "app_exec": "`wl-copy 🏳️‍🌈`",
+    "app_name": "🏳️‍🌈",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Pirate Flag, pirate, adventure, treasure, ship",
+    "app_exec": "`wl-copy 🏴‍☠️`",
+    "app_name": "🏴‍☠️",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Dog, pet, animal, puppy, loyal",
+    "app_exec": "`wl-copy 🐶`",
+    "app_name": "🐶",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Cat, pet, animal, kitten, cute",
+    "app_exec": "`wl-copy 🐱`",
+    "app_name": "🐱",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Panda, animal, cute, bamboo, China",
+    "app_exec": "`wl-copy 🐼`",
+    "app_name": "🐼",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Fox, animal, clever, sly, nature",
+    "app_exec": "`wl-copy 🦊`",
+    "app_name": "🦊",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Unicorn, magical, fantasy, mythical, sparkle",
+    "app_exec": "`wl-copy 🦄`",
+    "app_name": "🦄",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Dragon, mythical, fantasy, fire, legend",
+    "app_exec": "`wl-copy 🐉`",
+    "app_name": "🐉",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Turtle, slow, nature, animal, shell",
+    "app_exec": "`wl-copy 🐢`",
+    "app_name": "🐢",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Fish, animal, sea, ocean, swim",
+    "app_exec": "`wl-copy 🐟`",
+    "app_name": "🐟",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Butterfly, nature, insect, beauty, spring",
+    "app_exec": "`wl-copy 🦋`",
+    "app_name": "🦋",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Flower, nature, plant, blossom, spring",
+    "app_exec": "`wl-copy 🌸`",
+    "app_name": "🌸",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Tree, nature, plant, green, environment",
+    "app_exec": "`wl-copy 🌳`",
+    "app_name": "🌳",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Cactus, plant, desert, prickly, nature",
+    "app_exec": "`wl-copy 🌵`",
+    "app_name": "🌵",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Earth Globe, world, planet, geography, international",
+    "app_exec": "`wl-copy 🌍`",
+    "app_name": "🌍",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Full Moon, night, sky, celestial, bright",
+    "app_exec": "`wl-copy 🌕`",
+    "app_name": "🌕",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Shooting Star, wish, night, sky, magic",
+    "app_exec": "`wl-copy 🌠`",
+    "app_name": "🌠",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Volcano, nature, eruption, mountain, lava",
+    "app_exec": "`wl-copy 🌋`",
+    "app_name": "🌋",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Mountain, nature, hike, climb, outdoors",
+    "app_exec": "`wl-copy ⛰️`",
+    "app_name": "⛰️",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Beach, vacation, summer, ocean, sand",
+    "app_exec": "`wl-copy 🏖️`",
+    "app_name": "🏖️",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Camping, outdoors, nature, tent, adventure",
+    "app_exec": "`wl-copy 🏕️`",
+    "app_name": "🏕️",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "House, home, living, residence, building",
+    "app_exec": "`wl-copy 🏠`",
+    "app_name": "🏠",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Cityscape, urban, skyline, buildings, metropolis",
+    "app_exec": "`wl-copy 🏙️`",
+    "app_name": "🏙️",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Sunrise, morning, nature, beauty, new day",
+    "app_exec": "`wl-copy 🌅`",
+    "app_name": "🌅",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Sunset, evening, nature, beauty, calm",
+    "app_exec": "`wl-copy 🌇`",
+    "app_name": "🌇",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Bridge, structure, river, connection, travel",
+    "app_exec": "`wl-copy 🌉`",
+    "app_name": "🌉",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Ferris Wheel, amusement park, fun, carnival, ride",
+    "app_exec": "`wl-copy 🎡`",
+    "app_name": "🎡",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Roller Coaster, amusement park, thrill, ride, fun",
+    "app_exec": "`wl-copy 🎢`",
+    "app_name": "🎢",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Circus Tent, entertainment, show, carnival, fun",
+    "app_exec": "`wl-copy 🎪`",
+    "app_name": "🎪",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Film Frames, movie, cinema, reel, entertainment",
+    "app_exec": "`wl-copy 🎞️`",
+    "app_name": "🎞️",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Ticket, event, concert, show, admission",
+    "app_exec": "`wl-copy 🎫`",
+    "app_name": "🎫",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Musical Score, music, sheet, notes, composition",
+    "app_exec": "`wl-copy 🎼`",
+    "app_name": "🎼",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Microphone, music, performance, karaoke, sing",
+    "app_exec": "`wl-copy 🎤`",
+    "app_name": "🎤",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Headphone, music, sound, listen, audio",
+    "app_exec": "`wl-copy 🎧`",
+    "app_name": "🎧",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Drum, music, instrument, beat, rhythm",
+    "app_exec": "`wl-copy 🥁`",
+    "app_name": "🥁",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Saxophone, music, instrument, jazz, melody",
+    "app_exec": "`wl-copy 🎷`",
+    "app_name": "🎷",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Guitar, music, instrument, rock, strings",
+    "app_exec": "`wl-copy 🎸`",
+    "app_name": "🎸",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Trumpet, music, instrument, brass, melody",
+    "app_exec": "`wl-copy 🎺`",
+    "app_name": "🎺",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Violin, music, instrument, classical, strings",
+    "app_exec": "`wl-copy 🎻`",
+    "app_name": "🎻",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Clapper Board, movie, film, cinema, action",
+    "app_exec": "`wl-copy 🎬`",
+    "app_name": "🎬",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Television, TV, entertainment, shows, screen",
+    "app_exec": "`wl-copy 📺`",
+    "app_name": "📺",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Radio, music, news, broadcast, communication",
+    "app_exec": "`wl-copy 📻`",
+    "app_name": "📻",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Video Camera, recording, film, movie, memories",
+    "app_exec": "`wl-copy 📹`",
+    "app_name": "📹",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Game Die, gaming, luck, chance, play",
+    "app_exec": "`wl-copy 🎲`",
+    "app_name": "🎲",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Bowling, game, strike, pins, fun",
+    "app_exec": "`wl-copy 🎳`",
+    "app_name": "🎳",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Slot Machine, gambling, casino, luck, game",
+    "app_exec": "`wl-copy 🎰`",
+    "app_name": "🎰",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Chess Pawn, game, strategy, board, play",
+    "app_exec": "`wl-copy ♟️`",
+    "app_name": "♟️",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Joystick, gaming, control, play, console",
+    "app_exec": "`wl-copy 🕹️`",
+    "app_name": "🕹️",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Direct Hit, target, goal, aim, success",
+    "app_exec": "`wl-copy 🎯`",
+    "app_name": "🎯",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Yoyo, toy, play, fun, childhood",
+    "app_exec": "`wl-copy 🪀`",
+    "app_name": "🪀",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Kite, play, fun, outdoors, wind",
+    "app_exec": "`wl-copy 🪁`",
+    "app_name": "🪁",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Pool 8 Ball, game, billiards, pool, luck",
+    "app_exec": "`wl-copy 🎱`",
+    "app_name": "🎱",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Crystal Ball, magic, fortune, future, mystic",
+    "app_exec": "`wl-copy 🔮`",
+    "app_name": "🔮",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Nazar Amulet, protection, evil eye, luck, charm",
+    "app_exec": "`wl-copy 🧿`",
+    "app_name": "🧿",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Prayer Beads, religion, faith, meditation, spiritual",
+    "app_exec": "`wl-copy 📿`",
+    "app_name": "📿",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Barber Pole, haircut, style, grooming, salon",
+    "app_exec": "`wl-copy 💈`",
+    "app_name": "💈",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Alarm Clock, time, wake up, alert, morning",
+    "app_exec": "`wl-copy ⏰`",
+    "app_name": "⏰",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Stopwatch, time, race, speed, competition",
+    "app_exec": "`wl-copy ⏱️`",
+    "app_name": "⏱️",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Timer Clock, countdown, time, deadline, race",
+    "app_exec": "`wl-copy ⏲️`",
+    "app_name": "⏲️",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Hourglass Done, time, over, finished, end",
+    "app_exec": "`wl-copy ⌛`",
+    "app_name": "⌛",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Hourglass Not Done, time, waiting, patience, sand",
+    "app_exec": "`wl-copy ⏳`",
+    "app_name": "⏳",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Compass, direction, navigation, travel, explore",
+    "app_exec": "`wl-copy 🧭`",
+    "app_name": "🧭",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Map, location, travel, geography, explore",
+    "app_exec": "`wl-copy 🗺️`",
+    "app_name": "🗺️",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "World Map, geography, travel, globe, explore",
+    "app_exec": "`wl-copy 🌐`",
+    "app_name": "🌐",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Statue of Liberty, freedom, USA, New York, landmark",
+    "app_exec": "`wl-copy 🗽`",
+    "app_name": "🗽",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Tokyo Tower, Japan, landmark, travel, city",
+    "app_exec": "`wl-copy 🗼`",
+    "app_name": "🗼",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Mount Fuji, Japan, mountain, nature, travel",
+    "app_exec": "`wl-copy 🗻`",
+    "app_name": "🗻",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Castle, building, history, royalty, fantasy",
+    "app_exec": "`wl-copy 🏰`",
+    "app_name": "🏰",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Japanese Castle, Japan, building, history, culture",
+    "app_exec": "`wl-copy 🏯`",
+    "app_name": "🏯",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Stadium, sports, event, concert, venue",
+    "app_exec": "`wl-copy 🏟️`",
+    "app_name": "🏟️",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Classical Building, architecture, history, culture, city",
+    "app_exec": "`wl-copy 🏛️`",
+    "app_name": "🏛️",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Building Construction, construction, work, build, progress",
+    "app_exec": "`wl-copy 🏗️`",
+    "app_name": "🏗️",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Factory, industry, work, production, building",
+    "app_exec": "`wl-copy 🏭`",
+    "app_name": "🏭",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Hut, house, home, village, rural",
+    "app_exec": "`wl-copy 🛖`",
+    "app_name": "🛖",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "House with Garden, home, nature, residence, family",
+    "app_exec": "`wl-copy 🏡`",
+    "app_name": "🏡",
+    "app_type": "emoji"
+  },
+  {
+    "app_tags": "Office Building, work, business, job, city",
+    "app_exec": "`wl-copy 🏢`",
+    "app_name": "🏢",
+    "app_type": "emoji"
   }
 ]

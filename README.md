@@ -27,7 +27,7 @@ I use Arch BTW.. :)
 - **Screenshot all active workspaces** into one image: Custom script
 - **Dynamic color schemes** based on current wallpaper: Custom scripts & [PyWal](https://github.com/dylanaraps/pywal)
 - **Global Theme switcher (Light/Dark)**: Custom scripts
-- **Ags widgets** ~~(Eww replaced)~~:
+- **Ags widgets** ~~(Eww replaced)~~: _all of these are just some of the features_
   - Color scheme based on current wallpaper
   - Main bar
     - Dark/light modes
@@ -46,6 +46,7 @@ I use Arch BTW.. :)
     - System resource monitor
     - Calendar
     - System Updater (WIP)
+  - User Panel (logout etc...)
 - **Customizable shaders**: Includes saturation & retro effects
 - **High-quality wallpapers** from [Danbooru](https://danbooru.donmai.us), [Yandere](https://yande.re), and [Gelbooru](https://gelbooru.com)
 
@@ -64,7 +65,7 @@ I use Arch BTW.. :)
 # To-Do List
 
 - **Users: Any suggestions or issues?**
-- Make sure the dot files work for every machine not just mine **(WIP)**
+- Make sure the dot-files work for every machine not just mine **(WIP)**
 - Add tutorials for each part of the dot-files **(WIP)**
 - Continuous improvements and polishing **(INDEFINITELY)**
 
@@ -77,8 +78,8 @@ KeyBinds are displayed and organized [Here](https://github.com/AymanLyesri/hyprl
 ### Required Dependencies and packages
 
 - **Arch Linux** (pretty obvious)
-- Hyprland
-- [Necessary packages](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/pacman/pkglist.txt) (dont worry they will be installed automatically)
+- **Hyprland**
+- [Necessary packages](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/pacman/pkglist.txt) (do not worry they will be installed automatically)
 
 ### Installation Guide
 
@@ -90,7 +91,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/AymanLyesri/hyprland-con
 
 ### Update Guide
 
-> Simply run `update`
+> Simply run `update` in the terminal
 
 ```bash
 update
