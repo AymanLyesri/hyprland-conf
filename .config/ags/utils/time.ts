@@ -6,3 +6,8 @@ export function time(time: number, format = "%H:%M")
         .new_from_unix_local(time)
         .format(format)!
 }
+
+export function asyncSleep(INTERVAL)
+{
+    return new Promise(resolve => setTimeout(resolve, INTERVAL));
+}

@@ -10,6 +10,20 @@
     margin-bottom: 5px;
   }
 
+  .circular-progress {
+    margin: 0px;
+    padding: 0px;
+    min-width: 20px;
+    min-height: 10px;
+    font-size: 5px;
+
+    label {
+      font-size: 10px;
+      font-weight: 800;
+      color: $foreground;
+    }
+  }
+
   .lock,
   .copy,
   .expand {

@@ -80,3 +80,9 @@ alias update='bash -c "$(curl -fsSL https://raw.githubusercontent.com/AymanLyesr
 
 # Waifu Chat Bot and Assistant
 alias waifu='source $HOME/linux-chat-bot/main.sh "$(pwd)"'
+
+###REACT NATIVE SETUP (android studio) comment if u don't use react native
+export ANDROID_HOME=$HOME/Android/Sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+############################################################

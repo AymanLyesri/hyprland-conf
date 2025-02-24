@@ -4,7 +4,7 @@ import { readJson } from "utils/json"
 import { timeout } from "resource:///com/github/Aylur/ags/utils.js";
 import { globalTransition } from "variables";
 import Gtk from "types/@girs/gtk-3.0/gtk-3.0";
-import { time } from "utils/time";
+import { asyncSleep, time } from "utils/time";
 
 const Hyprland = await Service.import('hyprland')
 const notifications = await Service.import("notifications")
@@ -158,12 +158,28 @@ export function Notification_(n: Notification, new_Notification = false, popup =
         }),
     })
 
+    const CircularProgress = () => Widget.CircularProgress({
+        class_name: "circular-progress",
+        rounded: true,
+        startAt: 0.75,
+        value: 1,
+        visible: false,
+        setup: async (self) =>
+        {
+            while (self.value >= 0) {
+                self.value -= 0.01;
+                await asyncSleep(50); // Wait for 2 seconds before continuing
+            }
+        }
+    })
+
     const topBar = Widget.Box({
         class_name: "top-bar",
         hexpand: true,
         spacing: 5,
         children: [
             leftRevealer,
+            popup ? CircularProgress() : Widget.Box(),
             Widget.Label({
                 hexpand: true,
                 xalign: 0,
