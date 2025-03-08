@@ -6,38 +6,47 @@ import {
   rightPanelLock,
   rightPanelVisibility,
   rightPanelWidth,
+  widgetLimit,
+  Widgets,
 } from "../../variables";
 import { bind } from "astal";
 import CustomRevealer from "../CustomRevealer";
 import ToggleButton from "../toggleButton";
+import { globalSettings, setSetting } from "../../utils/settings";
+import { EventBox } from "astal/gtk3/widget";
 
 // Name need to match the name of the widget()
 export const WidgetSelectors: WidgetSelector[] = [
-  //     {
-  //     name: "Waifu",
-  //     icon: "",
-  //     widget: () => waifu()
-  // }, {
-  //     name: "Media",
-  //     icon: "",
-  //     widget: () => MediaWidget()
-  // }, {
-  //     name: "NotificationHistory",
-  //     icon: "",
-  //     widget: () => NotificationHistory()
-  // }, {
-  //     name: "Calendar",
-  //     icon: "",
-  //     widget: () => Calendar()
-  // }, {
-  //     name: "Resources",
-  //     icon: "",
-  //     widget: () => Resources()
-  // }, {
-  //     name: "Update",
-  //     icon: "󰚰",
-  //     widget: () => Update()
-  //     }
+  {
+    name: "Waifu",
+    icon: "",
+    widget: () => waifu(),
+  },
+  // {
+  //   name: "Media",
+  //   icon: "",
+  //   widget: () => MediaWidget(),
+  // },
+  // {
+  //   name: "NotificationHistory",
+  //   icon: "",
+  //   widget: () => NotificationHistory(),
+  // },
+  // {
+  //   name: "Calendar",
+  //   icon: "",
+  //   widget: () => Calendar(),
+  // },
+  // {
+  //   name: "Resources",
+  //   icon: "",
+  //   widget: () => Resources(),
+  // },
+  // {
+  //   name: "Update",
+  //   icon: "󰚰",
+  //   widget: () => Update(),
+  // },
 ];
 
 const maxRightPanelWidth = 600;
@@ -70,7 +79,7 @@ const opacitySlider = () => {
   //     draw_value: false,
   //     class_name: "slider",
   //     value: globalOpacity.bind(),
-  //     on_change: ({ value }) => (globalOpacity.value = value),
+  //     on_change: ({ value }) => (globalOpacity.get() = value),
   //   });
 
   const slider = (
@@ -100,14 +109,14 @@ const opacitySlider = () => {
 //       Widget.ToggleButton({
 //         class_name: "selector",
 //         label: selector.icon,
-//         active: Widgets.value.find((w) => w.name == selector.name)
+//         active: Widgets.get().find((w) => w.name == selector.name)
 //           ? true
 //           : false,
 //         on_toggled: (self) => {
 //           // If the button is active, create and store a new widget instance
 //           if (self.active) {
 //             // Limit the number of widgets to 3
-//             if (Widgets.value.length >= widgetLimit) {
+//             if (Widgets.get().length >= widgetLimit) {
 //               self.active = false;
 //               return;
 //             }
@@ -116,16 +125,16 @@ const opacitySlider = () => {
 //               selector.widgetInstance = selector.widget();
 //             }
 //             // Add the widget instance to Widgets if it's not already added
-//             if (!Widgets.value.includes(selector)) {
-//               Widgets.value = [...Widgets.value, selector];
+//             if (!Widgets.get().includes(selector)) {
+//               Widgets.get() = [...Widgets.get(), selector];
 //             }
 //           }
 //           // If the button is deactivated, remove the widget from the array
 //           else {
-//             let newWidgets = Widgets.value.filter((w) => w != selector); // Remove it from the array
-//             if (Widgets.value.length == newWidgets.length) return;
+//             let newWidgets = Widgets.get().filter((w) => w != selector); // Remove it from the array
+//             if (Widgets.get().length == newWidgets.length) return;
 
-//             Widgets.value = newWidgets;
+//             Widgets.get() = newWidgets;
 //             selector.widgetInstance = undefined; // Reset the widget instance
 //           }
 //         },
@@ -137,34 +146,60 @@ const WidgetActions = () => {
   return (
     <box vertical={true} vexpand={true} spacing={5}>
       {WidgetSelectors.map((selector) => {
-        return (
-          <ToggleButton
-            className={"selector"}
-            label={selector.icon}
-            // state={
-            //   Widgets.value.find((w) => w.name == selector.name) ? true : false
-            // }
-            // onToggled={(self) => {
-            //   if (self.active) {
-            //     if (Widgets.value.length >= widgetLimit) {
-            //       self.active = false;
-            //       return;
-            //     }
-            //     if (!selector.widgetInstance) {
-            //       selector.widgetInstance = selector.widget();
-            //     }
-            //     if (!Widgets.value.includes(selector)) {
-            //       Widgets.value = [...Widgets.value, selector];
-            //     }
-            //   } else {
-            //     let newWidgets = Widgets.value.filter((w) => w != selector);
-            //     if (Widgets.value.length == newWidgets.length) return;
-            //     Widgets.value = newWidgets;
-            //     selector.widgetInstance = undefined;
-            //   }
-            // }}
-          />
-        );
+        return ToggleButton({
+          className: "selector",
+          label: selector.icon,
+          state: false,
+          onToggled: (self, on) => {
+            if (on) {
+              if (Widgets.get().length >= widgetLimit) {
+                // self.state = false;
+                return;
+              }
+              // Create widget only if it's not already created
+              if (!selector.widgetInstance) {
+                selector.widgetInstance = selector.widget();
+              }
+              // Add the widget instance to Widgets if it's not already added
+              if (!Widgets.get().includes(selector)) {
+                print(Widgets.get().length);
+                Widgets.set([...Widgets.get(), selector]);
+                print(Widgets.get().length);
+              }
+            } else {
+              let newWidgets = Widgets.get().filter((w) => w != selector); // Remove it from the array
+              if (Widgets.get().length == newWidgets.length) return;
+              Widgets.set(newWidgets);
+              selector.widgetInstance = undefined;
+            }
+          },
+        });
+        // <ToggleButton
+        //   className={"selector"}
+        //   label={selector.icon}
+        //   // state={
+        //   //   Widgets.get().find((w) => w.name == selector.name) ? true : false
+        //   // }
+        //   // onToggled={(self) => {
+        //   //   if (self.active) {
+        //   //     if (Widgets.get().length >= widgetLimit) {
+        //   //       self.active = false;
+        //   //       return;
+        //   //     }
+        //   //     if (!selector.widgetInstance) {
+        //   //       selector.widgetInstance = selector.widget();
+        //   //     }
+        //   //     if (!Widgets.get().includes(selector)) {
+        //   //       Widgets.get() = [...Widgets.get(), selector];
+        //   //     }
+        //   //   } else {
+        //   //     let newWidgets = Widgets.get().filter((w) => w != selector);
+        //   //     if (Widgets.get().length == newWidgets.length) return;
+        //   //     Widgets.get() = newWidgets;
+        //   //     selector.widgetInstance = undefined;
+        //   //   }
+        //   // }}
+        // />
       })}
     </box>
   );
@@ -173,49 +208,86 @@ const WidgetActions = () => {
 const kelvinMin = 1000;
 const kelvinMax = 10000;
 
-// const Utilities = () =>
-//   Widget.Box({
-//     vertical: true,
-//     spacing: 5,
-//     vexpand: true,
-//     vpack: "center",
-//     children: [
-//       Widget.Button({
-//         label: "󱁝",
-//         class_name: "",
-//         on_clicked: () => {
-//           const kelvin = Math.min(
-//             kelvinMax,
-//             Math.max(kelvinMin, globalSettings.value.hyprsunset.kelvin + 1000)
-//           );
-//           Utils.execAsync(
-//             `bash -c 'killall hyprsunset; hyprsunset -t ${kelvin}'`
-//           ).catch((err) => {
-//             Utils.notify("Failed to change kelvin", err);
-//             return;
-//           });
-//           setSetting("hyprsunset.kelvin", kelvin);
-//         },
-//       }),
-//       Widget.Button({
-//         label: "󱁞",
-//         class_name: "",
-//         on_clicked: () => {
-//           const kelvin = Math.min(
-//             kelvinMax,
-//             Math.max(kelvinMin, globalSettings.value.hyprsunset.kelvin - 1000)
-//           );
-//           Utils.execAsync(
-//             `bash -c 'killall hyprsunset; hyprsunset -t ${kelvin}'`
-//           ).catch((err) => {
-//             Utils.notify("Failed to change kelvin", err);
-//             return;
-//           });
-//           setSetting("hyprsunset.kelvin", kelvin);
-//         },
-//       }),
-//     ],
-//   });
+const Utilities = () => (
+  // Widget.Box({
+  //   vertical: true,
+  //   spacing: 5,
+  //   vexpand: true,
+  //   vpack: "center",
+  //   children: [
+  //     Widget.Button({
+  //       label: "󱁝",
+  //       class_name: "",
+  //       on_clicked: () => {
+  //         const kelvin = Math.min(
+  //           kelvinMax,
+  //           Math.max(kelvinMin, globalSettings.get().hyprsunset.kelvin + 1000)
+  //         );
+  //         Utils.execAsync(
+  //           `bash -c 'killall hyprsunset; hyprsunset -t ${kelvin}'`
+  //         ).catch((err) => {
+  //           Utils.notify("Failed to change kelvin", err);
+  //           return;
+  //         });
+  //         setSetting("hyprsunset.kelvin", kelvin);
+  //       },
+  //     }),
+  //     Widget.Button({
+  //       label: "󱁞",
+  //       class_name: "",
+  //       on_clicked: () => {
+  //         const kelvin = Math.min(
+  //           kelvinMax,
+  //           Math.max(kelvinMin, globalSettings.get().hyprsunset.kelvin - 1000)
+  //         );
+  //         Utils.execAsync(
+  //           `bash -c 'killall hyprsunset; hyprsunset -t ${kelvin}'`
+  //         ).catch((err) => {
+  //           Utils.notify("Failed to change kelvin", err);
+  //           return;
+  //         });
+  //         setSetting("hyprsunset.kelvin", kelvin);
+  //       },
+  //     }),
+  //   ],
+  // });
+  <box vertical={true} spacing={5} vexpand={true} valign={Gtk.Align.CENTER}>
+    {/* <button
+      label={"󱁝"}
+      className={""}
+      onClicked={() => {
+        const kelvin = Math.min(
+          kelvinMax,
+          Math.max(kelvinMin, globalSettings.get().hyprsunset.kelvin + 1000)
+        );
+        Utils.execAsync(
+          `bash -c 'killall hyprsunset; hyprsunset -t ${kelvin}'`
+        ).catch((err) => {
+          Utils.notify("Failed to change kelvin", err);
+          return;
+        });
+        setSetting("hyprsunset.kelvin", kelvin);
+      }}
+    />
+    <button
+      label={"󱁞"}
+      className={""}
+      onClicked={() => {
+        const kelvin = Math.min(
+          kelvinMax,
+          Math.max(kelvinMin, globalSettings.get().hyprsunset.kelvin - 1000)
+        );
+        Utils.execAsync(
+          `bash -c 'killall hyprsunset; hyprsunset -t ${kelvin}'`
+        ).catch((err) => {
+          Utils.notify("Failed to change kelvin", err);
+          return;
+        });
+        setSetting("hyprsunset.kelvin", kelvin);
+      }}
+    /> */}
+  </box>
+);
 
 // function WindowActions() {
 //   return Widget.Box(
@@ -237,18 +309,18 @@ const kelvinMax = 10000;
 //       label: "",
 //       class_name: "expand-window",
 //       on_clicked: () =>
-//         (rightPanelWidth.value =
-//           rightPanelWidth.value < maxRightPanelWidth
-//             ? rightPanelWidth.value + 50
+//         (rightPanelWidth.get() =
+//           rightPanelWidth.get() < maxRightPanelWidth
+//             ? rightPanelWidth.get() + 50
 //             : maxRightPanelWidth),
 //     }),
 //     Widget.Button({
 //       label: "",
 //       class_name: "shrink-window",
 //       on_clicked: () =>
-//         (rightPanelWidth.value =
-//           rightPanelWidth.value > minRightPanelWidth
-//             ? rightPanelWidth.value - 50
+//         (rightPanelWidth.get() =
+//           rightPanelWidth.get() > minRightPanelWidth
+//             ? rightPanelWidth.get() - 50
 //             : minRightPanelWidth),
 //     }),
 //     WaifuVisibility(),
@@ -256,43 +328,49 @@ const kelvinMax = 10000;
 //       label: "",
 //       class_name: "exclusivity",
 //       onToggled: ({ active }) => {
-//         rightPanelExclusivity.value = active;
+//         rightPanelExclusivity.get() = active;
 //       },
 //     }).hook(
 //       rightPanelExclusivity,
-//       (self) => (self.active = rightPanelExclusivity.value),
+//       (self) => (self.active = rightPanelExclusivity.get()),
 //       "changed"
 //     ),
 //     Widget.ToggleButton({
-//       label: rightPanelLock.value ? "" : "",
+//       label: rightPanelLock.get() ? "" : "",
 //       class_name: "lock",
-//       active: rightPanelLock.value,
+//       active: rightPanelLock.get(),
 //       onToggled: (self) => {
-//         rightPanelLock.value = self.active;
+//         rightPanelLock.get() = self.active;
 //         self.label = self.active ? "" : "";
 //       },
 //     }),
 //     Widget.Button({
 //       label: "",
 //       class_name: "close",
-//       on_clicked: () => (rightPanelVisibility.value = false),
+//       on_clicked: () => (rightPanelVisibility.get() = false),
 //     })
 //   );
 // }
 
-// const Actions = () =>
-//   Widget.Box({
-//     class_name: "right-panel-actions",
-//     vertical: true,
-//     children: [WidgetActions(), Utilities(), WindowActions()],
-//   });
+const Actions = () => (
+  // Widget.Box({
+  //   class_name: "right-panel-actions",
+  //   vertical: true,
+  //   children: [WidgetActions(), Utilities(), WindowActions()],
+  // });
+  <box className={"right-panel-actions"} vertical={true}>
+    <WidgetActions />
+    {/* <Utilities />
+    <WindowActions /> */}
+  </box>
+);
 
 function Panel() {
   //   return Widget.Box({
   //     css: `padding-left: 5px;`,
   //     child: Widget.EventBox({
   //       on_hover_lost: () => {
-  //         if (!rightPanelLock.value) rightPanelVisibility.value = false;
+  //         if (!rightPanelLock.get()) rightPanelVisibility.get() = false;
   //       },
   //       child: Widget.Box({
   //         children: [
@@ -317,7 +395,7 @@ function Panel() {
       css={`
         padding-left: 5px;
       `}>
-      <eventbox
+      <EventBox
         onHoverLost={() => {
           if (!rightPanelLock.get()) rightPanelVisibility.set(false);
         }}>
@@ -329,13 +407,14 @@ function Panel() {
             )}
             vertical={true}
             spacing={5}>
-            {/* {Widgets.bind().as((widgets) =>
-              widgets.map((widget) => widget.widget())
-            )} */}
+            {bind(Widgets).as((widgets) => {
+              print("widgets are ", widgets.length);
+              return widgets.map((widget) => widget.widget());
+            })}
           </box>
-          {/* <Actions /> */}
+          <Actions />
         </box>
-      </eventbox>
+      </EventBox>
     </box>
   );
 }
@@ -348,18 +427,18 @@ function Panel() {
 //     exclusivity: "normal",
 //     layer: "overlay",
 //     keymode: "on-demand",
-//     visible: rightPanelVisibility.value,
+//     visible: rightPanelVisibility.get(),
 //     child: Panel(),
 //   })
 //     .hook(
 //       rightPanelExclusivity,
 //       (self) => {
-//         self.exclusivity = rightPanelExclusivity.value ? "exclusive" : "normal";
-//         self.layer = rightPanelExclusivity.value ? "bottom" : "top";
-//         self.class_name = rightPanelExclusivity.value
+//         self.exclusivity = rightPanelExclusivity.get() ? "exclusive" : "normal";
+//         self.layer = rightPanelExclusivity.get() ? "bottom" : "top";
+//         self.class_name = rightPanelExclusivity.get()
 //           ? "right-panel exclusive"
 //           : "right-panel normal";
-//         self.margins = rightPanelExclusivity.value
+//         self.margins = rightPanelExclusivity.get()
 //           ? [0, 0]
 //           : [5, globalMargin, globalMargin, globalMargin];
 //       },
@@ -367,7 +446,7 @@ function Panel() {
 //     )
 //     .hook(
 //       rightPanelVisibility,
-//       (self) => (self.visible = rightPanelVisibility.value),
+//       (self) => (self.visible = rightPanelVisibility.get()),
 //       "changed"
 //     );
 
@@ -384,7 +463,29 @@ const Window = () => {
       exclusivity={Astal.Exclusivity.NORMAL}
       layer={Astal.Layer.OVERLAY}
       keymode={Astal.Keymode.ON_DEMAND}
-      visible={rightPanelVisibility.get()}>
+      visible={rightPanelVisibility.get()}
+      setup={(self) => {
+        // self.hook(
+        //   rightPanelExclusivity,
+        //   (self) => {
+        //     self.exclusivity = rightPanelExclusivity.get()
+        //       ? "exclusive"
+        //       : "normal";
+        //     self.layer = rightPanelExclusivity.get() ? "bottom" : "top";
+        //     self.className = rightPanelExclusivity.get()
+        //       ? "right-panel exclusive"
+        //       : "right-panel normal";
+        //     self.margins = rightPanelExclusivity.get()
+        //       ? [0, 0]
+        //       : [5, globalMargin.get(), globalMargin.get(), globalMargin.get()];
+        //   },
+        //   "changed"
+        // );
+        self.hook(
+          rightPanelVisibility,
+          (self) => (self.visible = rightPanelVisibility.get())
+        );
+      }}>
       <Panel />
     </window>
   );

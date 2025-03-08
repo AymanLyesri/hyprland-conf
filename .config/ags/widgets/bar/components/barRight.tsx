@@ -2,7 +2,7 @@ import Brightness from "../../../services/brightness";
 const brightness = Brightness.get_default();
 // import { barLock, DND, rightPanelVisibility } from "../../../variables";
 // import { closeProgress, openProgress } from "widgets/Progress";
-import { custom_revealer } from "../../CustomRevealer";
+import CustomRevealer from "../../CustomRevealer";
 import { bind, execAsync } from "../../../../../../../usr/share/astal/gjs";
 import {
   Box,
@@ -76,7 +76,7 @@ function BrightnessWidget() {
       widthRequest={100}
       className="slider"
       drawValue={false}
-      onDragged={(self) => (brightness.screen = self.value)}
+      onDragged={(self) => (brightness.screen = self.get())}
       value={bind(brightness, "screen")}
     />
   );
@@ -100,7 +100,7 @@ function BrightnessWidget() {
     />
   );
 
-  return custom_revealer(label, slider);
+  return CustomRevealer(label, slider);
 }
 
 function Volume() {
@@ -117,7 +117,7 @@ function Volume() {
     />
   );
 
-  return custom_revealer(icon, slider, "", () =>
+  return CustomRevealer(icon, slider, "", () =>
     execAsync(`pavucontrol`).catch((err) => print(err))
   );
 }
@@ -125,29 +125,7 @@ function Volume() {
 function BatteryWidget() {
   const value = bind(battery, "percentage").as((p) => p);
 
-  if (battery.percentage < 0) return <Box />;
-
-  //   const label = Widget.Label({
-  //     class_name: "icon",
-  //     label: battery.bind("percent").as((p) => {
-  //       switch (true) {
-  //         case p == 100:
-  //           return "";
-  //         case p > 75:
-  //           return "";
-  //         case p > 50:
-  //           return "";
-  //         case p > 25:
-  //           return "";
-  //         case p > 10:
-  //           return "";
-  //         case p > 0:
-  //           return "";
-  //         default:
-  //           return "";
-  //       }
-  //     }),
-  //   });
+  if (battery.percentage <= 0) return <Box />;
 
   const label = (
     <label
@@ -173,19 +151,7 @@ function BatteryWidget() {
     />
   );
 
-  //   const info = Widget.Label({
-  //     class_name: "icon",
-  //     label: value.as((v) => `${v}%`),
-  //   });
-
   const info = <Label className={"icon"} label={value.as((v) => `${v}%`)} />;
-
-  // const slider = Widget.LevelBar({
-  //   class_name: "",
-  //   widthRequest: 100,
-  //   min_value: 0,
-  //   value: value.as((v) => v / 100),
-  // });
 
   const slider = (
     <Slider
@@ -195,11 +161,6 @@ function BatteryWidget() {
     />
   );
 
-  // const box = Widget.Box({
-  //   children: [info, slider],
-  //   class_name: "battery",
-  // });
-
   const box = (
     <Box className="battery">
       {info}
@@ -207,7 +168,7 @@ function BatteryWidget() {
     </Box>
   );
 
-  return custom_revealer(label, box);
+  return CustomRevealer(label, box);
 }
 
 function SysTray() {
@@ -260,13 +221,13 @@ function SysTray() {
 
 function PinBar() {
   // return Widget.ToggleButton({
-  //   active: barLock.value,
+  //   active: barLock.get(),
   //   onToggled: (self) => {
-  //     barLock.value = self.active;
+  //     barLock.get() = self.active;
   //     self.label = self.active ? "" : "";
   //   },
   //   class_name: "panel-lock icon",
-  //   label: barLock.value ? "" : "",
+  //   label: barLock.get() ? "" : "",
   // });
 
   return (
@@ -284,25 +245,24 @@ function PinBar() {
 
 function DndToggle() {
   // return Widget.ToggleButton({
-  //   active: DND.value,
-  //   on_toggled: ({ active }) => (DND.value = active),
+  //   active: DND.get(),
+  //   on_toggled: ({ active }) => (DND.get() = active),
   //   class_name: "dnd-toggle icon",
   // }).hook(
   //   DND,
   //   (self) => {
-  //     self.active = DND.value;
-  //     self.label = DND.value ? "" : "";
+  //     self.active = DND.get();
+  //     self.label = DND.get() ? "" : "";
   //   },
   //   "changed"
   // );
 
-  return (
-    <ToggleButton
-      state={DND.get()}
-      onToggled={(self, on) => DND.set(on)}
-      className="dnd-toggle icon"
-    />
-  );
+  return ToggleButton({
+    state: DND.get(),
+    onToggled: (self, on) => DND.set(on),
+    className: "dnd-toggle icon",
+    label: DND.get() ? "" : "",
+  });
 }
 
 export default () => {

@@ -9,10 +9,10 @@ import {
   userPanelVisibility,
 } from "../../../variables";
 
-import Hyprland from "gi://AstalHyprland";
+import hyprland from "gi://AstalHyprland";
 import ToggleButton from "../../toggleButton";
 
-const hyprland = Hyprland.get_default();
+const Hyprland = hyprland.get_default();
 
 function Workspaces() {
   let previousWorkspace: number = 0; // Variable to store the previous workspace ID
@@ -38,8 +38,8 @@ function Workspaces() {
   const workspaces = Variable.derive(
     [
       // bind(newAppWorkspace, "value"),
-      bind(hyprland, "workspaces"),
-      bind(hyprland, "focusedWorkspace").as((w) => w.id),
+      bind(Hyprland, "workspaces"),
+      bind(Hyprland, "focusedWorkspace").as((w) => w.id),
     ],
     (workspaces, currentWorkspace) => {
       print("workspaces", workspaces.length);
@@ -94,7 +94,7 @@ function Workspaces() {
             label={icon}
             onClick={() => {
               print(`dispatch workspace ${id}`);
-              hyprland.message_async(`dispatch workspace ${id}`, (res) =>
+              Hyprland.message_async(`dispatch workspace ${id}`, (res) =>
                 print(res)
               );
             }}
@@ -107,7 +107,7 @@ function Workspaces() {
           className="special"
           label={workspaceToIcon[0]}
           onClick={
-            () => hyprland.message(`dispatch togglespecialworkspace`)
+            () => Hyprland.message(`dispatch togglespecialworkspace`)
             // .catch((err) => print(err))
           }
         />
@@ -128,12 +128,12 @@ function AppLauncher() {
       label=""
       onToggled={(self, on) =>
         on
-          ? hyprland
-              .message_async("open app-launcher")
-              .catch((err) => print(err))
-          : hyprland
-              .message_async("close app-launcher")
-              .catch((err) => print(err))
+          ? Hyprland.message_async("open app-launcher").catch((err) =>
+              print(err)
+            )
+          : Hyprland.message_async("close app-launcher").catch((err) =>
+              print(err)
+            )
       }
     />
   );
@@ -145,9 +145,9 @@ function OverView() {
       className="overview"
       label="󱗼"
       onClick={() =>
-        hyprland
-          .message_async("dispatch hyprexpo:expo")
-          .catch((err) => print(err))
+        Hyprland.message_async("dispatch hyprexpo:expo toggle").catch((err) =>
+          print(err)
+        )
       }
     />
   );

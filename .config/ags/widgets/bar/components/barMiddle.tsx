@@ -17,8 +17,8 @@ import {
   Revealer,
 } from "../../../../../../../usr/share/astal/gjs/gtk3/widget";
 import { bind, Variable } from "../../../../../../../usr/share/astal/gjs";
-import { custom_revealer } from "../../CustomRevealer";
 import { Astal, Gtk } from "astal/gtk3";
+import CustomRevealer from "../../CustomRevealer";
 
 function Media() {
   const progress = (player: Mpris.Player) => {
@@ -111,9 +111,9 @@ function Media() {
 function Clock() {
   const revealer = <label className="revealer" label={bind(date_more)}></label>;
 
-  const trigger = <label className="trigger" label={bind(date_more)}></label>;
+  const trigger = <label className="trigger" label={bind(date_less)}></label>;
 
-  return custom_revealer(trigger, revealer, "clock");
+  return CustomRevealer(trigger, revealer, "clock");
 }
 
 function Bandwidth() {

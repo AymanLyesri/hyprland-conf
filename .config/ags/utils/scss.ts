@@ -1,7 +1,7 @@
 
-import { App } from "../../../../../usr/share/astal/gjs/gtk3"
-import { exec, monitorFile } from "../../../../../usr/share/astal/gjs"
-import Astal from "gi://Astal?version=3.0"
+import { exec } from "astal"
+import { monitorFile } from "astal/file"
+import { App } from "astal/gtk3"
 // import { globalOpacity } from "../variables"
 
 // target css file
