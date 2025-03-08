@@ -1,4 +1,5 @@
-import { exec, readFile, writeFile } from "../../../../../usr/share/astal/gjs";
+import { exec, readFile, writeFile } from "astal";
+
 
 export function readJSONFile(filePath: string): any
 {
@@ -26,7 +27,7 @@ export function writeJSONFile(filePath: string, data: any)
 {
     if (readFile(filePath) == '') exec(`mkdir -p ${filePath.split('/').slice(0, -1).join('/')}`);
     try {
-        writeFile(JSON.stringify(data, null, 4), filePath);
+        writeFile(filePath, JSON.stringify(data, null, 4));
     } catch (e) {
         console.error('Error:', e);
     }

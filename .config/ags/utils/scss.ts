@@ -2,7 +2,7 @@
 import { exec } from "astal"
 import { monitorFile } from "astal/file"
 import { App } from "astal/gtk3"
-// import { globalOpacity } from "../variables"
+import { globalOpacity } from "../variables"
 
 // target css file
 const tmpCss = `/tmp/tmp-style.css`
@@ -16,10 +16,9 @@ export const getCssPath = () => tmpCss
 
 export function refreshCss()
 {
-    // main scss file
     const scss = `./scss/style.scss`
 
-    const response = exec(`bash -c "echo '$OPACITY: ${1};' | cat - ${defaultColors} ${walColors} ${scss} > ${tmpScss} && sassc ${tmpScss} ${tmpCss} -I ${scss_dir}"`)
+    const response = exec(`bash -c "echo '$OPACITY: ${globalOpacity.get()};' | cat - ${defaultColors} ${walColors} ${scss} > ${tmpScss} && sassc ${tmpScss} ${tmpCss} -I ${scss_dir}"`)
     // if (response != "") notify(response)
 
     App.apply_css(tmpCss)

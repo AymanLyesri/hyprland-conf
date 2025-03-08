@@ -11,6 +11,7 @@ App.start({
         Bar()
         RightPanel()
         RightPanelHover()
+
         console.log("App started");
 
     },

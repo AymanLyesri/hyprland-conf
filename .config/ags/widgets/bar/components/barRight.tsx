@@ -4,11 +4,6 @@ const brightness = Brightness.get_default();
 // import { closeProgress, openProgress } from "widgets/Progress";
 import CustomRevealer from "../../CustomRevealer";
 import { bind, execAsync } from "../../../../../../../usr/share/astal/gjs";
-import {
-  Box,
-  Label,
-  Slider,
-} from "../../../../../../../usr/share/astal/gjs/gtk3/widget";
 
 import Wp from "gi://AstalWp";
 const audio = Wp.get_default()!.audio;
@@ -20,6 +15,7 @@ import Tray from "gi://AstalTray";
 import ToggleButton from "../../toggleButton";
 import { Gtk } from "astal/gtk3";
 import { barLock, DND } from "../../../variables";
+import { Box, Label, Slider } from "astal/gtk3/widget";
 const SystemTray = Tray.get_default();
 
 function Theme() {
@@ -76,7 +72,7 @@ function BrightnessWidget() {
       widthRequest={100}
       className="slider"
       drawValue={false}
-      onDragged={(self) => (brightness.screen = self.get())}
+      onDragged={(self) => (brightness.screen = self.value)}
       value={bind(brightness, "screen")}
     />
   );

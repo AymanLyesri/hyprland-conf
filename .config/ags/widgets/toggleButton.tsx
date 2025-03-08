@@ -17,9 +17,9 @@ export default function ToggleButton(btnprops: ToggleButtonProps) {
       setup={(self) => {
         setup?.(self);
 
-        self.toggleClassName("active", innerState.get());
+        self.toggleClassName("checked", innerState.get());
         self.hook(innerState, () =>
-          self.toggleClassName("active", innerState.get())
+          self.toggleClassName("checked", innerState.get())
         );
 
         if (state instanceof Binding) {
@@ -28,6 +28,8 @@ export default function ToggleButton(btnprops: ToggleButtonProps) {
       }}
       onClicked={(self) => {
         onToggled?.(self, !innerState.get());
+        innerState.set(!innerState.get());
+        self.toggleClassName("checked", innerState.get());
       }}>
       {child}
     </button>

@@ -2,6 +2,7 @@ import { bind, exec, execAsync, readFile, timeout, Variable } from "astal";
 import { Waifu } from "../../../interfaces/waifu.interface";
 import { readJSONFile } from "../../../utils/json";
 import {
+  globalSettings,
   globalTransition,
   rightPanelWidth,
   waifuCurrent,
@@ -10,11 +11,7 @@ import {
 import { Gtk } from "astal/gtk3";
 import ToggleButton from "../../toggleButton";
 import { EventBox } from "astal/gtk3/widget";
-import {
-  getSetting,
-  globalSettings,
-  setSetting,
-} from "../../../utils/settings";
+import { getSetting, setSetting } from "../../../utils/settings";
 import { notify } from "../../../utils/notification";
 
 import hyprland from "gi://AstalHyprland";
@@ -61,7 +58,7 @@ const CopyImage = () =>
 const OpenImage = () =>
   Hyprland.message_async(
     "dispatch exec [float;size 50%] feh --scale-down " + waifuPath
-  );
+  ).catch((err) => notify({ summary: "Error", body: err }));
 
 const addToFavorites = () => {
   if (!waifuFavorites.get().find((fav) => fav.id === waifuCurrent.get().id)) {
@@ -113,7 +110,8 @@ const removeFavorite = (favorite: any) => {
           waifuFavorites.get().filter((fav) => fav !== favorite)
         );
       }
-    );
+    )
+    .catch((err) => notify({ summary: "Error", body: err }));
 };
 
 const PinImageToTerminal = () => {
