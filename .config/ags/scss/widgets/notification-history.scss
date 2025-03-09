@@ -1,8 +1,5 @@
 .notification-history {
-  // @extend .module;
-
   .filter {
-    margin-bottom: 5px;
     .spotify {
       background: $spotify-background;
     }
@@ -30,6 +27,8 @@
   .notification {
     min-width: 0px;
     min-height: 0px;
+    margin: 0px;
+    padding: 0px;
 
     .icon {
       min-width: 20px;
@@ -41,6 +40,6 @@
     }
   }
   .clear {
-    @extend .danger;
+    // @extend .danger;
   }
 }

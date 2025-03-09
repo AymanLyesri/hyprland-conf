@@ -19,7 +19,7 @@ function Workspaces() {
 
   // Add the "." icon for empty workspaces
   const workspaceToIcon = [
-    "",
+    "󰻃",
     "",
     "",
     "",
@@ -32,8 +32,8 @@ function Workspaces() {
     "",
   ];
   const emptyIcon = ""; // Icon for empty workspaces
-  const extraWorkspaceIcon = ""; // Icon for workspaces after 10
-  const maxWorkspaces = 10; // Set the maximum number of workspaces
+  const extraWorkspaceIcon = ""; // Icon for workspaces beyond the maximum limit
+  const maxWorkspaces = 10; // Maximum number of workspaces to display with custom icons
 
   const workspaces = Variable.derive(
     [
@@ -63,9 +63,21 @@ function Workspaces() {
             : isActive
             ? workspaceToIcon[id]
             : emptyIcon; // Icon for extra workspaces beyond 10
-        // const isFocused = currentWorkspace == id; // Determine if the current ID is focused
+        const isFocused = currentWorkspace == id; // Determine if the current ID is focused
 
         let class_names: string[] = ["button"]; // Default class names
+
+        if (isFocused) {
+          if (previousWorkspace !== currentWorkspace) {
+            // Workspace has changed, mark it as `focused`
+            class_names.push("focused");
+          } else {
+            // Same workspace remains focused, mark it as `same-focused`
+            class_names.push("same-focused");
+          }
+          // Update the previous workspace ID
+          previousWorkspace_ = currentWorkspace;
+        }
 
         // Handle active groups
         if (isActive) {

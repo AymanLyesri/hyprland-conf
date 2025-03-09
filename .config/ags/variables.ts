@@ -39,16 +39,16 @@ export const emptyWorkspace = 0
 
 export const newAppWorkspace = Variable(0)
 
-export const rightPanelVisibility = Variable(getSetting("rightPanel.visibility"));
+export const rightPanelVisibility = Variable<boolean>(getSetting("rightPanel.visibility"));
 rightPanelVisibility.subscribe((value) => setSetting("rightPanel.visibility", value));
-export const rightPanelExclusivity = Variable(getSetting("rightPanel.exclusivity"));
+export const rightPanelExclusivity = Variable<boolean>(getSetting("rightPanel.exclusivity"));
 rightPanelExclusivity.subscribe((value) => setSetting("rightPanel.exclusivity", value));
 export const rightPanelWidth = Variable<number>(getSetting("rightPanel.width"));
 rightPanelWidth.subscribe((value) => setSetting("rightPanel.width", value));
-export const rightPanelLock = Variable(getSetting("rightPanel.lock"));
+export const rightPanelLock = Variable<boolean>(getSetting("rightPanel.lock"));
 rightPanelLock.subscribe((value) => setSetting("rightPanel.lock", value));
 
-export const DND = Variable(getSetting("notifications.dnd"));
+export const DND = Variable<boolean>(getSetting("notifications.dnd"));
 DND.subscribe((value) => setSetting("notifications.dnd", value));
 
 export const widgetLimit = 5

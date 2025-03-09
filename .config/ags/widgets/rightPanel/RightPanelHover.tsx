@@ -1,25 +1,12 @@
 import { Astal } from "astal/gtk3";
 import { rightPanelVisibility } from "../../variables";
+import { bind } from "astal";
 
 export default () => {
-  //   return Widget.Window({
-  //     name: `right-panel-hover`, // name has to be unique
-  //     anchor: ["right", "top", "bottom"],
-  //     exclusivity: "ignore",
-  //     layer: "top",
-  //     child: Widget.EventBox({
-  //       hexpand: true,
-  //       vexpand: true,
-  //       on_hover: () => (rightPanelVisibility.get() = true),
-  //       child: Widget.Box({ css: `min-width: 1px;` }),
-  //     }),
-  //   });
-  console.log("RightPanelHover");
-
   return (
     <window
       className="RightPanel"
-      exclusivity={Astal.Exclusivity.EXCLUSIVE}
+      exclusivity={Astal.Exclusivity.IGNORE}
       layer={Astal.Layer.TOP}
       anchor={
         Astal.WindowAnchor.RIGHT |
@@ -28,8 +15,7 @@ export default () => {
       }>
       <eventbox
         onHover={() => {
-          console.log("hovered");
-          rightPanelVisibility.set(true);
+          if (!rightPanelVisibility.get()) rightPanelVisibility.set(true);
         }}
         vexpand={true}
         hexpand={true}>

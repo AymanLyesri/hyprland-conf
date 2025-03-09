@@ -104,11 +104,9 @@ export default function NotificationPopups() {
       className="NotificationPopups"
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
       anchor={TOP | RIGHT}
-      margin={globalMargin}>
-      <box
-        vertical
-        // noImplicitDestroy
-        spacing={globalMargin}>
+      margin={globalMargin}
+      widthRequest={400}>
+      <box vertical vexpand={true} spacing={globalMargin}>
         {bind(notifs)}
       </box>
     </window>

@@ -460,62 +460,28 @@ function Panel() {
   return (
     <box
       css={`
-        padding-left: 5px;
+        // padding-left: 5px;
       `}>
       <EventBox
         onHoverLost={() => {
           if (!rightPanelLock.get()) rightPanelVisibility.set(false);
         }}>
-        <box>
-          <box
-            className={"main-content"}
-            css={bind(rightPanelWidth).as(
-              (width) => `*{min-width: ${width}px}`
-            )}
-            vertical={true}
-            spacing={5}>
-            {bind(Widgets).as((widgets) => {
-              print("widgets are ", widgets.length);
-              return widgets.map((widget) => widget.widget());
-            })}
-          </box>
-          <Actions />
-        </box>
+        <box css={"min-width:5px"} />
       </EventBox>
+      <box
+        className={"main-content"}
+        css={bind(rightPanelWidth).as((width) => `*{min-width: ${width}px}`)}
+        vertical={true}
+        spacing={5}>
+        {bind(Widgets).as((widgets) => {
+          print("widgets are ", widgets.length);
+          return widgets.map((widget) => widget.widget());
+        })}
+      </box>
+      <Actions />
     </box>
   );
 }
-
-// const Window = () =>
-//   Widget.Window({
-//     name: `right-panel`,
-//     class_name: "right-panel",
-//     anchor: ["right", "top", "bottom"],
-//     exclusivity: "normal",
-//     layer: "overlay",
-//     keymode: "on-demand",
-//     visible: rightPanelVisibility.get(),
-//     child: Panel(),
-//   })
-//     .hook(
-//       rightPanelExclusivity,
-//       (self) => {
-//         self.exclusivity = rightPanelExclusivity.get() ? "exclusive" : "normal";
-//         self.layer = rightPanelExclusivity.get() ? "bottom" : "top";
-//         self.class_name = rightPanelExclusivity.get()
-//           ? "right-panel exclusive"
-//           : "right-panel normal";
-//         self.margins = rightPanelExclusivity.get()
-//           ? [0, 0]
-//           : [5, globalMargin, globalMargin, globalMargin];
-//       },
-//       "changed"
-//     )
-//     .hook(
-//       rightPanelVisibility,
-//       (self) => (self.visible = rightPanelVisibility.get()),
-//       "changed"
-//     );
 
 const Window = () => {
   return (
@@ -527,8 +493,13 @@ const Window = () => {
         Astal.WindowAnchor.TOP |
         Astal.WindowAnchor.BOTTOM
       }
-      exclusivity={Astal.Exclusivity.EXCLUSIVE}
-      layer={Astal.Layer.OVERLAY}
+      exclusivity={
+        rightPanelExclusivity.get()
+          ? Astal.Exclusivity.EXCLUSIVE
+          : Astal.Exclusivity.NORMAL
+      }
+      layer={Astal.Layer.BOTTOM}
+      margin={rightPanelExclusivity.get() ? 0 : globalMargin}
       keymode={Astal.Keymode.ON_DEMAND}
       visible={rightPanelVisibility.get()}
       setup={(self) => {
@@ -542,9 +513,7 @@ const Window = () => {
           self.className = rightPanelExclusivity.get()
             ? "right-panel exclusive"
             : "right-panel normal";
-          // self.margins = rightPanelExclusivity.get()
-          //   ? [0, 0]
-          //   : [5, globalMargin.get(), globalMargin.get(), globalMargin.get()];
+          self.margin = rightPanelExclusivity.get() ? 0 : globalMargin;
         });
         self.hook(
           rightPanelVisibility,

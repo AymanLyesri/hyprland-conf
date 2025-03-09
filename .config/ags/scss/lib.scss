@@ -77,7 +77,7 @@ entry {
 }
 
 separator {
-  border-top: 1px solid $secondary;
+  border-top: 1px solid $tertiary;
 }
 
 menu {
@@ -119,6 +119,11 @@ switch {
   slider {
     @extend .slider;
   }
+}
+
+scrollable {
+  border-width: 0;
+  border-radius: 10px;
 }
 
 scrolledwindow {

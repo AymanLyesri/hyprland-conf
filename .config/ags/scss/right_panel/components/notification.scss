@@ -1,52 +1,56 @@
 .notification {
   @extend .module;
   min-height: 2px;
-  min-width: 400px;
+  // min-width: 300px;
   margin: 0px;
   padding: 0px;
   transition: opacity 0.5s ease-out; /* Adjust timing */
 
-  .lock {
-    padding: 5px;
-    border-radius: 10px 0px 0px 10px;
+  separator {
+    margin-bottom: 5px;
   }
 
-  .copy {
+  .circular-progress {
+    margin: 0px;
     padding: 0px;
-    min-width: 15px;
+    min-width: 20px;
+    min-height: 10px;
+    font-size: 5px;
+
+    label {
+      font-size: 10px;
+      font-weight: 800;
+      color: $foreground;
+    }
+  }
+
+  .lock,
+  .copy,
+  .expand {
+    padding: 0px 5px;
   }
 
   .close {
-    @extend .danger;
-    min-width: 15px;
     padding: 0px;
+    @extend .danger;
   }
 
   .main-content {
     padding: 10px;
   }
 
-  &.Spotify {
-    background: $spotify-background;
+  &.Spotify .app-name {
+    color: $spotify-foreground;
   }
 
+  .image,
   .icon {
+    font-size: 50px;
     min-width: 50px;
     min-height: 50px;
-    margin-right: 1em;
-  }
-
-  .icon image {
-    font-size: 40px;
     /* to center the icon */
-    margin: 5px;
+    margin-right: 5px;
     color: $secondary;
-  }
-
-  .icon box {
-    min-width: 50px;
-    min-height: 50px;
-    border-radius: 10px;
   }
 
   .title {
@@ -56,7 +60,7 @@
   }
 
   .body {
-    color: $secondary;
+    color: $foreground-secondary;
     font-size: 1em;
   }
   .actions {
