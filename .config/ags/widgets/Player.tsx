@@ -1,7 +1,7 @@
 import { bind } from "astal";
 import AstalMpris from "gi://AstalMpris?version=0.1";
 import { getDominantColor } from "../utils/image";
-import { Box, Button, Icon, Label, Slider } from "astal/gtk3/widget";
+import { Box, Button, CenterBox, Icon, Label, Slider } from "astal/gtk3/widget";
 import { Gtk } from "astal/gtk3";
 import { rightPanelWidth } from "../variables";
 
@@ -291,15 +291,15 @@ export function Player(
   return (
     <Box
       className={`player ${playerType}`}
-      css={
+      css={bind(player, "coverArt").as((p) =>
         playerType == "widget"
           ? `
-            min-height:${rightPanelWidth.get()}px;
-            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-                url('${bind(player, "coverArt").as((p) => p)}');
-            `
+                min-height:${rightPanelWidth.get()}px;
+                background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                    url('${p}');
+                `
           : ``
-      }>
+      )}>
       {img()}
       <Box vertical={true} hexpand={true} spacing={5}>
         <Box>
@@ -309,7 +309,7 @@ export function Player(
         <Box vexpand={true}></Box>
         {title}
         {positionSlider}
-        <Box>
+        <CenterBox>
           {positionLabel}
           <Box>
             {prev}
@@ -317,7 +317,7 @@ export function Player(
             {next}
           </Box>
           {lengthLabel}
-        </Box>
+        </CenterBox>
       </Box>
     </Box>
   );

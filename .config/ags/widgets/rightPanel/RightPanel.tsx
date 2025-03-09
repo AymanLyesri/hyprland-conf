@@ -17,6 +17,7 @@ import ToggleButton from "../toggleButton";
 import { exportSettings, setSetting } from "../../utils/settings";
 import { EventBox, Slider } from "astal/gtk3/widget";
 import MediaWidget from "../MediaWidget";
+import NotificationHistory from "./NotificationHistory";
 
 // Name need to match the name of the widget()
 export const WidgetSelectors: WidgetSelector[] = [
@@ -30,11 +31,11 @@ export const WidgetSelectors: WidgetSelector[] = [
     icon: "",
     widget: () => MediaWidget(),
   },
-  // {
-  //   name: "NotificationHistory",
-  //   icon: "",
-  //   widget: () => NotificationHistory(),
-  // },
+  {
+    name: "NotificationHistory",
+    icon: "",
+    widget: () => NotificationHistory(),
+  },
   // {
   //   name: "Calendar",
   //   icon: "",
@@ -390,18 +391,21 @@ function WindowActions() {
           );
         }}
       />
-      <button
+      <ToggleButton
         label={""}
         className={"exclusivity"}
-        onClicked={() => {
-          rightPanelExclusivity.set(!rightPanelExclusivity.get());
+        state={rightPanelExclusivity.get()}
+        onToggled={(self, on) => {
+          rightPanelExclusivity.set(on);
         }}
       />
-      <button
+      <ToggleButton
         label={rightPanelLock.get() ? "" : ""}
         className={"lock"}
-        onClicked={() => {
-          rightPanelLock.set(!rightPanelLock.get());
+        state={rightPanelLock.get()}
+        onToggled={(self, on) => {
+          rightPanelLock.set(on);
+          self.label = on ? "" : "";
         }}
       />
       <button
@@ -528,20 +532,20 @@ const Window = () => {
       keymode={Astal.Keymode.ON_DEMAND}
       visible={rightPanelVisibility.get()}
       setup={(self) => {
-        // self.hook(rightPanelExclusivity, (self) => {
-        //   self.exclusivity = rightPanelExclusivity.get()
-        //     ? Astal.Exclusivity.EXCLUSIVE
-        //     : Astal.Exclusivity.NORMAL;
-        //   self.layer = rightPanelExclusivity.get()
-        //     ? Astal.Layer.BOTTOM
-        //     : Astal.Layer.TOP;
-        //   self.className = rightPanelExclusivity.get()
-        //     ? "right-panel exclusive"
-        //     : "right-panel normal";
-        //   // self.margins = rightPanelExclusivity.get()
-        //   //   ? [0, 0]
-        //   //   : [5, globalMargin.get(), globalMargin.get(), globalMargin.get()];
-        // });
+        self.hook(rightPanelExclusivity, (self) => {
+          self.exclusivity = rightPanelExclusivity.get()
+            ? Astal.Exclusivity.EXCLUSIVE
+            : Astal.Exclusivity.NORMAL;
+          self.layer = rightPanelExclusivity.get()
+            ? Astal.Layer.BOTTOM
+            : Astal.Layer.TOP;
+          self.className = rightPanelExclusivity.get()
+            ? "right-panel exclusive"
+            : "right-panel normal";
+          // self.margins = rightPanelExclusivity.get()
+          //   ? [0, 0]
+          //   : [5, globalMargin.get(), globalMargin.get(), globalMargin.get()];
+        });
         self.hook(
           rightPanelVisibility,
           (self) => (self.visible = rightPanelVisibility.get())

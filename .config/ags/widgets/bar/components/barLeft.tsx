@@ -9,9 +9,9 @@ import {
   userPanelVisibility,
 } from "../../../variables";
 
-import hyprland from "gi://AstalHyprland";
 import ToggleButton from "../../toggleButton";
 
+import hyprland from "gi://AstalHyprland";
 const Hyprland = hyprland.get_default();
 
 function Workspaces() {

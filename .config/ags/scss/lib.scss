@@ -32,7 +32,7 @@ button,
     outline: none;
     // border-color: transparent;
   }
-  &:checked {
+  &.checked {
     background: $secondary;
     color: $color0;
   }

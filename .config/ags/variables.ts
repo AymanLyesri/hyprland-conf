@@ -6,6 +6,8 @@ import { refreshCss } from "./utils/scss";
 import { GLib, Variable } from "astal";
 import { writeJSONFile } from "./utils/json";
 
+export const NOTIFICATION_DELAY = 5000
+
 // Settings are stored in a json file, containing all the settings, check if it exists, if not, create it
 export const globalSettings = Variable<Settings>(defaultSettings);
 autoCreateSettings();
