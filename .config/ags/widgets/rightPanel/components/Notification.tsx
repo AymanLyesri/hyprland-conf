@@ -55,11 +55,7 @@ function NotificationIcon(n: Notifd.Notification) {
 
   if (n.desktopEntry && isIcon(n.desktopEntry)) icon = n.desktopEntry;
 
-  return (
-    <box>
-      <icon className="icon" icon={icon} />
-    </box>
-  );
+  return <icon className="icon" icon={icon} />;
 }
 
 export default ({
@@ -93,9 +89,8 @@ export default ({
       valign={Gtk.Align.START}
       halign={Gtk.Align.CENTER}
       hexpand={false}
-      className="icon">
-      {NotificationIcon(n)}
-    </box>
+      className="icon"
+      child={NotificationIcon(n)}></box>
   );
 
   const title = (
@@ -183,27 +178,28 @@ export default ({
     <revealer
       reveal_child={false}
       transition_type={Gtk.RevealerTransitionType.SLIDE_LEFT}
-      transitionDuration={globalTransition}>
-      {popup ? lockButton : copyButton}
-    </revealer>
+      transitionDuration={globalTransition}
+      child={popup ? lockButton : copyButton}
+    />
   );
 
   const closeRevealer = (
     <revealer
       reveal_child={false}
       transition_type={Gtk.RevealerTransitionType.SLIDE_RIGHT}
-      transitionDuration={globalTransition}>
-      <button
-        className="close"
-        label=""
-        onClicked={() => {
-          closeNotification();
-          timeout(globalTransition, () => {
-            // n.close();
-          });
-        }}
-      />
-    </revealer>
+      transitionDuration={globalTransition}
+      child={
+        <button
+          className="close"
+          label=""
+          onClicked={() => {
+            closeNotification();
+            timeout(globalTransition, () => {
+              // n.close();
+            });
+          }}
+        />
+      }></revealer>
   );
 
   const CircularProgress = () => {
@@ -252,7 +248,7 @@ export default ({
         <box>
           {icon}
           <box vertical={true} spacing={5}>
-            <box hexpand={true}>{title}</box>
+            <box hexpand={true} child={title}></box>
             {body}
           </box>
         </box>
@@ -271,9 +267,8 @@ export default ({
         timeout(1, () => {
           self.reveal_child = true;
         });
-      }}>
-      {Box}
-    </revealer>
+      }}
+      child={Box}></revealer>
   );
 
   const Parent = (
@@ -297,9 +292,7 @@ export default ({
         }}
         onClick={() => (popup ? lockButton.activate() : copyButton.activate())}
         // onSecondaryClick={() => closeRevealer.child.activate()}
-      >
-        {Revealer}
-      </eventbox>
+        child={Revealer}></eventbox>
     </box>
   );
 

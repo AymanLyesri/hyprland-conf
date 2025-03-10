@@ -8,7 +8,7 @@ export function containsOperator(str: string): boolean
     return operatorPattern.test(str);
 }
 
-export function arithmetic(text)
+export function arithmetic(text: string)
 {
     try {
         // Evaluate the arithmetic expression

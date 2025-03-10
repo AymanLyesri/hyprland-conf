@@ -1,3 +1,4 @@
+import { App } from "astal/gtk3";
 import { bind, Variable } from "../../../../../../../usr/share/astal/gjs";
 import {
   Box,
@@ -119,7 +120,10 @@ function Workspaces() {
           className="special"
           label={workspaceToIcon[0]}
           onClick={
-            () => Hyprland.message(`dispatch togglespecialworkspace`)
+            () =>
+              Hyprland.message_async(`dispatch togglespecialworkspace`, (res) =>
+                print(res)
+              )
             // .catch((err) => print(err))
           }
         />
@@ -138,15 +142,7 @@ function AppLauncher() {
     <ToggleButton
       className="app-search"
       label=""
-      onToggled={(self, on) =>
-        on
-          ? Hyprland.message_async("open app-launcher").catch((err) =>
-              print(err)
-            )
-          : Hyprland.message_async("close app-launcher").catch((err) =>
-              print(err)
-            )
-      }
+      onToggled={(self, on) => App.toggle_window("app-launcher")}
     />
   );
 }
@@ -157,8 +153,8 @@ function OverView() {
       className="overview"
       label="󱗼"
       onClick={() =>
-        Hyprland.message_async("dispatch hyprexpo:expo toggle").catch((err) =>
-          print(err)
+        Hyprland.message_async("dispatch hyprexpo:expo toggle", (res) =>
+          print(res)
         )
       }
     />

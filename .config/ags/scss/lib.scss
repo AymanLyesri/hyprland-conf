@@ -121,14 +121,13 @@ switch {
   }
 }
 
-scrollable {
+scrollable > * {
   border-width: 0;
-  border-radius: 10px;
 }
 
 scrolledwindow {
   slider {
-    background: $secondary;
+    background: black;
   }
 }
 

@@ -1,9 +1,12 @@
 import { autoCreateSettings, defaultSettings, getSetting, setSetting, settingsPath } from "./utils/settings";
 
+import Hyprland from "gi://AstalHyprland";
+const hyprland = Hyprland.get_default();
+
 import { WidgetSelector } from "./interfaces/widgetSelector.interface";
 import { WidgetSelectors } from "./widgets/rightPanel/RightPanel";
 import { refreshCss } from "./utils/scss";
-import { GLib, Variable } from "astal";
+import { bind, Binding, GLib, Variable } from "astal";
 import { writeJSONFile } from "./utils/json";
 
 export const NOTIFICATION_DELAY = 5000
@@ -34,8 +37,8 @@ waifuFavorites.subscribe((value) => setSetting("waifu.favorites", value));
 export const waifuCurrent = Variable(getSetting("waifu.current"));
 waifuCurrent.subscribe((value) => setSetting("waifu.current", value));
 
-// export const emptyWorkspace = hyprland.active.client.bind("title").as(title => title ? 0 : 1)
-export const emptyWorkspace = 0
+export const focusedClient: Binding<Hyprland.Client> = bind(hyprland, "focusedClient");
+export const emptyWorkspace: Binding<boolean> = focusedClient.as((client) => !client);
 
 export const newAppWorkspace = Variable(0)
 

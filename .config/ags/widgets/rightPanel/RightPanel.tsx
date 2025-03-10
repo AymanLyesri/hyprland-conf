@@ -15,7 +15,6 @@ import { bind } from "astal";
 import CustomRevealer from "../CustomRevealer";
 import ToggleButton from "../toggleButton";
 import { exportSettings, setSetting } from "../../utils/settings";
-import { EventBox, Slider } from "astal/gtk3/widget";
 import MediaWidget from "../MediaWidget";
 import NotificationHistory from "./NotificationHistory";
 
@@ -73,7 +72,7 @@ const opacitySlider = () => {
     />
   );
 
-  //   const slider = Widget.Slider({
+  //   const slider = Widget.slider({
   //     hexpand: false,
   //     vexpand: true,
   //     vertical: true,
@@ -87,7 +86,7 @@ const opacitySlider = () => {
   //   });
 
   const slider = (
-    <Slider
+    <slider
       hexpand={false}
       vexpand={true}
       vertical={true}
@@ -435,7 +434,7 @@ const Actions = () => (
 function Panel() {
   //   return Widget.Box({
   //     css: `padding-left: 5px;`,
-  //     child: Widget.EventBox({
+  //     child: Widget.eventbox({
   //       on_hover_lost: () => {
   //         if (!rightPanelLock.get()) rightPanelVisibility.get() = false;
   //       },
@@ -462,17 +461,16 @@ function Panel() {
       css={`
         // padding-left: 5px;
       `}>
-      <EventBox
+      <eventbox
         onHoverLost={() => {
           if (!rightPanelLock.get()) rightPanelVisibility.set(false);
-        }}>
-        <box css={"min-width:5px"} />
-      </EventBox>
+        }}
+        child={<box css={"min-width:5px"} />}></eventbox>
       <box
         className={"main-content"}
         css={bind(rightPanelWidth).as((width) => `*{min-width: ${width}px}`)}
         vertical={true}
-        spacing={5}>
+        spacing={10}>
         {bind(Widgets).as((widgets) => {
           print("widgets are ", widgets.length);
           return widgets.map((widget) => widget.widget());
@@ -487,41 +485,28 @@ const Window = () => {
   return (
     <window
       name={`right-panel`}
-      className={"right-panel"}
+      namespace={"right-panel"}
+      className={bind(rightPanelExclusivity).as((exclusivity) =>
+        exclusivity ? "right-panel exclusive" : "right-panel normal"
+      )}
       anchor={
         Astal.WindowAnchor.RIGHT |
         Astal.WindowAnchor.TOP |
         Astal.WindowAnchor.BOTTOM
       }
-      exclusivity={
-        rightPanelExclusivity.get()
-          ? Astal.Exclusivity.EXCLUSIVE
-          : Astal.Exclusivity.NORMAL
-      }
-      layer={Astal.Layer.BOTTOM}
-      margin={rightPanelExclusivity.get() ? 0 : globalMargin}
+      exclusivity={bind(rightPanelExclusivity).as((exclusivity) =>
+        exclusivity ? Astal.Exclusivity.EXCLUSIVE : Astal.Exclusivity.NORMAL
+      )}
+      layer={bind(rightPanelExclusivity).as((exclusivity) =>
+        exclusivity ? Astal.Layer.BOTTOM : Astal.Layer.TOP
+      )}
+      margin={bind(rightPanelExclusivity).as((exclusivity) =>
+        exclusivity ? 0 : globalMargin
+      )}
       keymode={Astal.Keymode.ON_DEMAND}
-      visible={rightPanelVisibility.get()}
-      setup={(self) => {
-        self.hook(rightPanelExclusivity, (self) => {
-          self.exclusivity = rightPanelExclusivity.get()
-            ? Astal.Exclusivity.EXCLUSIVE
-            : Astal.Exclusivity.NORMAL;
-          self.layer = rightPanelExclusivity.get()
-            ? Astal.Layer.BOTTOM
-            : Astal.Layer.TOP;
-          self.className = rightPanelExclusivity.get()
-            ? "right-panel exclusive"
-            : "right-panel normal";
-          self.margin = rightPanelExclusivity.get() ? 0 : globalMargin;
-        });
-        self.hook(
-          rightPanelVisibility,
-          (self) => (self.visible = rightPanelVisibility.get())
-        );
-      }}>
-      <Panel />
-    </window>
+      visible={bind(rightPanelVisibility)}
+      child={<Panel />}
+    />
   );
 };
 

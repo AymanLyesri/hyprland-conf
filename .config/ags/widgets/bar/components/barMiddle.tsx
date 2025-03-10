@@ -9,13 +9,9 @@ import {
   date_less,
   date_more,
   emptyWorkspace,
+  focusedClient,
   globalTransition,
 } from "../../../variables";
-import {
-  CircularProgress,
-  EventBox,
-  Revealer,
-} from "../../../../../../../usr/share/astal/gjs/gtk3/widget";
 import { bind, Variable } from "../../../../../../../usr/share/astal/gjs";
 import { Astal, Gtk } from "astal/gtk3";
 import CustomRevealer from "../../CustomRevealer";
@@ -26,16 +22,15 @@ function Media() {
       Astal.Icon.lookup_icon(e) ? e : "audio-x-generic-symbolic"
     );
     return (
-      <CircularProgress
+      <circularprogress
         className="progress"
         rounded={true}
         inverted={false}
         // startAt={0.75}
         value={bind(player, "position").as((p) =>
           player.length > 0 ? p / player.length : 0
-        )}>
-        <icon className="icon" icon={playerIcon} />
-      </CircularProgress>
+        )}
+        child={<icon className="icon" icon={playerIcon} />}></circularprogress>
     );
   };
 
@@ -73,7 +68,6 @@ function Media() {
       <box className="media" css={coverArt(player)}>
         {progress(player)}
         {title(player)}
-        {" -- "}
         {artist(player)}
       </box>
     );
@@ -87,24 +81,24 @@ function Media() {
     );
 
   return (
-    <Revealer
+    <revealer
       revealChild={bind(mpris, "players").as((arr) => arr.length > 0)}
       transitionDuration={globalTransition}
       transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
       // setup={(self) =>
       //   bind(mpris, "players").as((arr) => (self.reveal_child = arr.length > 0))
       // }
-    >
-      <EventBox
-        className="media-event"
-        onClick={() =>
-          hyprland.message_async("dispatch workspace 4", (res) => print(res))
-        }
-        on_hover={() => {}}
-        child={bind(mpris, "players").as((arr) =>
-          arr.length > 0 ? activePlayer() : <box />
-        )}></EventBox>
-    </Revealer>
+      child={
+        <eventbox
+          className="media-event"
+          onClick={() =>
+            hyprland.message_async("dispatch workspace 4", (res) => print(res))
+          }
+          on_hover={() => {}}
+          child={bind(mpris, "players").as((arr) =>
+            arr.length > 0 ? activePlayer() : <box />
+          )}></eventbox>
+      }></revealer>
   );
 }
 
@@ -134,14 +128,12 @@ function Bandwidth() {
 }
 
 function ClientTitle() {
-  const focused = bind(hyprland, "focusedClient");
-
   return (
-    <Revealer
-      revealChild={focused.as(Boolean)}
+    <revealer
+      revealChild={emptyWorkspace.as((empty) => !empty)}
       transitionDuration={globalTransition}
-      transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}>
-      {focused.as(
+      transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
+      child={focusedClient.as(
         (client) =>
           client && (
             <label
@@ -151,8 +143,7 @@ function ClientTitle() {
               label={bind(client, "title").as(String)}
             />
           )
-      )}
-    </Revealer>
+      )}></revealer>
   );
 }
 

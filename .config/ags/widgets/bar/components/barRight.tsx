@@ -1,7 +1,5 @@
 import Brightness from "../../../services/brightness";
 const brightness = Brightness.get_default();
-// import { barLock, DND, rightPanelVisibility } from "../../../variables";
-// import { closeProgress, openProgress } from "widgets/Progress";
 import CustomRevealer from "../../CustomRevealer";
 import { bind, execAsync } from "../../../../../../../usr/share/astal/gjs";
 
@@ -13,10 +11,14 @@ const battery = Battery.get_default();
 
 import Tray from "gi://AstalTray";
 import ToggleButton from "../../toggleButton";
-import { Gtk } from "astal/gtk3";
-import { barLock, DND } from "../../../variables";
-import { Box, Label, Slider } from "astal/gtk3/widget";
-const SystemTray = Tray.get_default();
+import { App, Gdk, Gtk } from "astal/gtk3";
+import {
+  barLock,
+  DND,
+  globalTransition,
+  rightPanelLock,
+  rightPanelVisibility,
+} from "../../../variables";
 
 function Theme() {
   function getIcon() {
@@ -65,10 +67,10 @@ function Theme() {
 }
 
 function BrightnessWidget() {
-  if (brightness.screen == 0) return <Box />;
+  if (brightness.screen == 0) return <box />;
 
   const slider = (
-    <Slider
+    <slider
       widthRequest={100}
       className="slider"
       drawValue={false}
@@ -121,7 +123,7 @@ function Volume() {
 function BatteryWidget() {
   const value = bind(battery, "percentage").as((p) => p);
 
-  if (battery.percentage <= 0) return <Box />;
+  if (battery.percentage <= 0) return <box />;
 
   const label = (
     <label
@@ -147,10 +149,10 @@ function BatteryWidget() {
     />
   );
 
-  const info = <Label className={"icon"} label={value.as((v) => `${v}%`)} />;
+  const info = <label className={"icon"} label={value.as((v) => `${v}%`)} />;
 
   const slider = (
-    <Slider
+    <slider
       className="slider"
       widthRequest={100}
       value={value.as((v) => v / 100)}
@@ -158,74 +160,37 @@ function BatteryWidget() {
   );
 
   const box = (
-    <Box className="battery">
+    <box className="battery">
       {info}
       {slider}
-    </Box>
+    </box>
   );
 
   return CustomRevealer(label, box);
 }
 
 function SysTray() {
-  // const tray = Tray.get_default();
-  // return (
-  //   <box className="SysTray">
-  //     {bind(tray, "items").as((items) =>
-  //       items.map((item) => (
-  //         <menubutton
-  //           tooltipMarkup={bind(item, "tooltipMarkup")}
-  //           usePopover={false}
-  //           actionGroup={bind(item, "actionGroup").as((ag) => ["dbusmenu", ag])}
-  //           menuModel={bind(item, "menuModel")}>
-  //           <icon gicon={bind(item, "gicon")} />
-  //         </menubutton>
-  //       ))
-  //     )}
-  //   </box>
-  // );
+  const tray = Tray.get_default();
+
+  const items = bind(tray, "items").as((items) =>
+    items.map((item) => (
+      <menubutton
+        margin={0}
+        cursor="pointer"
+        usePopover={false}
+        tooltipMarkup={bind(item, "tooltipMarkup")}
+        actionGroup={bind(item, "actionGroup").as((ag) => ["dbusmenu", ag])}
+        menuModel={bind(item, "menuModel")}
+        child={
+          <icon gicon={bind(item, "gicon")} className="systemtray-icon" />
+        }></menubutton>
+    ))
+  );
+
+  return <box className="system-tray">{items}</box>;
 }
 
-// function SysTray() {
-//   const items = bind(SystemTray, "items").as((items) =>
-//     items.map((item) => (
-//       // Widget.Button({
-//       //   child: Widget.Icon({ icon: item.bind("icon") }),
-//       //   on_primary_click: (_, event) => item.activate(event),
-//       //   on_secondary_click: (_, event) => item.openMenu(event),
-//       //   on_middle_click: (_, event) => item.secondaryActivate(event),
-//       //   tooltip_markup: item.bind("tooltip_markup"),
-//       // })
-
-//       <button
-//         child={<icon icon={bind(item, "iconName")} />}
-//         onPrimaryClick={(_, event) => item.activate(event, event)}
-//         // onSecondaryClick={(_, event) => item.openMenu(event)}
-//         // onMiddleClick={(_, event) => item.secondaryActivate(event)}
-//         tooltipMarkup={bind(item, "tooltip_markup")}
-//       />
-//     ))
-//   );
-
-//   // return Widget.Box({
-//   //   children: items,
-//   //   class_name: "system-tray",
-//   // });
-
-//   return <Box className="system-tray">{items}</Box>;
-// }
-
 function PinBar() {
-  // return Widget.ToggleButton({
-  //   active: barLock.get(),
-  //   onToggled: (self) => {
-  //     barLock.get() = self.active;
-  //     self.label = self.active ? "" : "";
-  //   },
-  //   class_name: "panel-lock icon",
-  //   label: barLock.get() ? "" : "",
-  // });
-
   return (
     <ToggleButton
       state={barLock.get()}
@@ -240,52 +205,46 @@ function PinBar() {
 }
 
 function DndToggle() {
-  // return Widget.ToggleButton({
-  //   active: DND.get(),
-  //   on_toggled: ({ active }) => (DND.get() = active),
-  //   class_name: "dnd-toggle icon",
-  // }).hook(
-  //   DND,
-  //   (self) => {
-  //     self.active = DND.get();
-  //     self.label = DND.get() ? "" : "";
-  //   },
-  //   "changed"
-  // );
-
   return ToggleButton({
     state: DND.get(),
-    onToggled: (self, on) => DND.set(on),
+    onToggled: (self, on) => {
+      DND.set(on);
+      self.label = DND.get() ? "" : "";
+    },
     className: "dnd-toggle icon",
     label: DND.get() ? "" : "",
   });
 }
 
-export default () => {
-  // return Widget.Box({
-  //   class_name: "bar-right",
-  //   hpack: "end",
-  //   spacing: 5,
-  //   children: [
-  //     BatteryWidget(),
-  //     Brightness(),
-  //     Volume(),
-  //     SysTray(),
-  //     //   Theme(),
-  //     PinBar(),
-  //     DndToggle(),
-  //   ],
-  // });
-
+function RightPanel() {
   return (
-    <Box className="bar-right" hexpand halign={Gtk.Align.END} spacing={5}>
+    <revealer
+      revealChild={bind(rightPanelLock).as((lock) => lock)}
+      transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
+      transitionDuration={globalTransition}
+      child={
+        <ToggleButton
+          state={bind(rightPanelVisibility)}
+          label={bind(rightPanelVisibility).as((v) => (v ? "" : ""))}
+          onToggled={(self, on) => rightPanelVisibility.set(on)}
+          className="panel-trigger icon"
+        />
+      }
+    />
+  );
+}
+
+export default () => {
+  return (
+    <box className="bar-right" hexpand halign={Gtk.Align.END} spacing={5}>
       <BatteryWidget />
       <BrightnessWidget />
       <Volume />
-      {/* <SysTray /> */}
+      <SysTray />
       <Theme />
       <PinBar />
+      <RightPanel />
       <DndToggle />
-    </Box>
+    </box>
   );
 };

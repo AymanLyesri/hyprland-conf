@@ -30,8 +30,8 @@ export default function ToggleButton(btnprops: ToggleButtonProps) {
         onToggled?.(self, !innerState.get());
         innerState.set(!innerState.get());
         self.toggleClassName("checked", innerState.get());
-      }}>
-      {child}
-    </button>
+      }}
+      child={child}
+    />
   );
 }

@@ -32,6 +32,11 @@ bindkey '^[[B' history-substring-search-down
 
 ############################################################
 
+# # Informative Prompt
+# echo "Ctrl+F => fastfetch / clear"
+
+############################################################
+
 # Aliases for ls
 alias ls='lsd'
 
@@ -40,6 +45,14 @@ alias cat='bat'
 
 # Aliases for fastfetch
 alias f='clear && source $HOME/.config/fastfetch/fastfetch.sh'
+fastfetch() {
+    clear
+    $HOME/.config/fastfetch/fastfetch.sh
+    zle redisplay
+}
+
+zle -N fastfetch
+bindkey '^F' fastfetch
 
 # Aliase functions
 function code() {
@@ -48,7 +61,6 @@ function code() {
 function v() {
     /bin/neovide --fork $1 && exit
 }
-alias cpdir='pwd | tr -d "\r\n" | wl-copy'
 
 # Test Connection
 TEST_CONNECTION="/home/ayman/.config/hypr/scripts/test-connection.sh"
@@ -64,7 +76,13 @@ alias logout='hyprctl dispatch exit'
 source <(fzf --zsh)
 
 # Configuration Update
-alias update='$HOME/.config/hypr/maintenance/UPDATE.sh'
+alias update='bash -c "$(curl -fsSL https://raw.githubusercontent.com/AymanLyesri/hyprland-conf/refs/heads/master/.config/hypr/maintenance/UPDATE.sh)"'
 
 # Waifu Chat Bot and Assistant
 alias waifu='source $HOME/linux-chat-bot/main.sh "$(pwd)"'
+
+###REACT NATIVE SETUP (android studio) comment if u don't use react native
+export ANDROID_HOME=$HOME/Android/Sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+############################################################
