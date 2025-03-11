@@ -39,37 +39,38 @@ const Setting = (keys: string, setting: HyprlandSetting) => {
       />
     );
 
+    const setValue = ({ value }: { value: number }) => {
+      infoLabel.label = `${Math.round(value * 100)}%`;
+      switch (setting.type) {
+        case "int":
+          value = Math.round(value * (setting.max - setting.min));
+          break;
+        case "float":
+          value = parseFloat(value.toFixed(2)) * (setting.max - setting.min);
+          break;
+        default:
+          break;
+      }
+
+      setSetting(keys + ".value", value);
+      const configString = buildConfigString(keyArray.slice(1), value);
+      execAsync(
+        `bash -c "echo -e '${configString}' >${
+          hyprCustomDir + keyArray.at(-2) + "." + keyArray.at(-1)
+        }.conf"`
+      ).catch((err) => notify(err));
+    };
+
     const slider_ = (
       <slider
         halign={Gtk.Align.END}
-        draw_value={false}
+        step={0.01}
         width_request={169}
         className="slider"
         value={bind(globalSettings).as(
           (s) => getSetting(keys + ".value") / (setting.max - setting.min)
         )}
-        onDragged={({ value }) => {
-          infoLabel.label = `${Math.round(value * 100)}%`;
-          switch (setting.type) {
-            case "int":
-              value = Math.round(value * (setting.max - setting.min));
-              break;
-            case "float":
-              value =
-                parseFloat(value.toFixed(2)) * (setting.max - setting.min);
-              break;
-            default:
-              break;
-          }
-
-          setSetting(keys + ".value", value);
-          const configString = buildConfigString(keyArray.slice(1), value);
-          execAsync(
-            `bash -c "echo -e '${configString}' >${
-              hyprCustomDir + keyArray.at(-2) + "." + keyArray.at(-1)
-            }.conf"`
-          ).catch((err) => notify(err));
-        }}
+        onValueChanged={setValue}
       />
     );
 
@@ -94,11 +95,11 @@ const Setting = (keys: string, setting: HyprlandSetting) => {
 
     const switch_ = (
       <switch
-        active={bind(globalSettings).as((s) => getSetting(keys + ".value"))}
-        on_activate={({ active }) => {
-          infoLabel.label = active ? "On" : "Off";
+        active={getSetting(keys + ".value")}
+        onButtonPressEvent={({ active }) => {
+          active = !active;
+          // notify({ summary: "thuneu", body: active });
           setSetting(keys + ".value", active);
-
           const configString = buildConfigString(keyArray.slice(1), active);
           execAsync(
             `bash -c "echo -e '${configString}' >${

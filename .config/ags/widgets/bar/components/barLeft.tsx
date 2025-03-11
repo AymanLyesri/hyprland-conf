@@ -1,5 +1,9 @@
 import { App } from "astal/gtk3";
-import { bind, Variable } from "../../../../../../../usr/share/astal/gjs";
+import {
+  bind,
+  execAsync,
+  Variable,
+} from "../../../../../../../usr/share/astal/gjs";
 import {
   Box,
   Button,
@@ -152,7 +156,7 @@ function OverView() {
     <Button
       className="overview"
       label="󱗼"
-      onClick={() =>
+      onClicked={() =>
         Hyprland.message_async("dispatch hyprexpo:expo toggle", (res) =>
           print(res)
         )

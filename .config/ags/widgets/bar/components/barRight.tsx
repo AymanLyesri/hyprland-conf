@@ -3,9 +3,6 @@ const brightness = Brightness.get_default();
 import CustomRevealer from "../../CustomRevealer";
 import { bind, execAsync } from "../../../../../../../usr/share/astal/gjs";
 
-import Wp from "gi://AstalWp";
-const audio = Wp.get_default()!.audio;
-
 import Battery from "gi://AstalBattery";
 const battery = Battery.get_default();
 
@@ -107,10 +104,10 @@ function Volume() {
 
   const slider = (
     <slider
-      // hexpand
+      step={0.1}
       className="slider"
       widthRequest={100}
-      onDragged={({ value }) => (speaker.volume = value)}
+      onValueChanged={({ value }) => (speaker.volume = value)}
       value={bind(speaker, "volume")}
     />
   );
@@ -153,6 +150,7 @@ function BatteryWidget() {
 
   const slider = (
     <slider
+      dragging={false}
       className="slider"
       widthRequest={100}
       value={value.as((v) => v / 100)}

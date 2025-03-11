@@ -77,6 +77,7 @@ source <(fzf --zsh)
 
 # Configuration Update
 alias update='bash -c "$(curl -fsSL https://raw.githubusercontent.com/AymanLyesri/hyprland-conf/refs/heads/master/.config/hypr/maintenance/UPDATE.sh)"'
+alias 'update dev'='bash -c "$(curl -fsSL https://raw.githubusercontent.com/AymanLyesri/hyprland-conf/refs/heads/dev/.config/hypr/maintenance/UPDATE.sh)" -- dev'
 
 # Waifu Chat Bot and Assistant
 alias waifu='source $HOME/linux-chat-bot/main.sh "$(pwd)"'
