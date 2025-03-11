@@ -4,23 +4,38 @@
   border-radius: 10px;
   min-width: 500px;
 
+  .quick-apps {
+    button {
+      padding: 6px;
+    }
+  }
+
   .icon {
     margin: 5px 10px;
   }
 
   .results {
-    .argument {
-      color: $secondary;
-      font-size: 0.69rem;
-    }
     button {
       border: unset;
       margin-top: 10px;
       padding: 10px;
+      .argument {
+        color: $secondary;
+        font-size: 0.69rem;
+      }
       &:focus {
         background: $background;
+
         &.checked {
           background: $secondary;
+          .argument {
+            color: white;
+          }
+        }
+      }
+      &.checked {
+        .argument {
+          color: $tertiary;
         }
       }
     }

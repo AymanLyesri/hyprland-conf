@@ -61,9 +61,9 @@ const CopyImage = () =>
 
 const OpenImage = () =>
   Hyprland.message_async(
-    "dispatch exec [float;size 50%] feh --scale-down " + waifuPath,
+    `dispatch exec [float;size 50%] feh --scale-down $HOME/.config/ags/${waifuPath}`,
     (res) => {
-      notify({ summary: "Waifu", body: "Image opened in feh" });
+      notify({ summary: "Waifu", body: waifuPath });
     }
   );
 
@@ -245,25 +245,6 @@ function Actions() {
           child={
             <box className="favorites" vertical spacing={5}>
               <box vertical>
-                {/* {waifuFavorites.bind().as((favorites) =>
-                favorites.map((favorite) => (
-                  <eventBox className="favorite-event">
-                    <box
-                      className="favorite"
-                      css={`background-image: url("${favoritesPath + favorite.id}.jpg");`}>
-                      <button
-                        hexpand
-                        valign={Gtk.Align.START}
-                        halign={Gtk.Align.END}
-                        className="delete"
-                        label=""
-                        // onClicked={() => removeFavorite(favorite)}
-                      />
-                    </box>
-                    {/* onClicked={() => {
-                      GetImageFromApi(String(favorite.id));
-                      left.reveal_child = false;
-                    }}> */}
                 {bind(waifuFavorites).as((favorites) =>
                   favorites.map((favorite) => (
                     <eventbox
@@ -305,15 +286,8 @@ function Actions() {
         onToggled: (self, on) => {
           actions.reveal_child = on;
           self.label = on ? "" : "";
-          if (on)
-            timeout(15000, () => {
-              actions.reveal_child = false;
-              self.label = "";
-              // self.active = false;
-
-              left.reveal_child = false;
-            });
-          else left.reveal_child = false;
+          actions.reveal_child = on;
+          if (!on) left.reveal_child = false;
         },
       })}
       {actions}

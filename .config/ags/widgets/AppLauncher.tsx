@@ -10,7 +10,13 @@ import {
 } from "../utils/url";
 import { App, Astal, Gdk, Gtk } from "astal/gtk3";
 import { notify } from "../utils/notification";
-import { emptyWorkspace, globalMargin, newAppWorkspace } from "../variables";
+import {
+  emptyWorkspace,
+  globalMargin,
+  globalSettings,
+  globalTransition,
+  newAppWorkspace,
+} from "../variables";
 
 const apps = new Apps.Apps();
 
@@ -28,6 +34,64 @@ interface Result {
 }
 
 const Results = Variable<Result[]>([]);
+const quickApps = globalSettings.get().quickLauncher.apps;
+
+const QuickApps = () => {
+  const apps = (
+    <revealer
+      transition_type={Gtk.RevealerTransitionType.SLIDE_DOWN}
+      transition_duration={1500}
+      revealChild={bind(Results).as((results) => results.length === 0)}
+      child={
+        <scrollable
+          vexpand={true}
+          hexpand={true}
+          widthRequest={500}
+          hscroll={Gtk.PolicyType.ALWAYS}
+          vscroll={Gtk.PolicyType.NEVER}
+          child={
+            <box className="quick-apps" spacing={5}>
+              {quickApps.map((app) => (
+                <button
+                  className="quick-app"
+                  onClicked={() => {
+                    openProgress();
+                    execAsync(
+                      `bash ./scripts/app-loading-progress.sh ${app.app_name}`
+                    )
+                      .then((workspace) =>
+                        newAppWorkspace.set(Number(workspace))
+                      )
+                      .finally(() => closeProgress())
+                      .catch((err) => notify({ summary: "Error", body: err }));
+                    hyprland.message_async(
+                      `dispatch exec ${app.exec}`,
+                      () => {}
+                    );
+                    // .then(
+                    // })
+                    // .catch((err) => notify({ summary: "Error", body: err }));
+                  }}
+                  child={
+                    <box spacing={5}>
+                      <label className="icon" label={app.icon} />
+                      <label label={app.name} />
+                    </box>
+                  }></button>
+              ))}
+            </box>
+          }></scrollable>
+      }></revealer>
+  );
+
+  return (
+    <box
+      className="quick-launcher"
+      halign={Gtk.Align.CENTER}
+      spacing={5}
+      child={apps}></box>
+  );
+};
 
 // const help = (
 //   <menu>
@@ -243,7 +307,7 @@ const organizeResults = (results: Result[]) => {
   if (results.length === 0) return <box />;
 
   const rows = (
-    <box className="results" vertical={true} vexpand={true} hexpand={true}>
+    <box className="results" vertical={true}>
       {Array.from({ length: Math.ceil(results.length / 2) }).map((_, i) => (
         <box vertical={false} spacing={5}>
           {results.slice(i * 2, i * 2 + 2).map((element, j) => (
@@ -261,8 +325,6 @@ const organizeResults = (results: Result[]) => {
 
   return (
     <scrollable
-      vexpand={true}
-      hexpand={true}
       heightRequest={bind(Results).as((results) =>
         results.length * 25 > maxHeight ? maxHeight : results.length * 25
       )}
@@ -299,6 +361,7 @@ export default () => (
             <icon className="icon" icon="preferences-system-search-symbolic" />
             {Entry}
           </box>
+          {QuickApps()}
           {ResultsDisplay}
         </box>
       </eventbox>

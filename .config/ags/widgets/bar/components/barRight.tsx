@@ -10,7 +10,7 @@ const battery = Battery.get_default();
 
 import Tray from "gi://AstalTray";
 import ToggleButton from "../../toggleButton";
-import { App, Gdk, Gtk } from "astal/gtk3";
+import { Gtk } from "astal/gtk3";
 import {
   barLock,
   DND,
@@ -27,42 +27,20 @@ function Theme() {
       "$HOME/.config/hypr/theme/scripts/system-theme.sh get",
     ]).then((theme) => (theme.includes("dark") ? "" : ""));
   }
-
-  // return Widget.ToggleButton({
-  //     on_toggled: (self) =>
-  //     {
-  //         openProgress()
-  //         Utils.execAsync(['bash', '-c', '$HOME/.config/hypr/theme/scripts/set-global-theme.sh switch']).then(() => self.label = self.label == "" ? "" : "")
-  //             .finally(() => closeProgress())
-  //             .catch(err => Utils.notify(err))
-  //     },
-
-  //     label: "",
-  //     class_name: "theme icon",
-  //     setup: (self) => getIcon().then(icon => self.label = icon)
-  // })
-
-  const btnProps = {
-    onToggled: (self: any) => {
-      execAsync([
-        "bash",
-        "-c",
-        "$HOME/.config/hypr/theme/scripts/system-theme.sh get",
-      ])
-        .then((theme) => {
-          if (theme.includes("dark")) {
-            self.label = "";
-          } else {
-            self.label = "";
-          }
-        })
-        .catch((err) => print(err));
-    },
-    label: "",
-    className: "theme icon",
-  };
-
-  return ToggleButton(btnProps);
+  return (
+    <ToggleButton
+      onToggled={(self, on) => {
+        execAsync([
+          "bash",
+          "-c",
+          "$HOME/.config/hypr/theme/scripts/set-global-theme.sh switch",
+        ]).then(() => getIcon().then((icon) => (self.label = icon)));
+      }}
+      label=""
+      className="theme icon"
+      setup={(self) => getIcon().then((icon) => (self.label = icon))}
+    />
+  );
 }
 
 function BrightnessWidget() {

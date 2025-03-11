@@ -2,6 +2,8 @@ import Hyprland from "gi://AstalHyprland";
 const hyprland = Hyprland.get_default();
 import Mpris from "gi://AstalMpris";
 const mpris = Mpris.get_default();
+import Cava from "gi://AstalCava";
+const cava = Cava.get_default()!;
 
 import { playerToColor } from "../../../utils/color";
 import { lookupIcon, playerToIcon } from "../../../utils/icon";
@@ -15,6 +17,41 @@ import {
 import { bind, Variable } from "../../../../../../../usr/share/astal/gjs";
 import { App, Astal, Gtk } from "astal/gtk3";
 import CustomRevealer from "../../CustomRevealer";
+
+cava?.set_bars(12);
+const bars = Variable("");
+const blocks = [
+  "\u2581",
+  "\u2582",
+  "\u2583",
+  "\u2584",
+  "\u2585",
+  "\u2586",
+  "\u2587",
+  "\u2588",
+];
+
+function AudioVisualizer() {
+  cava?.connect("notify::values", () => {
+    let b = "";
+    cava
+      .get_values()
+      .map(
+        (val) => (b += blocks[Math.min(Math.floor(val * 8), blocks.length - 1)])
+      );
+    bars.set(b);
+  });
+  return (
+    <button
+      onClicked={() => {
+        hyprland.message_async(`dispatch exec kitty cava`, (res) => print(res));
+      }}
+      className={"cava"}
+      onDestroy={() => cava?.disconnect}
+      child={<label onDestroy={() => bars.drop()} label={bind(bars)} />}
+    />
+  );
+}
 
 function Media() {
   const progress = (player: Mpris.Player) => {
@@ -155,6 +192,7 @@ export default () => {
   return (
     <box className="bar-middle" spacing={5}>
       {/* <CavaWidget /> */}
+      <AudioVisualizer />
       <Media />
       <Clock />
       <Bandwidth />

@@ -2,6 +2,13 @@
   // padding: 0px 5px;
   // background: black;
 
+  .cava {
+    label {
+      // font-size: 15px;
+      color: $secondary;
+    }
+  }
+
   .clock {
     &:hover {
       .trigger {
