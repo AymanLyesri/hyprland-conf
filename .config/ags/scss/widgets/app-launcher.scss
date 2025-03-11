@@ -19,6 +19,9 @@
       padding: 10px;
       &:focus {
         background: $background;
+        &.checked {
+          background: $secondary;
+        }
       }
     }
   }

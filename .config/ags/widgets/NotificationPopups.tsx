@@ -3,7 +3,7 @@ import Notifd from "gi://AstalNotifd";
 import Notification from "./rightPanel/components/Notification";
 import { type Subscribable } from "astal/binding";
 import { Variable, bind, timeout } from "astal";
-import { globalMargin } from "../variables";
+import { DND, globalMargin } from "../variables";
 
 // see comment below in constructor
 const TIMEOUT_DELAY = 5000;
@@ -36,6 +36,7 @@ class NotificationMap implements Subscribable {
     // notifd.ignoreTimeout = true
 
     notifd.connect("notified", (_, id) => {
+      if (DND.get()) return;
       this.set(
         id,
         Notification({

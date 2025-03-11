@@ -1,5 +1,5 @@
-> [!IMPORTANT]
-> I am migrating the ags code from V1 to the new version V2, all the code needs to be rewriten, so it might take sometime, as an alternative you could just run `update` in the terminal to install previous ags V1
+<!-- > [!IMPORTANT]
+> I am migrating the ags code from V1 to the new version V2, all the code needs to be rewriten, so it might take sometime, as an alternative you could just run `update` in the terminal to install previous ags V1 -->
 
 # Description
 

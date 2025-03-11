@@ -62,9 +62,10 @@ const CopyImage = () =>
 const OpenImage = () =>
   Hyprland.message_async(
     "dispatch exec [float;size 50%] feh --scale-down " + waifuPath,
-    null
+    (res) => {
+      notify({ summary: "Waifu", body: "Image opened in feh" });
+    }
   );
-// .catch((err) => notify({ summary: "Error", body: err }));
 
 const addToFavorites = () => {
   if (!waifuFavorites.get().find((fav) => fav.id === waifuCurrent.get().id)) {

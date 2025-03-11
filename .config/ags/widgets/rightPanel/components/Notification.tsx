@@ -62,12 +62,10 @@ export default ({
   n,
   newNotification = false,
   popup = false,
-  setup = () => {},
 }: {
   n: Notifd.Notification;
   newNotification?: boolean;
   popup?: boolean;
-  setup?: () => void;
 }) => {
   const IsLocked = Variable<boolean>(false);
   IsLocked.subscribe((value) => {
@@ -107,6 +105,10 @@ export default ({
     />
   );
 
+  function removeSpecialCharacters(input: string): string {
+    return input.replace(/[><\/]/g, ""); // Removes >, <, and /
+  }
+
   const body = (
     <label
       className="body"
@@ -116,7 +118,7 @@ export default ({
       maxWidthChars={24}
       xalign={0}
       justify={Gtk.Justification.LEFT}
-      label={n.body}
+      label={removeSpecialCharacters(n.body)}
       wrap={true}
     />
   );
@@ -147,8 +149,8 @@ export default ({
       className="expand"
       state={false}
       onToggled={(self, on) => {
-        title.set_property("truncate", on);
-        body.set_property("truncate", on);
+        title.set_property("truncate", !on);
+        body.set_property("truncate", !on);
         self.label = on ? "" : "";
       }}
       label=""

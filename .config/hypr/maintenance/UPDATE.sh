@@ -33,7 +33,9 @@ else
 fi
 
 # $MAINTENANCE_DIR/AGSV1.sh
-yay -Rns agsv1 --noconfirm
+if pacman -Q agsv1 &>/dev/null; then
+    yay -Rns agsv1 --noconfirm
+fi
 
 $MAINTENANCE_DIR/WAL.sh
 

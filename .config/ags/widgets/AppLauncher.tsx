@@ -74,101 +74,90 @@ const Results = Variable<Result[]>([]);
 let debounceTimer: any;
 
 const Entry = (
-  <box spacing={5}>
-    <icon className="icon" icon="preferences-system-search-symbolic" />
-    <entry
-      hexpand={true}
-      placeholder_text="Search for an app, emoji, translate, url, or do some math..."
-      onChanged={async ({ text }) => {
-        if (debounceTimer) {
-          clearTimeout(debounceTimer);
-        }
+  <entry
+    hexpand={true}
+    placeholder_text="Search for an app, emoji, translate, url, or do some math..."
+    onChanged={async ({ text }) => {
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+      }
 
-        debounceTimer = setTimeout(async () => {
-          try {
-            if (!text || text.trim() === "") {
-              Results.set([]);
-              return;
-            }
-
-            const args: string[] = text.split(" ");
-
-            if (args[0].includes("translate")) {
-              const language = text.includes(">")
-                ? text.split(">")[1].trim()
-                : "en";
-              Results.set(
-                readJson(
-                  await execAsync(
-                    `bash ./scripts/translate.sh '${text
-                      .split(">")[0]
-                      .replace("translate", "")
-                      .trim()}' '${language}'`
-                  )
-                )
-              );
-            } else if (args[0].includes("emoji")) {
-              Results.set(
-                readJSONFile(`./assets/emojis/emojis.json`).filter(
-                  (emoji: any) =>
-                    emoji.app_tags
-                      .toLowerCase()
-                      .includes(text.replace("emoji", "").trim())
-                )
-              );
-            } else if (containsProtocolOrTLD(args[0])) {
-              Results.set([
-                {
-                  app_name: getDomainFromURL(text),
-                  app_exec: `xdg-open ${formatToURL(text)}`,
-                  app_type: "url",
-                },
-              ]);
-            } else if (containsOperator(args[0])) {
-              Results.set([
-                {
-                  app_name: arithmetic(text),
-                  app_exec: `wl-copy ${arithmetic(text)}`,
-                  app_type: "calc",
-                },
-              ]);
-            } else {
-              Results.set(
-                apps.fuzzy_query(args.shift()!).map((app) => ({
-                  app_name: app.name,
-                  app_exec: app.executable,
-                  app_arg: args.join(""),
-                  app_type: "app",
-                  app_icon: app.iconName,
-                  // desktop: app.desktop,
-                }))
-              );
-
-              if (Results.get().length === 0) {
-                Results.set([
-                  { app_name: `Try ${text}`, app_exec: text, app_icon: "󰋖" },
-                ]);
-              }
-            }
-          } catch (err) {
-            print(err);
+      debounceTimer = setTimeout(async () => {
+        try {
+          if (!text || text.trim() === "") {
+            Results.set([]);
+            return;
           }
-        }, 100); // 100ms delay
-      }}
-      onActivate={() => {
-        if (Results.get().length > 0) {
-          launchApp(Results.get()[0]);
+
+          const args: string[] = text.split(" ");
+
+          if (args[0].includes("translate")) {
+            const language = text.includes(">")
+              ? text.split(">")[1].trim()
+              : "en";
+            Results.set(
+              readJson(
+                await execAsync(
+                  `bash ./scripts/translate.sh '${text
+                    .split(">")[0]
+                    .replace("translate", "")
+                    .trim()}' '${language}'`
+                )
+              )
+            );
+          } else if (args[0].includes("emoji")) {
+            Results.set(
+              readJSONFile(`./assets/emojis/emojis.json`).filter((emoji: any) =>
+                emoji.app_tags
+                  .toLowerCase()
+                  .includes(text.replace("emoji", "").trim())
+              )
+            );
+          } else if (containsProtocolOrTLD(args[0])) {
+            Results.set([
+              {
+                app_name: getDomainFromURL(text),
+                app_exec: `xdg-open ${formatToURL(text)}`,
+                app_type: "url",
+              },
+            ]);
+          } else if (containsOperator(args[0])) {
+            Results.set([
+              {
+                app_name: arithmetic(text),
+                app_exec: `wl-copy ${arithmetic(text)}`,
+                app_type: "calc",
+              },
+            ]);
+          } else {
+            Results.set(
+              apps.fuzzy_query(args.shift()!).map((app) => ({
+                app_name: app.name,
+                app_exec: app.executable,
+                app_arg: args.join(""),
+                app_type: "app",
+                app_icon: app.iconName,
+                // desktop: app.desktop,
+              }))
+            );
+
+            if (Results.get().length === 0) {
+              Results.set([
+                { app_name: `Try ${text}`, app_exec: text, app_icon: "󰋖" },
+              ]);
+            }
+          }
+        } catch (err) {
+          print(err);
         }
-      }}
-    />
-    {/* <button
-      label="󰋖"
-      on_primary_click={(_, event) => {
-        help.popup_at_pointer(event);
-      }}
-    /> */}
-    {/* {help} */}
-  </box>
+      }, 100); // 100ms delay
+    }}
+    onActivate={() => {
+      if (Results.get().length > 0) {
+        launchApp(Results.get()[0]);
+      }
+    }}
+  />
 );
 
 const launchApp = (app: Result) => {
@@ -232,15 +221,24 @@ const organizeResults = (results: Result[]) => {
     </box>
   );
 
-  const button = (element: Result) => (
-    <button
-      hexpand={true}
-      child={buttonContent(element)}
-      onClick={() => {
-        launchApp(element);
-      }}
-    />
-  );
+  const AppButton = ({
+    element,
+    className,
+  }: {
+    element: Result;
+    className?: string;
+  }) => {
+    return (
+      <button
+        hexpand={true}
+        className={className}
+        child={buttonContent(element)}
+        onClick={() => {
+          launchApp(element);
+        }}
+      />
+    );
+  };
 
   if (results.length === 0) return <box />;
 
@@ -248,7 +246,12 @@ const organizeResults = (results: Result[]) => {
     <box className="results" vertical={true} vexpand={true} hexpand={true}>
       {Array.from({ length: Math.ceil(results.length / 2) }).map((_, i) => (
         <box vertical={false} spacing={5}>
-          {results.slice(i * 2, i * 2 + 2).map((element) => button(element))}
+          {results.slice(i * 2, i * 2 + 2).map((element, j) => (
+            <AppButton
+              element={element}
+              className={i === 0 && j === 0 ? "checked" : ""}
+            />
+          ))}
         </box>
       ))}
     </box>
@@ -285,13 +288,17 @@ export default () => (
     visible={false}
     onKeyPressEvent={(self, event) => {
       if (event.get_keyval()[1] === Gdk.KEY_Escape) {
-        self.hide();
+        Entry.set_text("");
+        Entry.grab_focus();
       }
     }}
     child={
       <eventbox>
         <box vertical={true} className="app-launcher">
-          {Entry}
+          <box spacing={5}>
+            <icon className="icon" icon="preferences-system-search-symbolic" />
+            {Entry}
+          </box>
           {ResultsDisplay}
         </box>
       </eventbox>
