@@ -1,5 +1,5 @@
 import { Box, Label } from "astal/gtk3/widget";
-import { Player } from "./Player";
+import Player from "./Player";
 import { Astal, Gtk } from "astal/gtk3";
 import Mpris from "gi://AstalMpris";
 const mpris = Mpris.get_default();
@@ -19,9 +19,8 @@ const noPlayerFound = () => (
     halign={Gtk.Align.CENTER}
     valign={Gtk.Align.CENTER}
     hexpand={true}
-    className="module">
-    {<Label label="No player found" />}
-  </Box>
+    className="module"
+    child={<Label label="No player found" />}></Box>
 );
 
 const activePlayer = () => {
@@ -32,7 +31,8 @@ const activePlayer = () => {
       (player) => player.playbackStatus === Mpris.PlaybackStatus.PLAYING
     ) || mpris.players[0];
 
-  return Player(player, "widget");
+  // return Player(player, "widget");
+  return <Player player={player} playerType="widget" />;
 };
 
 const Media = () => (
@@ -41,7 +41,7 @@ const Media = () => (
   //     (self) => (self.child = activePlayer()),
   //     "changed"
   //   );
-  <Box>{activePlayer()}</Box>
+  <Box child={activePlayer()}></Box>
 );
 
 export default () => Media();

@@ -4,7 +4,7 @@ import Mpris from "gi://AstalMpris";
 const mpris = Mpris.get_default();
 
 import { playerToColor } from "../../../utils/color";
-import { playerToIcon } from "../../../utils/icon";
+import { lookupIcon, playerToIcon } from "../../../utils/icon";
 import {
   date_less,
   date_more,
@@ -13,24 +13,25 @@ import {
   globalTransition,
 } from "../../../variables";
 import { bind, Variable } from "../../../../../../../usr/share/astal/gjs";
-import { Astal, Gtk } from "astal/gtk3";
+import { App, Astal, Gtk } from "astal/gtk3";
 import CustomRevealer from "../../CustomRevealer";
 
 function Media() {
   const progress = (player: Mpris.Player) => {
-    const playerIcon = bind(player, "entry").as((e) =>
-      Astal.Icon.lookup_icon(e) ? e : "audio-x-generic-symbolic"
-    );
+    const playerIcon = bind(player, "entry").as((e) => playerToIcon(e));
     return (
       <circularprogress
         className="progress"
         rounded={true}
         inverted={false}
-        // startAt={0.75}
+        borderWidth={1}
         value={bind(player, "position").as((p) =>
           player.length > 0 ? p / player.length : 0
         )}
-        child={<icon className="icon" icon={playerIcon} />}></circularprogress>
+        child={
+          // <icon className="icon" icon={playerIcon}/>
+          <label css={"font-size:12px"} label={playerIcon} />
+        }></circularprogress>
     );
   };
 
@@ -47,7 +48,9 @@ function Media() {
       className="label"
       max_width_chars={20}
       truncate={true}
-      label={bind(player, "artist").as((a) => a || "Unknown Artist")}></label>
+      label={bind(player, "artist").as(
+        (a) => `[${a}]` || "Unknown Artist"
+      )}></label>
   );
 
   const coverArt = (player: Mpris.Player) =>
@@ -65,7 +68,7 @@ function Media() {
 
   function Player(player: Mpris.Player) {
     return (
-      <box className="media" css={coverArt(player)}>
+      <box className="media" css={coverArt(player)} spacing={10}>
         {progress(player)}
         {title(player)}
         {artist(player)}
@@ -94,7 +97,9 @@ function Media() {
           onClick={() =>
             hyprland.message_async("dispatch workspace 4", (res) => print(res))
           }
-          on_hover={() => {}}
+          on_hover={() => {
+            App.toggle_window("media");
+          }}
           child={bind(mpris, "players").as((arr) =>
             arr.length > 0 ? activePlayer() : <box />
           )}></eventbox>
@@ -120,9 +125,8 @@ function Bandwidth() {
   const label = <label label={bind(bandwidth)}></label>;
 
   return (
-    <box className="bandwidth">
-      {icon}
-      {label}
+    <box className="bandwidth" child={label}>
+      {/* {icon} */}
     </box>
   );
 }

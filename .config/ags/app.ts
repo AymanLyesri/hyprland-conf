@@ -8,6 +8,8 @@ import AppLauncher from "./widgets/AppLauncher"
 import Progress from "./widgets/Progress"
 import UserPanel from "./widgets/UserPanel"
 import WallpaperSwitcher from "./widgets/WallpaperSwitcher"
+import MediaPopups from "./widgets/MediaPopups"
+import SettingsWidget from "./widgets/SettingsWidget"
 
 App.start({
     css: getCssPath(),
@@ -26,6 +28,10 @@ App.start({
         UserPanel()
 
         WallpaperSwitcher()
+
+        MediaPopups()
+
+        SettingsWidget()
 
         console.log("App started");
 

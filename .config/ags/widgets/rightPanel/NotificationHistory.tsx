@@ -42,19 +42,22 @@ export default () => {
     notifications: Notifd.Notification[],
     filter: string
   ): Notifd.Notification[] {
-    const MAX_NOTIFICATIONS = 25;
+    const MAX_NOTIFICATIONS = 10;
+
+    // Sort notifications by time (newest first)
+    const sortedNotifications = notifications.sort((a, b) => b.time - a.time);
 
     const filtered: Notifd.Notification[] = [];
     const others: Notifd.Notification[] = [];
 
-    notifications.forEach((notification) => {
+    sortedNotifications.forEach((notification) => {
       if (
         notification.app_name.includes(filter) ||
         notification.summary.includes(filter)
       ) {
-        filtered.unshift(notification);
+        filtered.push(notification);
       } else {
-        others.unshift(notification);
+        others.push(notification);
       }
     });
 
@@ -86,9 +89,10 @@ export default () => {
   );
 
   const NotificationsDisplay = (
-    <scrollable hscroll={Gtk.PolicyType.NEVER} vexpand={true}>
-      {NotificationHistory}
-    </scrollable>
+    <scrollable
+      hscroll={Gtk.PolicyType.NEVER}
+      vexpand={true}
+      child={NotificationHistory}></scrollable>
   );
 
   const ClearNotifications = (

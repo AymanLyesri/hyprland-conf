@@ -145,6 +145,7 @@ export default ({
   const expand = (
     <ToggleButton
       className="expand"
+      state={false}
       onToggled={(self, on) => {
         title.set_property("truncate", on);
         body.set_property("truncate", on);
@@ -207,7 +208,6 @@ export default ({
       <circularprogress
         className="circular-progress"
         rounded={true}
-        startAt={0.75}
         value={1}
         visible={true}
         setup={async (self) => {
@@ -241,20 +241,22 @@ export default ({
   );
 
   const Box = (
-    <box className={`notification ${n.urgency} ${n.app_name}`}>
-      <box className="main-content" vertical={true} spacing={5}>
-        {topBar}
-        {/* <separator /> */}
-        <box>
-          {icon}
-          <box vertical={true} spacing={5}>
-            <box hexpand={true} child={title}></box>
-            {body}
+    <box
+      className={`notification ${n.urgency} ${n.app_name}`}
+      child={
+        <box className="main-content" vertical={true} spacing={5}>
+          {topBar}
+          {/* <separator /> */}
+          <box>
+            {icon}
+            <box vertical={true} spacing={5}>
+              <box hexpand={true} child={title}></box>
+              {body}
+            </box>
           </box>
+          {/* {Actions} */}
         </box>
-        {/* {Actions} */}
-      </box>
-    </box>
+      }></box>
   );
 
   const Revealer = (
@@ -278,22 +280,25 @@ export default ({
         timeout(NOTIFICATION_DELAY, () => {
           if (!IsLocked.get() && popup) closeNotification();
         })
-      }>
-      <eventbox
-        visible={true}
-        onHover={() => {
-          leftRevealer.reveal_child = true;
-          closeRevealer.reveal_child = true;
-        }}
-        onHoverLost={() => {
-          // if (!Revealer.attribute.locked) leftRevealer.reveal_child = false;
-          leftRevealer.reveal_child = false;
-          closeRevealer.reveal_child = false;
-        }}
-        onClick={() => (popup ? lockButton.activate() : copyButton.activate())}
-        // onSecondaryClick={() => closeRevealer.child.activate()}
-        child={Revealer}></eventbox>
-    </box>
+      }
+      child={
+        <eventbox
+          visible={true}
+          onHover={() => {
+            leftRevealer.reveal_child = true;
+            closeRevealer.reveal_child = true;
+          }}
+          onHoverLost={() => {
+            // if (!Revealer.attribute.locked) leftRevealer.reveal_child = false;
+            leftRevealer.reveal_child = false;
+            closeRevealer.reveal_child = false;
+          }}
+          onClick={() =>
+            popup ? lockButton.activate() : copyButton.activate()
+          }
+          // onSecondaryClick={() => closeRevealer.child.activate()}
+          child={Revealer}></eventbox>
+      }></box>
   );
 
   return Parent;

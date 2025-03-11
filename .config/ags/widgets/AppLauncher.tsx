@@ -156,7 +156,7 @@ const Entry = (
         }, 100); // 100ms delay
       }}
       onActivate={() => {
-        if (Results.get().length === 1) {
+        if (Results.get().length > 0) {
           launchApp(Results.get()[0]);
         }
       }}
@@ -180,19 +180,17 @@ const launchApp = (app: Result) => {
       .catch((err) => notify({ summary: "Error", body: err }));
   }
 
-  // if (app.desktop != null) {
-  //   hyprland
-  //     .message_async(
-  //       `dispatch exec gtk-launch ${app.desktop} ${
-  //         app.app_arg || ""
-  //       }`
-  //     )
-  //     .then(() => {
-  //       //   App.closeWindow("app-launcher");
-  //     })
-  //     .catch((err) => notify({ summary: "Error", body: err }));
-  //   return;
-  // }
+  if (app.desktop != null) {
+    hyprland
+      .message_async(
+        `dispatch exec gtk-launch ${app.desktop} ${app.app_arg || ""}`
+      )
+      .then(() => {
+        App.toggle_window("app-launcher");
+      })
+      .catch((err) => notify({ summary: "Error", body: err }));
+    return;
+  }
 
   hyprland.message_async(`dispatch exec ${app.app_exec} ${app.app_arg}`, () => {
     switch (app.app_type) {
@@ -287,16 +285,9 @@ export default () => (
     visible={false}
     onKeyPressEvent={(self, event) => {
       if (event.get_keyval()[1] === Gdk.KEY_Escape) {
-        // Entry.children[1].text = "";
-        // Entry.children[1].grab_focus();
+        self.hide();
       }
     }}
-    // setup={(self) =>
-    //   self.keybind("Escape", () => {
-    //     Entry.children[1].text = "";
-    //     Entry.children[1].grab_focus();
-    //   })
-    // }
     child={
       <eventbox>
         <box vertical={true} className="app-launcher">

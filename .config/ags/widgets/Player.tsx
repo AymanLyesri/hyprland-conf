@@ -17,11 +17,13 @@ function lengthStr(length: number) {
   return `${min}:${sec0}${sec}`;
 }
 
-/** @param {import('types/service/mpris').MprisPlayer} player */
-export function Player(
-  player: AstalMpris.Player,
-  playerType: "popup" | "widget"
-) {
+export default ({
+  player,
+  playerType,
+}: {
+  player: AstalMpris.Player;
+  playerType: "popup" | "widget";
+}) => {
   const dominantColor = bind(player, "coverArt").as((path) =>
     getDominantColor(path)
   );
@@ -48,6 +50,7 @@ export function Player(
     <label
       className="title"
       max_width_chars={20}
+      halign={Gtk.Align.START}
       truncate={true}
       label={bind(player, "title").as((t) => t || "Unknown Track")}></label>
   );
@@ -56,6 +59,7 @@ export function Player(
     <label
       className="artist"
       max_width_chars={20}
+      halign={Gtk.Align.START}
       truncate={true}
       label={bind(player, "artist").as((a) => a || "Unknown Artist")}></label>
   );
@@ -236,4 +240,4 @@ export function Player(
       </box>
     </box>
   );
-}
+};
