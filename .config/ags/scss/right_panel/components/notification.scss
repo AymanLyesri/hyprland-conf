@@ -1,7 +1,7 @@
 .notification {
   @extend .module;
   min-height: 2px;
-  min-width: 400px;
+  // min-width: 300px;
   margin: 0px;
   padding: 0px;
   transition: opacity 0.5s ease-out; /* Adjust timing */

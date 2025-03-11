@@ -7,7 +7,7 @@ export function time(time: number, format = "%H:%M")
         .format(format)!
 }
 
-export function asyncSleep(INTERVAL)
+export function asyncSleep(INTERVAL: number)
 {
     return new Promise(resolve => setTimeout(resolve, INTERVAL));
 }

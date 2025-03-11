@@ -32,7 +32,8 @@ else
     continue_prompt "Do you want to update necessary packages? (using $aur_helper)" "$HOME/.config/hypr/pacman/install-pkgs.sh $aur_helper"
 fi
 
-$MAINTENANCE_DIR/AGSV1.sh
+# $MAINTENANCE_DIR/AGSV1.sh
+yay -Rns agsv1 --noconfirm
 
 $MAINTENANCE_DIR/WAL.sh
 

@@ -32,7 +32,7 @@ button,
     outline: none;
     // border-color: transparent;
   }
-  &:checked {
+  &.checked {
     background: $secondary;
     color: $color0;
   }
@@ -121,9 +121,13 @@ switch {
   }
 }
 
+scrollable > * {
+  border-width: 0;
+}
+
 scrolledwindow {
   slider {
-    background: $secondary;
+    background: black;
   }
 }
 

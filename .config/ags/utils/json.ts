@@ -1,8 +1,11 @@
+import { exec, readFile, writeFile } from "astal";
+
+
 export function readJSONFile(filePath: string): any
 {
-    if (Utils.readFile(filePath) == '') return {};
+    if (readFile(filePath) == '') return {};
     try {
-        const data = Utils.readFile(filePath);
+        const data = readFile(filePath);
         return data.trim() ? JSON.parse(data) : {};
     } catch (e) {
         console.error('Error:', e);
@@ -22,9 +25,9 @@ export function readJson(string: string)
 
 export function writeJSONFile(filePath: string, data: any)
 {
-    if (Utils.readFile(filePath) == '') Utils.exec(`mkdir -p ${filePath.split('/').slice(0, -1).join('/')}`);
+    if (readFile(filePath) == '') exec(`mkdir -p ${filePath.split('/').slice(0, -1).join('/')}`);
     try {
-        Utils.writeFile(JSON.stringify(data, null, 4), filePath);
+        writeFile(filePath, JSON.stringify(data, null, 4));
     } catch (e) {
         console.error('Error:', e);
     }

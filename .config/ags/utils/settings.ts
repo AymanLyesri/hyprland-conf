@@ -1,8 +1,10 @@
+import { execAsync } from "astal";
 import { readJSONFile, writeJSONFile } from "./json";
+import { globalSettings } from "../variables";
 
-const settingsPath = App.configDir + "/assets/settings/settings.json";
+export const settingsPath = "./assets/settings/settings.json";
 
-const defaultSettings: Settings = {
+export const defaultSettings: Settings = {
   hyprsunset: {
     kelvin: 6500
   },
@@ -23,6 +25,7 @@ const defaultSettings: Settings = {
   },
   globalOpacity: 0.8,
   bar: {
+    visibility: true,
     lock: true
   },
   waifu: {
@@ -52,9 +55,6 @@ const defaultSettings: Settings = {
   }
 }
 
-// Settings are stored in a json file, containing all the settings, check if it exists, if not, create it
-export const globalSettings = Variable<Settings>(defaultSettings);
-
 function deepMerge(target: any, source: any): any
 {
   for (const key in source) {
@@ -69,35 +69,34 @@ function deepMerge(target: any, source: any): any
   return target;
 }
 
-
 // Settings are stored in a json file, containing all the settings, check if it exists, if not, create it
-if (Object.keys(readJSONFile(settingsPath)).length !== 0) {
-  globalSettings.value = deepMerge(defaultSettings, readJSONFile(settingsPath));
-} else {
-  writeJSONFile(settingsPath, globalSettings.value);
-}
-
-// When the settings change, write them to the json file
-globalSettings.connect('changed', ({ value }) =>
+export function autoCreateSettings()
 {
-  writeJSONFile(settingsPath, value);
-});
-
+  if (Object.keys(readJSONFile(settingsPath)).length !== 0) {
+    globalSettings.set(deepMerge(defaultSettings, readJSONFile(settingsPath)))
+  } else {
+    writeJSONFile(settingsPath, globalSettings.get());
+  }
+}
 
 export function setSetting(key: string, value: any): any
 {
-  let o = globalSettings.value;
+  let o: any = globalSettings.get();
   key.split('.').reduce((o, k, i, arr) =>
     o[k] = (i === arr.length - 1 ? value : o[k] || {}), o);
-  globalSettings.setValue(o);
+
+  globalSettings.set({ ...o });
 }
 
-export function getSetting(key: string): any
+export function getSetting(key: string): any // returns the value of the key in the settings
 {
-  return key.split('.').reduce((o, k) => o?.[k], globalSettings.value);
+  return key.split('.').reduce((o: any, k) => o?.[k], globalSettings.get());
 }
 
 export function exportSettings()
 {
-  Utils.execAsync(`bash -c 'cat ${settingsPath} | wl-copy'`)
+  execAsync(`bash -c 'cat ${settingsPath} | wl-copy'`)
 }
+
+
+
