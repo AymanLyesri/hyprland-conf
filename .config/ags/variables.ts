@@ -29,6 +29,8 @@ export const globalTransition = 500
 export const date_less = Variable("").poll(1000, () => GLib.DateTime.new_now_local().format("%H:%M")!);
 export const date_more = Variable("").poll(1000, () => GLib.DateTime.new_now_local().format(":%S %b %e, %A.")!);
 
+export const barVisibility = Variable<boolean>(getSetting("bar.visibility"));
+barVisibility.subscribe((value) => setSetting("bar.visibility", value));
 export const barLock: Variable<boolean> = Variable(getSetting("bar.lock"));
 barLock.subscribe((value) => setSetting("bar.lock", value));
 

@@ -29,6 +29,7 @@ interface Settings
     }
     globalOpacity: number,
     bar: {
+        visibility: boolean,
         lock: boolean,
     }
     waifu: {

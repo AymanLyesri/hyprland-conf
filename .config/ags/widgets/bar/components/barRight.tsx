@@ -3,6 +3,8 @@ const brightness = Brightness.get_default();
 import CustomRevealer from "../../CustomRevealer";
 import { bind, execAsync } from "../../../../../../../usr/share/astal/gjs";
 
+import Wp from "gi://AstalWp";
+
 import Battery from "gi://AstalBattery";
 const battery = Battery.get_default();
 

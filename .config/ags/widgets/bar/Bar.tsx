@@ -1,9 +1,14 @@
 import { App, Astal, Gdk } from "astal/gtk3";
-import { Variable } from "astal";
+import { bind, Variable } from "astal";
 import barLeft from "./components/barLeft";
 import barMiddle from "./components/barMiddle";
 import barRight from "./components/barRight";
-import { barLock, emptyWorkspace, globalMargin } from "../../variables";
+import {
+  barLock,
+  barVisibility,
+  emptyWorkspace,
+  globalMargin,
+} from "../../variables";
 
 export default () => {
   return (
@@ -20,12 +25,14 @@ export default () => {
         Astal.WindowAnchor.RIGHT
       }
       margin={emptyWorkspace.as((empty) => (empty ? globalMargin : 0))}
-      visible={true}
+      visible={bind(barVisibility)}
       child={
         <eventbox
           onLeaveNotifyEvent={(self, event: Gdk.Event) => {
             const [_, x, y] = event.get_root_coords();
-            // if (y >= 25 && !barLock.get()) App.closeWindow("bar");
+            if (y >= 25 && !barLock.get()) {
+              barVisibility.set(false);
+            }
           }}
           child={
             <centerbox

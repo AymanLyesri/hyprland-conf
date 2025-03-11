@@ -25,6 +25,7 @@ export const defaultSettings: Settings = {
   },
   globalOpacity: 0.8,
   bar: {
+    visibility: true,
     lock: true
   },
   waifu: {

@@ -64,57 +64,18 @@ export default ({
       label={bind(player, "artist").as((a) => a || "Unknown Artist")}></label>
   );
 
-  //   const positionSlider = Widget.slider({
-  //     class_name: "slider",
-  //     draw_value: false,
-  //     css: dominantColor.as((c) => `highlight{background: ${c}00}`),
-  //     on_change: ({ value }) => (player.position = value * player.length),
-  //     visible: player.bind("length").as((l) => l > 0),
-  //     setup: (self) => {
-  //       function update() {
-  //         const value = player.position / player.length;
-  //         self.value = value > 0 ? value : 0;
-  //       }
-  //       self.hook(player, update);
-  //       self.hook(player, update, "position");
-  //       self.poll(1000, update);
-  //     },
-  //   });
   const positionSlider = (
     <slider
       className="slider"
-      draw_value={false}
       css={dominantColor.as((c) => `highlight{background: ${c}00}`)}
       onDragged={({ value }) => (player.position = value * player.length)}
       visible={bind(player, "length").as((l) => l > 0)}
       value={bind(player, "position").as((p) =>
         player.length > 0 ? p / player.length : 0
       )}
-      // setup={(self) => {
-      //   function update() {
-      //     const value = player.position / player.length;
-      //     self.value = value > 0 ? value : 0;
-      //   }
-      //   self.hook(player, "changed", update);
-      //   self.hook(player, "position", update);
-      //   // self.poll(1000, update);
-      // }}
     />
   );
 
-  //   const positionLabel = Widget.label({
-  //     class_name: "position",
-  //     hpack: "start",
-  //     setup: (self) => {
-  //       const update = (_, time) => {
-  //         self.label = lengthStr(time || player.position);
-  //         self.visible = player.length > 0;
-  //       };
-
-  //       self.hook(player, update, "position");
-  //       self.poll(1000, update as any);
-  //     },
-  //   });
   const positionLabel = (
     <label
       className="position"
@@ -182,11 +143,6 @@ export default ({
       }></button>
   );
 
-  // const prev = Widget.button({
-  //   on_clicked: () => player.previous(),
-  //   visible: player.bind("can_go_prev"),
-  //   child: Widget.icon(PREV_ICON),
-  // });
   const prev = (
     <button
       on_clicked={() => player.previous()}
@@ -194,11 +150,6 @@ export default ({
       child={<icon icon={PREV_ICON}></icon>}></button>
   );
 
-  // const next = Widget.button({
-  //   on_clicked: () => player.next(),
-  //   visible: player.bind("can_go_next"),
-  //   child: Widget.icon(NEXT_ICON),
-  // });
   const next = (
     <button
       on_clicked={() => player.next()}

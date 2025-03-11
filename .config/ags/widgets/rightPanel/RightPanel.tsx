@@ -56,12 +56,6 @@ const maxRightPanelWidth = 600;
 const minRightPanelWidth = 200;
 
 const opacitySlider = () => {
-  //   const label = Widget.Label({
-  //     class_name: "icon",
-  //     css: `min-width: 0px;`,
-  //     label: "󱡓",
-  //   });
-
   const label = (
     <label
       className={"icon"}
@@ -71,19 +65,6 @@ const opacitySlider = () => {
       `}
     />
   );
-
-  //   const slider = Widget.slider({
-  //     hexpand: false,
-  //     vexpand: true,
-  //     vertical: true,
-  //     inverted: true,
-  //     hpack: "center",
-  //     height_request: 100,
-  //     draw_value: false,
-  //     class_name: "slider",
-  //     value: globalOpacity.bind(),
-  //     on_change: ({ value }) => (globalOpacity.get() = value),
-  //   });
 
   const slider = (
     <slider
@@ -96,7 +77,7 @@ const opacitySlider = () => {
       draw_value={false}
       className={"slider"}
       value={globalOpacity.get()}
-      onDragged={({ value }) => {
+      onValueChanged={({ value }) => {
         globalOpacity.set(value);
       }}
     />

@@ -10,12 +10,15 @@ import UserPanel from "./widgets/UserPanel"
 import WallpaperSwitcher from "./widgets/WallpaperSwitcher"
 import MediaPopups from "./widgets/MediaPopups"
 import SettingsWidget from "./widgets/SettingsWidget"
+import BarHover from "./widgets/bar/BarHover"
 
 App.start({
     css: getCssPath(),
     main()
     {
         Bar()
+        BarHover()
+
         RightPanel()
         RightPanelHover()
 

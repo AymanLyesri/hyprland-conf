@@ -12,15 +12,15 @@ export default () => {
         Astal.WindowAnchor.RIGHT |
         Astal.WindowAnchor.TOP |
         Astal.WindowAnchor.BOTTOM
-      }>
-      <eventbox
-        onHover={() => {
-          if (!rightPanelVisibility.get()) rightPanelVisibility.set(true);
-        }}
-        vexpand={true}
-        hexpand={true}>
-        <box css="min-width: 1px" />
-      </eventbox>
-    </window>
+      }
+      child={
+        <eventbox
+          onHover={() => {
+            if (!rightPanelVisibility.get()) rightPanelVisibility.set(true);
+          }}
+          vexpand={true}
+          hexpand={true}
+          child={<box css="min-width: 1px" />}></eventbox>
+      }></window>
   );
 };
