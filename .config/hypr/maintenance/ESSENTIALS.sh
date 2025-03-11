@@ -81,7 +81,7 @@ install_browser() {
     case $browser in
     zen-browser)
         title="Zen Browser"
-        package="zen-browser-avx2-bin"
+        package="zen-browser-bin"
         app="zen-browser"
         ;;
     firefox)

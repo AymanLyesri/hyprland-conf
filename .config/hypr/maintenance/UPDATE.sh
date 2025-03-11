@@ -29,9 +29,13 @@ done
 if [[ -z "$aur_helper" ]]; then
     echo "No AUR helper (yay or paru) is installed."
 else
-    continue_prompt "Do you want to install necessary packages? (using $aur_helper)" "$HOME/.config/hypr/pacman/install-pkgs.sh $aur_helper"
+    continue_prompt "Do you want to update necessary packages? (using $aur_helper)" "$HOME/.config/hypr/pacman/install-pkgs.sh $aur_helper"
 fi
 
 $MAINTENANCE_DIR/AGSV1.sh
 
-continue_prompt "Do you want to set up default custom files" "$MAINTENANCE_DIR/DEFAULTS.sh"
+$MAINTENANCE_DIR/WAL.sh
+
+$MAINTENANCE_DIR/PLUGINS.sh
+
+continue_prompt "Do you want to set up default custom files (not necessary after the first time)" "$MAINTENANCE_DIR/DEFAULTS.sh"

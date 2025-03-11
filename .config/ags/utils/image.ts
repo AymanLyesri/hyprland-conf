@@ -13,3 +13,9 @@ export function getDominantColor(imagePath: string)
     return exec(`bash ./scripts/get-image-color.sh ${imagePath}`)
     // return color
 }
+
+export function previewFloatImage(imagePath: string)
+{
+    Utils.execAsync(`swayimg -w 690,690 --class 'previewImage' ${imagePath}`)
+        .catch(err => Utils.notify({ summary: 'Error', body: err }))
+}
