@@ -7,6 +7,9 @@ types
 assets/images/*
 !assets/images/
 
+assets/thumbnails/*
+!assets/thumbnails/
+
 assets/terminal/*
 !assets/terminal/
 
