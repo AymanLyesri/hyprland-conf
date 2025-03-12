@@ -64,10 +64,9 @@ const QuickApps = () => {
                       )
                       .finally(() => closeProgress())
                       .catch((err) => notify({ summary: "Error", body: err }));
-                    hyprland.message_async(
-                      `dispatch exec ${app.exec}`,
-                      () => {}
-                    );
+                    hyprland.message_async(`dispatch exec ${app.exec}`, () => {
+                      App.toggle_window("app-launcher");
+                    });
                     // .then(
                     // })
                     // .catch((err) => notify({ summary: "Error", body: err }));

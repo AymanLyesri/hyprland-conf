@@ -105,20 +105,15 @@ export default ({
     />
   );
 
-  function removeSpecialCharacters(input: string): string {
-    return input.replace(/[><\/]/g, ""); // Removes >, <, and /
-  }
-
   const body = (
     <label
       className="body"
       hexpand={true}
-      useMarkup={true}
       truncate={true}
       maxWidthChars={24}
       xalign={0}
       justify={Gtk.Justification.LEFT}
-      label={removeSpecialCharacters(n.body)}
+      label={n.body}
       wrap={true}
     />
   );

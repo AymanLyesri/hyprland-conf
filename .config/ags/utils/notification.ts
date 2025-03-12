@@ -1,6 +1,6 @@
 import { execAsync } from "astal";
 
-export function notify({ summary, body }: { summary: string, body: string })
+export function notify({ summary = '', body = '' }: { summary: string, body: string })
 {
 
     print(`Notification: ${summary} - ${body}`);

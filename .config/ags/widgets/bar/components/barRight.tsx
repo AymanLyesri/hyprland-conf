@@ -130,7 +130,6 @@ function BatteryWidget() {
 
   const slider = (
     <slider
-      dragging={false}
       className="slider"
       widthRequest={100}
       value={value.as((v) => v / 100)}
@@ -159,9 +158,8 @@ function SysTray() {
         tooltipMarkup={bind(item, "tooltipMarkup")}
         actionGroup={bind(item, "actionGroup").as((ag) => ["dbusmenu", ag])}
         menuModel={bind(item, "menuModel")}
-        child={
-          <icon gicon={bind(item, "gicon")} className="systemtray-icon" />
-        }></menubutton>
+        child={<icon gicon={bind(item, "gicon")} className="systemtray-icon" />}
+      />
     ))
   );
 

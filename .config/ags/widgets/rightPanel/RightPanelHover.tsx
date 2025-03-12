@@ -1,6 +1,5 @@
 import { Astal } from "astal/gtk3";
-import { rightPanelVisibility } from "../../variables";
-import { bind } from "astal";
+import { rightPanelLock, rightPanelVisibility } from "../../variables";
 
 export default () => {
   return (
@@ -16,10 +15,8 @@ export default () => {
       child={
         <eventbox
           onHover={() => {
-            if (!rightPanelVisibility.get()) rightPanelVisibility.set(true);
+            if (!rightPanelLock.get()) rightPanelVisibility.set(true);
           }}
-          vexpand={true}
-          hexpand={true}
           child={<box css="min-width: 1px" />}></eventbox>
       }></window>
   );

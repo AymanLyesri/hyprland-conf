@@ -17,6 +17,7 @@ import {
 import { bind, Variable } from "../../../../../../../usr/share/astal/gjs";
 import { App, Astal, Gtk } from "astal/gtk3";
 import CustomRevealer from "../../CustomRevealer";
+import { notify } from "../../../utils/notification";
 
 cava?.set_bars(12);
 const bars = Variable("");
@@ -42,13 +43,28 @@ function AudioVisualizer() {
     bars.set(b);
   });
   return (
-    <button
-      onClicked={() => {
-        hyprland.message_async(`dispatch exec kitty cava`, (res) => print(res));
-      }}
-      className={"cava"}
-      onDestroy={() => cava?.disconnect}
-      child={<label onDestroy={() => bars.drop()} label={bind(bars)} />}
+    <revealer
+      // reveal_child={bind(
+      //   mpris.players.find(
+      //     (player) => player.playbackStatus === Mpris.PlaybackStatus.PLAYING
+      //   ) || mpris.players[0],
+      //   "playbackStatus"
+      // ).as((status) => status === Mpris.PlaybackStatus.PLAYING)}
+      revealChild={true}
+      transitionDuration={globalTransition}
+      transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
+      child={
+        <button
+          onClicked={() => {
+            hyprland.message_async(`dispatch exec kitty cava`, (res) =>
+              print(res)
+            );
+          }}
+          className={"cava"}
+          onDestroy={() => cava?.disconnect}
+          child={<label onDestroy={() => bars.drop()} label={bind(bars)} />}
+        />
+      }
     />
   );
 }
