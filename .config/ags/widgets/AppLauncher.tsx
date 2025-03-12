@@ -24,6 +24,8 @@ import Hyprland from "gi://AstalHyprland";
 import { closeProgress, openProgress } from "./Progress";
 const hyprland = Hyprland.get_default();
 
+const MAX_ITEMS = 10;
+
 interface Result {
   app_name: string;
   app_exec: string;
@@ -194,14 +196,17 @@ const Entry = (
             ]);
           } else {
             Results.set(
-              apps.fuzzy_query(args.shift()!).map((app) => ({
-                app_name: app.name,
-                app_exec: app.executable,
-                app_arg: args.join(""),
-                app_type: "app",
-                app_icon: app.iconName,
-                // desktop: app.desktop,
-              }))
+              apps
+                .fuzzy_query(args.shift()!)
+                .slice(0, MAX_ITEMS)
+                .map((app) => ({
+                  app_name: app.name,
+                  app_exec: app.executable,
+                  app_arg: args.join(""),
+                  app_type: "app",
+                  app_icon: app.iconName,
+                  // desktop: app.desktop,
+                }))
             );
 
             if (Results.get().length === 0) {

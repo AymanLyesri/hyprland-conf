@@ -107,7 +107,7 @@ function Wallpapers() {
   };
 
   const getWallpapers = () => {
-    const activeId = focusedClient.as((client) => client.workspace.id);
+    const activeId = focusedClient.as((client) => client.workspace.id || 1);
 
     const wallpapers = Variable([]);
 

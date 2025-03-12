@@ -1,24 +1,30 @@
 .bar {
-  padding: 5px 0px;
+  border-radius: 10px;
+  padding: 5px 10px;
+  background: $module-background;
 
   &.full {
     background: $module-background;
-    .bar-left {
-      .actions {
-        button:first-child {
-          border-radius: 0px;
-        }
-      }
-    }
-    .bar-right {
-      .dnd-toggle {
-        border-radius: 10px 0px 0px 10px;
-      }
-    }
+    // .bar-left {
+    //   .actions {
+    //     button:first-child {
+    //       border-radius: 0px;
+    //     }
+    //   }
+    // }
+    // .bar-right {
+    //   .dnd-toggle {
+    //     border-radius: 10px 5px 5px 10px;
+    //   }
+    // }
   }
 
   &.empty {
-    transition: background 0s;
-    background: transparent;
+    // transition: background 0s;
+    background-color: rgba($color: #000000, $alpha: 0.1);
+    // background: transparent;
+    // button {
+    //   padding: 5px 10px;
+    // }
   }
 }

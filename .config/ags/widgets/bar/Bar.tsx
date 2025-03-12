@@ -5,6 +5,7 @@ import barMiddle from "./components/barMiddle";
 import barRight from "./components/barRight";
 import {
   barLock,
+  barOrientation,
   barVisibility,
   emptyWorkspace,
   globalMargin,
@@ -19,12 +20,16 @@ export default () => {
       application={App}
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
       layer={Astal.Layer.TOP}
-      anchor={
-        Astal.WindowAnchor.TOP |
-        Astal.WindowAnchor.LEFT |
-        Astal.WindowAnchor.RIGHT
-      }
-      margin={emptyWorkspace.as((empty) => (empty ? globalMargin : 0))}
+      anchor={bind(barOrientation).as((orientation) =>
+        orientation
+          ? Astal.WindowAnchor.TOP |
+            Astal.WindowAnchor.LEFT |
+            Astal.WindowAnchor.RIGHT
+          : Astal.WindowAnchor.BOTTOM |
+            Astal.WindowAnchor.LEFT |
+            Astal.WindowAnchor.RIGHT
+      )}
+      margin={emptyWorkspace.as((empty) => (empty ? globalMargin : 5))}
       visible={bind(barVisibility)}
       child={
         <eventbox

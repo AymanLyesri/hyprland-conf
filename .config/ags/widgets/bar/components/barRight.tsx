@@ -13,6 +13,7 @@ import ToggleButton from "../../toggleButton";
 import { Gtk } from "astal/gtk3";
 import {
   barLock,
+  barOrientation,
   DND,
   globalTransition,
   rightPanelLock,
@@ -210,6 +211,18 @@ function RightPanel() {
   );
 }
 
+function BarOrientation() {
+  return (
+    <button
+      onClicked={() => barOrientation.set(!barOrientation.get())}
+      className="bar-orientation icon"
+      label={bind(barOrientation).as((orientation) =>
+        orientation ? "" : ""
+      )}
+    />
+  );
+}
+
 export default () => {
   return (
     <box className="bar-right" hexpand halign={Gtk.Align.END} spacing={5}>
@@ -219,8 +232,9 @@ export default () => {
       <SysTray />
       <Theme />
       <PinBar />
-      <RightPanel />
       <DndToggle />
+      <BarOrientation />
+      <RightPanel />
     </box>
   );
 };

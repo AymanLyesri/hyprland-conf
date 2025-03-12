@@ -33,6 +33,8 @@ export const barVisibility = Variable<boolean>(getSetting("bar.visibility"));
 barVisibility.subscribe((value) => setSetting("bar.visibility", value));
 export const barLock: Variable<boolean> = Variable(getSetting("bar.lock"));
 barLock.subscribe((value) => setSetting("bar.lock", value));
+export const barOrientation = Variable<boolean>(getSetting("bar.orientation"));
+barOrientation.subscribe((value) => setSetting("bar.orientation", value));
 
 export const waifuFavorites = Variable<{ id: number, preview: string }[]>(getSetting("waifu.favorites"));
 waifuFavorites.subscribe((value) => setSetting("waifu.favorites", value));

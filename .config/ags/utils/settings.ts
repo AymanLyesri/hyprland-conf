@@ -26,7 +26,8 @@ export const defaultSettings: Settings = {
   globalOpacity: 0.8,
   bar: {
     visibility: true,
-    lock: true
+    lock: true,
+    orientation: true
   },
   waifu: {
     input_history: "",

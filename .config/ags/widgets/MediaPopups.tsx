@@ -3,7 +3,7 @@ import Player from "./Player";
 
 import Mpris from "gi://AstalMpris";
 import { App, Astal } from "astal/gtk3";
-import { globalMargin } from "../variables";
+import { barOrientation, globalMargin } from "../variables";
 
 const mpris = Mpris.get_default();
 const players = bind(mpris, "players");
@@ -14,7 +14,9 @@ export default () => {
       name="media"
       namespace={"media"}
       application={App}
-      anchor={Astal.WindowAnchor.TOP}
+      anchor={bind(barOrientation).as((orientation) =>
+        orientation ? Astal.WindowAnchor.TOP : Astal.WindowAnchor.BOTTOM
+      )}
       margin={globalMargin}
       visible={false}
       child={

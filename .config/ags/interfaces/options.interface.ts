@@ -31,6 +31,7 @@ interface Settings
     bar: {
         visibility: boolean,
         lock: boolean,
+        orientation: boolean,
     }
     waifu: {
         visibility: boolean,
