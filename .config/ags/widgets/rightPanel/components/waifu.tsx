@@ -322,7 +322,7 @@ function Actions() {
 function Image() {
   return (
     <eventbox
-      onClick={OpenInBrowser}
+      // onClicked={OpenInBrowser}
       child={
         <box
           className="image"

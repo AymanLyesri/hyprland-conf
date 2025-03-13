@@ -33,16 +33,7 @@ const blocks = [
 ];
 
 function AudioVisualizer() {
-  cava?.connect("notify::values", () => {
-    let b = "";
-    cava
-      .get_values()
-      .map(
-        (val) => (b += blocks[Math.min(Math.floor(val * 8), blocks.length - 1)])
-      );
-    bars.set(b);
-  });
-  return (
+  const revealer = (
     <revealer
       // reveal_child={bind(
       //   mpris.players.find(
@@ -50,23 +41,37 @@ function AudioVisualizer() {
       //   ) || mpris.players[0],
       //   "playbackStatus"
       // ).as((status) => status === Mpris.PlaybackStatus.PLAYING)}
-      revealChild={true}
+      revealChild={false}
       transitionDuration={globalTransition}
       transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
       child={
-        <button
-          onClicked={() => {
-            hyprland.message_async(`dispatch exec kitty cava`, (res) =>
-              print(res)
-            );
-          }}
+        <label
           className={"cava"}
-          onDestroy={() => cava?.disconnect}
-          child={<label onDestroy={() => bars.drop()} label={bind(bars)} />}
+          onDestroy={() => bars.drop()}
+          label={bind(bars)}
         />
       }
     />
   );
+
+  cava?.connect("notify::values", () => {
+    const values = cava.get_values();
+    const blocksLength = blocks.length;
+    const barArray = new Array(values.length);
+
+    for (let i = 0; i < values.length; i++) {
+      const val = values[i];
+      const index = Math.min(Math.floor(val * 8), blocksLength - 1);
+      barArray[i] = blocks[index];
+    }
+
+    const b = barArray.join("");
+    bars.set(b);
+
+    revealer.reveal_child = b !== "".padEnd(12, "\u2581");
+  });
+
+  return revealer;
 }
 
 function Media() {

@@ -151,7 +151,7 @@ function Wallpapers() {
       valign={Gtk.Align.CENTER}
       className="reload-wallpapers"
       label="󰑐"
-      onClick={() => {
+      onClicked={() => {
         execAsync(`bash -c "$HOME/.config/hypr/hyprpaper/reload.sh"`)
           .finally(() => FetchWallpapers())
           .catch((err) => print(err));
@@ -161,8 +161,8 @@ function Wallpapers() {
 
   const top = (
     <box hexpand={true} vexpand={true} halign={Gtk.Align.CENTER} spacing={10}>
-      {getWallpapers().as((wallpapers) => [...wallpapers, reset])}
-      {/* {[...getWallpapers(), reset]} */}
+      <box>{getWallpapers()}</box>
+      {reset}
     </box>
   );
 
