@@ -16,12 +16,12 @@ fi
 current_wallpaper=${current_wallpaper/\$HOME/$HOME}
 
 if [ "$current_theme" = "dark" ]; then
-    
-    wal --backend colorthief -e -n -i "$current_wallpaper"  >/dev/null 2>&1
-    
-    elif [ "$current_theme" = "light" ]; then
-    
-    wal --backend colorthief -e -n -i "$current_wallpaper" -l  >/dev/null 2>&1
+
+    wal --backend colorthief -e -n -i "$current_wallpaper" >/dev/null 2>&1
+
+elif [ "$current_theme" = "light" ]; then
+
+    wal --backend colorthief -e -n -i "$current_wallpaper" -l >/dev/null 2>&1
 fi
 
-pywalfox update
+# pywalfox update

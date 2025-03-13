@@ -241,7 +241,7 @@ export default ({
     <box
       className={`notification ${n.urgency} ${n.app_name}`}
       child={
-        <box className="main-content" vertical={true} spacing={5}>
+        <box className="main-content" vertical={true} spacing={10}>
           {topBar}
           {/* <separator /> */}
           <box>
@@ -286,8 +286,7 @@ export default ({
             closeRevealer.reveal_child = true;
           }}
           onHoverLost={() => {
-            // if (!Revealer.attribute.locked) leftRevealer.reveal_child = false;
-            leftRevealer.reveal_child = false;
+            if (!IsLocked.get()) leftRevealer.reveal_child = false;
             closeRevealer.reveal_child = false;
           }}
           onClick={() =>

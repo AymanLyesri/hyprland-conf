@@ -9,7 +9,6 @@ libastal-io-git
 libastal-git
 bat
 bc
-bun-bin
 figlet
 git
 p7zip
@@ -35,7 +34,6 @@ dart-sass
 sassc
 fd
 jq
-lazygit
 translate-shell
 python2-bin
 python-setuptools
@@ -119,7 +117,6 @@ spotify-launcher
 #      
 sddm
 where-is-my-sddm-theme-git
-python-pywalfox
 python-colorthief
 python-pywal
 fastfetch

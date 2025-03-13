@@ -1,22 +1,13 @@
 import { App } from "astal/gtk3";
 import {
-  bind,
-  execAsync,
-  Variable,
-} from "../../../../../../../usr/share/astal/gjs";
-import {
-  Box,
-  Button,
-} from "../../../../../../../usr/share/astal/gjs/gtk3/widget";
-import {
   newAppWorkspace,
   settingsVisibility,
   userPanelVisibility,
 } from "../../../variables";
 
-import ToggleButton from "../../toggleButton";
-
 import hyprland from "gi://AstalHyprland";
+import { bind, Variable } from "astal";
+import ToggleButton from "../../toggleButton";
 const Hyprland = hyprland.get_default();
 
 function Workspaces() {
@@ -106,10 +97,10 @@ function Workspaces() {
         }
 
         return (
-          <Button
+          <button
             className={class_names.join(" ")}
             label={icon}
-            onClick={() => {
+            onClicked={() => {
               print(`dispatch workspace ${id}`);
               Hyprland.message_async(`dispatch workspace ${id}`, (res) =>
                 print(res)
@@ -120,10 +111,10 @@ function Workspaces() {
       });
 
       results.unshift(
-        <Button
+        <button
           className="special"
           label={workspaceToIcon[0]}
-          onClick={
+          onClicked={
             () =>
               Hyprland.message_async(`dispatch togglespecialworkspace`, (res) =>
                 print(res)
@@ -138,7 +129,7 @@ function Workspaces() {
     }
   );
 
-  return <Box className="workspaces">{bind(workspaces)}</Box>;
+  return <box className="workspaces">{bind(workspaces)}</box>;
 }
 
 function AppLauncher() {
@@ -153,7 +144,7 @@ function AppLauncher() {
 
 function OverView() {
   return (
-    <Button
+    <button
       className="overview"
       label="󱗼"
       onClicked={() =>
@@ -187,20 +178,20 @@ function UserPanel() {
 
 const Actions = () => {
   return (
-    <Box className="actions">
+    <box className="actions">
       <UserPanel />
       <Settings />
       <AppLauncher />
-    </Box>
+    </box>
   );
 };
 
 export default () => {
   return (
-    <Box className="bar-left" spacing={5}>
+    <box className="bar-left" spacing={5}>
       <Actions />
       <OverView />
       <Workspaces />
-    </Box>
+    </box>
   );
 };

@@ -86,79 +86,10 @@ const opacitySlider = () => {
   return CustomRevealer(label, slider, "", () => {}, true);
 };
 
-// const WidgetActions = () =>
-//   Widget.Box({
-//     vertical: true,
-//     vexpand: true,
-//     spacing: 5,
-//     children: WidgetSelectors.map((selector) =>
-//       Widget.ToggleButton({
-//         class_name: "selector",
-//         label: selector.icon,
-//         active: Widgets.get().find((w) => w.name == selector.name)
-//           ? true
-//           : false,
-//         on_toggled: (self) => {
-//           // If the button is active, create and store a new widget instance
-//           if (self.active) {
-//             // Limit the number of widgets to 3
-//             if (Widgets.get().length >= widgetLimit) {
-//               self.active = false;
-//               return;
-//             }
-//             // Create widget only if it's not already created
-//             if (!selector.widgetInstance) {
-//               selector.widgetInstance = selector.widget();
-//             }
-//             // Add the widget instance to Widgets if it's not already added
-//             if (!Widgets.get().includes(selector)) {
-//               Widgets.get() = [...Widgets.get(), selector];
-//             }
-//           }
-//           // If the button is deactivated, remove the widget from the array
-//           else {
-//             let newWidgets = Widgets.get().filter((w) => w != selector); // Remove it from the array
-//             if (Widgets.get().length == newWidgets.length) return;
-
-//             Widgets.get() = newWidgets;
-//             selector.widgetInstance = undefined; // Reset the widget instance
-//           }
-//         },
-//       })
-//     ),
-//   });
-
 const WidgetActions = () => {
   return (
-    <box vertical={true} vexpand={true} spacing={5}>
+    <box vertical={true} vexpand={true} className={"widget-actions"}>
       {WidgetSelectors.map((selector) => {
-        // return ToggleButton({
-        //   className: "selector",
-        //   label: selector.icon,
-        //   state: false,
-        //   onToggled: (self, on) => {
-        //     if (on) {
-        //       print("self is ", self);
-        //       if (Widgets.get().length >= widgetLimit) {
-        //         // self.state = false;
-        //         return;
-        //       }
-        //       // Create widget only if it's not already created
-        //       if (!selector.widgetInstance) {
-        //         selector.widgetInstance = selector.widget();
-        //       }
-        //       // Add the widget instance to Widgets if it's not already added
-        //       if (!Widgets.get().includes(selector)) {
-        //         Widgets.set([...Widgets.get(), selector]);
-        //       }
-        //     } else {
-        //       let newWidgets = Widgets.get().filter((w) => w != selector); // Remove it from the array
-        //       if (Widgets.get().length == newWidgets.length) return;
-        //       Widgets.set(newWidgets);
-        //       selector.widgetInstance = undefined;
-        //     }
-        //   },
-        // });
         return (
           <ToggleButton
             className={"widget-selector"}
@@ -276,73 +207,13 @@ const Utilities = () => (
 );
 
 function WindowActions() {
-  //   return Widget.Box(
-  //     {
-  //       vexpand: true,
-  //       hpack: "end",
-  //       vpack: "end",
-  //       vertical: true,
-  //       spacing: 5,
-  //     },
-  //     opacitySlider(),
-
-  //     Widget.Button({
-  //       label: "󰈇",
-  //       class_name: "export-settings",
-  //       on_clicked: () => exportSettings(),
-  //     }),
-  //     Widget.Button({
-  //       label: "",
-  //       class_name: "expand-window",
-  //       on_clicked: () =>
-  //         (rightPanelWidth.get() =
-  //           rightPanelWidth.get() < maxRightPanelWidth
-  //             ? rightPanelWidth.get() + 50
-  //             : maxRightPanelWidth),
-  //     }),
-  //     Widget.Button({
-  //       label: "",
-  //       class_name: "shrink-window",
-  //       on_clicked: () =>
-  //         (rightPanelWidth.get() =
-  //           rightPanelWidth.get() > minRightPanelWidth
-  //             ? rightPanelWidth.get() - 50
-  //             : minRightPanelWidth),
-  //     }),
-  //     WaifuVisibility(),
-  //     Widget.ToggleButton({
-  //       label: "",
-  //       class_name: "exclusivity",
-  //       onToggled: ({ active }) => {
-  //         rightPanelExclusivity.get() = active;
-  //       },
-  //     }).hook(
-  //       rightPanelExclusivity,
-  //       (self) => (self.active = rightPanelExclusivity.get()),
-  //       "changed"
-  //     ),
-  //     Widget.ToggleButton({
-  //       label: rightPanelLock.get() ? "" : "",
-  //       class_name: "lock",
-  //       active: rightPanelLock.get(),
-  //       onToggled: (self) => {
-  //         rightPanelLock.get() = self.active;
-  //         self.label = self.active ? "" : "";
-  //       },
-  //     }),
-  //     Widget.Button({
-  //       label: "",
-  //       class_name: "close",
-  //       on_clicked: () => (rightPanelVisibility.get() = false),
-  //     })
-  //   );
   return (
     <box
+      className={"window-actions"}
       vexpand={true}
       halign={Gtk.Align.END}
       valign={Gtk.Align.END}
-      vertical={true}
-      spacing={5}>
+      vertical={true}>
       {opacitySlider()}
       <button
         label={"󰈇"}
@@ -413,30 +284,6 @@ const Actions = () => (
 );
 
 function Panel() {
-  //   return Widget.Box({
-  //     css: `padding-left: 5px;`,
-  //     child: Widget.eventbox({
-  //       on_hover_lost: () => {
-  //         if (!rightPanelLock.get()) rightPanelVisibility.get() = false;
-  //       },
-  //       child: Widget.Box({
-  //         children: [
-  //           Widget.Box({
-  //             class_name: "main-content",
-  //             css: rightPanelWidth
-  //               .bind()
-  //               .as((width) => `*{min-width: ${width}px}`),
-  //             vertical: true,
-  //             spacing: 5,
-  //             children: Widgets.bind().as((widgets) =>
-  //               widgets.map((widget) => widget.widget())
-  //             ),
-  //           }),
-  //           Actions(),
-  //         ],
-  //       }),
-  //     }),
-  //   });
   return (
     <box
       css={`

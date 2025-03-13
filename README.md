@@ -27,7 +27,7 @@ I use Arch BTW.. :)
 - **Screenshot all active workspaces** into one image: Custom script
 - **Dynamic color schemes** based on current wallpaper: Custom scripts & [PyWal](https://github.com/dylanaraps/pywal)
 - **Global Theme switcher (Light/Dark)**: Custom scripts
-- **Ags widgets** ~~(Eww replaced)~~: _all of these are just some of the features_
+- **Ags V2 widgets** ~~(Eww replaced)~~: _these are just some of the features_
   - Color scheme based on current wallpaper
   - Main bar
     - Dark/light modes
@@ -40,23 +40,22 @@ I use Arch BTW.. :)
   - Wallpaper switcher for each workspace
   - Media player
   - Right panel
-    - Waifu display
+    - Waifu display -- using [Danbooru](https://danbooru.donmai.us) and [Gelbooru](https://gelbooru.com) APIs
     - Media Player
     - Notification history - filter
-    - System resource monitor
-    - Calendar
+    - System resource monitor (WIP)
+    - Calendar (WIP)
     - System Updater (WIP)
   - User Panel (logout etc...)
-- **Customizable shaders**: Includes saturation & retro effects
 - **High-quality wallpapers** from [Danbooru](https://danbooru.donmai.us), [Yandere](https://yande.re), and [Gelbooru](https://gelbooru.com)
 
 # Current Workflow
 
 > **Important:** Screenshots below ⊽
 
-| W1  | W2                                                  | W3  | W4                                                  | W5                                           | W6                                                  | W7                                                                            | W8  | W9  | W10   |
-| --- | --------------------------------------------------- | --- | --------------------------------------------------- | -------------------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------------- | --- | --- | ----- |
-| --- | [Firefox](https://wiki.archlinux.org/title/firefox) | --- | [Spotify](https://wiki.archlinux.org/title/spotify) | [Btop](https://github.com/aristocratos/btop) | [Discord](https://wiki.archlinux.org/title/Discord) | [Steam](https://wiki.archlinux.org/title/steam)/[Lutris](https://lutris.net/) | --- | --- | Games |
+| W1  | W2      | W3  | W4                                                  | W5                                           | W6                                                  | W7                                                                            | W8  | W9  | W10   |
+| --- | ------- | --- | --------------------------------------------------- | -------------------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------------- | --- | --- | ----- |
+| --- | Browser | --- | [Spotify](https://wiki.archlinux.org/title/spotify) | [Btop](https://github.com/aristocratos/btop) | [Discord](https://wiki.archlinux.org/title/Discord) | [Steam](https://wiki.archlinux.org/title/steam)/[Lutris](https://lutris.net/) | --- | --- | Games |
 
 - **W`id`**: Workspace with corresponding ID.
 - **`---`**: Placeholder, any app can go here.
@@ -77,8 +76,8 @@ KeyBinds are displayed and organized [Here](https://github.com/AymanLyesri/hyprl
 
 ### Required Dependencies and packages
 
-- **Arch Linux** (pretty obvious)
-- **Hyprland**
+- [Arch Linux](https://archlinux.org/) (I use Arch linux BTW)
+- [Hyprland](https://hyprland.org/)
 - [Necessary packages](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/pacman/pkglist.txt) (do not worry they will be installed automatically)
 
 ### Installation Guide
@@ -91,7 +90,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/AymanLyesri/hyprland-con
 
 ### Update Guide
 
-> Simply run `update` in the terminal
+> To update the config and its related pkgs Simply run `update` in the terminal
 
 ```bash
 update
@@ -99,6 +98,7 @@ update
 
 # Tips
 
+- Press `SUPER + w` to select the wallpaper you like
 - Custom wallpapers should be added in `$HOME/.config/wallpapers/custom`
 - Most functionalities have associated [keybinds](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/configs/keybinds.conf). Check them out!
 

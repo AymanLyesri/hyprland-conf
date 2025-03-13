@@ -88,6 +88,7 @@ export default function NotificationPopups() {
       namespace="notification-popups"
       application={App}
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
+      layer={Astal.Layer.OVERLAY}
       anchor={TOP | RIGHT}
       margin={globalMargin}
       widthRequest={400}
