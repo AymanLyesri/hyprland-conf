@@ -104,7 +104,6 @@ kitty
 light
 lolcat
 spotify-launcher
-cava
 
 # _____ _                                                _   _   _ ___ 
 #|_   _| |__   ___ _ __ ___   ___  ___    __ _ _ __   __| | | | | |_ _|
