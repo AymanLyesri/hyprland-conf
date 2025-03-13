@@ -4,6 +4,10 @@
   border-radius: 10px;
   min-width: 500px;
 
+  entry {
+    margin-bottom: 10px;
+  }
+
   .quick-apps {
     button {
       padding: 6px;
@@ -16,8 +20,6 @@
 
   .results {
     button {
-      border: unset;
-      margin-top: 10px;
       padding: 10px;
       .argument {
         color: $secondary;

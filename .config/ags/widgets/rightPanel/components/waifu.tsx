@@ -1,7 +1,7 @@
-import { bind, exec, execAsync, readFile, timeout, Variable } from "astal";
+import { bind, execAsync, Variable } from "astal";
 import { Waifu } from "../../../interfaces/waifu.interface";
-import { readJSONFile } from "../../../utils/json";
 import {
+  waifuApi,
   globalSettings,
   globalTransition,
   rightPanelWidth,
@@ -10,43 +10,64 @@ import {
 } from "../../../variables";
 import { Gtk } from "astal/gtk3";
 import ToggleButton from "../../toggleButton";
-import { EventBox } from "astal/gtk3/widget";
 import { getSetting, setSetting } from "../../../utils/settings";
 import { notify } from "../../../utils/notification";
 
-import hyprland from "gi://AstalHyprland";
 import { closeProgress, openProgress } from "../../Progress";
+import { Api } from "../../../interfaces/api.interface";
+import { readJSONFile } from "../../../utils/json";
+
+import hyprland from "gi://AstalHyprland";
 const Hyprland = hyprland.get_default();
 
 const waifuPath = "./assets/waifu/waifu.png";
 const jsonPath = "./assets/waifu/waifu.json";
 const favoritesPath = "./assets/waifu/favorites/";
 
-const imageDetails = Variable<Waifu>(readJSONFile(`./assets/waifu/waifu.json`));
+const apiList: Api[] = [
+  {
+    name: "Danbooru",
+    value: "danbooru",
+    idSearchUrl: "https://danbooru.donmai.us/posts/",
+  },
+  {
+    name: "Gelbooru",
+    value: "gelbooru",
+    idSearchUrl: "https://gelbooru.com/index.php?page=post&s=view&id=",
+  },
+];
+
 const nsfw = Variable<boolean>(false);
 nsfw.subscribe((value) =>
   notify({ summary: "Waifu", body: `NSFW is ${value ? "on" : "off"}` })
 );
 const terminalWaifuPath = `./assets/terminal/icon.jpg`;
 
-const GetImageFromApi = (param = "") => {
+const GetImageFromApi = (param = "", api: Api = {} as Api) => {
   openProgress();
-  execAsync(`python ./scripts/get-waifu.py ${nsfw.get()} "${param}"`)
+
+  let apiValue = api.value ?? waifuApi.get().value;
+  execAsync(
+    `python ./scripts/get-waifu.py ${apiValue} ${nsfw.get()} "${param}"`
+  )
     .finally(() => {
       closeProgress();
-      imageDetails.set(JSON.parse(readFile(`./assets/waifu/waifu.json`)));
+      let imageDetails = readJSONFile(jsonPath);
       waifuCurrent.set({
-        id: String(imageDetails.get().id),
-        preview: String(imageDetails.get().preview_file_url),
+        id: imageDetails.id,
+        preview: imageDetails.preview_file_url ?? imageDetails.preview_url,
+        height: imageDetails.image_height ?? imageDetails.height,
+        width: imageDetails.image_width ?? imageDetails.width,
+        api: waifuApi.get(),
       });
     })
     .catch((error) => notify({ summary: "Error", body: error }));
 };
 
-const SearchImage = () =>
+const OpenInBrowser = () =>
   execAsync(
-    `bash -c "xdg-open 'https://danbooru.donmai.us/posts/${
-      imageDetails.get().id
+    `bash -c "xdg-open '${waifuApi.get().idSearchUrl}${
+      waifuCurrent.get().id
     }' && xdg-settings get default-web-browser | sed 's/\.desktop$//'"`
   )
     .then((browser) =>
@@ -139,42 +160,73 @@ const PinImageToTerminal = () => {
 };
 
 function Actions() {
-  //   const top = Widget.Box({
-  //     class_name: "top",
-  //     vpack: "start",
-  //     hpack: "start",
-  //     children: [
-  //       Widget.Button({
-  //         label: "Pin",
-  //         class_name: "pin",
-  //         on_clicked: () => PinImageToTerminal(),
-  //       }),
-  //     ],
-  //   });
+  const favoritesDisplay = (
+    <revealer
+      transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
+      transitionDuration={globalTransition}
+      revealChild={false}
+      child={
+        <eventbox
+          className="favorite-event"
+          child={
+            <scrollable
+              vscroll={Gtk.PolicyType.NEVER}
+              child={
+                <box className="favorites" spacing={5}>
+                  {bind(waifuFavorites).as((favorites) => [
+                    ...favorites.map((favorite) => (
+                      <eventbox
+                        onClick={() => GetImageFromApi(String(favorite.id))}
+                        child={
+                          <box
+                            className="favorite"
+                            css={`
+                              background-image: url("${favoritesPath +
+                              favorite.id}.jpg");
+                            `}
+                            child={
+                              <button
+                                valign={Gtk.Align.START}
+                                halign={Gtk.Align.END}
+                                className="delete"
+                                label=""
+                                onClicked={() => removeFavorite(favorite)}
+                              />
+                            }></box>
+                        }></eventbox>
+                    )),
+                    <button
+                      label=""
+                      className="add"
+                      onClicked={addToFavorites}
+                    />,
+                  ])}
+                </box>
+              }></scrollable>
+          }></eventbox>
+      }></revealer>
+  );
 
   const top = (
-    <box
-      className="top"
-      valign={Gtk.Align.START}
-      halign={Gtk.Align.START}
-      child={
-        <button
-          label="Pin"
-          className="pin"
-          onClicked={() => PinImageToTerminal()}
-        />
-      }></box>
+    <box className="top" vertical vexpand>
+      {favoritesDisplay}
+      <ToggleButton
+        halign={Gtk.Align.START}
+        label=""
+        className="favorite"
+        onToggled={(self, on) => {
+          favoritesDisplay.reveal_child = on;
+        }}
+      />
+    </box>
   );
 
   const Entry = (
     <entry
       className="input"
-      placeholderText="Tags/ID"
+      placeholderText="Tags / ID"
       text={getSetting("waifu.input_history")}
       onActivate={(self) => {
-        if (self.text == null || self.text == "") {
-          return;
-        }
         setSetting("waifu.input_history", self.text);
         GetImageFromApi(self.text);
       }}
@@ -191,10 +243,9 @@ function Actions() {
           <box>
             <button label="" className="open" hexpand onClicked={OpenImage} />
             <button
-              label=""
-              className="favorite"
-              hexpand
-              onClicked={() => (left.reveal_child = !left.reveal_child)}
+              label=""
+              className="pin"
+              onClicked={() => PinImageToTerminal()}
             />
             <button
               label=""
@@ -206,7 +257,7 @@ function Actions() {
               label=""
               hexpand
               className="browser"
-              onClicked={() => SearchImage()}
+              onClicked={() => OpenInBrowser()}
             />
             <button label="" hexpand className="copy" onClicked={CopyImage} />
           </box>
@@ -219,7 +270,7 @@ function Actions() {
             />
             {Entry}
             {ToggleButton({
-              label: "",
+              label: "",
               className: "nsfw",
               hexpand: true,
               onToggled: (self, on) => {
@@ -227,58 +278,25 @@ function Actions() {
               },
             })}
           </box>
+          <box>
+            {apiList.map((api) => (
+              <ToggleButton
+                hexpand
+                className={"api"}
+                label={api.name}
+                state={bind(waifuApi).as(
+                  (current) => current.value === api.value
+                )}
+                onToggled={(self, on) => waifuApi.set(api)}
+              />
+            ))}
+          </box>
         </box>
       }></revealer>
   );
 
-  const left = (
-    <revealer
-      vexpand
-      hexpand
-      halign={Gtk.Align.START}
-      transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
-      transitionDuration={globalTransition}
-      revealChild={false}
-      child={
-        <scrollable
-          hscroll={Gtk.PolicyType.NEVER}
-          child={
-            <box className="favorites" vertical spacing={5}>
-              <box vertical>
-                {bind(waifuFavorites).as((favorites) =>
-                  favorites.map((favorite) => (
-                    <eventbox
-                      className="favorite-event"
-                      onClick={() => GetImageFromApi(String(favorite.id))}
-                      child={
-                        <box
-                          className="favorite"
-                          css={`
-                            background-image: url("${favoritesPath +
-                            favorite.id}.jpg");
-                          `}
-                          child={
-                            <button
-                              hexpand
-                              valign={Gtk.Align.START}
-                              halign={Gtk.Align.END}
-                              className="delete"
-                              label=""
-                              onClicked={() => removeFavorite(favorite)}
-                            />
-                          }></box>
-                      }></eventbox>
-                  ))
-                )}
-              </box>
-              <button label="" className="add" onClicked={addToFavorites} />
-            </box>
-          }></scrollable>
-      }></revealer>
-  );
-
   const bottom = (
-    <box className="bottom" vertical valign={Gtk.Align.END}>
+    <box className="bottom" vertical vexpand valign={Gtk.Align.END}>
       {ToggleButton({
         label: "",
         className: "action-trigger",
@@ -287,61 +305,24 @@ function Actions() {
           actions.reveal_child = on;
           self.label = on ? "" : "";
           actions.reveal_child = on;
-          if (!on) left.reveal_child = false;
         },
       })}
       {actions}
     </box>
   );
 
-  //   return Widget.Box({
-  //     class_name: "actions",
-  //     hexpand: true,
-  //     vertical: true,
-  //     children: [top, left, bottom],
-  //   });
-
   return (
     <box className="actions" vertical>
       {top}
-      {left}
       {bottom}
     </box>
   );
 }
 
 function Image() {
-  //   return Widget.EventBox({
-  //     on_secondary_click: async () => SearchImage(),
-  //     child: Widget.Box({
-  //       class_name: "image",
-  //       hexpand: false,
-  //       vexpand: false,
-  //       child: Actions(),
-  //       css: merge(
-  //         [imageDetails.bind(), rightPanelWidth.bind()],
-  //         (imageDetails, width) => {
-  //           return `
-  //                 background-image: url("${waifuPath}");
-  //                 min-height: ${
-  //                   (Number(imageDetails.image_height) /
-  //                     Number(imageDetails.image_width)) *
-  //                   width
-  //                 }px;
-  //                 `;
-  //         }
-  //       ),
-  //       setup: () => {
-  //         if (readFile(waifuPath) == "" || readFile(jsonPath) == "")
-  //           GetImageFromApi(waifuCurrent.get());
-  //         // downloadAllFavorites()
-  //       },
-  //     }),
-  //   });
-
   return (
     <eventbox
-      onClick={SearchImage}
+      onClick={OpenInBrowser}
       child={
         <box
           className="image"
@@ -349,13 +330,13 @@ function Image() {
           vexpand={false}
           css={bind(
             Variable.derive(
-              [bind(imageDetails), bind(rightPanelWidth)],
+              [bind(waifuCurrent), bind(rightPanelWidth)],
               (imageDetails, width) => {
                 return `
                     background-image: url("${waifuPath}");
                     min-height: ${
-                      (Number(imageDetails.image_height) /
-                        Number(imageDetails.image_width)) *
+                      (Number(imageDetails.height) /
+                        Number(imageDetails.width)) *
                       width
                     }px;
                     `;
@@ -368,22 +349,6 @@ function Image() {
 }
 
 export default () => {
-  //   return Widget.Revealer({
-  //     transitionDuration: globalTransition,
-  //     transition: "slide_down",
-  //     reveal_child: globalSettings.bind().as((s) => s.waifu.visibility),
-  //     child: Widget.EventBox({
-  //       class_name: "waifu-event",
-  //       child: Widget.Box(
-  //         {
-  //           vertical: true,
-  //           class_name: "waifu",
-  //         },
-  //         Image()
-  //       ),
-  //     }),
-  //   });
-
   return (
     <revealer
       transitionDuration={globalTransition}
@@ -400,15 +365,8 @@ export default () => {
 };
 
 export function WaifuVisibility() {
-  //   return Widget.ToggleButton({
-  //     active: globalSettings.get().waifu.visibility,
-  //     onToggled: ({ active }) => setSetting("waifu.visibility", active),
-  //     label: "󱙣",
-  //     class_name: "waifu icon",
-  //   });
-
   return ToggleButton({
-    state: globalSettings.get().waifu.visibility,
+    state: bind(globalSettings).as((s) => s.waifu.visibility),
     onToggled: (self, on) => setSetting("waifu.visibility", on),
     label: "󱙣",
     className: "waifu icon",

@@ -1,5 +1,7 @@
+import { Api } from "./api.interface"
+import { Waifu } from "./waifu.interface"
 
-interface HyprlandSetting
+export interface HyprlandSetting
 {
     value: any,
     type: string,
@@ -7,7 +9,7 @@ interface HyprlandSetting
     max: number,
 }
 
-interface Settings
+export interface Settings
 {
     hyprsunset: {
         kelvin: number,
@@ -36,11 +38,9 @@ interface Settings
     waifu: {
         visibility: boolean,
         input_history: string,
-        current: string,
-        favorites: {
-            id: string,
-            preview: string,
-        }[],
+        current: Waifu,
+        api: Api,
+        favorites: Waifu[],
     }
     rightPanel: {
         visibility: boolean,

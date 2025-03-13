@@ -311,7 +311,7 @@ const organizeResults = (results: Result[]) => {
   if (results.length === 0) return <box />;
 
   const rows = (
-    <box className="results" vertical={true}>
+    <box className="results" vertical={true} spacing={5}>
       {Array.from({ length: Math.ceil(results.length / 2) }).map((_, i) => (
         <box vertical={false} spacing={5}>
           {results.slice(i * 2, i * 2 + 2).map((element, j) => (
@@ -330,7 +330,7 @@ const organizeResults = (results: Result[]) => {
   return (
     <scrollable
       heightRequest={bind(Results).as((results) =>
-        results.length * 25 > maxHeight ? maxHeight : results.length * 25
+        results.length * 20 > maxHeight ? maxHeight : results.length * 20
       )}
       child={rows}
     />

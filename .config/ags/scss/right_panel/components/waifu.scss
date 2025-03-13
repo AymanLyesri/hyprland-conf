@@ -8,19 +8,16 @@
     .top {
       margin: 5px;
     }
+    .favorite-event:hover {
+      background: $module-background;
+      .favorite {
+        min-height: 169px;
+      }
+    }
     .favorites {
       @extend .module;
-      padding: 0px;
-      border-radius: 0px 10px 10px 0px;
-      .favorite-event:hover {
-        background: $module-background;
-        .favorite {
-          min-height: 100px;
-        }
-        .delete {
-          padding: 0px 10px;
-        }
-      }
+      padding: 5px;
+      margin-bottom: 5px;
 
       .favorite {
         background-position: center;
@@ -32,16 +29,15 @@
         border-radius: 10px;
 
         min-width: 69px;
+        min-height: 69px;
         font-size: 10px;
+        padding: 5px;
 
         .delete {
           padding: 1px;
-          border-radius: 10px 0px 0px 10px;
         }
       }
       .add {
-        margin-top: 10px;
-        border-radius: 0px;
       }
     }
     .bottom {
@@ -66,34 +62,9 @@
         min-width: 0px;
         border-radius: 0px;
 
-        &.pin {
-          border-radius: 10px;
-        }
-
-        &.favorite {
-          // border-radius: 0px 0px 10px 0px;
-        }
-
-        &.random {
-          // border-radius: 0px;
-        }
-
-        &.browser {
-          // border-radius: 0px;
-        }
-
-        &.copy {
-          // border-radius: 0px;
-        }
-
-        &.entry-search {
-          border-radius: 0px 0px 0px 10px;
-        }
-
-        &.nsfw {
-          @extend .danger;
-          border-radius: 0px 0px 10px 0px;
-        }
+        // &.pin {
+        //   border-radius: 10px;
+        // }
       }
     }
   }

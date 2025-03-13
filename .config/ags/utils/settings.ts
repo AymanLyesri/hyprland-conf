@@ -1,6 +1,7 @@
 import { execAsync } from "astal";
 import { readJSONFile, writeJSONFile } from "./json";
 import { globalSettings } from "../variables";
+import { Settings } from "../interfaces/settings.interface";
 
 export const settingsPath = "./assets/settings/settings.json";
 
@@ -32,11 +33,23 @@ export const defaultSettings: Settings = {
   waifu: {
     input_history: "",
     visibility: true,
-    current: "",
-    favorites: [{
-      id: "",
+    current: {
+      id: 0,
       preview: "",
-    }],
+      width: 0,
+      height: 0,
+      api: {
+        name: "Danbooru",
+        value: "danbooru",
+        idSearchUrl: "https://danbooru.donmai.us/posts/",
+      },
+    },
+    api: {
+      name: "Danbooru",
+      value: "danbooru",
+      idSearchUrl: "https://danbooru.donmai.us/posts/",
+    },
+    favorites: [],
   },
   rightPanel: {
     exclusivity: true,

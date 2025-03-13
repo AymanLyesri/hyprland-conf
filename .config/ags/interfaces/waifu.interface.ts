@@ -1,4 +1,16 @@
+import { Api } from "./api.interface"
+
+
 export interface Waifu
+{
+    id: number
+    preview: string
+    width: number
+    height: number
+    api: Api
+}
+
+export interface WaifuJson
 {
     id: number
     created_at: string

@@ -1,5 +1,5 @@
 import { App, Astal, Gdk } from "astal/gtk3";
-import { bind, Variable } from "astal";
+import { bind } from "astal";
 import barLeft from "./components/barLeft";
 import barMiddle from "./components/barMiddle";
 import barRight from "./components/barRight";

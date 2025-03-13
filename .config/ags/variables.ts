@@ -8,6 +8,9 @@ import { WidgetSelectors } from "./widgets/rightPanel/RightPanel";
 import { refreshCss } from "./utils/scss";
 import { bind, Binding, GLib, Variable } from "astal";
 import { writeJSONFile } from "./utils/json";
+import { Settings } from "./interfaces/settings.interface";
+import { Api } from "./interfaces/api.interface";
+import { Waifu } from "./interfaces/waifu.interface";
 
 export const NOTIFICATION_DELAY = 5000
 
@@ -36,10 +39,12 @@ barLock.subscribe((value) => setSetting("bar.lock", value));
 export const barOrientation = Variable<boolean>(getSetting("bar.orientation"));
 barOrientation.subscribe((value) => setSetting("bar.orientation", value));
 
-export const waifuFavorites = Variable<{ id: number, preview: string }[]>(getSetting("waifu.favorites"));
-waifuFavorites.subscribe((value) => setSetting("waifu.favorites", value));
-export const waifuCurrent = Variable(getSetting("waifu.current"));
+export const waifuApi = Variable<Api>(getSetting("waifu.api"));
+waifuApi.subscribe((value) => setSetting("waifu.api", value));
+export const waifuCurrent = Variable<Waifu>(getSetting("waifu.current"));
 waifuCurrent.subscribe((value) => setSetting("waifu.current", value));
+export const waifuFavorites = Variable<Waifu[]>(getSetting("waifu.favorites"));
+waifuFavorites.subscribe((value) => setSetting("waifu.favorites", value));
 
 export const focusedClient: Binding<Hyprland.Client> = bind(hyprland, "focusedClient");
 export const emptyWorkspace: Binding<boolean> = focusedClient.as((client) => !client);
