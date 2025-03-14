@@ -3,6 +3,7 @@ import { exec } from "astal"
 import { monitorFile } from "astal/file"
 import { App } from "astal/gtk3"
 import { globalOpacity } from "../variables"
+import { notify } from "./notification"
 
 // target css file
 const tmpCss = `/tmp/tmp-style.css`
@@ -12,7 +13,11 @@ const scss_dir = `./scss`
 const walColors = `./../../.cache/wal/colors.scss`
 const defaultColors = `./scss/defaultColors.scss`
 
-export const getCssPath = () => tmpCss
+export const getCssPath = () =>
+{
+    refreshCss()
+    return tmpCss
+}
 
 export function refreshCss()
 {
