@@ -1,7 +1,29 @@
+// .player-background {
+//   position: relative;
+// }
+
+// .player-background::before {
+//   content: "";
+//   background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
+//   position: absolute;
+//   top: 0;
+//   left: 0;
+//   right: 0;
+//   bottom: 0;
+//   pointer-events: none; /* Ensure the overlay doesn't block interactions */
+// }
+
 .player {
   @extend .module;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 0px;
+  border-radius: 15px;
+  // background: black;
+
+  .player-content {
+    background: rgba($color: #000000, $alpha: 0.45);
+    border-radius: 15px;
+    padding: 10px;
+  }
 
   &.popup {
     min-width: 400px;
@@ -46,29 +68,13 @@
     margin: 0 0.3em;
   }
 
-  // scale.slider {
-  //   margin-bottom: 0.3em;
-  //   padding: 10px 0px;
-  // }
+  &.widget {
+    .title {
+      font-size: 1.2em;
+    }
 
-  // scale.slider trough {
-  //   min-height: 5px;
-  //   background: $background;
-  //   border: unset;
-  // }
-
-  // scale.slider highlight {
-  //   border: unset;
-  //   // background: $secondary;
-  // }
-
-  // scale.slider slider {
-  //   all: unset;
-  //   border: none;
-  //   min-height: 10px;
-  //   min-width: 20px;
-  //   margin: -5px;
-  //   border-radius: 10px;
-  //   background: $foreground;
-  // }
+    .artist {
+      font-size: 1.2em;
+    }
+  }
 }

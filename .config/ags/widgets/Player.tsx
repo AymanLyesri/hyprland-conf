@@ -81,17 +81,7 @@ export default ({
       className="position"
       halign={Gtk.Align.START}
       label={bind(player, "position").as(lengthStr)}
-      visible={bind(player, "length").as((l) => l > 0)}
-      // setup={(self) => {
-      //   const update = (_: any, time: any) => {
-      //     self.label = lengthStr(time || player.position);
-      //     self.visible = player.length > 0;
-      //   };
-
-      //   self.hook(player, "position", update);
-      //   // self.poll(1000, update as any);
-      // }}
-    ></label>
+      visible={bind(player, "length").as((l) => l > 0)}></label>
   );
   const lengthLabel = (
     <label
@@ -164,31 +154,34 @@ export default ({
       css={bind(player, "coverArt").as((p) =>
         playerType == "widget"
           ? `
-                min-height:${rightPanelWidth.get()}px;
-                background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-                    url('${p}');
-                `
+              min-height:${rightPanelWidth.get()}px;
+              background-image: url('${p}');
+              `
           : ``
-      )}>
-      {img()}
-      <box vertical={true} hexpand={true} spacing={5}>
-        <box>
-          {artist}
-          {icon}
-        </box>
-        <box vexpand={true}></box>
-        {title}
-        {positionSlider}
-        <centerbox>
-          {positionLabel}
-          <box>
-            {prev}
-            {playPause}
-            {next}
+      )}
+      child={
+        <box className={"player-content"} vexpand={true}>
+          {img()}
+          <box vertical={true} hexpand={true} spacing={5}>
+            <box>
+              {artist}
+              {icon}
+            </box>
+            <box vexpand={true}></box>
+            {title}
+            {positionSlider}
+            <centerbox>
+              {positionLabel}
+              <box>
+                {prev}
+                {playPause}
+                {next}
+              </box>
+              {lengthLabel}
+            </centerbox>
           </box>
-          {lengthLabel}
-        </centerbox>
-      </box>
-    </box>
+        </box>
+      }
+    />
   );
 };

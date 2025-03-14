@@ -16,4 +16,5 @@ escaped_result=$(echo "$result" | sed "s/'/'\\\\''/g")
 app_name=$result
 app_exec="wl-copy '$escaped_result'"
 
-echo "[{\"app_name\": \"$app_name\", \"app_exec\": \"$app_exec\"}]"
+# echo "[{\"app_name\": \"$app_name\", \"app_exec\": \"$app_exec\"}]"
+echo "$result"

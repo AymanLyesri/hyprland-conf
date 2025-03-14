@@ -129,16 +129,11 @@ const removeFavorite = (favorite: any) => {
         body: `${favorite.id} Favorite removed`,
       })
     )
-    .finally(() =>
-      // (waifuFavorites.get() = waifuFavorites
-      //   .get()
-      //   .filter((fav) => fav !== favorite))
-      {
-        waifuFavorites.set(
-          waifuFavorites.get().filter((fav) => fav !== favorite)
-        );
-      }
-    )
+    .finally(() => {
+      waifuFavorites.set(
+        waifuFavorites.get().filter((fav) => fav !== favorite)
+      );
+    })
     .catch((err) => notify({ summary: "Error", body: err }));
 };
 
@@ -176,7 +171,9 @@ function Actions() {
                   {bind(waifuFavorites).as((favorites) => [
                     ...favorites.map((favorite) => (
                       <eventbox
-                        onClick={() => GetImageFromApi(String(favorite.id))}
+                        onClick={() =>
+                          GetImageFromApi(String(favorite.id), favorite.api)
+                        }
                         child={
                           <box
                             className="favorite"
@@ -244,6 +241,7 @@ function Actions() {
             <button label="" className="open" hexpand onClicked={OpenImage} />
             <button
               label=""
+              hexpand
               className="pin"
               onClicked={() => PinImageToTerminal()}
             />

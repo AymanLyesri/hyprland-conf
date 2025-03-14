@@ -41,7 +41,11 @@ const FetchWallpapers = () => {
 
 FetchWallpapers();
 
-monitorFile(`./../wallpapers`, () => {
+monitorFile(`./../wallpapers/default`, () => {
+  FetchWallpapers();
+});
+
+monitorFile(`./../wallpapers/custom`, () => {
   FetchWallpapers();
 });
 
