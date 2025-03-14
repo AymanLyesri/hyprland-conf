@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -eux # Exit on error, show commands, fail on unset vars
-
 export FZF_HEIGHT="40%"
 MAINTENANCE_DIR=".config/hypr/maintenance"
 CONF_DIR="ArchEclipse"
