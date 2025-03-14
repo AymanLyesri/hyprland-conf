@@ -6,6 +6,7 @@ import { App, Astal, Gtk } from "astal/gtk3";
 
 import hyprland from "gi://AstalHyprland";
 import { date_less, userPanelVisibility } from "../variables";
+import { hideWindow } from "../utils/window";
 const Hyprland = hyprland.get_default();
 
 const pfpPath = exec(`bash -c "echo $HOME/.face.icon"`);
@@ -69,7 +70,7 @@ const UserPanel = () => {
         hexpand={true}
         className="logout"
         label="󰍃"
-        onClick={() => {
+        onClicked={() => {
           Hyprland.message_async("dispatch exit");
         }}
       />
@@ -80,7 +81,7 @@ const UserPanel = () => {
         hexpand={true}
         className="shutdown"
         label=""
-        onClick={() => {
+        onClicked={() => {
           execAsync(`shutdown now`);
         }}
       />
@@ -91,7 +92,7 @@ const UserPanel = () => {
         hexpand={true}
         className="restart"
         label="󰜉"
-        onClick={() => {
+        onClicked={() => {
           execAsync(`reboot`);
         }}
       />
@@ -102,7 +103,7 @@ const UserPanel = () => {
         hexpand={true}
         className="sleep"
         label="󰤄"
-        onClick={() => {
+        onClicked={() => {
           App.toggle_window("user-panel");
           execAsync(
             `bash -c "$HOME/.config/hypr/scripts/hyprlock.sh suspend "`
@@ -180,9 +181,9 @@ const WindowActions = () => {
         <button
           className="close"
           label=""
-          onClick={() => {
+          onClicked={() => {
             userPanelVisibility.set(false);
-            App.toggle_window("user-panel");
+            hideWindow("user-panel");
           }}
         />
       }></box>
@@ -204,7 +205,6 @@ export default () => {
       application={App}
       className="user-panel"
       layer={Astal.Layer.OVERLAY}
-      //   anchor={[]}
       visible={bind(userPanelVisibility)}
       child={Display}
     />

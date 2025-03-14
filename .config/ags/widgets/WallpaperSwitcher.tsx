@@ -72,7 +72,7 @@ function Wallpapers() {
                       css={`
                         background-image: url("${allThumbnails[key]}");
                       `}
-                      onClick={(self) => {
+                      onClicked={(self) => {
                         if (sddm.get()) {
                           execAsync(
                             `pkexec sh -c 'sed -i "s|^background=.*|background=\"${wallpaper}\"|" /usr/share/sddm/themes/where_is_my_sddm_theme/theme.conf'`
@@ -138,7 +138,7 @@ function Wallpapers() {
               }`;
             })}
             label={`${key}`}
-            onClick={(self, event) => {
+            onClicked={(self) => {
               sddm.set(false);
               bottomRevealer.reveal_child = true;
               selectedWorkspace.set(key);
@@ -165,7 +165,7 @@ function Wallpapers() {
 
   const top = (
     <box hexpand={true} vexpand={true} halign={Gtk.Align.CENTER} spacing={10}>
-      <box>{getWallpapers()}</box>
+      <box spacing={10}>{getWallpapers()}</box>
       {reset}
     </box>
   );
@@ -175,7 +175,7 @@ function Wallpapers() {
       valign={Gtk.Align.CENTER}
       className="random-wallpaper"
       label=""
-      onClick={() => {
+      onClicked={() => {
         const randomWallpaper =
           allWallpapers.get()[
             Math.floor(Math.random() * allWallpapers.get().length)
@@ -212,7 +212,7 @@ function Wallpapers() {
       valign={Gtk.Align.CENTER}
       className="stop-selection"
       label=""
-      onClick={() => {
+      onClicked={() => {
         bottomRevealer.reveal_child = false;
       }}
     />
@@ -232,7 +232,7 @@ function Wallpapers() {
 
   const selectedWorkspaceLabel = (
     <label
-      className="button"
+      className="button selected-workspace"
       label={bind(
         Variable.derive(
           [bind(selectedWorkspace), bind(sddm)],
@@ -259,26 +259,18 @@ function Wallpapers() {
       reveal_child={false}
       transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
       transition_duration={globalTransition}
-      child={
-        <box vertical={true}>
-          {actions}
-          {getAllWallpapers()}
-        </box>
-      }
+      child={<box vertical={true} child={getAllWallpapers()}></box>}
     />
   );
 
   const bottom = (
-    <box
-      hexpand={true}
-      vexpand={true}
-      spacing={10}
-      child={bottomRevealer}></box>
+    <box hexpand={true} vexpand={true} child={bottomRevealer}></box>
   );
 
   return (
-    <box className="wallpaper-switcher" vertical={true}>
+    <box className="wallpaper-switcher" vertical={true} spacing={20}>
       {top}
+      {actions}
       {bottom}
     </box>
   );

@@ -11,6 +11,7 @@ import {
 import { App, Astal, Gdk, Gtk } from "astal/gtk3";
 import { notify } from "../utils/notification";
 import {
+  appLauncherVisibility,
   emptyWorkspace,
   globalMargin,
   globalSettings,
@@ -22,6 +23,7 @@ const apps = new Apps.Apps();
 
 import Hyprland from "gi://AstalHyprland";
 import { closeProgress, openProgress } from "./Progress";
+import { hideWindow } from "../utils/window";
 const hyprland = Hyprland.get_default();
 
 const MAX_ITEMS = 10;
@@ -32,10 +34,6 @@ interface Result {
   app_type?: string;
   app_icon?: string;
   app_launch: () => void;
-}
-
-function hide() {
-  App.get_window("app-launcher")!.hide();
 }
 
 const Results = Variable<Result[]>([]);
@@ -219,7 +217,8 @@ const Entry = (
 const launchApp = (app: Result) => {
   openProgress();
   app.app_launch();
-  hide();
+  appLauncherVisibility.set(false);
+  hideWindow("app-launcher");
 };
 
 const organizeResults = (results: Result[]) => {
@@ -247,7 +246,7 @@ const organizeResults = (results: Result[]) => {
         hexpand={true}
         className={className}
         child={buttonContent(element)}
-        onClick={() => {
+        onClicked={() => {
           launchApp(element);
         }}
       />
@@ -297,7 +296,7 @@ export default () => (
     keymode={Astal.Keymode.ON_DEMAND}
     layer={Astal.Layer.TOP}
     margin={globalMargin} // top right bottom left
-    visible={false}
+    visible={bind(appLauncherVisibility)}
     onKeyPressEvent={(self, event) => {
       if (event.get_keyval()[1] === Gdk.KEY_Escape) {
         Entry.set_text("");

@@ -151,7 +151,7 @@ const PinImageToTerminal = () => {
         }`,
       })
     )
-    .catch((err) => print(err));
+    .catch((err) => notify({ summary: "Error", body: err }));
 };
 
 function Actions() {

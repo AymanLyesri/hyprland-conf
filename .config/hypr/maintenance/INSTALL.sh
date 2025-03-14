@@ -2,8 +2,8 @@
 
 export FZF_HEIGHT="40%"
 MAINTENANCE_DIR=".config/hypr/maintenance"
-CONF_DIR="hyprland-conf"
-
+CONF_DIR="ArchEclipse"
+pse
 # specify the repo branch
 if [ -z "$1" ]; then
     BRANCH="master"
@@ -15,7 +15,7 @@ if [ -d "$CONF_DIR" ]; then
     echo "$CONF_DIR directory exists."
 else
     echo "$CONF_DIR directory does not exist. Cloning the repository..."
-    git clone https://github.com/AymanLyesri/hyprland-conf.git --depth 1
+    git clone https://github.com/AymanLyesri/ArchEclipse.git --depth 1
 fi
 
 # Change branch to the specified branch

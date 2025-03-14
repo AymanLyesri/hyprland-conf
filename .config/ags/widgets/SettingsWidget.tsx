@@ -4,6 +4,8 @@ import { globalMargin, globalSettings, settingsVisibility } from "../variables";
 import { bind, execAsync } from "astal";
 import { getSetting, setSetting } from "../utils/settings";
 import { notify } from "../utils/notification";
+import { HyprlandSetting } from "../interfaces/settings.interface";
+import { hideWindow } from "../utils/window";
 const Hyprland = hyprland.get_default();
 
 const hyprCustomDir: string = "$HOME/.config/hypr/configs/custom/";
@@ -190,13 +192,13 @@ const windowActions = (
         <button
           halign={Gtk.Align.END}
           label=""
-          onClick={() => {
+          onClicked={() => {
             settingsVisibility.set(false);
-            App.toggle_window("settings");
+            hideWindow("settings");
           }}
         />
       }></box>
-    <button label="󰑐" onClick={() => execAsync(`bash -c "hyprctl reload"`)} />
+    <button label="󰑐" onClicked={() => execAsync(`bash -c "hyprctl reload"`)} />
   </box>
 );
 

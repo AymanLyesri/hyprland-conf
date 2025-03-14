@@ -18,6 +18,9 @@
   }
 
   .actions {
+    .selected-workspace {
+      color: $secondary;
+    }
     * {
       border-radius: 0px;
     }
@@ -70,7 +73,7 @@
   }
 
   .all-wallpapers-scrollable {
-    margin: 25px 0px 0px 0px;
+    // margin: 25px 0px 0px 0px;
     padding: 0px 50px;
     min-height: 75px;
   }

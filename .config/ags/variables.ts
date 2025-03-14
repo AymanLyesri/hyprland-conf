@@ -72,4 +72,4 @@ export const userPanelVisibility = Variable(false)
 
 export const settingsVisibility = Variable(false)
 
-export const quickLauncherVisibility = Variable(false)
+export const appLauncherVisibility = Variable(false)

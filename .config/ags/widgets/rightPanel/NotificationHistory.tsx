@@ -23,7 +23,7 @@ export default () => {
         <button
           label={filter.name}
           hexpand={true}
-          on_clicked={() => {
+          onClicked={() => {
             notificationFilter.set(
               notificationFilter.get() === filter
                 ? { name: "", class: "" }
