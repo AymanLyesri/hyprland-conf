@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eux # Exit on error, show commands, fail on unset vars
+
 export FZF_HEIGHT="40%"
 MAINTENANCE_DIR=".config/hypr/maintenance"
 CONF_DIR="ArchEclipse"
@@ -59,8 +61,6 @@ continue_prompt "Do you want to install necessary packages? (using $aur_helper)"
 install_browser
 
 install_discord_client
-
-# $MAINTENANCE_DIR/AGSV1.sh
 
 continue_prompt "Sddm theme setup" "$MAINTENANCE_DIR/SDDM.sh"
 
