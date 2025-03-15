@@ -192,9 +192,7 @@ export default ({
           label=""
           onClicked={() => {
             closeNotification();
-            timeout(globalTransition, () => {
-              // n.close();
-            });
+            n.dismiss();
           }}
         />
       }></revealer>

@@ -24,7 +24,6 @@ export function refreshCss()
     const scss = `./scss/style.scss`
 
     const response = exec(`bash -c "echo '$OPACITY: ${globalOpacity.get()};' | cat - ${defaultColors} ${walColors} ${scss} > ${tmpScss} && sassc ${tmpScss} ${tmpCss} -I ${scss_dir}"`)
-    // if (response != "") notify(response)
 
     App.reset_css()
     App.apply_css(tmpCss)
