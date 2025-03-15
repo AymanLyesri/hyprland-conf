@@ -107,6 +107,7 @@ function BatteryWidget() {
     <label
       className="icon"
       label={bind(battery, "percentage").as((p) => {
+        p *= 100;
         switch (true) {
           case p == 100:
             return "";
@@ -127,13 +128,16 @@ function BatteryWidget() {
     />
   );
 
-  const info = <label className={"icon"} label={value.as((v) => `${v}%`)} />;
+  const info = (
+    <label className={"icon"} label={value.as((v) => `${v * 100}%`)} />
+  );
 
   const slider = (
-    <slider
+    <levelbar
       className="slider"
+      canDrag={false}
       widthRequest={100}
-      value={value.as((v) => v / 100)}
+      value={value.as((v) => v)}
     />
   );
 
