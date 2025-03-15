@@ -113,41 +113,35 @@ function Wallpapers() {
   const getWallpapers = () => {
     const activeId = focusedClient.as((client) => client.workspace.id || 1);
 
-    const wallpapers = Variable([]);
-
-    execAsync(`bash ./scripts/get-wallpapers.sh --current`)
-      .then((w) => {
-        wallpapers.set(JSON.parse(w));
-      })
-      .catch((err) => notify(err));
-
-    return bind(wallpapers).as((wallpapers) =>
-      wallpapers.map((wallpaper, key) => {
-        key += 1;
-
-        return (
-          <button
-            valign={Gtk.Align.CENTER}
-            css={`
-              background-image: url("${wallpaper}");
-            `}
-            className={activeId.as((i) => {
-              selectedWorkspace.set(i);
-              return `${
-                i == key ? "workspace-wallpaper focused" : "workspace-wallpaper"
-              }`;
-            })}
-            label={`${key}`}
-            onClicked={(self) => {
-              sddm.set(false);
-              bottomRevealer.reveal_child = true;
-              selectedWorkspace.set(key);
-              selectedWorkspaceWidget.set(self);
-            }}
-          />
-        );
-      })
+    const wallpapers: [] = JSON.parse(
+      exec(`bash ./scripts/get-wallpapers.sh --current`) || "[]"
     );
+
+    return wallpapers.map((wallpaper, key) => {
+      key += 1;
+
+      return (
+        <button
+          valign={Gtk.Align.CENTER}
+          css={`
+            background-image: url("${wallpaper}");
+          `}
+          className={activeId.as((i) => {
+            selectedWorkspace.set(i);
+            return `${
+              i == key ? "workspace-wallpaper focused" : "workspace-wallpaper"
+            }`;
+          })}
+          label={`${key}`}
+          onClicked={(self) => {
+            sddm.set(false);
+            bottomRevealer.reveal_child = true;
+            selectedWorkspace.set(key);
+            selectedWorkspaceWidget.set(self);
+          }}
+        />
+      );
+    });
   };
 
   const reset = (
@@ -165,8 +159,7 @@ function Wallpapers() {
 
   const top = (
     <box hexpand={true} vexpand={true} halign={Gtk.Align.CENTER} spacing={10}>
-      <box spacing={10}>{getWallpapers()}</box>
-      {reset}
+      {[...getWallpapers(), reset]}
     </box>
   );
 

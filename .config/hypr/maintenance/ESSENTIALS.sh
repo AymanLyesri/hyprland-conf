@@ -175,7 +175,7 @@ install_paru() {
 # Function to remove certain packages
 remove_packages() {
     # List of packages to remove (space-separated)
-    packages_to_remove=("dunst") # Replace with actual package names
+    packages_to_remove=("dunst" "swaync") # Replace with actual package names
 
     # Check if packages are installed and remove them
     if pacman -Q "${packages_to_remove[@]}" &>/dev/null; then
