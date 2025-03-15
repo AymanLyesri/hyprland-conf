@@ -71,7 +71,7 @@ const UserPanel = () => {
         className="logout"
         label="󰍃"
         onClicked={() => {
-          Hyprland.message_async("dispatch exit");
+          Hyprland.message_async("dispatch exit", () => {});
         }}
       />
     );

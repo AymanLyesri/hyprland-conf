@@ -100,8 +100,9 @@ export default () => {
       className="clear"
       label=""
       on_clicked={() => {
-        // Notifd.get_default().clear();
-        // NotificationHistory.children = []; // Clear UI
+        Notifd.get_default().notifications.forEach((notification) => {
+          notification.dismiss();
+        });
       }}
     />
   );

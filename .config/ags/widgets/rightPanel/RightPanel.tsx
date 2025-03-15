@@ -1,4 +1,4 @@
-import { Astal, Gtk } from "astal/gtk3";
+import { App, Astal, Gtk } from "astal/gtk3";
 import { WidgetSelector } from "../../interfaces/widgetSelector.interface";
 import waifu, { WaifuVisibility } from "./components/waifu";
 import {
@@ -314,6 +314,7 @@ const Window = () => {
     <window
       name={`right-panel`}
       namespace={"right-panel"}
+      application={App}
       className={bind(rightPanelExclusivity).as((exclusivity) =>
         exclusivity ? "right-panel exclusive" : "right-panel normal"
       )}

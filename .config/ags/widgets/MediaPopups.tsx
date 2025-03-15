@@ -4,6 +4,7 @@ import Player from "./Player";
 import Mpris from "gi://AstalMpris";
 import { App, Astal } from "astal/gtk3";
 import { barOrientation, globalMargin } from "../variables";
+import { hideWindow } from "../utils/window";
 
 const mpris = Mpris.get_default();
 const players = bind(mpris, "players");
@@ -24,7 +25,7 @@ export default () => {
           className="media-popup"
           child={
             <eventbox
-              onHoverLost={() => App.toggle_window("media")}
+              onHoverLost={() => hideWindow("media")}
               child={
                 <box vertical={true} spacing={10}>
                   {players.as((p) =>

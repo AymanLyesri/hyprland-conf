@@ -18,6 +18,7 @@ import { bind, Variable } from "../../../../../../../usr/share/astal/gjs";
 import { App, Astal, Gtk } from "astal/gtk3";
 import CustomRevealer from "../../CustomRevealer";
 import { notify } from "../../../utils/notification";
+import { showWindow } from "../../../utils/window";
 
 cava?.set_bars(12);
 const bars = Variable("");
@@ -156,7 +157,7 @@ function Media() {
             hyprland.message_async("dispatch workspace 4", (res) => print(res))
           }
           on_hover={() => {
-            App.toggle_window("media");
+            showWindow("media");
           }}
           child={bind(mpris, "players").as((arr) =>
             arr.length > 0 ? activePlayer() : <box />
