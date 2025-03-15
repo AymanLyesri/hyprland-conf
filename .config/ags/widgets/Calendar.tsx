@@ -1,24 +1,20 @@
-// export default () =>
-//   Widget.Box({
-//     class_name: "calendar",
-//     hexpand: true,
-//     child: Widget.Calendar({
-//       hexpand: true,
-//       showDayNames: true,
-//       showDetails: true,
-//       showHeading: true,
-//       showWeekNumbers: false,
-//       detail: (self, y, m, d) => {
-//         return `<span color="white">${d}</span>`;
-//       },
-//       onDaySelected: ({ date: [y, m, d] }) => {
-//         print(`${y}. ${m}. ${d}.`);
-//       },
-//     }),
-//   });
+import { GObject } from "astal";
+import { astalify, ConstructProps, Gtk } from "astal/gtk3";
 
-// export default () =>
-//     <box
-//         className={"calendar"}
-//         hexpand={true}
-//     child={<calendar}
+class Calendar extends astalify(Gtk.Calendar) {
+  static {
+    GObject.registerClass(this);
+  }
+
+  constructor(
+    props: ConstructProps<Gtk.Calendar, Gtk.Calendar.ConstructorProps>
+  ) {
+    super(props as any);
+  }
+}
+
+export default () => {
+  return (
+    <box className={"calendar"} child={new Calendar({ hexpand: true })}></box>
+  );
+};

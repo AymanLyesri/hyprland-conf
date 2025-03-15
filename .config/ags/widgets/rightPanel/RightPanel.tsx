@@ -17,6 +17,7 @@ import ToggleButton from "../toggleButton";
 import { exportSettings, setSetting } from "../../utils/settings";
 import MediaWidget from "../MediaWidget";
 import NotificationHistory from "./NotificationHistory";
+import Calendar from "../Calendar";
 
 // Name need to match the name of the widget()
 export const WidgetSelectors: WidgetSelector[] = [
@@ -35,11 +36,11 @@ export const WidgetSelectors: WidgetSelector[] = [
     icon: "",
     widget: () => NotificationHistory(),
   },
-  // {
-  //   name: "Calendar",
-  //   icon: "",
-  //   widget: () => Calendar(),
-  // },
+  {
+    name: "Calendar",
+    icon: "",
+    widget: () => Calendar(),
+  },
   // {
   //   name: "Resources",
   //   icon: "",
@@ -271,11 +272,6 @@ function WindowActions() {
 }
 
 const Actions = () => (
-  // Widget.Box({
-  //   class_name: "right-panel-actions",
-  //   vertical: true,
-  //   children: [WidgetActions(), Utilities(), WindowActions()],
-  // });
   <box className={"right-panel-actions"} vertical={true}>
     <WidgetActions />
     <Utilities />
@@ -300,7 +296,6 @@ function Panel() {
         vertical={true}
         spacing={10}>
         {bind(Widgets).as((widgets) => {
-          print("widgets are ", widgets.length);
           return widgets.map((widget) => widget.widget());
         })}
       </box>
