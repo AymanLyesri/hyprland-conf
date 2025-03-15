@@ -101,6 +101,7 @@ update
 
 ## Tips
 
+- User Icon is stored in `$HOME/.face.icon`
 - Press `SUPER + w` to select the wallpaper you like
 - Custom wallpapers should be added in `$HOME/.config/wallpapers/custom`
 - Most functionalities have associated [keybinds](https://github.com/AymanLyesri/hyprland-conf/blob/master/.config/hypr/configs/keybinds.conf). Check them out!

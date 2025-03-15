@@ -48,6 +48,7 @@ waifuFavorites.subscribe((value) => setSetting("waifu.favorites", value));
 
 export const focusedClient: Binding<Hyprland.Client> = bind(hyprland, "focusedClient");
 export const emptyWorkspace: Binding<boolean> = focusedClient.as((client) => !client);
+export const focusedWorkspace: Binding<Hyprland.Workspace> = bind(hyprland, "focusedWorkspace");
 
 export const newAppWorkspace = Variable(0)
 

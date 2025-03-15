@@ -1,5 +1,6 @@
 import { App } from "astal/gtk3";
 import {
+  focusedWorkspace,
   newAppWorkspace,
   settingsVisibility,
   userPanelVisibility,
@@ -35,7 +36,7 @@ function Workspaces() {
     [
       // bind(newAppWorkspace, "value"),
       bind(Hyprland, "workspaces"),
-      bind(Hyprland, "focusedWorkspace").as((w) => w.id),
+      focusedWorkspace.as((workspace) => workspace.id),
     ],
     (workspaces, currentWorkspace) => {
       print("workspaces", workspaces.length);

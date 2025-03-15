@@ -1,12 +1,18 @@
 .right-panel {
   &.exclusive {
     border-radius: 0px;
-    border-left: 1px solid $tertiary;
+    border-left: 1px solid $secondary;
   }
   &.normal {
-    border-radius: 15px;
-    margin: 10px 15px;
-    border: 1px solid $secondary;
+    > box {
+      border-radius: 15px;
+      margin: 0px;
+      padding: 0px;
+      border: 1px solid $secondary;
+    }
+    .right-panel-actions {
+      border-radius: 15px;
+    }
   }
 
   @extend .module;

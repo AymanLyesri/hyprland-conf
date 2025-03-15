@@ -2,7 +2,11 @@ import hyprland from "gi://AstalHyprland";
 import { bind, exec, execAsync, monitorFile, Variable } from "astal";
 import { App, Gtk } from "astal/gtk3";
 import { notify } from "../utils/notification";
-import { focusedClient, globalTransition } from "../variables";
+import {
+  focusedClient,
+  focusedWorkspace,
+  globalTransition,
+} from "../variables";
 import ToggleButton from "./toggleButton";
 import { Button } from "astal/gtk3/widget";
 const Hyprland = hyprland.get_default();
@@ -111,7 +115,7 @@ function Wallpapers() {
   };
 
   const getWallpapers = () => {
-    const activeId = focusedClient.as((client) => client.workspace.id || 1);
+    const activeId = focusedWorkspace.as((workspace) => workspace.id || 1);
 
     const wallpapers: [] = JSON.parse(
       exec(`bash ./scripts/get-wallpapers.sh --current`) || "[]"

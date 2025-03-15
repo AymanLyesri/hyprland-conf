@@ -224,6 +224,7 @@ export default ({
       {popup ? <CircularProgress /> : <box />}
       <label
         hexpand={true}
+        wrap={true}
         xalign={0}
         truncate={popup}
         className="app-name"
@@ -242,7 +243,7 @@ export default ({
         <box className="main-content" vertical={true} spacing={10}>
           {topBar}
           {/* <separator /> */}
-          <box>
+          <box spacing={5}>
             {icon}
             <box vertical={true} spacing={5}>
               <box hexpand={true} child={title}></box>

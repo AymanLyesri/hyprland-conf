@@ -33,11 +33,14 @@ export default () => {
       visible={bind(barVisibility)}
       child={
         <eventbox
-          onLeaveNotifyEvent={(self, event: Gdk.Event) => {
-            const [_, x, y] = event.get_root_coords();
-            if (y >= 25 && !barLock.get()) {
-              barVisibility.set(false);
-            }
+          // onLeaveNotifyEvent={(self, event: Gdk.Event) => {
+          //   const [_, x, y] = event.get_root_coords();
+          //   if (y >= 25 && !barLock.get()) {
+          //     barVisibility.set(false);
+          //   }
+          // }}
+          onHoverLost={() => {
+            if (!barLock.get()) barVisibility.set(false);
           }}
           child={
             <centerbox
