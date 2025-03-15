@@ -4,19 +4,24 @@
   min-width: 1px;
   min-height: 1px;
   background: transparent;
-  padding: 10px 0px 10px 10px;
+
+  .container {
+    background-color: $module-background;
+    padding: 15px 10px 10px 10px;
+    border-radius: 50px;
+  }
 
   .slider {
     min-height: 500px;
 
     trough {
-      border-radius: 50px;
+      border-radius: 50px 50px 15px 15px;
 
       slider {
-        min-width: 33px;
+        min-width: 30px;
       }
       highlight {
-        border-radius: 50px;
+        border-radius: 50px 50px 15px 15px;
       }
     }
   }

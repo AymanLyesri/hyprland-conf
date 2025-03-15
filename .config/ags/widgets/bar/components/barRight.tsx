@@ -88,7 +88,7 @@ function Volume() {
       step={0.1}
       className="slider"
       widthRequest={100}
-      onValueChanged={({ value }) => (speaker.volume = value)}
+      onDragged={({ value }) => (speaker.volume = value)}
       value={bind(speaker, "volume")}
     />
   );
@@ -135,7 +135,6 @@ function BatteryWidget() {
   const slider = (
     <levelbar
       className="slider"
-      canDrag={false}
       widthRequest={100}
       value={value.as((v) => v)}
     />

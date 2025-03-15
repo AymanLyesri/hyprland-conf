@@ -11,6 +11,7 @@ import WallpaperSwitcher from "./widgets/WallpaperSwitcher"
 import MediaPopups from "./widgets/MediaPopups"
 import SettingsWidget from "./widgets/SettingsWidget"
 import BarHover from "./widgets/bar/BarHover"
+import OSD from "./widgets/OSD"
 
 App.start({
     css: getCssPath(),
@@ -35,6 +36,8 @@ App.start({
         MediaPopups()
 
         SettingsWidget()
+
+        OSD()
 
         console.log("App started");
 
