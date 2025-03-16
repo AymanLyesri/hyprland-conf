@@ -1,4 +1,4 @@
-import { Astal, Gtk } from "astal/gtk3";
+import { Astal, Gdk, Gtk } from "astal/gtk3";
 import Brightness from "../services/brightness";
 const brightness = Brightness.get_default();
 import Wp from "gi://AstalWp";
@@ -121,8 +121,9 @@ function OnScreenProgress(vertical: boolean) {
   );
 }
 
-export default () => (
+export default (monitor: Gdk.Monitor) => (
   <window
+    gdkmonitor={monitor}
     name="osd"
     namespace="osd"
     className="osd"

@@ -1,14 +1,10 @@
 import { App } from "astal/gtk3";
-import {
-  focusedWorkspace,
-  newAppWorkspace,
-  settingsVisibility,
-  userPanelVisibility,
-} from "../../../variables";
+import { focusedWorkspace, newAppWorkspace } from "../../../variables";
 
 import hyprland from "gi://AstalHyprland";
 import { bind, Variable } from "astal";
 import ToggleButton from "../../toggleButton";
+import { hideWindow, showWindow } from "../../../utils/window";
 const Hyprland = hyprland.get_default();
 
 function Workspaces() {
@@ -133,16 +129,6 @@ function Workspaces() {
   return <box className="workspaces">{bind(workspaces)}</box>;
 }
 
-function AppLauncher() {
-  return (
-    <ToggleButton
-      className="app-search"
-      label=""
-      onToggled={(self, on) => App.toggle_window("app-launcher")}
-    />
-  );
-}
-
 function OverView() {
   return (
     <button
@@ -157,40 +143,62 @@ function OverView() {
   );
 }
 
-function Settings() {
+function AppLauncher({ monitorName }: { monitorName: string }) {
+  return (
+    <ToggleButton
+      className="app-search"
+      label=""
+      onToggled={(self, on) => {
+        on
+          ? showWindow(`app-launcher-${monitorName}`)
+          : hideWindow(`app-launcher-${monitorName}`);
+      }}
+    />
+  );
+}
+
+function Settings({ monitorName }: { monitorName: string }) {
   return (
     <ToggleButton
       className="settings"
       label=""
-      onToggled={(self, on) => settingsVisibility.set(on)}
+      onToggled={(self, on) =>
+        on
+          ? showWindow(`settings-${monitorName}`)
+          : hideWindow(`settings-${monitorName}`)
+      }
     />
   );
 }
 
-function UserPanel() {
+function UserPanel({ monitorName }: { monitorName: string }) {
   return (
     <ToggleButton
       className="user-panel"
       label=""
-      onToggled={(self, on) => userPanelVisibility.set(on)}
+      onToggled={(self, on) => {
+        on
+          ? showWindow(`user-panel-${monitorName}`)
+          : hideWindow(`user-panel-${monitorName}`);
+      }}
     />
   );
 }
 
-const Actions = () => {
+const Actions = ({ monitorName }: { monitorName: string }) => {
   return (
     <box className="actions">
-      <UserPanel />
-      <Settings />
-      <AppLauncher />
+      <UserPanel monitorName={monitorName} />
+      <Settings monitorName={monitorName} />
+      <AppLauncher monitorName={monitorName} />
     </box>
   );
 };
 
-export default () => {
+export default (monitorName: string) => {
   return (
     <box className="bar-left" spacing={5}>
-      <Actions />
+      <Actions monitorName={monitorName} />
       <OverView />
       <Workspaces />
     </box>

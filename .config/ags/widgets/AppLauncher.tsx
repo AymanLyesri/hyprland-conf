@@ -11,7 +11,6 @@ import {
 import { App, Astal, Gdk, Gtk } from "astal/gtk3";
 import { notify } from "../utils/notification";
 import {
-  appLauncherVisibility,
   emptyWorkspace,
   globalMargin,
   globalSettings,
@@ -24,9 +23,12 @@ const apps = new Apps.Apps();
 import Hyprland from "gi://AstalHyprland";
 import { closeProgress, openProgress } from "./Progress";
 import { hideWindow } from "../utils/window";
+import { getMonitorName } from "../utils/monitor";
 const hyprland = Hyprland.get_default();
 
 const MAX_ITEMS = 10;
+
+const monitorName = Variable<string>("");
 
 interface Result {
   app_name: string;
@@ -217,8 +219,7 @@ const Entry = (
 const launchApp = (app: Result) => {
   openProgress();
   app.app_launch();
-  appLauncherVisibility.set(false);
-  hideWindow("app-launcher");
+  hideWindow(`app-launcher-${monitorName.get()}`);
 };
 
 const organizeResults = (results: Result[]) => {
@@ -284,9 +285,10 @@ const organizeResults = (results: Result[]) => {
 
 const ResultsDisplay = <box child={bind(Results).as(organizeResults)} />;
 
-export default () => (
+export default (monitor: Gdk.Monitor) => (
   <window
-    name="app-launcher"
+    gdkmonitor={monitor}
+    name={`app-launcher-${getMonitorName(monitor.get_display(), monitor)}`}
     namespace="app-launcher"
     application={App}
     anchor={emptyWorkspace.as((empty) =>
@@ -296,12 +298,15 @@ export default () => (
     keymode={Astal.Keymode.ON_DEMAND}
     layer={Astal.Layer.TOP}
     margin={globalMargin} // top right bottom left
-    visible={bind(appLauncherVisibility)}
+    visible={false}
     onKeyPressEvent={(self, event) => {
       if (event.get_keyval()[1] === Gdk.KEY_Escape) {
         Entry.set_text("");
         Entry.grab_focus();
       }
+    }}
+    setup={(self) => {
+      monitorName.set(getMonitorName(monitor.get_display(), monitor)!);
     }}
     child={
       <eventbox>

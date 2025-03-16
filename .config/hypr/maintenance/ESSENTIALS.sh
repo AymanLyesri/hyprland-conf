@@ -172,18 +172,23 @@ install_paru() {
     fi
 }
 
-# Function to remove certain packages
 remove_packages() {
-    # List of packages to remove (space-separated)
     packages_to_remove=("dunst" "swaync") # Replace with actual package names
 
-    # Check if packages are installed and remove them
-    if pacman -Q "${packages_to_remove[@]}" &>/dev/null; then
-        echo "Removing packages: ${packages_to_remove[*]}"
-        killall ${packages_to_remove[@]} 2>/dev/null
-        sudo pacman -Rns --noconfirm "${packages_to_remove[@]}"
+    installed_packages=()
+
+    for pkg in "${packages_to_remove[@]}"; do
+        if pacman -Q "$pkg" &>/dev/null; then
+            installed_packages+=("$pkg")
+            pkill -x "$pkg" 2>/dev/null # More precise than killall
+        fi
+    done
+
+    if [[ ${#installed_packages[@]} -gt 0 ]]; then
+        echo "Removing packages: ${installed_packages[*]}"
+        sudo pacman -Rns --noconfirm "${installed_packages[@]}"
     else
-        echo "One or more packages are not installed."
+        echo "No specified packages are installed."
     fi
 }
 

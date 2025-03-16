@@ -1,4 +1,4 @@
-import { App } from "astal/gtk3"
+import { App, Gdk } from "astal/gtk3"
 import Bar from "./widgets/bar/Bar"
 import { getCssPath } from "./utils/scss"
 import RightPanel from "./widgets/rightPanel/RightPanel"
@@ -13,33 +13,37 @@ import SettingsWidget from "./widgets/SettingsWidget"
 import BarHover from "./widgets/bar/BarHover"
 import OSD from "./widgets/OSD"
 
+
+
+
 App.start({
     css: getCssPath(),
     main()
     {
-        Bar()
-        BarHover()
+        App.get_monitors().map(monitor =>
+        {
+            Bar(monitor)
+            BarHover(monitor)
 
-        RightPanel()
-        RightPanelHover()
+            RightPanel(monitor)
+            RightPanelHover(monitor)
 
-        NotificationPopups()
+            NotificationPopups(monitor)
 
-        AppLauncher()
+            AppLauncher(monitor)
 
-        Progress()
+            Progress(monitor)
 
-        UserPanel()
+            UserPanel(monitor)
 
-        WallpaperSwitcher()
+            WallpaperSwitcher(monitor)
 
-        MediaPopups()
+            MediaPopups(monitor)
 
-        SettingsWidget()
+            SettingsWidget(monitor)
 
-        OSD()
-
-        console.log("App started");
+            OSD(monitor)
+        })
 
     },
 })

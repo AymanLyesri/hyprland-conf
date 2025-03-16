@@ -1,10 +1,9 @@
 #!/bin/bash
 
-hyprDir=$HOME/.config/hypr                       # hypr directory
-defaults=$hyprDir/hyprpaper/config/defaults.conf # config file
+hyprDir=$HOME/.config/hypr # hypr directory
 
-hyprpaper_conf=$hyprDir/hyprpaper/config/defaults.conf # hyprpaper config
-backup=$hyprDir/hyprpaper/config/defaults.conf.bak     # backup config
+hyprpaper_conf=$hyprDir/hyprpaper/config       # hyprpaper config
+backup=$hyprDir/hyprpaper/config/defaults.conf # backup config
 
 default_wallpapers=$HOME/.config/wallpapers/default # default wallpapers directory
 custom_wallpapers=$HOME/.config/wallpapers/custom   # custom wallpapers directory
@@ -23,18 +22,30 @@ echo "Wallpapers for sddm updated!"
 
 #################################################
 
-if [ ! -s "$defaults" ]; then
-    touch $defaults
-    cp $backup $defaults
+monitors=$(hyprctl monitors | awk '/Monitor/ {print $2}')
 
-    echo "Config file created!"
-fi
+for monitor in $monitors; do
+    monitor_conf=$hyprpaper_conf/$monitor/defaults.conf
+
+    if [ ! -s "$monitor_conf" ]; then
+        touch $monitor_conf
+        mkdir -p $hyprpaper_conf/$monitor
+        cp $backup $monitor_conf
+
+        echo "Config file created! for $monitor"
+    fi
+done
 
 #################################################
-wallpapers=$(awk -F'=' '{print $2}' $defaults) # get wallpapers
-# loop through wallpapers
-for wallpaper in $wallpapers; do
-    hyprctl hyprpaper preload "$wallpaper" # preload wallpaper
+
+for conf in $hyprpaper_conf/*/defaults.conf; do
+    monitor=$(basename $conf/defaults.conf)
+
+    wallpapers=$(awk -F'=' '{print $2}' $conf)
+
+    for wallpaper in $wallpapers; do
+        hyprctl hyprpaper preload "$wallpaper"
+    done
 done
 
 echo "Wallpapers preloaded!"

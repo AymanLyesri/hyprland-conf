@@ -2,11 +2,12 @@ import { bind, exec, execAsync, Variable } from "astal";
 import MediaWidget from "./MediaWidget";
 
 import NotificationHistory from "./rightPanel/NotificationHistory";
-import { App, Astal, Gtk } from "astal/gtk3";
+import { App, Astal, Gdk, Gtk } from "astal/gtk3";
 
 import hyprland from "gi://AstalHyprland";
-import { date_less, userPanelVisibility } from "../variables";
+import { date_less } from "../variables";
 import { hideWindow } from "../utils/window";
+import { getMonitorName } from "../utils/monitor";
 const Hyprland = hyprland.get_default();
 
 const pfpPath = exec(`bash -c "echo $HOME/.face.icon"`);
@@ -171,7 +172,7 @@ const UserPanel = () => {
   );
 };
 
-const WindowActions = () => {
+const WindowActions = (monitorName: string) => {
   return (
     <box
       className="window-actions"
@@ -182,31 +183,29 @@ const WindowActions = () => {
           className="close"
           label=""
           onClicked={() => {
-            userPanelVisibility.set(false);
-            hideWindow("user-panel");
+            hideWindow(`user-panel-${monitorName}`);
           }}
         />
       }></box>
   );
 };
 
-const Display = (
-  <box className="display" vertical={true} spacing={10}>
-    {WindowActions()}
-    {UserPanel()}
-  </box>
-);
-
-export default () => {
+export default (monitor: Gdk.Monitor) => {
   return (
     <window
-      name="user-panel"
+      gdkmonitor={monitor}
+      name={`user-panel-${getMonitorName(monitor.get_display(), monitor)}`}
       namespace="user-panel"
       application={App}
       className="user-panel"
       layer={Astal.Layer.OVERLAY}
-      visible={bind(userPanelVisibility)}
-      child={Display}
+      visible={false}
+      child={
+        <box className="display" vertical={true} spacing={10}>
+          {WindowActions(getMonitorName(monitor.get_display(), monitor)!)}
+          {UserPanel()}
+        </box>
+      }
     />
   );
 };

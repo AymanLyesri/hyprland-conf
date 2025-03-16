@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the file that contains the wallpaper paths
-defaults="$HOME/.config/hypr/hyprpaper/config/defaults.conf"
+hyprpaper_config="$HOME/.config/hypr/hyprpaper/config"
 all="$HOME/.config/wallpapers/all"
 custom="$HOME/.config/wallpapers/custom"
 
@@ -10,12 +10,19 @@ wallpaper_paths=()
 
 # check if $1 == current
 if [ "$1" == "--current" ]; then
+    # check if $2 is set
+    if [ -z "$2" ]; then
+        echo "Usage: get-wallpapers.sh --current <monitor>"
+        exit 1
+    else
+        monitor=$2
+    fi
     # Read the file line by line
     while IFS='=' read -r key path; do
         # Trim any whitespace from the path and add to the array
         path=$(echo "$path" | sed "s~^\$HOME~$HOME~" | xargs)
         wallpaper_paths+=("\"$path\"")
-    done <"$defaults"
+    done <"$hyprpaper_config/$monitor/defaults.conf"
 
 elif [ "$1" == "--all" ]; then
     # Read the folder and add all the wallpapers to the array

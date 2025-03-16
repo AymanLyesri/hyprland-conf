@@ -226,7 +226,7 @@ function BarOrientation() {
   );
 }
 
-export default () => {
+export default (monitorName: string) => {
   return (
     <box className="bar-right" hexpand halign={Gtk.Align.END} spacing={5}>
       <BatteryWidget />

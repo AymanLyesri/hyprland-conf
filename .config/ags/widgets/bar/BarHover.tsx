@@ -3,10 +3,11 @@ import { Window } from "../../../../../../usr/share/astal/gjs/gtk3/widget";
 import { barOrientation, barVisibility } from "../../variables";
 import { bind } from "astal";
 
-export default () => {
+export default (monitor: Gdk.Monitor) => {
   return (
     <Window
       name="bar-hover"
+      gdkmonitor={monitor}
       anchor={bind(barOrientation).as((orientation) =>
         orientation
           ? Astal.WindowAnchor.TOP |

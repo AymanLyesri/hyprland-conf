@@ -1,11 +1,12 @@
-import { App, Astal, Gtk } from "astal/gtk3";
+import { App, Astal, Gdk, Gtk } from "astal/gtk3";
 import hyprland from "gi://AstalHyprland";
-import { globalMargin, globalSettings, settingsVisibility } from "../variables";
+import { globalMargin, globalSettings } from "../variables";
 import { bind, execAsync } from "astal";
 import { getSetting, setSetting } from "../utils/settings";
 import { notify } from "../utils/notification";
 import { HyprlandSetting } from "../interfaces/settings.interface";
 import { hideWindow } from "../utils/window";
+import { getMonitorName } from "../utils/monitor";
 const Hyprland = hyprland.get_default();
 
 const hyprCustomDir: string = "$HOME/.config/hypr/configs/custom/";
@@ -183,7 +184,7 @@ const Settings = () => {
   );
 };
 
-const windowActions = (
+const WindowActions = ({ monitor }: { monitor: string }) => (
   <box hexpand={true} className="window-actions">
     <box
       hexpand={true}
@@ -193,8 +194,7 @@ const windowActions = (
           halign={Gtk.Align.END}
           label=""
           onClicked={() => {
-            settingsVisibility.set(false);
-            hideWindow("settings");
+            hideWindow(`settings-${monitor}`);
           }}
         />
       }></box>
@@ -202,23 +202,23 @@ const windowActions = (
   </box>
 );
 
-const Display = (
-  <box vertical={true} className="settings-widget">
-    {windowActions}
-    <Settings />
-  </box>
-);
-
-export default () => {
+export default (monitor: Gdk.Monitor) => {
+  const monitorName = getMonitorName(monitor.get_display(), monitor)!;
   return (
     <window
-      name="settings"
+      gdkmonitor={monitor}
+      name={`settings-${monitorName}`}
       namespace="settings"
       application={App}
       className=""
       anchor={Astal.WindowAnchor.BOTTOM | Astal.WindowAnchor.LEFT}
-      visible={bind(settingsVisibility)}
+      visible={false}
       margin={globalMargin}
-      child={Display}></window>
+      child={
+        <box vertical={true} className="settings-widget">
+          <WindowActions monitor={monitorName} />
+          <Settings />
+        </box>
+      }></window>
   );
 };

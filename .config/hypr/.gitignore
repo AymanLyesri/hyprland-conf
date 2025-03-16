@@ -2,5 +2,5 @@ configs/custom/*
 !configs/custom/.gitkeep
 
 theme/theme.conf
-hyprpaper/config/current.conf
-hyprpaper/config/defaults.conf
+hyprpaper/config/*
+!hyprpaper/config/defaults.conf

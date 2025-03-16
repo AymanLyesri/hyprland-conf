@@ -1,9 +1,10 @@
-import { Astal } from "astal/gtk3";
+import { Astal, Gdk } from "astal/gtk3";
 import { rightPanelLock, rightPanelVisibility } from "../../variables";
 
-export default () => {
+export default (monitor: Gdk.Monitor) => {
   return (
     <window
+      gdkmonitor={monitor}
       className="RightPanel"
       exclusivity={Astal.Exclusivity.IGNORE}
       layer={Astal.Layer.TOP}
