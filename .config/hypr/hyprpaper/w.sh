@@ -3,14 +3,9 @@
 # Define variables
 hyprdir=$HOME/.config/hypr
 wallpaper=$1 # This is passed as an argument to the script
+monitor=$2
 
-# Get list of monitors
-monitors=($(hyprctl monitors | awk '/Monitor/ {print $2}'))
-
-# Set wallpaper for each monitor
-for monitor in "${monitors[@]}"; do
-    hyprctl hyprpaper wallpaper "$monitor,$wallpaper"
-done
+hyprctl hyprpaper wallpaper "$monitor,$wallpaper"
 
 sleep 1 # Wait for wallpaper to be set (removes stuttering)
 

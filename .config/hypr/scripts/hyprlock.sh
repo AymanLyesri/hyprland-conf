@@ -1,7 +1,6 @@
 #!/bin/bash
 
 hyprDir=$HOME/.config/hypr
-current_wallpaper=$(cat $hyprDir/hyprpaper/config/current.conf)
 hyprlock=$hyprDir/hyprlock.conf
 
 # sed -i "/background {/,/}/ s|path = .*$|path = $current_wallpaper|" $hyprlock
