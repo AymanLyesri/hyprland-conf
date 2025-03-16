@@ -11,10 +11,11 @@ const mpris = Mpris.get_default();
 const players = bind(mpris, "players");
 
 export default (monitor: Gdk.Monitor) => {
+  const monitorName = getMonitorName(monitor.get_display(), monitor);
   return (
     <window
       gdkmonitor={monitor}
-      name={`media-${getMonitorName(monitor.get_display(), monitor)}`}
+      name={`media-${monitorName}`}
       namespace={"media"}
       application={App}
       anchor={bind(barOrientation).as((orientation) =>
@@ -27,7 +28,7 @@ export default (monitor: Gdk.Monitor) => {
           className="media-popup"
           child={
             <eventbox
-              onHoverLost={() => hideWindow("media")}
+              onHoverLost={() => hideWindow(`media-${monitorName}`)}
               child={
                 <box vertical={true} spacing={10}>
                   {players.as((p) =>

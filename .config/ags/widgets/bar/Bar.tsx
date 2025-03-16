@@ -13,10 +13,11 @@ import {
 import { getMonitorName } from "../../utils/monitor";
 
 export default (monitor: Gdk.Monitor) => {
+  const monitorName = getMonitorName(monitor.get_display(), monitor)!;
   return (
     <window
       gdkmonitor={monitor}
-      name={`bar-${getMonitorName(monitor.get_display(), monitor)}`}
+      name={`bar-${monitorName}`}
       namespace="bar"
       className="Bar"
       application={App}
@@ -43,12 +44,14 @@ export default (monitor: Gdk.Monitor) => {
               className={emptyWorkspace.as((empty) =>
                 empty ? "bar empty" : "bar full"
               )}
-              startWidget={<box name="start-widget" child={barLeft()}></box>}
+              startWidget={
+                <box name="start-widget" child={barLeft(monitorName)}></box>
+              }
               centerWidget={
-                <box name="center-widget" child={barMiddle()}></box>
+                <box name="center-widget" child={barMiddle(monitorName)}></box>
               }
               endWidget={
-                <box name="end-widget" child={barRight()}></box>
+                <box name="end-widget" child={barRight(monitorName)}></box>
               }></centerbox>
           }></eventbox>
       }></window>

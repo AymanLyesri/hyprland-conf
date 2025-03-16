@@ -69,8 +69,3 @@ export const Widgets = Variable<WidgetSelector[]>(getSetting("rightPanel.widgets
     .map((name: string) => WidgetSelectors.find(widget => widget.name === name)))
 Widgets.subscribe((value) => setSetting("rightPanel.widgets", value.map(widget => widget.name)));
 
-export const userPanelVisibility = Variable(false)
-
-export const settingsVisibility = Variable(false)
-
-export const appLauncherVisibility = Variable(false)

@@ -75,7 +75,7 @@ function AudioVisualizer() {
   return revealer;
 }
 
-function Media() {
+function Media({ monitorName }: { monitorName: string }) {
   const progress = (player: Mpris.Player) => {
     const playerIcon = bind(player, "entry").as((e) => playerToIcon(e));
     return (
@@ -147,9 +147,6 @@ function Media() {
       revealChild={bind(mpris, "players").as((arr) => arr.length > 0)}
       transitionDuration={globalTransition}
       transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
-      // setup={(self) =>
-      //   bind(mpris, "players").as((arr) => (self.reveal_child = arr.length > 0))
-      // }
       child={
         <eventbox
           className="media-event"
@@ -157,7 +154,7 @@ function Media() {
             hyprland.message_async("dispatch workspace 4", (res) => print(res))
           }
           on_hover={() => {
-            showWindow("media");
+            showWindow(`media-${monitorName}`);
           }}
           child={bind(mpris, "players").as((arr) =>
             arr.length > 0 ? activePlayer() : <box />
@@ -210,12 +207,11 @@ function ClientTitle() {
   );
 }
 
-export default () => {
+export default (monitorName: string) => {
   return (
     <box className="bar-middle" spacing={5}>
-      {/* <CavaWidget /> */}
       <AudioVisualizer />
-      <Media />
+      <Media monitorName={monitorName} />
       <Clock />
       <Bandwidth />
       <ClientTitle />
