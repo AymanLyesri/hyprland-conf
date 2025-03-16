@@ -7,6 +7,7 @@ export default (monitor: Gdk.Monitor) => {
   return (
     <Window
       name="bar-hover"
+      gdkmonitor={monitor}
       anchor={bind(barOrientation).as((orientation) =>
         orientation
           ? Astal.WindowAnchor.TOP |
