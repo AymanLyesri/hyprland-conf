@@ -5,6 +5,7 @@ import Mpris from "gi://AstalMpris";
 import { App, Astal, Gdk } from "astal/gtk3";
 import { barOrientation, globalMargin } from "../variables";
 import { hideWindow } from "../utils/window";
+import { getMonitorName } from "../utils/monitor";
 
 const mpris = Mpris.get_default();
 const players = bind(mpris, "players");
@@ -13,7 +14,7 @@ export default (monitor: Gdk.Monitor) => {
   return (
     <window
       gdkmonitor={monitor}
-      name="media"
+      name={`media-${getMonitorName(monitor.get_display(), monitor)}`}
       namespace={"media"}
       application={App}
       anchor={bind(barOrientation).as((orientation) =>

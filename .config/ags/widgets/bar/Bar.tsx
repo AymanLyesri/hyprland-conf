@@ -10,12 +10,13 @@ import {
   emptyWorkspace,
   globalMargin,
 } from "../../variables";
+import { getMonitorName } from "../../utils/monitor";
 
 export default (monitor: Gdk.Monitor) => {
   return (
     <window
       gdkmonitor={monitor}
-      name="bar"
+      name={`bar-${getMonitorName(monitor.get_display(), monitor)}`}
       namespace="bar"
       className="Bar"
       application={App}
@@ -34,12 +35,6 @@ export default (monitor: Gdk.Monitor) => {
       visible={bind(barVisibility)}
       child={
         <eventbox
-          // onLeaveNotifyEvent={(self, event: Gdk.Event) => {
-          //   const [_, x, y] = event.get_root_coords();
-          //   if (y >= 25 && !barLock.get()) {
-          //     barVisibility.set(false);
-          //   }
-          // }}
           onHoverLost={() => {
             if (!barLock.get()) barVisibility.set(false);
           }}

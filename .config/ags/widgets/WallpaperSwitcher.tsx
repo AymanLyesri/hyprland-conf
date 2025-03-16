@@ -280,8 +280,11 @@ export default (monitor: Gdk.Monitor) => {
   return (
     <window
       gdkmonitor={monitor}
-      name="wallpaper-switcher"
       namespace="wallpaper-switcher"
+      name={`wallpaper-switcher-${getMonitorName(
+        monitor.get_display(),
+        monitor
+      )}`}
       application={App}
       visible={false}
       child={Wallpapers(getMonitorName(monitor.get_display(), monitor)!)}

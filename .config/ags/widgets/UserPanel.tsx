@@ -7,6 +7,7 @@ import { App, Astal, Gdk, Gtk } from "astal/gtk3";
 import hyprland from "gi://AstalHyprland";
 import { date_less, userPanelVisibility } from "../variables";
 import { hideWindow } from "../utils/window";
+import { getMonitorName } from "../utils/monitor";
 const Hyprland = hyprland.get_default();
 
 const pfpPath = exec(`bash -c "echo $HOME/.face.icon"`);
@@ -201,7 +202,7 @@ export default (monitor: Gdk.Monitor) => {
   return (
     <window
       gdkmonitor={monitor}
-      name="user-panel"
+      name={`user-panel-${getMonitorName(monitor.get_display(), monitor)}`}
       namespace="user-panel"
       application={App}
       className="user-panel"

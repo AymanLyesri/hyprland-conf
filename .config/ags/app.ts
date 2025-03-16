@@ -43,6 +43,8 @@ App.start({
             SettingsWidget(monitor)
 
             OSD(monitor)
+
+            print("Monitor added")
         })
 
     },

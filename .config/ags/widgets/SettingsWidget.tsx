@@ -6,6 +6,7 @@ import { getSetting, setSetting } from "../utils/settings";
 import { notify } from "../utils/notification";
 import { HyprlandSetting } from "../interfaces/settings.interface";
 import { hideWindow } from "../utils/window";
+import { getMonitorName } from "../utils/monitor";
 const Hyprland = hyprland.get_default();
 
 const hyprCustomDir: string = "$HOME/.config/hypr/configs/custom/";
@@ -213,7 +214,7 @@ export default (monitor: Gdk.Monitor) => {
   return (
     <window
       gdkmonitor={monitor}
-      name="settings"
+      name={`settings-${getMonitorName(monitor.get_display(), monitor)}`}
       namespace="settings"
       application={App}
       className=""

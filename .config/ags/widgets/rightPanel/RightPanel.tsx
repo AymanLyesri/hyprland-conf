@@ -18,6 +18,7 @@ import { exportSettings, setSetting } from "../../utils/settings";
 import MediaWidget from "../MediaWidget";
 import NotificationHistory from "./NotificationHistory";
 import Calendar from "../Calendar";
+import { getMonitorName } from "../../utils/monitor";
 
 // Name need to match the name of the widget()
 export const WidgetSelectors: WidgetSelector[] = [
@@ -307,7 +308,7 @@ export default (monitor: Gdk.Monitor) => {
   return (
     <window
       gdkmonitor={monitor}
-      name={`right-panel`}
+      name={`right-panel-${getMonitorName(monitor.get_display(), monitor)}`}
       namespace={"right-panel"}
       application={App}
       className={bind(rightPanelExclusivity).as((exclusivity) =>
