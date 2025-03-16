@@ -26,8 +26,9 @@ fi
 # check for $3 (monitor)
 if [ -z "$3" ]; then
     echo "Usage: set-wallpaper.sh <workspace_id> <wallpaper> <monitor>"
-    monitor=$(hyprctl monitors | awk '/Monitor/ {monitor=$2} /focused: yes/ {print monitor}')
-    echo "Setting wallpaper for monitor $monitor"
+    # monitor=$(hyprctl monitors | awk '/Monitor/ {monitor=$2} /focused: yes/ {print monitor}')
+    # echo "Setting wallpaper for monitor $monitor"
+    exit 1
 else
     monitor=$3
 fi

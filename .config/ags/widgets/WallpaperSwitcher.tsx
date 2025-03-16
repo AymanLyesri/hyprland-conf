@@ -9,6 +9,7 @@ import {
 } from "../variables";
 import ToggleButton from "./toggleButton";
 import { Button } from "astal/gtk3/widget";
+import { getMonitorName } from "../utils/monitor";
 const Hyprland = hyprland.get_default();
 
 const selectedWorkspace = Variable<number>(0);
@@ -55,7 +56,7 @@ monitorFile(`./../wallpapers/custom`, () => {
 
 wallpaperType.subscribe(() => FetchWallpapers());
 
-function Wallpapers() {
+function Wallpapers(monitor: string) {
   const getAllWallpapers = () => {
     return (
       <scrollable
@@ -92,12 +93,12 @@ function Wallpapers() {
                           App.toggle_window("wallpaper-switcher");
                         } else {
                           execAsync(
-                            `bash -c "$HOME/.config/hypr/hyprpaper/set-wallpaper.sh ${selectedWorkspace.get()} ${wallpaper}"`
+                            `bash -c "$HOME/.config/hypr/hyprpaper/set-wallpaper.sh ${selectedWorkspace.get()} ${wallpaper} ${monitor}"`
                           )
                             .finally(() => {
                               const new_wallpaper = JSON.parse(
                                 exec(
-                                  `bash ./scripts/get-wallpapers.sh --current`
+                                  `bash ./scripts/get-wallpapers.sh --current ${monitor}`
                                 )
                               )[selectedWorkspace.get() - 1];
                               selectedWorkspaceWidget.get().css = `background-image: url('${new_wallpaper}');`;
@@ -117,8 +118,10 @@ function Wallpapers() {
   const getWallpapers = () => {
     const activeId = focusedWorkspace.as((workspace) => workspace.id || 1);
 
+    print(`bash ./scripts/get-wallpapers.sh --current ${monitor}`);
+
     const wallpapers: [] = JSON.parse(
-      exec(`bash ./scripts/get-wallpapers.sh --current`) || "[]"
+      exec(`bash ./scripts/get-wallpapers.sh --current ${monitor}`) || "[]"
     );
 
     return wallpapers.map((wallpaper, key) => {
@@ -179,11 +182,11 @@ function Wallpapers() {
           ];
 
         execAsync(
-          `bash -c "$HOME/.config/hypr/hyprpaper/set-wallpaper.sh ${selectedWorkspace.get()} ${randomWallpaper}"`
+          `bash -c "$HOME/.config/hypr/hyprpaper/set-wallpaper.sh ${selectedWorkspace.get()} ${randomWallpaper} ${monitor}"`
         )
           .finally(() => {
             const new_wallpaper = JSON.parse(
-              exec(`bash ./scripts/get-wallpapers.sh --current`)
+              exec(`bash ./scripts/get-wallpapers.sh --current ${monitor}`)
             )[selectedWorkspace.get() - 1];
             selectedWorkspaceWidget.get().css = `background-image: url('${new_wallpaper}');`;
           })
@@ -281,7 +284,7 @@ export default (monitor: Gdk.Monitor) => {
       namespace="wallpaper-switcher"
       application={App}
       visible={false}
-      child={Wallpapers()}
+      child={Wallpapers(getMonitorName(monitor.get_display(), monitor)!)}
     />
   );
 };

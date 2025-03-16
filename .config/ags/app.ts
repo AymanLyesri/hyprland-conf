@@ -1,4 +1,4 @@
-import { App } from "astal/gtk3"
+import { App, Gdk } from "astal/gtk3"
 import Bar from "./widgets/bar/Bar"
 import { getCssPath } from "./utils/scss"
 import RightPanel from "./widgets/rightPanel/RightPanel"
@@ -12,6 +12,9 @@ import MediaPopups from "./widgets/MediaPopups"
 import SettingsWidget from "./widgets/SettingsWidget"
 import BarHover from "./widgets/bar/BarHover"
 import OSD from "./widgets/OSD"
+
+
+
 
 App.start({
     css: getCssPath(),
