@@ -1,4 +1,4 @@
-import { App, Astal, Gtk } from "astal/gtk3";
+import { App, Astal, Gdk, Gtk } from "astal/gtk3";
 import hyprland from "gi://AstalHyprland";
 import { globalMargin, globalSettings, settingsVisibility } from "../variables";
 import { bind, execAsync } from "astal";
@@ -209,9 +209,10 @@ const Display = (
   </box>
 );
 
-export default () => {
+export default (monitor: Gdk.Monitor) => {
   return (
     <window
+      gdkmonitor={monitor}
       name="settings"
       namespace="settings"
       application={App}

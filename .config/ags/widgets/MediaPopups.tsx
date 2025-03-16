@@ -2,16 +2,17 @@ import { bind } from "astal";
 import Player from "./Player";
 
 import Mpris from "gi://AstalMpris";
-import { App, Astal } from "astal/gtk3";
+import { App, Astal, Gdk } from "astal/gtk3";
 import { barOrientation, globalMargin } from "../variables";
 import { hideWindow } from "../utils/window";
 
 const mpris = Mpris.get_default();
 const players = bind(mpris, "players");
 
-export default () => {
+export default (monitor: Gdk.Monitor) => {
   return (
     <window
+      gdkmonitor={monitor}
       name="media"
       namespace={"media"}
       application={App}

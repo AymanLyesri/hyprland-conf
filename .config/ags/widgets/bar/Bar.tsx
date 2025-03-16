@@ -11,9 +11,10 @@ import {
   globalMargin,
 } from "../../variables";
 
-export default () => {
+export default (monitor: Gdk.Monitor) => {
   return (
     <window
+      gdkmonitor={monitor}
       name="bar"
       namespace="bar"
       className="Bar"

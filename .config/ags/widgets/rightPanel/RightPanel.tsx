@@ -1,4 +1,4 @@
-import { App, Astal, Gtk } from "astal/gtk3";
+import { App, Astal, Gdk, Gtk } from "astal/gtk3";
 import { WidgetSelector } from "../../interfaces/widgetSelector.interface";
 import waifu, { WaifuVisibility } from "./components/waifu";
 import {
@@ -303,10 +303,10 @@ function Panel() {
     </box>
   );
 }
-
-const Window = () => {
+export default (monitor: Gdk.Monitor) => {
   return (
     <window
+      gdkmonitor={monitor}
       name={`right-panel`}
       namespace={"right-panel"}
       application={App}
@@ -332,8 +332,4 @@ const Window = () => {
       child={<Panel />}
     />
   );
-};
-
-export default () => {
-  return Window();
 };

@@ -2,7 +2,7 @@ import { bind, exec, execAsync, Variable } from "astal";
 import MediaWidget from "./MediaWidget";
 
 import NotificationHistory from "./rightPanel/NotificationHistory";
-import { App, Astal, Gtk } from "astal/gtk3";
+import { App, Astal, Gdk, Gtk } from "astal/gtk3";
 
 import hyprland from "gi://AstalHyprland";
 import { date_less, userPanelVisibility } from "../variables";
@@ -197,9 +197,10 @@ const Display = (
   </box>
 );
 
-export default () => {
+export default (monitor: Gdk.Monitor) => {
   return (
     <window
+      gdkmonitor={monitor}
       name="user-panel"
       namespace="user-panel"
       application={App}

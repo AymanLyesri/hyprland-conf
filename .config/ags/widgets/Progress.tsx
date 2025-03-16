@@ -1,5 +1,5 @@
 import { bind, Variable } from "astal";
-import { App, Astal } from "astal/gtk3";
+import { App, Astal, Gdk } from "astal/gtk3";
 import { asyncSleep } from "../utils/time";
 
 const INTERVAL = 10;
@@ -39,8 +39,9 @@ export function closeProgress() {
 
 // const Spinner = <spinner />;
 
-export default () => (
+export default (monitor: Gdk.Monitor) => (
   <window
+    gdkmonitor={monitor}
     name="progress"
     application={App}
     anchor={Astal.WindowAnchor.BOTTOM}

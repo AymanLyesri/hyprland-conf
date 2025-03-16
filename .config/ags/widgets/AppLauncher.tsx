@@ -284,8 +284,9 @@ const organizeResults = (results: Result[]) => {
 
 const ResultsDisplay = <box child={bind(Results).as(organizeResults)} />;
 
-export default () => (
+export default (monitor: Gdk.Monitor) => (
   <window
+    gdkmonitor={monitor}
     name="app-launcher"
     namespace="app-launcher"
     application={App}

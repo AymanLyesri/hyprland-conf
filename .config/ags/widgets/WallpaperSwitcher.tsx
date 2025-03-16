@@ -1,6 +1,6 @@
 import hyprland from "gi://AstalHyprland";
 import { bind, exec, execAsync, monitorFile, Variable } from "astal";
-import { App, Gtk } from "astal/gtk3";
+import { App, Gdk, Gtk } from "astal/gtk3";
 import { notify } from "../utils/notification";
 import {
   focusedClient,
@@ -273,9 +273,10 @@ function Wallpapers() {
   );
 }
 
-export default () => {
+export default (monitor: Gdk.Monitor) => {
   return (
     <window
+      gdkmonitor={monitor}
       name="wallpaper-switcher"
       namespace="wallpaper-switcher"
       application={App}
