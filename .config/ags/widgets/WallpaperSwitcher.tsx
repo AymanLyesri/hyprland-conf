@@ -12,7 +12,8 @@ const Hyprland = hyprland.get_default();
 const selectedWorkspace = Variable<number>(0);
 const selectedWorkspaceWidget = Variable<Button>(new Button());
 
-const sddm = Variable<boolean>(false);
+const targetTypes = ["workspace", "sddm", "lockscreen"];
+const targetType = Variable<string>("workspace");
 const wallpaperType = Variable<boolean>(false);
 
 let defaultWallpapers: string[];
@@ -111,11 +112,11 @@ function Wallpapers(monitor: string) {
                         background-image: url("${allThumbnails[key]}");
                       `}
                       onClicked={(self) => {
-                        if (sddm.get()) {
+                        if (targetType.get() === "sddm") {
                           execAsync(
                             `pkexec sh -c 'sed -i "s|^background=.*|background=\"${wallpaper}\"|" /usr/share/sddm/themes/where_is_my_sddm_theme/theme.conf'`
                           )
-                            .then(() => sddm.set(false))
+                            // .then(() => sddm.set(false))
                             .finally(() =>
                               notify({
                                 summary: "SDDM",
@@ -124,6 +125,18 @@ function Wallpapers(monitor: string) {
                             )
                             .catch((err) => notify(err));
                           hideWindow(`wallpaper-switcher-${monitor}`);
+                        } else if (targetType.get() === "lockscreen") {
+                          execAsync(
+                            `bash -c "cp ${wallpaper} $HOME/.config/wallpapers/lockscreen/wallpaper"`
+                          )
+                            // .then(() => lockScreen.set(false))
+                            .finally(() =>
+                              notify({
+                                summary: "Lock Screen",
+                                body: "Lock Screen wallpaper changed successfully!",
+                              })
+                            )
+                            .catch((err) => notify(err));
                         } else {
                           execAsync(
                             `bash -c "$HOME/.config/hypr/hyprpaper/set-wallpaper.sh ${selectedWorkspace.get()} ${wallpaper} ${monitor}"`
@@ -163,13 +176,14 @@ function Wallpapers(monitor: string) {
           `}
           className={activeId.as((i) => {
             selectedWorkspace.set(i);
+            targetType.set("workspace");
             return `${
               i == key ? "workspace-wallpaper focused" : "workspace-wallpaper"
             }`;
           })}
           label={`${key}`}
           onClicked={(self) => {
-            sddm.set(false);
+            targetType.set("workspace");
             bottomRevealer.reveal_child = true;
             selectedWorkspace.set(key);
             selectedWorkspaceWidget.set(self);
@@ -254,16 +268,20 @@ function Wallpapers(monitor: string) {
     />
   );
 
-  const sddmToggle = (
-    <ToggleButton
-      valign={Gtk.Align.CENTER}
-      className="sddm"
-      label="sddm"
-      state={bind(sddm)}
-      onToggled={(self, on) => {
-        sddm.set(on);
-      }}
-    />
+  const targets = (
+    <box className="targets" hexpand={true} halign={Gtk.Align.CENTER}>
+      {targetTypes.map((type) => (
+        <ToggleButton
+          valign={Gtk.Align.CENTER}
+          className={type}
+          label={type}
+          state={bind(targetType).as((t) => t === type)}
+          onToggled={(self, on) => {
+            targetType.set(type);
+          }}
+        />
+      ))}
+    </box>
   );
 
   const selectedWorkspaceLabel = (
@@ -271,21 +289,27 @@ function Wallpapers(monitor: string) {
       className="button selected-workspace"
       label={bind(
         Variable.derive(
-          [bind(selectedWorkspace), bind(sddm)],
-          (workspace, sddm) =>
-            `Wallpaper -> ${sddm ? "sddm" : `Workspace ${workspace}`}`
+          [bind(selectedWorkspace), bind(targetType)],
+          (workspace, targetType) =>
+            `Wallpaper -> ${targetType} ${
+              targetType == "workspace" ? workspace : ""
+            }`
         )
       )}
     />
   );
 
   const actions = (
-    <box className="actions" hexpand={true} halign={Gtk.Align.CENTER}>
-      {sddmToggle}
+    <box
+      className="actions"
+      hexpand={true}
+      halign={Gtk.Align.CENTER}
+      spacing={10}>
+      {targets}
       {selectedWorkspaceLabel}
-      {random}
-      {custom}
       {revealButton}
+      {custom}
+      {random}
     </box>
   );
 

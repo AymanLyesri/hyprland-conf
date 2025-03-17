@@ -20,15 +20,24 @@
   .actions {
     .selected-workspace {
       color: $secondary;
+      border-radius: 50px;
     }
     * {
-      border-radius: 0px;
+      font-size: 1.1em;
     }
-    *:first-child {
-      border-radius: 50px 0px 0px 50px;
-    }
-    *:last-child {
-      border-radius: 0px 50px 50px 0px;
+    .targets {
+      button {
+        border-radius: 0px;
+      }
+      button:first-child {
+        border-radius: 50px 0px 0px 50px;
+      }
+      button:only-child {
+        border-radius: 0px;
+      }
+      button:last-child {
+        border-radius: 0px 50px 50px 0px;
+      }
     }
   }
 
