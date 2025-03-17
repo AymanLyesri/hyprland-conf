@@ -2,7 +2,7 @@
 
 # Define the file that contains the wallpaper paths
 hyprpaper_config="$HOME/.config/hypr/hyprpaper/config"
-all="$HOME/.config/wallpapers/all"
+defaults="$HOME/.config/wallpapers/defaults"
 custom="$HOME/.config/wallpapers/custom"
 
 # Initialize an empty array for the wallpaper paths
@@ -24,9 +24,9 @@ if [ "$1" == "--current" ]; then
         wallpaper_paths+=("\"$path\"")
     done <"$hyprpaper_config/$monitor/defaults.conf"
 
-elif [ "$1" == "--all" ]; then
+elif [ "$1" == "--defaults" ]; then
     # Read the folder and add all the wallpapers to the array
-    for path in $all/*; do
+    for path in $defaults/*; do
         wallpaper_paths+=("\"$path\"")
     done
 

@@ -105,10 +105,7 @@ const UserPanel = () => {
         className="sleep"
         label="󰤄"
         onClicked={() => {
-          App.toggle_window("user-panel");
-          execAsync(
-            `bash -c "$HOME/.config/hypr/scripts/hyprlock.sh suspend "`
-          );
+          execAsync(`bash -c "$HOME/.config/hypr/scripts/hyprlock.sh suspend"`);
         }}
       />
     );

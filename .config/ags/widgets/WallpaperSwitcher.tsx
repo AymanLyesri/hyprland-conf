@@ -2,14 +2,11 @@ import hyprland from "gi://AstalHyprland";
 import { bind, exec, execAsync, monitorFile, Variable } from "astal";
 import { App, Gdk, Gtk } from "astal/gtk3";
 import { notify } from "../utils/notification";
-import {
-  focusedClient,
-  focusedWorkspace,
-  globalTransition,
-} from "../variables";
+import { focusedWorkspace, globalTransition } from "../variables";
 import ToggleButton from "./toggleButton";
 import { Button } from "astal/gtk3/widget";
 import { getMonitorName } from "../utils/monitor";
+import { hideWindow } from "../utils/window";
 const Hyprland = hyprland.get_default();
 
 const selectedWorkspace = Variable<number>(0);
@@ -18,37 +15,73 @@ const selectedWorkspaceWidget = Variable<Button>(new Button());
 const sddm = Variable<boolean>(false);
 const wallpaperType = Variable<boolean>(false);
 
+let defaultWallpapers: string[];
+let defaultThumbnails: string[];
+
+let customWallpapers: string[];
+let customThumbnails: string[];
+
 const allWallpapers = Variable<string[]>([]);
 const allThumbnails = Variable<string[]>([]);
 
-const FetchWallpapers = () => {
-  execAsync(`bash ./scripts/wallpaper-to-thumbnail.sh`).then(() => {
-    execAsync(
-      `bash ./scripts/get-wallpapers.sh ${
-        wallpaperType.get() ? "--custom" : "--all"
-      }`
-    )
+const shuffleArraysTogether = (
+  arr1: string[],
+  arr2: string[]
+): [string[], string[]] => {
+  const length = Math.min(arr1.length, arr2.length); // Ensures equal length
+
+  for (let i = length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+
+    // Swap in both arrays
+    [arr1[i], arr1[j]] = [arr1[j], arr1[i]];
+    [arr2[i], arr2[j]] = [arr2[j], arr2[i]];
+  }
+
+  return [arr1, arr2];
+};
+
+const FetchWallpapers = async () => {
+  Promise.all([
+    execAsync(`bash ./scripts/wallpaper-to-thumbnail.sh`).then(() => {
+      defaultThumbnails = JSON.parse(
+        exec(`bash ./scripts/get-wallpapers-thumbnails.sh --defaults`)
+      );
+      customThumbnails = JSON.parse(
+        exec(`bash ./scripts/get-wallpapers-thumbnails.sh --custom`)
+      );
+    }),
+    execAsync(`bash ./scripts/get-wallpapers.sh --defaults`)
       .then((wallpapers) => {
-        allWallpapers.set(JSON.parse(wallpapers));
+        defaultWallpapers = JSON.parse(wallpapers);
       })
-      .catch((err) => notify(err));
-    execAsync(
-      `bash ./scripts/get-wallpapers-thumbnails.sh ${
-        wallpaperType.get() ? "--custom" : "--all"
-      }`
-    )
+      .catch((err) => notify(err)),
+    execAsync(`bash ./scripts/get-wallpapers.sh --custom`)
       .then((wallpapers) => {
-        allThumbnails.set(JSON.parse(wallpapers));
+        customWallpapers = JSON.parse(wallpapers);
       })
-      .catch((err) => notify(err));
+      .catch((err) => notify(err)),
+  ]).then(() => {
+    print("fetch complete");
+    if (wallpaperType.get()) {
+      allWallpapers.set(customWallpapers);
+      allThumbnails.set(customThumbnails);
+    } else {
+      const mergedWallpapers = [...defaultWallpapers, ...customWallpapers];
+      const mergedThumbnails = [...defaultThumbnails, ...customThumbnails];
+
+      const [shuffledWallpapers, shuffledThumbnails] = shuffleArraysTogether(
+        mergedWallpapers,
+        mergedThumbnails
+      );
+
+      allWallpapers.set(shuffledWallpapers);
+      allThumbnails.set(shuffledThumbnails);
+    }
   });
 };
 
 FetchWallpapers();
-
-monitorFile(`./../wallpapers/default`, () => {
-  FetchWallpapers();
-});
 
 monitorFile(`./../wallpapers/custom`, () => {
   FetchWallpapers();
@@ -85,23 +118,18 @@ function Wallpapers(monitor: string) {
                             .then(() => sddm.set(false))
                             .finally(() =>
                               notify({
-                                summary: "SDDMs",
+                                summary: "SDDM",
                                 body: "SDDM wallpaper changed successfully!",
                               })
                             )
                             .catch((err) => notify(err));
-                          App.toggle_window("wallpaper-switcher");
+                          hideWindow(`wallpaper-switcher-${monitor}`);
                         } else {
                           execAsync(
                             `bash -c "$HOME/.config/hypr/hyprpaper/set-wallpaper.sh ${selectedWorkspace.get()} ${wallpaper} ${monitor}"`
                           )
                             .finally(() => {
-                              const new_wallpaper = JSON.parse(
-                                exec(
-                                  `bash ./scripts/get-wallpapers.sh --current ${monitor}`
-                                )
-                              )[selectedWorkspace.get() - 1];
-                              selectedWorkspaceWidget.get().css = `background-image: url('${new_wallpaper}');`;
+                              selectedWorkspaceWidget.get().css = `background-image: url('${wallpaper}');`;
                             })
                             .catch((err) => notify(err));
                         }
@@ -145,6 +173,14 @@ function Wallpapers(monitor: string) {
             bottomRevealer.reveal_child = true;
             selectedWorkspace.set(key);
             selectedWorkspaceWidget.set(self);
+          }}
+          setup={(self) => {
+            activeId.as((i) => {
+              if (i === key) {
+                selectedWorkspace.set(key);
+                selectedWorkspaceWidget.set(self);
+              }
+            });
           }}
         />
       );
@@ -207,13 +243,13 @@ function Wallpapers(monitor: string) {
     />
   );
 
-  const hide = (
-    <button
-      valign={Gtk.Align.CENTER}
-      className="stop-selection"
-      label=""
-      onClicked={() => {
-        bottomRevealer.reveal_child = false;
+  const revealButton = (
+    <ToggleButton
+      className="bottom-revealer-button"
+      label=""
+      onToggled={(self, on) => {
+        bottomRevealer.reveal_child = on;
+        self.label = on ? "" : "";
       }}
     />
   );
@@ -249,7 +285,7 @@ function Wallpapers(monitor: string) {
       {selectedWorkspaceLabel}
       {random}
       {custom}
-      {hide}
+      {revealButton}
     </box>
   );
 

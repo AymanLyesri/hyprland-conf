@@ -5,20 +5,16 @@ hyprDir=$HOME/.config/hypr # hypr directory
 hyprpaper_conf=$hyprDir/hyprpaper/config       # hyprpaper config
 backup=$hyprDir/hyprpaper/config/defaults.conf # backup config
 
-default_wallpapers=$HOME/.config/wallpapers/default # default wallpapers directory
-custom_wallpapers=$HOME/.config/wallpapers/custom   # custom wallpapers directory
-all_wallpapers=$HOME/.config/wallpapers/all         # all wallpapers directory
+default_wallpapers=$HOME/.config/wallpapers/defaults # default wallpapers directory
+custom_wallpapers=$HOME/.config/wallpapers/custom    # custom wallpapers directory
+all_wallpapers=$HOME/.config/wallpapers/all          # all wallpapers directory
 
 #################################################
-# copy default and custom wallpapers to all wallpapers directory
-rm -rf $all_wallpapers && mkdir -p $all_wallpapers && cp -r $default_wallpapers/* $custom_wallpapers/* $all_wallpapers
-
-echo "Wallpapers directory updated!"
 
 # overwrite /usr/share/backgrounds with all wallpapers
-rm -rf /usr/share/backgrounds/* && cp -r $all_wallpapers/* /usr/share/backgrounds
+# rm -rf /usr/share/backgrounds/* && cp -r $all_wallpapers/* /usr/share/backgrounds
 
-echo "Wallpapers for sddm updated!"
+# echo "Wallpapers for sddm updated!"
 
 #################################################
 
@@ -35,6 +31,8 @@ for monitor in $monitors; do
         echo "Config file created! for $monitor"
     fi
 done
+
+echo "Config files created!"
 
 #################################################
 

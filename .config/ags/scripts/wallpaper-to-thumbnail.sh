@@ -1,12 +1,12 @@
 #!/bin/bash
 
-all_wallpapers="$HOME/.config/wallpapers/all"                             # all wallpapers directory
-all_wallpapers_thumbnails="$HOME/.config/ags/assets/thumbnails/all"       # thumbnails wallpapers directory
-custom_wallpapers="$HOME/.config/wallpapers/custom"                       # custom wallpapers directory
-custom_wallpapers_thumbnails="$HOME/.config/ags/assets/thumbnails/custom" # thumbnails custom wallpapers directory
+default_wallpapers="$HOME/.config/wallpapers/defaults"                       # all wallpapers directory
+default_wallpapers_thumbnails="$HOME/.config/ags/assets/thumbnails/defaults" # thumbnails wallpapers directory
+custom_wallpapers="$HOME/.config/wallpapers/custom"                          # custom wallpapers directory
+custom_wallpapers_thumbnails="$HOME/.config/ags/assets/thumbnails/custom"    # thumbnails custom wallpapers directory
 
 # Ensure thumbnail directories exist
-mkdir -p "$all_wallpapers_thumbnails" "$custom_wallpapers_thumbnails"
+mkdir -p "$default_wallpapers_thumbnails" "$custom_wallpapers_thumbnails"
 
 # Function to create and clean up thumbnails
 generate_thumbnails() {
@@ -35,7 +35,7 @@ generate_thumbnails() {
 }
 
 # Process both directories
-generate_thumbnails "$all_wallpapers" "$all_wallpapers_thumbnails"
+generate_thumbnails "$default_wallpapers" "$default_wallpapers_thumbnails"
 generate_thumbnails "$custom_wallpapers" "$custom_wallpapers_thumbnails"
 
 echo "Thumbnails updated!"

@@ -1,15 +1,15 @@
 #!/bin/bash
 
-all="$HOME/.config/ags/assets/thumbnails/all"
+defaults="$HOME/.config/ags/assets/thumbnails/defaults"
 custom="$HOME/.config/ags/assets/thumbnails/custom"
 
 # Initialize an empty array for the wallpaper paths
 wallpaper_paths=()
 
 # check if $1 == current
-if [ "$1" == "--all" ]; then
+if [ "$1" == "--defaults" ]; then
     # Read the folder and add all the wallpapers to the array
-    for path in $all/*; do
+    for path in $defaults/*; do
         wallpaper_paths+=("\"$path\"")
     done
 
