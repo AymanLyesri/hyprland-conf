@@ -22,6 +22,7 @@
 button,
 .button {
   @extend .module;
+  font-size: $ICON-SIZE;
   background: $secondary-background;
   &:hover {
     background: $background;
@@ -63,7 +64,7 @@ image {
 }
 
 .icon {
-  font-size: 10px;
+  font-size: $ICON-SIZE;
 }
 
 entry {

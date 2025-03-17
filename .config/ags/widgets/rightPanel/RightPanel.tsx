@@ -57,37 +57,6 @@ export const WidgetSelectors: WidgetSelector[] = [
 const maxRightPanelWidth = 600;
 const minRightPanelWidth = 200;
 
-const opacitySlider = () => {
-  const label = (
-    <label
-      className={"icon"}
-      label={"󱡓"}
-      css={`
-        min-width: 0px;
-      `}
-    />
-  );
-
-  const slider = (
-    <slider
-      hexpand={false}
-      vexpand={true}
-      vertical={true}
-      inverted={true}
-      halign={Gtk.Align.CENTER}
-      height_request={100}
-      draw_value={false}
-      className={"slider"}
-      value={globalOpacity.get()}
-      onValueChanged={({ value }) => {
-        globalOpacity.set(value);
-      }}
-    />
-  );
-
-  return CustomRevealer(label, slider, "", () => {}, true);
-};
-
 const WidgetActions = () => {
   return (
     <box vertical={true} vexpand={true} className={"widget-actions"}>
@@ -216,7 +185,6 @@ function WindowActions() {
       halign={Gtk.Align.END}
       valign={Gtk.Align.END}
       vertical={true}>
-      {opacitySlider()}
       <button
         label={"󰈇"}
         className={"export-settings"}

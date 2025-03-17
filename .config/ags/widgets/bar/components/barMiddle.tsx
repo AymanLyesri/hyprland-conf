@@ -87,6 +87,8 @@ function Media({ monitorName }: { monitorName: string }) {
         value={bind(player, "position").as((p) =>
           player.length > 0 ? p / player.length : 0
         )}
+        halign={Gtk.Align.CENTER}
+        valign={Gtk.Align.CENTER}
         child={
           // <icon className="icon" icon={playerIcon}/>
           <label css={"font-size:12px"} label={playerIcon} />

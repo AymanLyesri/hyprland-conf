@@ -2,8 +2,7 @@
 import { exec } from "astal"
 import { monitorFile } from "astal/file"
 import { App } from "astal/gtk3"
-import { globalOpacity } from "../variables"
-import { notify } from "./notification"
+import { globalIconSize, globalOpacity } from "../variables"
 
 // target css file
 const tmpCss = `/tmp/tmp-style.css`
@@ -23,7 +22,7 @@ export function refreshCss()
 {
     const scss = `./scss/style.scss`
 
-    const response = exec(`bash -c "echo '$OPACITY: ${globalOpacity.get()};' | cat - ${defaultColors} ${walColors} ${scss} > ${tmpScss} && sassc ${tmpScss} ${tmpCss} -I ${scss_dir}"`)
+    const response = exec(`bash -c "echo '$OPACITY: ${globalOpacity.get().value};$ICON-SIZE:${globalIconSize.get().value}px;' | cat - ${defaultColors} ${walColors} ${scss} > ${tmpScss} && sassc ${tmpScss} ${tmpCss} -I ${scss_dir}"`)
 
     App.reset_css()
     App.apply_css(tmpCss)

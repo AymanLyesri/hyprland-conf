@@ -1,10 +1,15 @@
-import { App, Astal, Gdk, Gtk } from "astal/gtk3";
+import { App, Astal, Gdk, Gtk, Widget } from "astal/gtk3";
 import hyprland from "gi://AstalHyprland";
-import { globalMargin, globalSettings } from "../variables";
-import { bind, execAsync } from "astal";
+import {
+  globalIconSize,
+  globalMargin,
+  globalOpacity,
+  globalSettings,
+} from "../variables";
+import { bind, execAsync, Variable } from "astal";
 import { getSetting, setSetting } from "../utils/settings";
 import { notify } from "../utils/notification";
-import { HyprlandSetting } from "../interfaces/settings.interface";
+import { AGSSetting, HyprlandSetting } from "../interfaces/settings.interface";
 import { hideWindow } from "../utils/window";
 import { getMonitorName } from "../utils/monitor";
 const Hyprland = hyprland.get_default();
@@ -19,7 +24,106 @@ function buildConfigString(keys: string[], value: any): string {
   return `${currentKey} {\n\t${nestedConfig.replace(/\n/g, "\n\t")}\n}`;
 }
 
-const Setting = (keys: string, setting: HyprlandSetting) => {
+const normalizeValue = (value: any, type: string) => {
+  switch (type) {
+    case "int":
+      return Math.round(value);
+    case "float":
+      return parseFloat(value.toFixed(2));
+    default:
+      return value;
+  }
+};
+
+const agsSetting = (setting: Variable<AGSSetting>) => {
+  const title = <label halign={Gtk.Align.START} label={setting.get().name} />;
+
+  const sliderWidget = () => {
+    const infoLabel = (
+      <label
+        hexpand={true}
+        xalign={1}
+        label={bind(setting).as(
+          (setting) =>
+            `${Math.round(
+              (setting.value / (setting.max - setting.min)) * 100
+            )}%`
+        )}
+      />
+    );
+
+    const Slider = (
+      <slider
+        halign={Gtk.Align.END}
+        step={1}
+        width_request={169}
+        className="slider"
+        value={setting.get().value / (setting.get().max - setting.get().min)}
+        onValueChanged={({ value }) =>
+          setting.set({
+            name: setting.get().name,
+            value: normalizeValue(
+              value * (setting.get().max - setting.get().min),
+              setting.get().type
+            ),
+            type: setting.get().type,
+            min: setting.get().min,
+            max: setting.get().max,
+          })
+        }
+      />
+    );
+
+    return (
+      <box hexpand={true} halign={Gtk.Align.END} spacing={5}>
+        {Slider}
+        {infoLabel}
+      </box>
+    );
+  };
+
+  const switchWidget = () => {
+    const infoLabel = (
+      <label
+        hexpand={true}
+        xalign={1}
+        label={bind(setting).as((setting) => (setting.value ? "On" : "Off"))}
+      />
+    );
+
+    const Switch = (
+      <switch
+        active={setting.get().value}
+        onButtonPressEvent={({ active }) => {
+          active = !active;
+          setting.set({
+            name: setting.get().name,
+            value: active,
+            type: setting.get().type,
+            min: setting.get().min,
+            max: setting.get().max,
+          });
+        }}
+      />
+    );
+
+    return (
+      <box hexpand={true} halign={Gtk.Align.END} spacing={5}>
+        {Switch}
+        {infoLabel}
+      </box>
+    );
+  };
+
+  return (
+    <box className="setting" hexpand={true} spacing={5}>
+      {title}
+      {setting.get().type === "bool" ? switchWidget() : sliderWidget()}
+    </box>
+  );
+};
+
+const hyprlandSetting = (keys: string, setting: HyprlandSetting) => {
   const keyArray = keys.split(".");
   const lastKey = keyArray.at(-1);
   if (!lastKey) return;
@@ -64,7 +168,7 @@ const Setting = (keys: string, setting: HyprlandSetting) => {
       ).catch((err) => notify(err));
     };
 
-    const slider_ = (
+    const Slider = (
       <slider
         halign={Gtk.Align.END}
         step={0.01}
@@ -79,7 +183,7 @@ const Setting = (keys: string, setting: HyprlandSetting) => {
 
     return (
       <box hexpand={true} halign={Gtk.Align.END} spacing={5}>
-        {slider_}
+        {Slider}
         {infoLabel}
       </box>
     );
@@ -96,12 +200,11 @@ const Setting = (keys: string, setting: HyprlandSetting) => {
       />
     );
 
-    const switch_ = (
+    const Switch = (
       <switch
         active={getSetting(keys + ".value")}
         onButtonPressEvent={({ active }) => {
           active = !active;
-          // notify({ summary: "thuneu", body: active });
           setSetting(keys + ".value", active);
           const configString = buildConfigString(keyArray.slice(1), active);
           execAsync(
@@ -115,7 +218,7 @@ const Setting = (keys: string, setting: HyprlandSetting) => {
 
     return (
       <box hexpand={true} halign={Gtk.Align.END} spacing={5}>
-        {switch_}
+        {Switch}
         {infoLabel}
       </box>
     );
@@ -134,7 +237,7 @@ interface NestedSettings {
 }
 
 const Settings = () => {
-  const settings: any[] = [];
+  const hyprlandSettings: any = [];
 
   const Category = (title: string) => <label label={title} />;
 
@@ -144,7 +247,7 @@ const Settings = () => {
   ) => {
     if (typeof value === "object" && value !== null) {
       // Add a category label for the current key
-      settings.push(Category(key));
+      hyprlandSettings.push(Category(key));
 
       // Iterate over the entries of the current value
       Object.entries(value).forEach(([childKey, childValue]) => {
@@ -161,8 +264,8 @@ const Settings = () => {
             processSetting(`${key}.${childKey}`, childValue as NestedSettings);
           } else {
             // If no nested settings, treat it as a HyprlandSetting
-            settings.push(
-              Setting(
+            hyprlandSettings.push(
+              hyprlandSetting(
                 `hyprland.${key}.${childKey}`,
                 childValue as HyprlandSetting
               )
@@ -178,9 +281,18 @@ const Settings = () => {
   });
 
   return (
-    <box vertical={true} spacing={5} className="settings">
-      {settings}
-    </box>
+    <scrollable
+      heightRequest={500}
+      child={
+        <box vertical={true} spacing={5} className="settings">
+          <label className={"category"} label="AGS" />
+          {agsSetting(globalOpacity)}
+          {agsSetting(globalIconSize)}
+          <label className={"category"} label="Hyprland" />
+          {hyprlandSettings}
+        </box>
+      }
+    />
   );
 };
 

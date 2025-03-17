@@ -9,6 +9,14 @@
     background: $background;
     padding: 10px;
   }
+  .category {
+    background: $background;
+    color: $foreground;
+    border-radius: 10px;
+    margin: 10px;
+    border: 1px solid $tertiary;
+    font-size: 1.5em;
+  }
   .settings {
     padding: 10px;
   }

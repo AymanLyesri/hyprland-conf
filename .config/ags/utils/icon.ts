@@ -8,14 +8,14 @@ export function playerToIcon(name: string)
         spotify: "󰓇",
         VLC: "󰓈",
         YouTube: "󰓉",
-        Brave: "󰓊",
+        Brave: "",
         Audacious: "󰓋",
         Rhythmbox: "󰓌",
-        Chromium: "󰓍",
+        Chromium: "",
         Firefox: "󰈹",
         firefox: "󰈹",
     }
-    return icons[name]
+    return icons[name] || "hh"
 }
 
 

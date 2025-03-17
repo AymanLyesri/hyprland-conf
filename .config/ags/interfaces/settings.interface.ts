@@ -9,6 +9,15 @@ export interface HyprlandSetting
     max: number,
 }
 
+export interface AGSSetting
+{
+    name: string,
+    value: any,
+    type: string,
+    min: number,
+    max: number,
+}
+
 export interface Settings
 {
     hyprsunset: {
@@ -29,7 +38,8 @@ export interface Settings
     notifications: {
         dnd: boolean,
     }
-    globalOpacity: number,
+    globalOpacity: AGSSetting,
+    globalIconSize: AGSSetting,
     bar: {
         visibility: boolean,
         lock: boolean,

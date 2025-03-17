@@ -8,7 +8,7 @@ import { WidgetSelectors } from "./widgets/rightPanel/RightPanel";
 import { refreshCss } from "./utils/scss";
 import { bind, Binding, GLib, Variable } from "astal";
 import { writeJSONFile } from "./utils/json";
-import { Settings } from "./interfaces/settings.interface";
+import { AGSSetting, Settings } from "./interfaces/settings.interface";
 import { Api } from "./interfaces/api.interface";
 import { Waifu } from "./interfaces/waifu.interface";
 
@@ -19,10 +19,16 @@ export const globalSettings = Variable<Settings>(defaultSettings);
 autoCreateSettings();
 globalSettings.subscribe((value) => writeJSONFile(settingsPath, value));
 
-export const globalOpacity = Variable<number>(getSetting("globalOpacity"))
+export const globalOpacity = Variable<AGSSetting>(getSetting("globalOpacity"))
 globalOpacity.subscribe((value) =>
 {
     setSetting("globalOpacity", value)
+    refreshCss()
+});
+export const globalIconSize = Variable<AGSSetting>(getSetting("globalIconSize"))
+globalIconSize.subscribe((value) =>
+{
+    setSetting("globalIconSize", value)
     refreshCss()
 });
 

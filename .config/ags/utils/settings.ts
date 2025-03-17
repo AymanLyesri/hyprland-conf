@@ -24,7 +24,8 @@ export const defaultSettings: Settings = {
   notifications: {
     dnd: false
   },
-  globalOpacity: 0.8,
+  globalOpacity: { name: "Global Opacity", value: 0.9, type: "float", min: 0, max: 1 },
+  globalIconSize: { name: "Global Icon Size", value: 10, type: "int", min: 5, max: 20 },
   bar: {
     visibility: true,
     lock: true,
