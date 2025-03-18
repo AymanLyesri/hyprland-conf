@@ -8,9 +8,13 @@ I use Arch BTW.. :)
 
 > **Feel free to open an issue ♡ (anything you can think of)!**
 
+# Discord
+
+New official [Discord](https://discord.gg/ryN4PRHF) server.
+
 # See Wiki
 
-> The full and organized [WIKI](https://hyprland-conf-wiki.vercel.app/)
+> The README as an organized [WIKI](https://hyprland-conf-wiki.vercel.app/)
 
 # Design Philosophy
 
@@ -64,6 +68,7 @@ I use Arch BTW.. :)
 
 - **Users: Any suggestions or issues?**
 - AGS V2 bundling
+- AGS V2: GTK-3 --> GTK-4
 - Make sure the dot-files work for every machine not just mine **(WIP)**
 - Add tutorials for each part of the dot-files **(WIP)**
 - Continuous improvements and polishing **(INDEFINITELY)**

@@ -15,7 +15,7 @@ export function playerToIcon(name: string)
         Firefox: "󰈹",
         firefox: "󰈹",
     }
-    return icons[name] || "hh"
+    return icons[name] || ""
 }
 
 

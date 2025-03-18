@@ -8,6 +8,8 @@ import hyprland from "gi://AstalHyprland";
 import { date_less } from "../variables";
 import { hideWindow } from "../utils/window";
 import { getMonitorName } from "../utils/monitor";
+import { notify } from "../utils/notification";
+import { FileChooserButton } from "./FileChooser";
 const Hyprland = hyprland.get_default();
 
 const pfpPath = exec(`bash -c "echo $HOME/.face.icon"`);
@@ -35,25 +37,30 @@ const UserPanel = (monitorName: string) => {
         className="profile-picture"
         css={`
           background-image: url("${pfpPath}");
-        `}>
-        {/* <filechooserbutton
-          hexpand={true}
-          vexpand={true}
-          usePreviewLabel={false}
-          onFileSet={({ uri }) => {
-            if (!uri) return;
-            const cleanUri = uri.replace("file://", ""); // Remove 'file://' from the URI
-            Utils.execAsync(`bash -c "cp '${cleanUri}' ${pfpPath}"`)
-              .then(() => {
-                ProfilePicture.css = `background-image: url('${pfpPath}');`;
-              })
-              .finally(() => {
-                Utils.notify(`Profile picture ${cleanUri} set to ${pfpPath}`);
-              })
-              .catch((err) => Utils.notify(err));
-          }}
-        /> */}
-      </box>
+        `}
+        child={
+          <FileChooserButton
+            hexpand
+            vexpand
+            usePreviewLabel={false}
+            onFileSet={(self) => {
+              let uri = self.get_uri();
+              if (!uri) return;
+              const cleanUri = uri.replace("file://", ""); // Remove 'file://' from the URI
+              execAsync(`bash -c "cp '${cleanUri}' ${pfpPath}"`)
+                .then(() => {
+                  ProfilePicture.css = `background-image: url('${pfpPath}');`;
+                })
+                .finally(() => {
+                  notify({
+                    summary: "Profile picture",
+                    body: `${cleanUri} set to ${pfpPath}`,
+                  });
+                })
+                .catch((err) => notify(err));
+            }}
+          />
+        }></box>
     );
 
     return (

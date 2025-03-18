@@ -1,4 +1,4 @@
-import { bind, execAsync, Variable } from "astal";
+import { bind, exec, execAsync, Variable } from "astal";
 import { Waifu } from "../../../interfaces/waifu.interface";
 import {
   waifuApi,
@@ -90,6 +90,10 @@ const OpenImage = () =>
 
 const addToFavorites = () => {
   if (!waifuFavorites.get().find((fav) => fav.id === waifuCurrent.get().id)) {
+    if (waifuCurrent.get().id == 0) {
+      notify({ summary: "Waifu", body: "Only Api images could be favored" });
+      return;
+    }
     execAsync(
       `bash -c "curl -o ${favoritesPath + waifuCurrent.get().id}.jpg ${
         waifuCurrent.get().preview
@@ -261,20 +265,58 @@ function Actions() {
           </box>
           <box>
             <button
+              hexpand
               label=""
               className="entry-search"
-              hexpand
               onClicked={() => Entry.activate()}
             />
             {Entry}
-            {ToggleButton({
-              label: "",
-              className: "nsfw",
-              hexpand: true,
-              onToggled: (self, on) => {
+            <ToggleButton
+              label={""}
+              className={"nsfw"}
+              hexpand={true}
+              onToggled={(self, on) => {
                 nsfw.set(on);
-              },
-            })}
+              }}
+            />
+            <button
+              hexpand
+              label={""}
+              className={"upload"}
+              onClicked={() => {
+                let dialog = new Gtk.FileChooserDialog({
+                  title: "Open Image",
+                  action: Gtk.FileChooserAction.OPEN,
+                });
+                dialog.add_button("Open", Gtk.ResponseType.OK);
+                dialog.add_button("Cancel", Gtk.ResponseType.CANCEL);
+                let response = dialog.run();
+                if (response == Gtk.ResponseType.OK) {
+                  let filename = dialog.get_filename();
+                  let [height, width] = exec(
+                    `identify -format "%h %w" ${filename}`
+                  ).split(" ");
+                  execAsync(`cp ${filename} ${waifuPath}`)
+                    .then(() =>
+                      waifuCurrent.set({
+                        id: 0,
+                        preview: waifuPath,
+                        height: Number(height) ?? 0,
+                        width: Number(width) ?? 0,
+                        api: {} as Api,
+                      })
+                    )
+                    .finally(() =>
+                      notify({
+                        summary: "Waifu",
+                        body: "Custom image set",
+                      })
+                    )
+                    .catch((err) => notify({ summary: "Error", body: err }));
+                }
+                dialog.destroy();
+              }}
+            />
           </box>
           <box>
             {apiList.map((api) => (
@@ -329,12 +371,12 @@ function Image() {
           css={bind(
             Variable.derive(
               [bind(waifuCurrent), bind(rightPanelWidth)],
-              (imageDetails, width) => {
+              (waifuCurrent, width) => {
                 return `
                     background-image: url("${waifuPath}");
                     min-height: ${
-                      (Number(imageDetails.height) /
-                        Number(imageDetails.width)) *
+                      (Number(waifuCurrent.height) /
+                        Number(waifuCurrent.width)) *
                       width
                     }px;
                     `;

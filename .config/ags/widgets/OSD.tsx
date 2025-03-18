@@ -112,7 +112,7 @@ function OnScreenProgress(vertical: boolean) {
   );
 
   return (
-    <box>
+    <box spacing={5}>
       {VolumeSlider}
       {MicrophoneSlider}
       {BrightnessSlider}
