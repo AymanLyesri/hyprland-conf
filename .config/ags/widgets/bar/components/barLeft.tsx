@@ -14,9 +14,9 @@ function Workspaces() {
   const workspaceToIcon = [
     "󰻃",
     "",
-    "",
+    "",
     "",
-    "",
+    "",
     "",
     "󰙯",
     "󰓓",
@@ -35,8 +35,6 @@ function Workspaces() {
       focusedWorkspace.as((workspace) => workspace.id),
     ],
     (workspaces, currentWorkspace) => {
-      print("workspaces", workspaces.length);
-      print("currentWorkspace", currentWorkspace);
       // Get the IDs of active workspaces and fill in empty slots
       const workspaceIds = workspaces.map((w) => w.id);
       const totalWorkspaces = Math.max(...workspaceIds, maxWorkspaces); // Get the total number of workspaces, accounting for more than 10
@@ -98,7 +96,6 @@ function Workspaces() {
             className={class_names.join(" ")}
             label={icon}
             onClicked={() => {
-              print(`dispatch workspace ${id}`);
               Hyprland.message_async(`dispatch workspace ${id}`, (res) =>
                 print(res)
               );

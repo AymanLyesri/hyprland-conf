@@ -174,17 +174,23 @@ function Clock() {
 }
 
 function Bandwidth() {
-  const bandwidth = Variable("").watch(
+  const bandwidth = Variable<string[]>([]).watch(
     `bash ./scripts/bandwidth.sh`,
-    (out) => "↑" + JSON.parse(out)[0] + " ↓" + JSON.parse(out)[1]
+    (out) => [String(JSON.parse(out)[0]), String(JSON.parse(out)[1])]
   );
 
-  const icon = <icon icon="network-wired-symbolic" />;
-  const label = <label label={bind(bandwidth)}></label>;
+  const packet = (icon: string, value: string) => (
+    <box className={"packet"} spacing={1}>
+      <label label={value} />
+      <label className={"icon"} label={icon} />
+    </box>
+  );
 
   return (
-    <box className="bandwidth" child={label}>
-      {/* {icon} */}
+    <box className="bandwidth" spacing={5}>
+      {bind(bandwidth).as((bandwidth) => {
+        return [packet("", bandwidth[0]), packet("", bandwidth[1])];
+      })}
     </box>
   );
 }

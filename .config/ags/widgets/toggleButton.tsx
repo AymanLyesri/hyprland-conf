@@ -31,7 +31,6 @@ export default function ToggleButton(btnprops: ToggleButtonProps) {
         // Apply "checked" class based on the current inner state value
         self.toggleClassName("checked", innerState.get());
         self.hook(innerState, () => {
-          print(innerState.get());
           self.toggleClassName("checked", innerState.get());
         });
 

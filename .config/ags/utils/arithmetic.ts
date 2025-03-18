@@ -8,21 +8,14 @@ export function containsOperator(str: string): boolean
     return operatorPattern.test(str);
 }
 
-export function arithmetic(text: string)
+export function arithmetic(text: string): string
 {
     try {
-        // Evaluate the arithmetic expression
-        const result = eval(text);
+        const result = new Function(`return (${text})`)();
 
-        // Check if the result is a finite number
-        if (typeof result === 'number' && isFinite(result)) {
-            return String(result);
-        } else {
-            // Return null if result is not a valid number
-            return '';
-        }
-    } catch (error) {
-        // If there's any error (like a malformed expression), return null
+        return (typeof result === 'number' && isFinite(result)) ? String(result) : '';
+    } catch {
         return '';
     }
 }
+

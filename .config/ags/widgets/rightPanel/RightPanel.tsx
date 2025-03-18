@@ -56,34 +56,26 @@ export const WidgetSelectors: WidgetSelector[] = [
 
 const maxRightPanelWidth = 600;
 const minRightPanelWidth = 200;
-
 const WidgetActions = () => {
   return (
     <box vertical={true} vexpand={true} className={"widget-actions"}>
       {WidgetSelectors.map((selector) => {
+        const isActive = Widgets.get().some((w) => w.name === selector.name);
         return (
           <ToggleButton
             className={"widget-selector"}
             label={selector.icon}
-            state={
-              Widgets.get().find((w) => w.name == selector.name) ? true : false
-            }
+            state={isActive}
             onToggled={(self, on) => {
               if (on) {
-                if (Widgets.get().length >= widgetLimit) {
-                  return;
-                }
+                if (Widgets.get().length >= widgetLimit) return;
                 if (!selector.widgetInstance) {
                   selector.widgetInstance = selector.widget();
                 }
-                if (!Widgets.get().includes(selector)) {
-                  Widgets.set([...Widgets.get(), selector]);
-                }
+                Widgets.set([...Widgets.get(), selector]);
               } else {
-                let newWidgets = Widgets.get().filter((w) => w != selector);
-                if (Widgets.get().length == newWidgets.length) return;
+                const newWidgets = Widgets.get().filter((w) => w !== selector);
                 Widgets.set(newWidgets);
-                selector.widgetInstance = undefined;
               }
             }}
           />
@@ -92,90 +84,8 @@ const WidgetActions = () => {
     </box>
   );
 };
-
 const kelvinMin = 1000;
 const kelvinMax = 10000;
-
-const Utilities = () => (
-  // Widget.Box({
-  //   vertical: true,
-  //   spacing: 5,
-  //   vexpand: true,
-  //   vpack: "center",
-  //   children: [
-  //     Widget.Button({
-  //       label: "󱁝",
-  //       class_name: "",
-  //       on_clicked: () => {
-  //         const kelvin = Math.min(
-  //           kelvinMax,
-  //           Math.max(kelvinMin, globalSettings.get().hyprsunset.kelvin + 1000)
-  //         );
-  //         Utils.execAsync(
-  //           `bash -c 'killall hyprsunset; hyprsunset -t ${kelvin}'`
-  //         ).catch((err) => {
-  //           Utils.notify("Failed to change kelvin", err);
-  //           return;
-  //         });
-  //         setSetting("hyprsunset.kelvin", kelvin);
-  //       },
-  //     }),
-  //     Widget.Button({
-  //       label: "󱁞",
-  //       class_name: "",
-  //       on_clicked: () => {
-  //         const kelvin = Math.min(
-  //           kelvinMax,
-  //           Math.max(kelvinMin, globalSettings.get().hyprsunset.kelvin - 1000)
-  //         );
-  //         Utils.execAsync(
-  //           `bash -c 'killall hyprsunset; hyprsunset -t ${kelvin}'`
-  //         ).catch((err) => {
-  //           Utils.notify("Failed to change kelvin", err);
-  //           return;
-  //         });
-  //         setSetting("hyprsunset.kelvin", kelvin);
-  //       },
-  //     }),
-  //   ],
-  // });
-  <box vertical={true} spacing={5} vexpand={true} valign={Gtk.Align.CENTER}>
-    {/* <button
-      label={"󱁝"}
-      className={""}
-      onClicked={() => {
-        const kelvin = Math.min(
-          kelvinMax,
-          Math.max(kelvinMin, globalSettings.get().hyprsunset.kelvin + 1000)
-        );
-        Utils.execAsync(
-          `bash -c 'killall hyprsunset; hyprsunset -t ${kelvin}'`
-        ).catch((err) => {
-          Utils.notify("Failed to change kelvin", err);
-          return;
-        });
-        setSetting("hyprsunset.kelvin", kelvin);
-      }}
-    />
-    <button
-      label={"󱁞"}
-      className={""}
-      onClicked={() => {
-        const kelvin = Math.min(
-          kelvinMax,
-          Math.max(kelvinMin, globalSettings.get().hyprsunset.kelvin - 1000)
-        );
-        Utils.execAsync(
-          `bash -c 'killall hyprsunset; hyprsunset -t ${kelvin}'`
-        ).catch((err) => {
-          Utils.notify("Failed to change kelvin", err);
-          return;
-        });
-        setSetting("hyprsunset.kelvin", kelvin);
-      }}
-    /> */}
-  </box>
-);
 
 function WindowActions() {
   return (
@@ -243,17 +153,13 @@ function WindowActions() {
 const Actions = () => (
   <box className={"right-panel-actions"} vertical={true}>
     <WidgetActions />
-    <Utilities />
     <WindowActions />
   </box>
 );
 
 function Panel() {
   return (
-    <box
-      css={`
-        // padding-left: 5px;
-      `}>
+    <box>
       <eventbox
         onHoverLost={() => {
           if (!rightPanelLock.get()) rightPanelVisibility.set(false);
@@ -265,7 +171,16 @@ function Panel() {
         vertical={true}
         spacing={10}>
         {bind(Widgets).as((widgets) => {
-          return widgets.map((widget) => widget.widget());
+          return widgets
+            .filter((widget) => widget && widget.widget) // Filter out undefined widgets and those without a widget method
+            .map((widget) => {
+              try {
+                return widget.widget();
+              } catch (error) {
+                console.error(`Error rendering widget ${widget.name}:`, error);
+                return <box />; // Return null or a fallback component in case of error
+              }
+            });
         })}
       </box>
       <Actions />

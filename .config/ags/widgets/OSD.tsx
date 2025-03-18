@@ -61,7 +61,6 @@ const osdSlider = (
         }, DELAY);
         self.hook(connectable, `notify::${signal}`, () => {
           self.reveal_child = true;
-          print(sliderLock.get());
           debouncedHide();
         });
       }}

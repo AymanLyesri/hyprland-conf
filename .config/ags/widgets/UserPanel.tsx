@@ -14,7 +14,7 @@ const pfpPath = exec(`bash -c "echo $HOME/.face.icon"`);
 const username = exec(`whoami`);
 const uptime = Variable("-").poll(600000, "uptime -p");
 
-const UserPanel = () => {
+const UserPanel = (monitorName: string) => {
   const Profile = () => {
     const UserName = (
       <box halign={Gtk.Align.CENTER} className="user-name">
@@ -105,6 +105,7 @@ const UserPanel = () => {
         className="sleep"
         label="󰤄"
         onClicked={() => {
+          hideWindow(`user-panel-${monitorName}`);
           execAsync(`bash -c "$HOME/.config/hypr/scripts/hyprlock.sh suspend"`);
         }}
       />
@@ -188,10 +189,11 @@ const WindowActions = (monitorName: string) => {
 };
 
 export default (monitor: Gdk.Monitor) => {
+  const monitorName = getMonitorName(monitor.get_display(), monitor)!;
   return (
     <window
       gdkmonitor={monitor}
-      name={`user-panel-${getMonitorName(monitor.get_display(), monitor)}`}
+      name={`user-panel-${monitorName}`}
       namespace="user-panel"
       application={App}
       className="user-panel"
@@ -199,8 +201,8 @@ export default (monitor: Gdk.Monitor) => {
       visible={false}
       child={
         <box className="display" vertical={true} spacing={10}>
-          {WindowActions(getMonitorName(monitor.get_display(), monitor)!)}
-          {UserPanel()}
+          {WindowActions(monitorName)}
+          {UserPanel(monitorName)}
         </box>
       }
     />

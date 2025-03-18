@@ -23,7 +23,6 @@ export function playerToIcon(name: string)
 export const lookupIcon = (name: string) =>
 {
     let result = Astal.Icon.lookup_icon(name) ? Astal.Icon.lookup_icon(name) : "audio-x-generic-symbolic"
-    print(result)
     return result
 }
 
