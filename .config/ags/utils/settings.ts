@@ -73,12 +73,20 @@ export const defaultSettings: Settings = {
 function deepMerge(target: any, source: any): any
 {
   for (const key in source) {
-    if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
-      // Recursively merge objects
-      target[key] = deepMerge(target[key] || {}, source[key]);
-    } else {
-      // Directly copy primitive values and arrays
-      target[key] = source[key];
+    if (source.hasOwnProperty(key)) {
+      const sourceValue = source[key];
+      const targetValue = target[key];
+
+      // Check if both values are objects and not arrays
+      if (sourceValue && typeof sourceValue === 'object' && !Array.isArray(sourceValue) &&
+        targetValue && typeof targetValue === 'object' && !Array.isArray(targetValue)) {
+        // Recursively merge objects if types match
+        target[key] = deepMerge(targetValue, sourceValue);
+      } else if (typeof sourceValue === typeof targetValue || targetValue === undefined) {
+        // Assign source value if types match or if target doesn't have the key
+        target[key] = sourceValue;
+      }
+      // If types don't match, prioritize the target's type by skipping the assignment
     }
   }
   return target;

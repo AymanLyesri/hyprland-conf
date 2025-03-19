@@ -117,7 +117,7 @@ function Wallpapers(monitor: string) {
                           });
                         })
                         .catch(notify);
-                      hideWindow(`wallpaper-switcher-${monitor}`);
+                      // hideWindow(`wallpaper-switcher-${monitor}`);
                     }}
                   />
                 ))
