@@ -7,23 +7,12 @@ import ToggleButton from "../../toggleButton";
 import { hideWindow, showWindow } from "../../../utils/window";
 const Hyprland = hyprland.get_default();
 
+// workspaces icons
+const workspaceToIcon = ["󰻃", "", "", "", "", "", "󰙯", "󰓓", "", "", ""];
+
 function Workspaces() {
   let previousWorkspace: number = 0; // Variable to store the previous workspace ID
 
-  // Add the "." icon for empty workspaces
-  const workspaceToIcon = [
-    "󰻃",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "󰙯",
-    "󰓓",
-    "",
-    "",
-    "",
-  ];
   const emptyIcon = ""; // Icon for empty workspaces
   const extraWorkspaceIcon = ""; // Icon for workspaces beyond the maximum limit
   const maxWorkspaces = 10; // Maximum number of workspaces to display with custom icons
@@ -103,21 +92,6 @@ function Workspaces() {
           />
         );
       });
-
-      results.unshift(
-        <button
-          className="special"
-          label={workspaceToIcon[0]}
-          onClicked={
-            () =>
-              Hyprland.message_async(`dispatch togglespecialworkspace`, (res) =>
-                print(res)
-              )
-            // .catch((err) => print(err))
-          }
-        />
-      );
-
       previousWorkspace = previousWorkspace_;
       return results;
     }
@@ -125,6 +99,18 @@ function Workspaces() {
 
   return <box className="workspaces">{bind(workspaces)}</box>;
 }
+
+const Special = (
+  <button
+    className="special"
+    label={workspaceToIcon[0]}
+    onClicked={() =>
+      Hyprland.message_async(`dispatch togglespecialworkspace`, (res) =>
+        print(res)
+      )
+    }
+  />
+);
 
 function OverView() {
   return (
@@ -197,6 +183,7 @@ export default (monitorName: string) => {
     <box className="bar-left" spacing={5}>
       <Actions monitorName={monitorName} />
       <OverView />
+      {Special}
       <Workspaces />
     </box>
   );

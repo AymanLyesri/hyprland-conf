@@ -1,7 +1,6 @@
 // Define the theme variables
 
 * {
-  font-family: "JetBrainsMono NFP", "Noto Font";
   transition: all 0.5s;
 }
 
@@ -51,7 +50,7 @@ filechooserbutton * {
   padding: 0px;
   margin: 0px;
   image {
-    font-size: 0em;
+    font-size: 0rem;
   }
 }
 
@@ -177,13 +176,14 @@ scrolledwindow {
 
 .custom-revealer {
   @extend .module;
+  &:hover {
+    background: $background;
+    text-shadow: $foreground 0 0 1px;
+  }
   label {
     margin: 0 10px;
   }
   .icon {
-    font-size: 1.5em;
-    all: unset;
-    // margin: 0 10px;
     min-width: 35px;
   }
 }

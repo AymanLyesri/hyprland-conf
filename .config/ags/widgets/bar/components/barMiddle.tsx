@@ -83,6 +83,7 @@ function Media({ monitorName }: { monitorName: string }) {
         className="progress"
         rounded={true}
         inverted={false}
+        // startAt={0.25}
         borderWidth={1}
         value={bind(player, "position").as((p) =>
           player.length > 0 ? p / player.length : 0
@@ -91,7 +92,7 @@ function Media({ monitorName }: { monitorName: string }) {
         valign={Gtk.Align.CENTER}
         child={
           // <icon className="icon" icon={playerIcon}/>
-          <label css={"font-size:12px"} label={playerIcon} />
+          <label className={"icon"} label={playerIcon} />
         }></circularprogress>
     );
   };
@@ -190,8 +191,8 @@ function Bandwidth() {
     <box className="bandwidth" spacing={5}>
       {bind(bandwidth).as((bandwidth) => {
         return [
-          packet("", String(bandwidth[0])),
-          packet("", String(bandwidth[1])),
+          packet("", String(bandwidth[0])),
+          packet("", String(bandwidth[1])),
         ];
       })}
     </box>

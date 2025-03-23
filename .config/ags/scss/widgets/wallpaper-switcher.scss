@@ -6,41 +6,6 @@
   border-radius: 50px;
   border: 1px solid $secondary;
 
-  scrolledwindow {
-    box-shadow: unset;
-  }
-
-  .reload-wallpapers {
-    padding: 0px;
-    min-height: 69px;
-    min-width: 69px;
-    border-radius: 50%;
-  }
-
-  .actions {
-    .selected-workspace {
-      color: $secondary;
-      border-radius: 50px;
-    }
-    * {
-      font-size: 1.1em;
-    }
-    .targets {
-      button {
-        border-radius: 0px;
-      }
-      button:first-child {
-        border-radius: 50px 0px 0px 50px;
-      }
-      button:only-child {
-        border-radius: 0px;
-      }
-      button:last-child {
-        border-radius: 0px 50px 50px 0px;
-      }
-    }
-  }
-
   .workspace-wallpaper {
     transition: all 0.5s;
     border: none;
@@ -81,15 +46,46 @@
     }
   }
 
+  .actions {
+    .selected-workspace {
+      color: $secondary;
+      border-radius: 50px;
+    }
+    * {
+      font-size: 1rem;
+    }
+    .targets {
+      button {
+        border-radius: 0px;
+      }
+      button:first-child {
+        border-radius: 50px 0px 0px 50px;
+      }
+      button:only-child {
+        border-radius: 0px;
+      }
+      button:last-child {
+        border-radius: 0px 50px 50px 0px;
+      }
+    }
+  }
+
   .all-wallpapers-scrollable {
-    // margin: 25px 0px 0px 0px;
     padding: 0px 50px;
+    border-radius: 10px;
     min-height: 75px;
   }
 
   .all-wallpapers {
     padding: 0px;
     margin: 0px;
+    .wallpaper-event-box {
+      &:hover .wallpaper {
+        min-width: 125px;
+        background-position: center;
+        border-radius: 20px;
+      }
+    }
     .wallpaper {
       background-size: cover;
       background-position: center;
@@ -99,14 +95,10 @@
       min-height: 75px;
       border-radius: 10px;
 
-      &:hover {
-        min-width: 125px;
-        background-position: center;
-        border-radius: 20px;
-      }
-      &:active {
-        box-shadow: 0px 0px 20px 100px $background inset;
-        transition: all 0.2s;
+      .delete-wallpaper {
+        @extend .danger;
+        margin: 5px;
+        padding: 0px;
       }
     }
   }

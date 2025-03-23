@@ -3,7 +3,6 @@
   // background: black;
 
   .cava {
-    // font-size: 15px;
     color: $secondary;
   }
 
@@ -29,12 +28,13 @@
 
     .progress {
       min-width: 15px; /* its size is min(min-height, min-width) */
-      min-height: 1px;
-      font-size: 1px; /* to set its thickness set font-size on it */
       margin: 0px; /* you can set margin on it */
+      font-size: 1px;
       padding: 0px;
-      label {
-        font-size: 15px;
+      margin: 0px;
+
+      .icon {
+        color: unset; /* you can set color on it */
       }
     }
   }
