@@ -44,13 +44,15 @@ alias ls='lsd'
 alias cat='bat'
 
 # Aliases for fastfetch
-alias f='clear && source $HOME/.config/fastfetch/fastfetch.sh'
 fastfetch() {
     clear
     $HOME/.config/fastfetch/fastfetch.sh
-    zle redisplay
+    if zle; then
+        echo
+        zle redisplay
+    fi
 }
-
+alias f=fastfetch
 zle -N fastfetch
 bindkey '^F' fastfetch
 

@@ -198,30 +198,26 @@ export default ({
       }></revealer>
   );
 
-  const CircularProgress = () => {
-    const progress = (
-      <circularprogress
-        className="circular-progress"
-        rounded={true}
-        value={1}
-        visible={true}
-        setup={async (self) => {
-          while (self.value >= 0) {
-            self.value -= 0.01;
-            await asyncSleep(50);
-          }
-          self.hide();
-        }}
-      />
-    );
-
-    return progress;
-  };
+  const CircularProgress = (
+    <circularprogress
+      className="circular-progress"
+      rounded={true}
+      value={1}
+      visible={true}
+      setup={async (self) => {
+        while (self.value >= 0) {
+          self.value -= 0.01;
+          await asyncSleep(50);
+        }
+        self.destroy();
+      }}
+    />
+  );
 
   const topBar = (
     <box className="top-bar" hexpand={true} spacing={5}>
       {leftRevealer}
-      {popup ? <CircularProgress /> : <box />}
+      {popup ? CircularProgress : <box />}
       <label
         hexpand={true}
         wrap={true}

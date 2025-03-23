@@ -45,7 +45,7 @@ const QuickApps = () => {
   const apps = (
     <revealer
       transition_type={Gtk.RevealerTransitionType.SLIDE_DOWN}
-      transition_duration={1500}
+      transition_duration={globalTransition}
       revealChild={bind(Results).as((results) => results.length === 0)}
       child={
         <scrollable
@@ -143,6 +143,7 @@ const Entry = (
               filteredEmojis.map((emoji: { app_name: string }) => ({
                 app_name: emoji.app_name,
                 app_icon: emoji.app_name,
+                app_type: "emoji",
                 app_launch: () => execAsync(`wl-copy ${emoji.app_name}`),
               }))
             );
@@ -183,6 +184,7 @@ const Entry = (
                 .map((app) => ({
                   app_name: app.name,
                   app_icon: app.iconName,
+                  app_arg: args.join(" "),
                   app_launch: () =>
                     !args.join("")
                       ? app.launch()
@@ -229,7 +231,11 @@ const organizeResults = (results: Result[]) => {
       halign={
         element.app_type === "emoji" ? Gtk.Align.CENTER : Gtk.Align.START
       }>
-      <icon icon={element.app_icon || "view-grid-symbolic"} />
+      {element.app_type === "emoji" ? (
+        <icon icon={element.app_icon} />
+      ) : (
+        <box />
+      )}
       <label label={element.app_name} />
       <label className="argument" label={element.app_arg || ""} />
     </box>
@@ -315,8 +321,9 @@ export default (monitor: Gdk.Monitor) => (
             <icon className="icon" icon="preferences-system-search-symbolic" />
             {Entry}
           </box>
-          {QuickApps()}
+
           {ResultsDisplay}
+          {QuickApps()}
         </box>
       </eventbox>
     }></window>

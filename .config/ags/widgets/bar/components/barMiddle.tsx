@@ -189,7 +189,10 @@ function Bandwidth() {
   return (
     <box className="bandwidth" spacing={5}>
       {bind(bandwidth).as((bandwidth) => {
-        return [packet("", bandwidth[0]), packet("", bandwidth[1])];
+        return [
+          packet("", String(bandwidth[0])),
+          packet("", String(bandwidth[1])),
+        ];
       })}
     </box>
   );
