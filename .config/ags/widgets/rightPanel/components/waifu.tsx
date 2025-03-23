@@ -142,8 +142,6 @@ const removeFavorite = (favorite: any) => {
 };
 
 const PinImageToTerminal = () => {
-  // if (!readFile(terminalWaifuPath))
-  //   exec(`mkdir -p ${terminalWaifuPath.split("/").slice(0, -1).join("/")}`);
   execAsync(
     `bash -c "cmp -s ${waifuPath} ${terminalWaifuPath} && { rm ${terminalWaifuPath}; echo 1; } || { cp ${waifuPath} ${terminalWaifuPath}; echo 0; }"`
   )
@@ -336,17 +334,19 @@ function Actions() {
   );
 
   const bottom = (
-    <box className="bottom" vertical vexpand valign={Gtk.Align.END}>
-      {ToggleButton({
-        label: "",
-        className: "action-trigger",
-        halign: Gtk.Align.END,
-        onToggled: (self, on) => {
-          actions.reveal_child = on;
-          self.label = on ? "" : "";
-          actions.reveal_child = on;
-        },
-      })}
+    <box className="bottom" vertical valign={Gtk.Align.END}>
+      {
+        <ToggleButton
+          label=""
+          className="action-trigger"
+          halign={Gtk.Align.END}
+          onToggled={(self, on) => {
+            actions.reveal_child = on;
+            self.label = on ? "" : "";
+            actions.reveal_child = on;
+          }}
+        />
+      }
       {actions}
     </box>
   );

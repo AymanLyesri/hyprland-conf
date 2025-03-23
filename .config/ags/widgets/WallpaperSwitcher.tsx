@@ -84,8 +84,8 @@ function Wallpapers(monitor: string) {
       className="all-wallpapers-scrollable"
       hscrollbarPolicy={Gtk.PolicyType.ALWAYS}
       vscrollbarPolicy={Gtk.PolicyType.NEVER}
-      hexpand={true}
-      vexpand={true}
+      hexpand
+      vexpand
       child={
         <box className="all-wallpapers" spacing={5}>
           {bind(
@@ -93,12 +93,9 @@ function Wallpapers(monitor: string) {
               [bind(allWallpapers), bind(allThumbnails)],
               (allWallpapers, allThumbnails) =>
                 allWallpapers.map((wallpaper, key) => (
-                  <button
-                    className="wallpaper"
-                    css={`
-                      background-image: url("${allThumbnails[key]}");
-                    `}
-                    onClicked={() => {
+                  <eventbox
+                    className={"wallpaper-event-box"}
+                    onClick={() => {
                       const target = targetType.get();
                       const command = {
                         sddm: `pkexec sh -c 'sed -i "s|^background=.*|background=\"${wallpaper}\"|" /usr/share/sddm/themes/where_is_my_sddm_theme/theme.conf'`,
@@ -117,8 +114,42 @@ function Wallpapers(monitor: string) {
                           });
                         })
                         .catch(notify);
-                      // hideWindow(`wallpaper-switcher-${monitor}`);
                     }}
+                    child={
+                      <box
+                        className="wallpaper"
+                        vertical
+                        css={`
+                          background-image: url("${allThumbnails[key]}");
+                        `}
+                        child={
+                          <button
+                            visible={wallpaperType.get()}
+                            className="delete-wallpaper"
+                            halign={Gtk.Align.END}
+                            valign={Gtk.Align.START}
+                            label=""
+                            onClicked={() => {
+                              execAsync(
+                                `bash -c "rm -f '${allThumbnails[key]}' '${wallpaper}'"`
+                              )
+                                .then(() => {
+                                  notify({
+                                    summary: "Success",
+                                    body: "Wallpaper deleted successfully!",
+                                  });
+                                })
+                                .catch((err) =>
+                                  notify({
+                                    summary: "Error",
+                                    body: String(err),
+                                  })
+                                );
+                            }}
+                          />
+                        }
+                      />
+                    }
                   />
                 ))
             )
@@ -181,7 +212,7 @@ function Wallpapers(monitor: string) {
 
   const top = (
     <box hexpand={true} vexpand={true} halign={Gtk.Align.CENTER} spacing={10}>
-      {[...getWallpapers(), reset]}
+      {getWallpapers()}
     </box>
   );
 
@@ -263,6 +294,36 @@ function Wallpapers(monitor: string) {
     />
   );
 
+  const addWallpaperButton = (
+    <button
+      label={""}
+      className={"upload"}
+      onClicked={() => {
+        let dialog = new Gtk.FileChooserDialog({
+          title: "Open Image",
+          action: Gtk.FileChooserAction.OPEN,
+        });
+        dialog.add_button("Upload", Gtk.ResponseType.OK);
+        dialog.add_button("Cancel", Gtk.ResponseType.CANCEL);
+        let response = dialog.run();
+        if (response == Gtk.ResponseType.OK) {
+          let filename = dialog.get_filename();
+          execAsync(
+            `bash -c "cp '${filename}' $HOME/.config/wallpapers/custom"`
+          )
+            .then(() =>
+              notify({
+                summary: "Success",
+                body: "Wallpaper added successfully!",
+              })
+            )
+            .catch((err) => notify({ summary: "Error", body: String(err) }));
+        }
+        dialog.destroy();
+      }}
+    />
+  );
+
   const actions = (
     <box
       className="actions"
@@ -274,6 +335,8 @@ function Wallpapers(monitor: string) {
       {revealButton}
       {custom}
       {random}
+      {reset}
+      {addWallpaperButton}
     </box>
   );
 
@@ -283,12 +346,16 @@ function Wallpapers(monitor: string) {
       reveal_child={false}
       transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
       transition_duration={globalTransition}
-      child={<box vertical={true} child={getAllWallpapers()}></box>}
+      child={<box child={getAllWallpapers()}></box>}
     />
   );
 
   const bottom = (
-    <box hexpand={true} vexpand={true} child={bottomRevealer}></box>
+    <box
+      className={"bottom"}
+      hexpand={true}
+      vexpand={true}
+      child={bottomRevealer}></box>
   );
 
   return (

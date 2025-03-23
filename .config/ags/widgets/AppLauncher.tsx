@@ -15,13 +15,11 @@ import {
   globalMargin,
   globalSettings,
   globalTransition,
-  newAppWorkspace,
 } from "../variables";
 
 const apps = new Apps.Apps();
 
 import Hyprland from "gi://AstalHyprland";
-import { closeProgress, openProgress } from "./Progress";
 import { hideWindow } from "../utils/window";
 import { getMonitorName } from "../utils/monitor";
 const hyprland = Hyprland.get_default();
@@ -60,17 +58,8 @@ const QuickApps = () => {
                 <button
                   className="quick-app"
                   onClicked={() => {
-                    openProgress();
-                    execAsync(
-                      `bash ./scripts/app-loading-progress.sh ${app.app_name}`
-                    )
-                      .then((workspace) =>
-                        newAppWorkspace.set(Number(workspace))
-                      )
-                      .finally(() => closeProgress())
-                      .catch((err) => notify({ summary: "Error", body: err }));
                     hyprland.message_async(`dispatch exec ${app.exec}`, () => {
-                      App.toggle_window("app-launcher");
+                      hideWindow(`app-launcher-${monitorName.get()}`);
                     });
                   }}
                   child={
@@ -219,7 +208,6 @@ const Entry = (
 );
 
 const launchApp = (app: Result) => {
-  openProgress();
   app.app_launch();
   hideWindow(`app-launcher-${monitorName.get()}`);
 };

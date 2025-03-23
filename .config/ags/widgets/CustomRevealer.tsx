@@ -23,7 +23,7 @@ export default (
 
   const eventBox = (
     <eventbox
-      className={"custom-revealer button " + custom_class}
+      className={"custom-revealer " + custom_class}
       on_hover={(self) => {
         revealer.reveal_child = true;
       }}

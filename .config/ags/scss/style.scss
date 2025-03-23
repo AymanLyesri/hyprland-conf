@@ -7,9 +7,9 @@
 @import "bar/bar_right.scss";
 
 @import "right_panel/right-panel.scss";
-@import "right_panel/components/notification-popups.scss";
-@import "right_panel/components/notification.scss";
 @import "right_panel/components/waifu.scss";
+@import "right_panel/components/notification.scss";
+@import "right_panel/components/notification-popups.scss";
 
 @import "widgets/resources.scss";
 @import "widgets/app-launcher.scss";
@@ -27,8 +27,7 @@
 
 // Use the variables in the styles
 window {
+  font-family: "JetBrainsMono NFP", "Noto Font";
   background-color: transparent;
-  transition: all 1s;
   font-size: 10px;
-  // animation: fade-in 5s;
 }

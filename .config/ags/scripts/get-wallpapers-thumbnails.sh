@@ -24,4 +24,4 @@ else
 fi
 
 # Join the array elements with commas and print in the desired format
-echo "[${wallpaper_paths[*]}]" | sed 's/ /, /g'
+echo "[${wallpaper_paths[@]}]" | sed 's/" "/", "/g'

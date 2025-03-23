@@ -1,18 +1,3 @@
-// .player-background {
-//   position: relative;
-// }
-
-// .player-background::before {
-//   content: "";
-//   background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
-//   position: absolute;
-//   top: 0;
-//   left: 0;
-//   right: 0;
-//   bottom: 0;
-//   pointer-events: none; /* Ensure the overlay doesn't block interactions */
-// }
-
 .player {
   @extend .module;
   padding: 0px;
@@ -59,22 +44,12 @@
   }
 
   button {
-    min-height: 1em;
-    min-width: 1em;
-    // padding: 0.3em;
+    min-height: 1rem;
+    min-width: 1rem;
+    // padding: 0.3rem;
   }
 
   button.play-pause {
-    margin: 0 0.3em;
-  }
-
-  &.widget {
-    .title {
-      font-size: 1.2em;
-    }
-
-    .artist {
-      font-size: 1.2em;
-    }
+    margin: 0 0.3rem;
   }
 }
