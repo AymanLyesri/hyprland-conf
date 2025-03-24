@@ -1,0 +1,53 @@
+.chat-bot {
+  padding: 5px;
+
+  .info {
+    @extend .module;
+    padding: 10px 5px;
+    color: $secondary;
+
+    .name {
+      font-size: 1rem;
+    }
+  }
+
+  .messages {
+    // @extend .module;
+    padding: 5px;
+
+    .message {
+      @extend .module;
+      padding: 5px 0px;
+
+      .actions {
+        padding: 5px;
+
+        .copy {
+          padding: 5px;
+        }
+      }
+      .body {
+        font-size: 0.8rem;
+        padding: 10px 10px 10px 5px;
+
+        .code-block {
+          background: $module-background;
+          border-radius: 10px;
+
+          .text {
+            padding: 10px;
+          }
+
+          .copy {
+            margin: 5px;
+            padding: 5px;
+          }
+        }
+      }
+    }
+  }
+
+  entry {
+    padding: 10px;
+  }
+}

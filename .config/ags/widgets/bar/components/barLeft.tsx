@@ -1,5 +1,11 @@
-import { App } from "astal/gtk3";
-import { focusedWorkspace, newAppWorkspace } from "../../../variables";
+import { App, Gtk } from "astal/gtk3";
+import {
+  focusedWorkspace,
+  globalTransition,
+  leftPanelLock,
+  leftPanelVisibility,
+  newAppWorkspace,
+} from "../../../variables";
 
 import hyprland from "gi://AstalHyprland";
 import { bind, Variable } from "astal";
@@ -100,6 +106,24 @@ function Workspaces() {
   return <box className="workspaces">{bind(workspaces)}</box>;
 }
 
+function LeftPanel() {
+  return (
+    <revealer
+      revealChild={bind(leftPanelLock).as((lock) => lock)}
+      transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
+      transitionDuration={globalTransition}
+      child={
+        <ToggleButton
+          state={bind(leftPanelVisibility)}
+          label={bind(leftPanelVisibility).as((v) => (v ? "" : ""))}
+          onToggled={(self, on) => leftPanelVisibility.set(on)}
+          className="panel-trigger icon"
+        />
+      }
+    />
+  );
+}
+
 const Special = (
   <button
     className="special"
@@ -181,6 +205,7 @@ const Actions = ({ monitorName }: { monitorName: string }) => {
 export default (monitorName: string) => {
   return (
     <box className="bar-left" spacing={5}>
+      <LeftPanel />
       <Actions monitorName={monitorName} />
       <OverView />
       {Special}

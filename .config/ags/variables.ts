@@ -75,3 +75,12 @@ export const Widgets = Variable<WidgetSelector[]>(getSetting("rightPanel.widgets
     .map((name: string) => WidgetSelectors.find(widget => widget.name === name)))
 Widgets.subscribe((value) => setSetting("rightPanel.widgets", value.map(widget => widget.name)));
 
+export const leftPanelVisibility = Variable<boolean>(getSetting("leftPanel.visibility"));
+leftPanelVisibility.subscribe((value) => setSetting("leftPanel.visibility", value));
+export const leftPanelExclusivity = Variable<boolean>(getSetting("leftPanel.exclusivity"));
+leftPanelExclusivity.subscribe((value) => setSetting("leftPanel.exclusivity", value));
+export const leftPanelWidth = Variable<number>(getSetting("leftPanel.width"));
+leftPanelWidth.subscribe((value) => setSetting("leftPanel.width", value));
+export const leftPanelLock = Variable<boolean>(getSetting("leftPanel.lock"));
+leftPanelLock.subscribe((value) => setSetting("leftPanel.lock", value));
+

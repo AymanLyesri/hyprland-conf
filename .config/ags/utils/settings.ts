@@ -5,6 +5,7 @@ import { Settings } from "../interfaces/settings.interface";
 
 export const settingsPath = "./assets/settings/settings.json";
 
+
 export const defaultSettings: Settings = {
   hyprsunset: {
     kelvin: 6500
@@ -58,6 +59,19 @@ export const defaultSettings: Settings = {
     width: 300,
     visibility: true,
     widgets: []
+  },
+  leftPanel: {
+    exclusivity: true,
+    lock: true,
+    width: 400,
+    visibility: true,
+  },
+  chatBot: {
+    provider: {
+      name: "pollinations",
+      icon: "Po",
+      description: "Completely free, default model is gpt-4o",
+    },
   },
   quickLauncher: {
     apps: [
