@@ -71,6 +71,7 @@ export const defaultSettings: Settings = {
       name: "pollinations",
       icon: "Po",
       description: "Completely free, default model is gpt-4o",
+      imageGenerationSupport: true,
     },
   },
   quickLauncher: {

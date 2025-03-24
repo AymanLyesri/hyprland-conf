@@ -1,24 +1,33 @@
 import { Gtk } from "astal/gtk3";
 import { Message, Provider } from "../../interfaces/chatbot.interface";
-import { bind, execAsync, Variable } from "astal";
+import { bind, execAsync, timeout, Variable } from "astal";
 import { notify } from "../../utils/notification";
 import { readJSONFile, writeJSONFile } from "../../utils/json";
 
-function formatTextWithCodeBlocks(text: string) {
-  // Split the text by code blocks (```)
-  const parts = text.split(/```(.*?)```/gs);
+// Constants
+const MESSAGE_FILE_PATH = "./assets/chatbot";
+const DEBOUNCE_TIME = 100;
 
-  // Create an array to hold all the elements
+// State
+const imageGeneration = Variable<boolean>(false);
+const messages = Variable<Message[]>([]);
+
+// Utils
+const getMessageFilePath = (provider: string) =>
+  `${MESSAGE_FILE_PATH}/${provider}.json`;
+
+const formatTextWithCodeBlocks = (text: string) => {
+  const parts = text.split(/```(\w*)?\n?([\s\S]*?)```/gs);
   const elements = [];
 
   for (let i = 0; i < parts.length; i++) {
-    const part = parts[i].trim();
-    if (!part) continue; // Skip empty parts
+    const part = parts[i]?.trim();
+    if (!part) continue;
 
-    if (i % 2 === 1) {
-      // Odd indices are code blocks (between ```)
+    if (i % 3 === 2) {
+      // Code content
       elements.push(
-        <box className="code-block">
+        <box className="code-block" spacing={5}>
           <label
             className="text"
             hexpand
@@ -29,166 +38,204 @@ function formatTextWithCodeBlocks(text: string) {
           <button
             halign={Gtk.Align.END}
             valign={Gtk.Align.START}
-            className={"copy"}
-            label={""}
-            onClick={() => {
-              execAsync(`wl-copy "${part}"`).catch((err) => print(err));
-            }}
+            className="copy"
+            label=""
+            onClick={() => execAsync(`wl-copy "${part}"`).catch(print)}
           />
         </box>
       );
-    } else {
-      // Even indices are regular text
+    } else if (i % 3 === 0 && part) {
+      // Regular text
       elements.push(<label hexpand wrap xalign={0} label={part} />);
     }
   }
 
   return (
-    <box className={"body"} vertical spacing={10}>
+    <box className="body" vertical spacing={10}>
       {elements}
     </box>
   );
-}
+};
 
-const fetchMessages = (provider: string) => {
-  let fetched_messages = readJSONFile(`./assets/chatbot/${provider}.json`);
-  if (Object.keys(fetched_messages).length > 0) {
-    return fetched_messages;
+const fetchMessages = (provider: string): Message[] => {
+  try {
+    const fetchedMessages = readJSONFile(getMessageFilePath(provider));
+    return Array.isArray(fetchedMessages) ? fetchedMessages : [];
+  } catch {
+    return [];
   }
-  return [];
 };
 
-const messages = Variable<Message[]>([]);
+const saveMessages = (provider: string) => {
+  writeJSONFile(getMessageFilePath(provider), messages.get());
+};
 
-const sendMessage = (message: Message, provider: Variable<Provider>) => {
-  execAsync(
-    `bash -c "tgpt --provider ${provider.get().name} -q '${message.content}'"`
-  )
-    .then((response) => {
-      notify({ summary: "Message sent", body: response });
-      let newMessage = {
-        id: (messages.get().length + 1).toString(),
-        sender: provider.get().name,
-        receiver: "me",
-        content: response,
-        timestamp: Date.now(),
-      };
-      messages.set([...messages.get(), newMessage]);
-      writeJSONFile(
-        `./assets/chatbot/${provider.get().name}.json`,
-        messages.get()
-      );
-    })
+const sendMessage = async (message: Message, provider: Provider) => {
+  try {
+    const imgFlag = imageGeneration.get() ? "-img" : "";
+    const response = await execAsync(
+      `tgpt -q ${imgFlag} --provider ${provider.name} ` +
+        `--preprompt 'short and straight forward response' '${message.content}'`
+    );
 
-    .catch((error) => {
-      notify({ summary: "Error", body: error });
+    notify({ summary: "Message sent", body: response });
+
+    const newMessage: Message = {
+      id: (messages.get().length + 1).toString(),
+      sender: provider.name,
+      receiver: "user",
+      content: response,
+      timestamp: Date.now(),
+    };
+
+    messages.set([...messages.get(), newMessage]);
+    saveMessages(provider.name);
+  } catch (error) {
+    notify({
+      summary: "Error",
+      body: error instanceof Error ? error.message : String(error),
     });
+  }
 };
 
-const Info = (provider: Variable<Provider>) => (
-  <box className={"info"} vertical spacing={5}>
-    {bind(provider).as((provider) => [
-      <label className={"name"} hexpand wrap label={`[${provider.name}]`} />,
-      <label
-        className={"description"}
-        hexpand
-        wrap
-        label={provider.description}
-      />,
+// Components
+const Info = ({ provider }: { provider: Variable<Provider> }) => (
+  <box className="info" vertical spacing={5}>
+    {bind(provider).as(({ name, description }) => [
+      <label className="name" hexpand wrap label={`[${name}]`} />,
+      <label className="description" hexpand wrap label={description} />,
     ])}
   </box>
 );
 
-const Messages = (provider: Variable<Provider>) => (
+const MessageItem = ({ message }: { message: Message }) => (
+  <box
+    className={`message ${message.sender}`}
+    spacing={5}
+    halign={message.sender === "user" ? Gtk.Align.END : Gtk.Align.START}>
+    {message.sender !== "user" ? (
+      <box
+        className="actions"
+        vexpand={false}
+        vertical
+        child={
+          <button
+            valign={Gtk.Align.END}
+            vexpand
+            className="copy"
+            label=""
+            onClicked={() =>
+              execAsync(`wl-copy "${message.content}"`).catch(print)
+            }
+          />
+        }></box>
+    ) : (
+      <box />
+    )}
+    {message.sender === "user" ? (
+      <box className="body" spacing={5}>
+        <label wrap label={message.content} />
+        <button
+          className="copy"
+          label=""
+          halign={Gtk.Align.END}
+          valign={Gtk.Align.START}
+          onClicked={() =>
+            execAsync(`wl-copy "${message.content}"`).catch(print)
+          }
+        />
+      </box>
+    ) : (
+      formatTextWithCodeBlocks(message.content)
+    )}
+  </box>
+);
+
+const Messages = (
   <scrollable
     vexpand
+    setup={(self) => {
+      self.hook(messages, () => {
+        timeout(DEBOUNCE_TIME, () => {
+          self.get_vadjustment().set_value(self.get_vadjustment().get_upper());
+        });
+      });
+    }}
     child={
-      <box className={"messages"} vertical hexpand spacing={5}>
-        {bind(messages).as((messages) =>
-          messages.map((message) => (
-            <box className={"message"} spacing={5}>
-              <box
-                className={"actions"}
-                visible={message.sender !== "me"}
-                vexpand={false}
-                vertical>
-                <label label={provider.get().icon}></label>
-                <button
-                  valign={Gtk.Align.END}
-                  vexpand
-                  className={"copy"}
-                  label={""}
-                  onClick={() => {
-                    execAsync(`wl-copy "${message.content}"`).catch((err) =>
-                      print(err)
-                    );
-                  }}
-                />
-              </box>
-              {message.sender === "me" ? (
-                <label
-                  className={"body"}
-                  hexpand
-                  wrap
-                  xalign={message.sender === "me" ? 1 : 0}
-                  label={message.content}
-                />
-              ) : (
-                formatTextWithCodeBlocks(message.content)
-              )}
-            </box>
-          ))
+      <box className="messages" vertical spacing={10}>
+        {bind(messages).as((msgs) =>
+          msgs.map((msg) => <MessageItem message={msg} />)
         )}
       </box>
-    }></scrollable>
+    }
+  />
 );
 
-const Clear = (provider: Variable<Provider>) => (
+const ClearButton = ({ provider }: { provider: Variable<Provider> }) => (
   <button
-    label={""}
-    className={"clear"}
+    halign={Gtk.Align.CENTER}
+    valign={Gtk.Align.CENTER}
+    label=""
+    className="clear"
     onClicked={() => {
       messages.set([]);
-      writeJSONFile(
-        `./assets/chatbot/${provider.get().name}.json`,
-        messages.get()
-      );
+      saveMessages(provider.get().name);
     }}
   />
 );
 
-const Entry = (provider: Variable<Provider>) => (
-  <entry
-    hexpand
-    placeholderText="Type a message"
-    onActivate={(self) => {
-      let newMessage = {
-        id: (messages.get().length + 1).toString(),
-        sender: "me",
-        receiver: provider.get().name,
-        content: self.get_text(),
-        timestamp: Date.now(),
-      };
-      messages.set([...messages.get(), newMessage]);
-      sendMessage(newMessage, provider);
-      self.set_text("");
-    }}
+const ImageGenerationSwitch = ({
+  provider,
+}: {
+  provider: Variable<Provider>;
+}) => (
+  <switch
+    visible={provider.get().imageGenerationSupport}
+    active={imageGeneration.get()}
+    onButtonPressEvent={() => imageGeneration.set(!imageGeneration.get())}
   />
 );
 
-const Bottom = (provider: Variable<Provider>) => (
-  <box spacing={5}>{[Entry(provider), Clear(provider)]}</box>
+const MessageEntry = ({ provider }: { provider: Variable<Provider> }) => {
+  const handleSubmit = (self: Gtk.Entry) => {
+    const text = self.get_text();
+    if (!text) return;
+
+    const newMessage: Message = {
+      id: (messages.get().length + 1).toString(),
+      sender: "user",
+      receiver: provider.get().name,
+      content: text,
+      timestamp: Date.now(),
+    };
+
+    messages.set([...messages.get(), newMessage]);
+    sendMessage(newMessage, provider.get());
+    self.set_text("");
+  };
+
+  return (
+    <entry hexpand placeholderText="Type a message" onActivate={handleSubmit} />
+  );
+};
+
+const BottomBar = ({ provider }: { provider: Variable<Provider> }) => (
+  <box spacing={5}>
+    <MessageEntry provider={provider} />
+    <ClearButton provider={provider} />
+  </box>
 );
 
 export default ({ provider }: { provider: Variable<Provider> }) => {
+  // Initialize and watch provider changes
+  provider.subscribe((p) => messages.set(fetchMessages(p.name)));
   messages.set(fetchMessages(provider.get().name));
-  provider.subscribe((p) => {
-    messages.set(fetchMessages(p.name));
-  });
 
   return (
-    <box className={"chat-bot"} vertical hexpand spacing={5}>
-      {[Info(provider), Messages(provider), Bottom(provider)]}
+    <box className="chat-bot" vertical hexpand spacing={5}>
+      <Info provider={provider} />
+      {Messages}
+      <BottomBar provider={provider} />
     </box>
   );
 };

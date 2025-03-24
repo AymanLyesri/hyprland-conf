@@ -11,37 +11,34 @@
     }
   }
 
-  .messages {
-    // @extend .module;
+  .copy {
     padding: 5px;
+    margin: 0px;
+  }
 
+  .messages {
     .message {
       @extend .module;
-      padding: 5px 0px;
+      padding: 5px;
+
+      &.user {
+        border-radius: 50px;
+        padding: 0px;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
 
       .actions {
         padding: 5px;
-
-        .copy {
-          padding: 5px;
-        }
       }
       .body {
         font-size: 0.8rem;
-        padding: 10px 10px 10px 5px;
+        padding: 10px;
 
         .code-block {
           background: $module-background;
           border-radius: 10px;
-
-          .text {
-            padding: 10px;
-          }
-
-          .copy {
-            margin: 5px;
-            padding: 5px;
-          }
+          padding: 10px;
         }
       }
     }
@@ -49,5 +46,11 @@
 
   entry {
     padding: 10px;
+    border-radius: 50px;
+  }
+
+  .clear {
+    @extend .danger;
+    padding: 5px;
   }
 }

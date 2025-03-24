@@ -12,4 +12,5 @@ export interface Provider
     name: string,
     icon: string,
     description: string,
+    imageGenerationSupport?: boolean,
 }
