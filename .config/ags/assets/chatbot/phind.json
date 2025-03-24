@@ -1,0 +1,44 @@
+[
+    {
+        "id": "1",
+        "sender": "me",
+        "receiver": "phind",
+        "content": "hi",
+        "timestamp": 1742816897258
+    },
+    {
+        "id": "2",
+        "sender": "phind",
+        "receiver": "me",
+        "content": "Hello! How can I assist you with your programming task today?",
+        "timestamp": 1742816898128
+    },
+    {
+        "id": "3",
+        "sender": "me",
+        "receiver": "phind",
+        "content": "hi",
+        "timestamp": 1742818601088
+    },
+    {
+        "id": "4",
+        "sender": "phind",
+        "receiver": "me",
+        "content": "Hello! How can I assist you with your programming task today?",
+        "timestamp": 1742818602054
+    },
+    {
+        "id": "5",
+        "sender": "me",
+        "receiver": "phind",
+        "content": "create hello world in python",
+        "timestamp": 1742819009750
+    },
+    {
+        "id": "6",
+        "sender": "phind",
+        "receiver": "me",
+        "content": "Here's a simple \"Hello World\" program in Python:\n\n```python\nprint(\"Hello, World!\")\n```\n\nThis code uses the `print()` function to display the string \"Hello, World!\" in the console.\n\nTo run this code:\n\n1. Open a text editor (like VSCode)\n2. Create a new file with a `.py` extension (e.g., `hello_world.py`)\n3. Copy and paste the above code into the file\n4. Save the file\n5. Run the script using Python interpreter\n\nIf you want to add a bit more functionality, here's another example:\n\n```python\ndef greet(name):\n    return f\"Hello, {name}!\"\n\nmessage = greet(\"World\")\nprint(message)\n```\n\nThis code defines a function `greet()` that takes a name as input and returns a personalized greeting. The main part of the script calls this function with \"World\" as the argument and prints the result.\n\nBoth examples will produce the same output: \"Hello, World!\".",
+        "timestamp": 1742819011198
+    }
+]

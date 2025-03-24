@@ -2,14 +2,19 @@
 
 @import "lib.scss";
 @import "bar/bar.scss";
-@import "bar/bar_left.scss";
-@import "bar/bar_middle.scss";
-@import "bar/bar_right.scss";
+@import "bar/bar-left.scss";
+@import "bar/bar-middle.scss";
+@import "bar/bar-right.scss";
 
-@import "right_panel/right-panel.scss";
-@import "right_panel/components/waifu.scss";
-@import "right_panel/components/notification.scss";
-@import "right_panel/components/notification-popups.scss";
+@import "panel/panel.scss";
+
+@import "panel/right-panel/right-panel.scss";
+@import "panel/right-panel/components/waifu.scss";
+@import "panel/right-panel/components/notification.scss";
+@import "panel/right-panel/components/notification-popups.scss";
+
+@import "panel/left-panel/left-panel.scss";
+@import "panel/left-panel/components/chat-bot.scss";
 
 @import "widgets/resources.scss";
 @import "widgets/app-launcher.scss";

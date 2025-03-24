@@ -11,7 +11,7 @@ import {
   widgetLimit,
   Widgets,
 } from "../../variables";
-import { bind } from "astal";
+import { bind, Variable } from "astal";
 import CustomRevealer from "../CustomRevealer";
 import ToggleButton from "../toggleButton";
 import { exportSettings, setSetting } from "../../utils/settings";
@@ -19,6 +19,7 @@ import MediaWidget from "../MediaWidget";
 import NotificationHistory from "./NotificationHistory";
 import Calendar from "../Calendar";
 import { getMonitorName } from "../../utils/monitor";
+import { WindowActions } from "../../utils/window";
 
 // Name need to match the name of the widget()
 export const WidgetSelectors: WidgetSelector[] = [
@@ -54,8 +55,6 @@ export const WidgetSelectors: WidgetSelector[] = [
   // },
 ];
 
-const maxRightPanelWidth = 600;
-const minRightPanelWidth = 200;
 const WidgetActions = () => {
   return (
     <box vertical={true} vexpand={true} className={"widget-actions"}>
@@ -84,76 +83,16 @@ const WidgetActions = () => {
     </box>
   );
 };
-const kelvinMin = 1000;
-const kelvinMax = 10000;
-
-function WindowActions() {
-  return (
-    <box
-      className={"window-actions"}
-      vexpand={true}
-      halign={Gtk.Align.END}
-      valign={Gtk.Align.END}
-      vertical={true}>
-      <button
-        label={"󰈇"}
-        className={"export-settings"}
-        onClicked={() => exportSettings()}
-      />
-      <button
-        label={""}
-        className={"expand-window"}
-        onClicked={() => {
-          rightPanelWidth.set(
-            rightPanelWidth.get() < maxRightPanelWidth
-              ? rightPanelWidth.get() + 50
-              : maxRightPanelWidth
-          );
-        }}
-      />
-      <button
-        label={""}
-        className={"shrink-window"}
-        onClicked={() => {
-          rightPanelWidth.set(
-            rightPanelWidth.get() > minRightPanelWidth
-              ? rightPanelWidth.get() - 50
-              : minRightPanelWidth
-          );
-        }}
-      />
-      <ToggleButton
-        label={""}
-        className={"exclusivity"}
-        state={rightPanelExclusivity.get()}
-        onToggled={(self, on) => {
-          rightPanelExclusivity.set(on);
-        }}
-      />
-      <ToggleButton
-        label={rightPanelLock.get() ? "" : ""}
-        className={"lock"}
-        state={rightPanelLock.get()}
-        onToggled={(self, on) => {
-          rightPanelLock.set(on);
-          self.label = on ? "" : "";
-        }}
-      />
-      <button
-        label={""}
-        className={"close"}
-        onClicked={() => {
-          rightPanelVisibility.set(false);
-        }}
-      />
-    </box>
-  );
-}
 
 const Actions = () => (
-  <box className={"right-panel-actions"} vertical={true}>
+  <box className={"panel-actions"} vertical={true}>
     <WidgetActions />
-    <WindowActions />
+    <WindowActions
+      windowWidth={rightPanelWidth}
+      windowExclusivity={rightPanelExclusivity}
+      windowLock={rightPanelLock}
+      windowVisibility={rightPanelVisibility}
+    />
   </box>
 );
 
@@ -167,9 +106,9 @@ function Panel() {
         child={<box css={"min-width:5px"} />}></eventbox>
       <box
         className={"main-content"}
-        css={bind(rightPanelWidth).as((width) => `*{min-width: ${width}px}`)}
         vertical={true}
-        spacing={10}>
+        spacing={10}
+        widthRequest={bind(rightPanelWidth)}>
         {bind(Widgets).as((widgets) => {
           return widgets
             .filter((widget) => widget && widget.widget) // Filter out undefined widgets and those without a widget method

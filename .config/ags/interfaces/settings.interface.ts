@@ -59,6 +59,12 @@ export interface Settings
         widgets: string[],
         lock: boolean,
     },
+    leftPanel: {
+        visibility: boolean,
+        exclusivity: boolean,
+        width: number,
+        lock: boolean,
+    },
     quickLauncher: {
         apps: {
             name: string,

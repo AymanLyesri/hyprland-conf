@@ -1,0 +1,30 @@
+.chat-bot {
+  padding: 5px;
+
+  .messages {
+    @extend .module;
+    padding: 5px;
+
+    .message {
+      @extend .module;
+      padding: 5px;
+      .body {
+        font-size: 0.8rem;
+        padding: 5px;
+
+        .code-block {
+          background: $module-background;
+          border-radius: 10px;
+          padding: 10px;
+        }
+      }
+    }
+    .copy {
+      padding: 5px;
+    }
+  }
+
+  entry {
+    padding: 10px;
+  }
+}

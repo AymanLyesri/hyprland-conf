@@ -59,6 +59,12 @@ export const defaultSettings: Settings = {
     visibility: true,
     widgets: []
   },
+  leftPanel: {
+    exclusivity: true,
+    lock: true,
+    width: 300,
+    visibility: true,
+  },
   quickLauncher: {
     apps: [
       { name: "Browser", app_name: "zen-browser", exec: "zen-browser", icon: "" },

@@ -13,6 +13,7 @@ p7zip
 ranger
 wl-clipboard
 lsd
+tgpt
 
 # ____                 _                                  _   
 #|  _ \  _____   _____| | ___  _ __  _ __ ___   ___ _ __ | |_ 

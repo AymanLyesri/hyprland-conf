@@ -14,6 +14,8 @@ import BarHover from "./widgets/bar/BarHover"
 import OSD from "./widgets/OSD"
 import { getMonitorName } from "./utils/monitor"
 import { logTime } from "./utils/time"
+import LeftPanel from "./widgets/leftPanel/LeftPanel"
+import LeftPanelHover from "./widgets/leftPanel/LeftPanelHover"
 
 
 const main = () => App.get_monitors().map(monitor =>
@@ -24,6 +26,8 @@ const main = () => App.get_monitors().map(monitor =>
     logTime("\t\t BarHover", () => BarHover(monitor));
     logTime("\t\t RightPanel", () => RightPanel(monitor));
     logTime("\t\t RightPanelHover", () => RightPanelHover(monitor));
+    logTime("\t\t LeftPanel", () => LeftPanel(monitor));
+    logTime("\t\t LeftPanelHover", () => LeftPanelHover(monitor));
     logTime("\t\t NotificationPopups", () => NotificationPopups(monitor));
     logTime("\t\t AppLauncher", () => AppLauncher(monitor));
     logTime("\t\t Progress", () => Progress(monitor));
