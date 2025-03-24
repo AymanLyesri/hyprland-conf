@@ -12,8 +12,12 @@ import ChatBot from "./chatBot";
 import { WindowActions } from "../../utils/window";
 import { Provider } from "../../interfaces/chatbot.interface";
 import ToggleButton from "../toggleButton";
+import { getSetting, setSetting } from "../../utils/settings";
 
-const providerTypes: Provider[] = [
+const provider = Variable<Provider>(getSetting("chatBot.provider"));
+provider.subscribe((value) => setSetting("chatBot.provider", value));
+
+const providers: Provider[] = [
   {
     name: "pollinations",
     icon: "Po",
@@ -26,11 +30,9 @@ const providerTypes: Provider[] = [
   },
 ];
 
-const provider = Variable<Provider>(providerTypes[0]);
-
 const ProviderActions = () => (
   <box className={"provider-actions"} vertical={true}>
-    {providerTypes.map((p) => (
+    {providers.map((p) => (
       <ToggleButton
         state={bind(provider).as((provider) => provider.name === p.name)}
         label={p.icon}

@@ -1,4 +1,5 @@
 import { Api } from "./api.interface"
+import { Provider } from "./chatbot.interface"
 import { Waifu } from "./waifu.interface"
 
 export interface HyprlandSetting
@@ -58,6 +59,9 @@ export interface Settings
         width: number,
         widgets: string[],
         lock: boolean,
+    },
+    chatBot: {
+        provider: Provider,
     },
     leftPanel: {
         visibility: boolean,

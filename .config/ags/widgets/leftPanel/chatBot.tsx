@@ -18,12 +18,24 @@ function formatTextWithCodeBlocks(text: string) {
     if (i % 2 === 1) {
       // Odd indices are code blocks (between ```)
       elements.push(
-        <box
-          className="code-block"
-          margin={5}
-          child={
-            <label className="monospace" hexpand wrap xalign={0} label={part} />
-          }></box>
+        <box className="code-block">
+          <label
+            className="text"
+            hexpand
+            wrap
+            halign={Gtk.Align.START}
+            label={part}
+          />
+          <button
+            halign={Gtk.Align.END}
+            valign={Gtk.Align.START}
+            className={"copy"}
+            label={""}
+            onClick={() => {
+              execAsync(`wl-copy "${part}"`).catch((err) => print(err));
+            }}
+          />
+        </box>
       );
     } else {
       // Even indices are regular text
@@ -32,7 +44,7 @@ function formatTextWithCodeBlocks(text: string) {
   }
 
   return (
-    <box className={"body"} vertical spacing={5}>
+    <box className={"body"} vertical spacing={10}>
       {elements}
     </box>
   );
@@ -74,10 +86,15 @@ const sendMessage = (message: Message, provider: Variable<Provider>) => {
 };
 
 const Info = (provider: Variable<Provider>) => (
-  <box className={"info"}>
+  <box className={"info"} vertical spacing={5}>
     {bind(provider).as((provider) => [
-      <label hexpand wrap label={`[${provider.name}]`} />,
-      <label hexpand wrap label={provider.description} />,
+      <label className={"name"} hexpand wrap label={`[${provider.name}]`} />,
+      <label
+        className={"description"}
+        hexpand
+        wrap
+        label={provider.description}
+      />,
     ])}
   </box>
 );
@@ -89,8 +106,12 @@ const Messages = (provider: Variable<Provider>) => (
       <box className={"messages"} vertical hexpand spacing={5}>
         {bind(messages).as((messages) =>
           messages.map((message) => (
-            <box className={"message"}>
-              <box visible={message.sender !== "me"} vexpand={false} vertical>
+            <box className={"message"} spacing={5}>
+              <box
+                className={"actions"}
+                visible={message.sender !== "me"}
+                vexpand={false}
+                vertical>
                 <label label={provider.get().icon}></label>
                 <button
                   valign={Gtk.Align.END}
@@ -104,14 +125,17 @@ const Messages = (provider: Variable<Provider>) => (
                   }}
                 />
               </box>
-              {/* <label
-                className={"body"}
-                hexpand
-                wrap
-                xalign={message.sender === "me" ? 1 : 0}
-                label={message.content}
-              /> */}
-              {formatTextWithCodeBlocks(message.content)}
+              {message.sender === "me" ? (
+                <label
+                  className={"body"}
+                  hexpand
+                  wrap
+                  xalign={message.sender === "me" ? 1 : 0}
+                  label={message.content}
+                />
+              ) : (
+                formatTextWithCodeBlocks(message.content)
+              )}
             </box>
           ))
         )}
@@ -119,8 +143,23 @@ const Messages = (provider: Variable<Provider>) => (
     }></scrollable>
 );
 
+const Clear = (provider: Variable<Provider>) => (
+  <button
+    label={""}
+    className={"clear"}
+    onClicked={() => {
+      messages.set([]);
+      writeJSONFile(
+        `./assets/chatbot/${provider.get().name}.json`,
+        messages.get()
+      );
+    }}
+  />
+);
+
 const Entry = (provider: Variable<Provider>) => (
   <entry
+    hexpand
     placeholderText="Type a message"
     onActivate={(self) => {
       let newMessage = {
@@ -137,6 +176,10 @@ const Entry = (provider: Variable<Provider>) => (
   />
 );
 
+const Bottom = (provider: Variable<Provider>) => (
+  <box spacing={5}>{[Entry(provider), Clear(provider)]}</box>
+);
+
 export default ({ provider }: { provider: Variable<Provider> }) => {
   messages.set(fetchMessages(provider.get().name));
   provider.subscribe((p) => {
@@ -145,7 +188,7 @@ export default ({ provider }: { provider: Variable<Provider> }) => {
 
   return (
     <box className={"chat-bot"} vertical hexpand spacing={5}>
-      {[Info(provider), Messages(provider), Entry(provider)]}
+      {[Info(provider), Messages(provider), Bottom(provider)]}
     </box>
   );
 };
