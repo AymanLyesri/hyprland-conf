@@ -42,7 +42,7 @@ for input_image in "$input_directory"/*; do
 
                 # Check if the file size is less than or equal to the target size
                 if [ $new_size -le $target_size ]; then
-                    echo "Processed JPG: $filename - Size: $new_size bytes (target: $target_size bytes)"
+                    echo "Processed JPG: $filename - Size: $new_size bytes (target: $target_size bytes) Quality: $quality"
                     break
                 fi
 
