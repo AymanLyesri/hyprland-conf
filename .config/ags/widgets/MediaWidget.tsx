@@ -2,17 +2,8 @@ import { Box, Label } from "astal/gtk3/widget";
 import Player from "./Player";
 import { Astal, Gtk } from "astal/gtk3";
 import Mpris from "gi://AstalMpris";
+import { bind } from "astal";
 const mpris = Mpris.get_default();
-
-// const noPlayerFound = () => Widget.Box({
-//     hpack: "center",
-//     vpack: "center",
-//     hexpand: true,
-//     class_name: "module",
-//     child: Widget.Label({
-//         label: "No player found",
-//     })
-// })
 
 const noPlayerFound = () => (
   <Box
@@ -36,12 +27,11 @@ const activePlayer = () => {
 };
 
 const Media = () => (
-  //   Widget.Box({}).hook(
-  //     mpris,
-  //     (self) => (self.child = activePlayer()),
-  //     "changed"
-  //   );
-  <Box child={activePlayer()}></Box>
+  <Box
+    child={bind(mpris, "players").as((arr) =>
+      arr.length > 0 ? activePlayer() : noPlayerFound()
+    )}
+  />
 );
 
 export default () => Media();

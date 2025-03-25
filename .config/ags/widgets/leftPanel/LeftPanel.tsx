@@ -6,38 +6,29 @@ import {
   leftPanelExclusivity,
   leftPanelLock,
   leftPanelVisibility,
+  leftPanelWidget,
   leftPanelWidth,
 } from "../../variables";
 import ChatBot from "./chatBot";
 import { WindowActions } from "../../utils/window";
-import { Provider } from "../../interfaces/chatbot.interface";
 import ToggleButton from "../toggleButton";
-import { getSetting, setSetting } from "../../utils/settings";
+import { WidgetSelector } from "../../interfaces/widgetSelector.interface";
 
-const provider = Variable<Provider>(getSetting("chatBot.provider"));
-provider.subscribe((value) => setSetting("chatBot.provider", value));
-
-const providers: Provider[] = [
+const WidgetSelectors: WidgetSelector[] = [
   {
-    name: "pollinations",
-    icon: "Po",
-    description: "Completely free, default model is gpt-4o",
-    imageGenerationSupport: true,
-  },
-  {
-    name: "phind",
-    icon: "Ph",
-    description: "Uses Phind Model. Great for developers",
+    name: "ChatBot",
+    icon: "AI",
+    widget: () => ChatBot(),
   },
 ];
 
 const ProviderActions = () => (
   <box className={"provider-actions"} vertical={true}>
-    {providers.map((p) => (
+    {WidgetSelectors.map((widgetSelector) => (
       <ToggleButton
-        state={bind(provider).as((provider) => provider.name === p.name)}
-        label={p.icon}
-        onToggled={() => provider.set(p)}
+        state={bind(leftPanelWidget).as((w) => w.name === widgetSelector.name)}
+        label={widgetSelector.icon}
+        onToggled={() => leftPanelWidget.set(widgetSelector)}
       />
     ))}
   </box>
@@ -58,11 +49,11 @@ const Actions = () => (
 function Panel() {
   return (
     <box>
-      <box>
-        <Actions />
-        <ChatBot provider={provider} />
-      </box>
-
+      <Actions />
+      <box
+        child={bind(leftPanelWidget).as((widget) =>
+          WidgetSelectors.find((ws) => ws.name === widget.name)?.widget()
+        )}></box>
       <eventbox
         onHoverLost={() => {
           if (!leftPanelLock.get()) leftPanelVisibility.set(false);

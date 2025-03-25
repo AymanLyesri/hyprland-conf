@@ -2,6 +2,8 @@ import { execAsync } from "astal";
 import { readJSONFile, writeJSONFile } from "./json";
 import { globalSettings } from "../variables";
 import { Settings } from "../interfaces/settings.interface";
+import { WidgetSelectors } from "../widgets/rightPanel/RightPanel";
+import { WidgetSelector } from "../interfaces/widgetSelector.interface";
 
 export const settingsPath = "./assets/settings/settings.json";
 
@@ -65,6 +67,7 @@ export const defaultSettings: Settings = {
     lock: true,
     width: 400,
     visibility: true,
+    widget: {} as WidgetSelector
   },
   chatBot: {
     provider: {

@@ -156,6 +156,7 @@ export default ({
           ? `
               min-height:${rightPanelWidth.get()}px;
               background-image: url('${p}');
+              background-color: rgba(0, 0, 0, 0.5);
               `
           : ``
       )}

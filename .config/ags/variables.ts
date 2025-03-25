@@ -4,13 +4,13 @@ import Hyprland from "gi://AstalHyprland";
 const hyprland = Hyprland.get_default();
 
 import { WidgetSelector } from "./interfaces/widgetSelector.interface";
-import { WidgetSelectors } from "./widgets/rightPanel/RightPanel";
 import { refreshCss } from "./utils/scss";
 import { bind, Binding, GLib, Variable } from "astal";
 import { writeJSONFile } from "./utils/json";
 import { AGSSetting, Settings } from "./interfaces/settings.interface";
 import { Api } from "./interfaces/api.interface";
 import { Waifu } from "./interfaces/waifu.interface";
+import { Provider } from "./interfaces/chatbot.interface";
 
 export const NOTIFICATION_DELAY = 5000
 
@@ -71,9 +71,8 @@ export const DND = Variable<boolean>(getSetting("notifications.dnd"));
 DND.subscribe((value) => setSetting("notifications.dnd", value));
 
 export const widgetLimit = 5
-export const Widgets = Variable<WidgetSelector[]>(getSetting("rightPanel.widgets")
-    .map((name: string) => WidgetSelectors.find(widget => widget.name === name)))
-Widgets.subscribe((value) => setSetting("rightPanel.widgets", value.map(widget => widget.name)));
+export const rightPanelWidgets = Variable<WidgetSelector[]>(getSetting("rightPanel.widgets"))
+rightPanelWidgets.subscribe((value) => setSetting("rightPanel.widgets", value));
 
 export const leftPanelVisibility = Variable<boolean>(getSetting("leftPanel.visibility"));
 leftPanelVisibility.subscribe((value) => setSetting("leftPanel.visibility", value));
@@ -83,4 +82,10 @@ export const leftPanelWidth = Variable<number>(getSetting("leftPanel.width"));
 leftPanelWidth.subscribe((value) => setSetting("leftPanel.width", value));
 export const leftPanelLock = Variable<boolean>(getSetting("leftPanel.lock"));
 leftPanelLock.subscribe((value) => setSetting("leftPanel.lock", value));
+
+export const leftPanelWidget = Variable<WidgetSelector>(getSetting("leftPanel.widget"))
+leftPanelWidget.subscribe((value) => setSetting("leftPanel.widget", value));
+
+export const aiProvider = Variable<Provider>(getSetting("chatBot.provider"));
+aiProvider.subscribe((value) => setSetting("chatBot.provider", value));
 

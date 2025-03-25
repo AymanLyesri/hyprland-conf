@@ -3,13 +3,12 @@ import { WidgetSelector } from "../../interfaces/widgetSelector.interface";
 import waifu, { WaifuVisibility } from "./components/waifu";
 import {
   globalMargin,
-  globalOpacity,
   rightPanelExclusivity,
   rightPanelLock,
   rightPanelVisibility,
+  rightPanelWidgets,
   rightPanelWidth,
   widgetLimit,
-  Widgets,
 } from "../../variables";
 import { bind, Variable } from "astal";
 import CustomRevealer from "../CustomRevealer";
@@ -59,7 +58,9 @@ const WidgetActions = () => {
   return (
     <box vertical={true} vexpand={true} className={"widget-actions"}>
       {WidgetSelectors.map((selector) => {
-        const isActive = Widgets.get().some((w) => w.name === selector.name);
+        const isActive = rightPanelWidgets
+          .get()
+          .some((w) => w.name === selector.name);
         return (
           <ToggleButton
             className={"widget-selector"}
@@ -67,14 +68,16 @@ const WidgetActions = () => {
             state={isActive}
             onToggled={(self, on) => {
               if (on) {
-                if (Widgets.get().length >= widgetLimit) return;
+                if (rightPanelWidgets.get().length >= widgetLimit) return;
                 if (!selector.widgetInstance) {
                   selector.widgetInstance = selector.widget();
                 }
-                Widgets.set([...Widgets.get(), selector]);
+                rightPanelWidgets.set([...rightPanelWidgets.get(), selector]);
               } else {
-                const newWidgets = Widgets.get().filter((w) => w !== selector);
-                Widgets.set(newWidgets);
+                const newWidgets = rightPanelWidgets
+                  .get()
+                  .filter((w) => w !== selector);
+                rightPanelWidgets.set(newWidgets);
               }
             }}
           />
@@ -109,15 +112,18 @@ function Panel() {
         vertical={true}
         spacing={10}
         widthRequest={bind(rightPanelWidth)}>
-        {bind(Widgets).as((widgets) => {
+        {bind(rightPanelWidgets).as((widgets) => {
           return widgets
-            .filter((widget) => widget && widget.widget) // Filter out undefined widgets and those without a widget method
+            .map((widget) =>
+              WidgetSelectors.find((w) => w.name === widget.name)
+            ) // Find and call the widget function
+            .filter((widget) => widget && widget.widget) // Filter out invalid widgets
             .map((widget) => {
               try {
-                return widget.widget();
+                return widget!.widget();
               } catch (error) {
-                console.error(`Error rendering widget ${widget.name}:`, error);
-                return <box />; // Return null or a fallback component in case of error
+                console.error(`Error rendering widget:`, error);
+                return <box />; // Fallback component
               }
             });
         })}
