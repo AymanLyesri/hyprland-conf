@@ -27,14 +27,12 @@ def fetch_gelbooru(nsfw, tags, post_id):
         api_url = (f"https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&limit=1&tags={nsfw}rating:explicit+sort:random"
                f"+{'+'.join(tags)}"
                f"+{'+'.join(exclude_tags)}")
-        print(api_url)
     else:
         api_url = (f"https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&id={post_id}")
     user_id = "1667355"
     api_key = "1ccd9dd7c457c2317e79bd33f47a1138ef9545b9ba7471197f477534efd1dd05"  # Replace with your own API key
     response = requests.get(api_url, auth=HTTPBasicAuth(user_id, api_key))
     if response.status_code == 200:
-        print (response.json())
         return response.json()['post'][0]
     return None
 
@@ -54,14 +52,11 @@ def main():
             post_id = arg
         elif arg:
             tags.append(arg)
-    
-    print(tags,"id",post_id)
 
     save_dir = os.path.expanduser("~/.config/ags/assets/waifu")
     os.makedirs(save_dir, exist_ok=True)
     image_name = "waifu.png"
-    
-    print(f"Fetching waifu from {api_source}...")
+
     
     if api_source == "danbooru":
         data = fetch_danbooru(nsfw, tags, post_id)

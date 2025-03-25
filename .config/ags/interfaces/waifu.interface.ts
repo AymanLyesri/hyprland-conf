@@ -4,7 +4,10 @@ import { Api } from "./api.interface"
 export interface Waifu
 {
     id: number
-    preview: string
+    url?: string
+    url_path?: string
+    preview?: string
+    preview_path?: string
     width: number
     height: number
     api: Api

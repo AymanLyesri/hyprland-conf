@@ -13,12 +13,18 @@ import ChatBot from "./chatBot";
 import { WindowActions } from "../../utils/window";
 import ToggleButton from "../toggleButton";
 import { WidgetSelector } from "../../interfaces/widgetSelector.interface";
+import BooruViewer from "./BooruViewer";
 
 const WidgetSelectors: WidgetSelector[] = [
   {
     name: "ChatBot",
     icon: "AI",
     widget: () => ChatBot(),
+  },
+  {
+    name: "BooruViewer",
+    icon: "🖼️",
+    widget: () => BooruViewer(),
   },
 ];
 
@@ -51,6 +57,7 @@ function Panel() {
     <box>
       <Actions />
       <box
+        widthRequest={bind(leftPanelWidth)}
         child={bind(leftPanelWidget).as((widget) =>
           WidgetSelectors.find((ws) => ws.name === widget.name)?.widget()
         )}></box>
@@ -89,7 +96,6 @@ export default (monitor: Gdk.Monitor) => {
       )}
       keymode={Astal.Keymode.ON_DEMAND}
       visible={bind(leftPanelVisibility)}
-      widthRequest={bind(leftPanelWidth)}
       child={<Panel />}
     />
   );

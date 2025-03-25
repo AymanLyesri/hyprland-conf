@@ -114,7 +114,7 @@ const sendMessage = async (message: Message) => {
   }
 };
 
-const Providers = (
+const Providers = () => (
   <box className="providers" spacing={5}>
     {aiProviders.map((provider) => (
       <ToggleButton
@@ -180,7 +180,7 @@ const MessageItem = ({ message }: { message: Message }) => (
   </box>
 );
 
-const Messages = (
+const Messages = () => (
   <scrollable
     vexpand
     setup={(self) => {
@@ -258,9 +258,9 @@ export default () => {
   fetchMessages();
   return (
     <box className="chat-bot" vertical hexpand spacing={5}>
-      {Providers}
+      <Providers />
       <Info />
-      {Messages}
+      <Messages />
       <BottomBar />
     </box>
   );

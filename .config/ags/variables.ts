@@ -89,3 +89,13 @@ leftPanelWidget.subscribe((value) => setSetting("leftPanel.widget", value));
 export const aiProvider = Variable<Provider>(getSetting("chatBot.provider"));
 aiProvider.subscribe((value) => setSetting("chatBot.provider", value));
 
+export const booruApi = Variable<Api>(getSetting("booru.api"));
+booruApi.subscribe((value) => setSetting("booru.api", value));
+export const booruTags = Variable<string[]>(getSetting("booru.tags"));
+booruTags.subscribe((value) => setSetting("booru.tags", value));
+export const booruLimit = Variable<number>(getSetting("booru.limit"));
+booruLimit.subscribe((value) => setSetting("booru.limit", value));
+export const booruPage = Variable<number>(getSetting("booru.page"));
+booruPage.subscribe((value) => setSetting("booru.page", value));
+
+

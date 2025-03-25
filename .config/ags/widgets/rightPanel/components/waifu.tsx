@@ -1,5 +1,4 @@
 import { bind, exec, execAsync, Variable } from "astal";
-import { Waifu } from "../../../interfaces/waifu.interface";
 import {
   waifuApi,
   globalSettings,

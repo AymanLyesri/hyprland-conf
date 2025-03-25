@@ -1,0 +1,43 @@
+.booru {
+  button {
+    // padding: 10px;
+  }
+
+  .api-list {
+    padding: 5px;
+    button {
+      border-bottom: 5px solid $background;
+    }
+    button.checked {
+      border-bottom: 5px solid $tertiary;
+    }
+  }
+
+  .images {
+    .image {
+      border-radius: 15px;
+    }
+    .actions {
+      background: $background;
+      button {
+        padding: 2px;
+        border-radius: 0px;
+      }
+    }
+  }
+
+  .pages {
+    button {
+      padding: 5px;
+    }
+    .first {
+      background: $secondary;
+    }
+  }
+
+  .tags {
+    button {
+      padding: 5px;
+    }
+  }
+}

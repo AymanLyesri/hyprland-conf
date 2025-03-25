@@ -64,6 +64,12 @@ export interface Settings
     chatBot: {
         provider: Provider,
     },
+    booru: {
+        api: Api,
+        tags: string[],
+        limit: number,
+        page: number,
+    },
     leftPanel: {
         visibility: boolean,
         exclusivity: boolean,

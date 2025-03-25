@@ -77,6 +77,16 @@ export const defaultSettings: Settings = {
       imageGenerationSupport: true,
     },
   },
+  booru: {
+    api: {
+      name: "Danbooru",
+      value: "danbooru",
+      idSearchUrl: "https://danbooru.donmai.us/posts/",
+    },
+    tags: [],
+    limit: 10,
+    page: 1,
+  },
   quickLauncher: {
     apps: [
       { name: "Browser", app_name: "zen-browser", exec: "zen-browser", icon: "" },

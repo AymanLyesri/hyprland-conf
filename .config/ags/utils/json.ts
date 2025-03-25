@@ -1,4 +1,5 @@
 import { exec, readFile, writeFile } from "astal";
+import { notify } from "./notification";
 
 
 export function readJSONFile(filePath: string): any
@@ -8,7 +9,7 @@ export function readJSONFile(filePath: string): any
         const data = readFile(filePath);
         return data.trim() ? JSON.parse(data) : {};
     } catch (e) {
-        console.error('Error:', e);
+        notify({ summary: 'Error', body: String(e) });
         return {};
     }
 }
@@ -18,7 +19,7 @@ export function readJson(string: string)
     try {
         return JSON.parse(string);
     } catch (e) {
-        console.error('Error:', e);
+        notify({ summary: 'Error', body: String(e) });
         return "null";
     }
 }
@@ -29,6 +30,6 @@ export function writeJSONFile(filePath: string, data: any)
     try {
         writeFile(filePath, JSON.stringify(data, null, 4));
     } catch (e) {
-        console.error('Error:', e);
+        notify({ summary: 'Error', body: String(e) });
     }
 }
