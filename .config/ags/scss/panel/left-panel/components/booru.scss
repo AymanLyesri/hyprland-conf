@@ -1,15 +1,13 @@
 .booru {
-  button {
-    // padding: 10px;
-  }
+  padding: 5px 0px 5px 5px;
 
   .api-list {
-    padding: 5px;
     button {
       border-bottom: 5px solid $background;
+      padding: 5px 15px;
     }
     button.checked {
-      border-bottom: 5px solid $tertiary;
+      border-bottom: 5px solid $foreground;
     }
   }
 
@@ -26,18 +24,29 @@
     }
   }
 
-  .pages {
-    button {
-      padding: 5px;
+  .bottom {
+    .pages {
+      button {
+        padding: 5px;
+      }
     }
-    .first {
-      background: $secondary;
-    }
-  }
 
-  .tags {
-    button {
-      padding: 5px;
+    .input-bar {
+      @extend .module;
+      padding: 10px;
+      .tags {
+        .explicit {
+          background: $red;
+        }
+
+        button {
+          padding: 5px 10px;
+
+          &:hover {
+            background: $red;
+          }
+        }
+      }
     }
   }
 }

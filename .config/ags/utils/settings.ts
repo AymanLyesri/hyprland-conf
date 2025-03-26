@@ -53,7 +53,6 @@ export const defaultSettings: Settings = {
       value: "danbooru",
       idSearchUrl: "https://danbooru.donmai.us/posts/",
     },
-    favorites: [],
   },
   rightPanel: {
     exclusivity: true,
@@ -84,7 +83,7 @@ export const defaultSettings: Settings = {
       idSearchUrl: "https://danbooru.donmai.us/posts/",
     },
     tags: [],
-    limit: 10,
+    limit: 20,
     page: 1,
   },
   quickLauncher: {

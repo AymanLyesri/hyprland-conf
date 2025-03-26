@@ -10,17 +10,20 @@ import {
   booruTags,
   globalTransition,
   leftPanelWidth,
+  waifuCurrent,
 } from "../../variables";
 import ToggleButton from "../toggleButton";
 import { notify } from "../../utils/notification";
 
 import hyprland from "gi://AstalHyprland";
+import { closeProgress, openProgress } from "../Progress";
 const Hyprland = hyprland.get_default();
 
 const images = new Variable<Waifu[]>([]);
-booruPage.subscribe(() => fetchImages());
 
-const imagePath = "./assets/booru/previews";
+const imagePreviewPath = "./assets/booru/previews";
+const imageUrlPath = "./assets/booru/images";
+const waifuPath = "./assets/booru/waifu";
 
 const apiList: Api[] = [
   {
@@ -35,81 +38,44 @@ const apiList: Api[] = [
   },
 ];
 
-const Apis = () => (
-  <box className="api-list" spacing={5}>
-    {apiList.map((api) => (
-      <ToggleButton
-        state={bind(booruApi).as((a) => a.name === api.name)}
-        className="api"
-        label={api.name}
-        onToggled={() => booruApi.set(api)}
-      />
-    ))}
-  </box>
-);
-const fetchImages = async () => {
-  try {
-    // 1. Fetch image metadata
-    print(
-      `python /home/ayman/.config/ags/scripts/search-booru.py --api ${
-        booruApi.get().value
-      } --nsfw false --tags '${booruTags
-        .get()
-        .join(",")}' --limit ${booruLimit.get()} --page ${booruPage.get()}`
-    );
-    const res = await execAsync(
-      `python /home/ayman/.config/ags/scripts/search-booru.py --api ${
-        booruApi.get().value
-      } --nsfw false --tags '${booruTags
-        .get()
-        .join(",")}' --limit ${booruLimit.get()} --page ${booruPage.get()}`
-    );
+const ensureRatingTagFirst = () => {
+  let tags: string[] = booruTags.get();
+  // Find existing rating tag
+  const ratingTag = tags.find((tag) => tag.match(/[-+]rating:explicit/));
+  // Remove any existing rating tag
+  tags = tags.filter((tag) => !tag.match(/[-+]rating:explicit/));
+  // Add the previous rating tag at the beginning, or default to "-rating:explicit"
+  tags.unshift(ratingTag ?? "-rating:explicit");
+  booruTags.set(tags);
+};
 
-    print(res);
+const cleanUp = () => {
+  execAsync(`bash -c "rm -rf ${imagePreviewPath}/*"`);
+  execAsync(`bash -c "rm -rf ${imageUrlPath}/*"`);
+};
 
-    // 2. Process metadata without blocking
-    const newImages: Waifu[] = readJson(res).map((image: any) => ({
-      id: image.id,
-      url: image.url,
-      preview: image.preview,
-      width: image.width,
-      height: image.height,
-      api: booruApi.get(),
-    }));
+const fetchImage = async (
+  image: Waifu,
+  savePath: string,
+  name: string = ""
+) => {
+  const url = image.url!;
+  name = name || String(image.id);
+  image.url_path = `${savePath}/${name}.webp`;
 
-    // 3. Clear existing data without waiting
-    images.set([]);
+  await execAsync(`bash -c "mkdir -p ${savePath}"`).catch((err) =>
+    notify({ summary: "Error", body: String(err) })
+  );
 
-    // 4. Prepare directory in background
-    execAsync(`bash -c "rm -rf ${imagePath}/* && mkdir -p ${imagePath}"`).catch(
-      (err) => notify({ summary: "Error", body: String(err) })
-    );
+  await execAsync(`curl -o ${savePath}/${name}.webp ${url}`).catch((err) =>
+    notify({ summary: "Error", body: String(err) })
+  );
+};
 
-    // 5. Download images in parallel
-    const downloadPromises = newImages.map((image) =>
-      execAsync(`curl -o ${imagePath}/${image.id}.jpg ${image.preview}`)
-        .then(() => {
-          image.preview_path = `${imagePath}/${image.id}.jpg`;
-          return image;
-        })
-        .catch((err) => {
-          notify({ summary: "Error", body: String(err) });
-          return null; // Return null for failed downloads
-        })
-    );
-
-    // 6. Update UI when all downloads complete
-    Promise.all(downloadPromises).then((downloadedImages) => {
-      // Filter out failed downloads (null values)
-      const successfulDownloads = downloadedImages.filter(
-        (img) => img !== null
-      );
-      images.set(successfulDownloads);
-    });
-  } catch (err) {
-    console.error(err);
-    notify({ summary: "Error", body: String(err) });
-  }
+const waifuThisImage = (image: Waifu) => {
+  fetchImage(image, waifuPath, "waifu").then(() => {
+    waifuCurrent.set(image);
+  });
 };
 
 const OpenInBrowser = (image: Waifu) =>
@@ -124,17 +90,89 @@ const OpenInBrowser = (image: Waifu) =>
     .catch((err) => notify({ summary: "Error", body: err }));
 
 const CopyImage = (image: Waifu) =>
-  execAsync(`bash -c "wl-copy --type image/png < ${image.url_path}"`).catch(
-    (err) => notify({ summary: "Error", body: err })
-  );
+  fetchImage(image, imageUrlPath).then(() => {
+    execAsync(
+      `bash -c "wl-copy --type image/png < ${imageUrlPath}/${image.id}.webp"`
+    ).catch((err) => notify({ summary: "Error", body: err }));
+  });
 
-const OpenImage = (image: Waifu) =>
-  Hyprland.message_async(
-    `dispatch exec [float;size 50%] feh --scale-down $HOME/.config/ags/${image.url_path}`,
-    (res) => {
-      notify({ summary: "Waifu", body: String(image.url_path) });
-    }
-  );
+const OpenImage = (image: Waifu) => {
+  fetchImage(image, imageUrlPath).then(() => {
+    Hyprland.message_async(
+      `dispatch exec [float;size 50%] feh --scale-down $HOME/.config/ags/${imageUrlPath}/${image.id}.webp`,
+      (res) => {}
+    );
+  });
+};
+const fetchImages = async () => {
+  try {
+    openProgress();
+    const res = await execAsync(
+      `python /home/ayman/.config/ags/scripts/search-booru.py 
+      --api ${booruApi.get().value} 
+      --nsfw false 
+      --tags '${booruTags.get().join(",")}' 
+      --limit ${booruLimit.get()} 
+      --page ${booruPage.get()}`
+    );
+
+    // 2. Process metadata without blocking
+    const newImages: Waifu[] = readJson(res).map((image: any) => ({
+      id: image.id,
+      url: image.url,
+      preview: image.preview,
+      width: image.width,
+      height: image.height,
+      api: booruApi.get(),
+    }));
+
+    // 4. Prepare directory in background
+    execAsync(`bash -c "mkdir -p ${imagePreviewPath}"`).catch((err) =>
+      notify({ summary: "Error", body: String(err) })
+    );
+
+    // 5. Download images in parallel
+    const downloadPromises = newImages.map((image) =>
+      execAsync(
+        `bash -c "[ -e "${imagePreviewPath}/${image.id}.jpg" ] || curl -o "${imagePreviewPath}/${image.id}.jpg" "${image.preview}""`
+      )
+        .then(() => {
+          image.preview_path = `${imagePreviewPath}/${image.id}.jpg`;
+          return image;
+        })
+        .catch((err) => {
+          notify({ summary: "Error", body: String(err) });
+          return null;
+        })
+    );
+
+    // 6. Update UI when all downloads complete
+    Promise.all(downloadPromises).then((downloadedImages) => {
+      // Filter out failed downloads (null values)
+      const successfulDownloads = downloadedImages.filter(
+        (img) => img !== null
+      );
+      images.set(successfulDownloads);
+      closeProgress();
+    });
+  } catch (err) {
+    console.error(err);
+    notify({ summary: "Error", body: String(err) });
+    closeProgress();
+  }
+};
+const Apis = () => (
+  <box className="api-list" spacing={5}>
+    {apiList.map((api) => (
+      <ToggleButton
+        state={bind(booruApi).as((a) => a.name === api.name)}
+        className="api"
+        label={api.name}
+        onToggled={() => booruApi.set(api)}
+      />
+    ))}
+  </box>
+);
 
 const imageActions = (image: Waifu) => {
   return (
@@ -164,6 +202,12 @@ const imageActions = (image: Waifu) => {
             valign={Gtk.Align.START}
             label=""
             onClicked={() => OpenImage(image)}
+            hexpand
+          />
+          <button
+            valign={Gtk.Align.START}
+            label=""
+            onClicked={() => waifuThisImage(image)}
             hexpand
           />
         </box>
@@ -201,7 +245,7 @@ const Images = () => {
                             )}
                             className="image"
                             css={`
-                              background-image: url("${image.preview}");
+                              background-image: url("${image.preview_path}");
                               background-size: cover;
                               background-position: center;
                             `}
@@ -231,7 +275,8 @@ const PageDisplay = () => (
             className={"first"}
             label="1"
             onClicked={() => booruPage.set(1)}
-          />
+          />,
+          <label>...</label>
         );
       }
 
@@ -253,41 +298,107 @@ const PageDisplay = () => (
   </box>
 );
 
+const LimitDisplay = () => {
+  let debounceTimer: NodeJS.Timeout;
+
+  return (
+    <box className="limits" spacing={5} hexpand>
+      <label>Limit</label>
+      <slider
+        value={bind(booruLimit).as((l) => l / 100)}
+        className={"slider"}
+        // min={4}
+        // max={20}
+        step={0.1}
+        hexpand
+        onValueChanged={(self) => {
+          // Clear the previous timeout if any
+          if (debounceTimer) clearTimeout(debounceTimer);
+          print(self.value);
+
+          // Set a new timeout with the desired delay (e.g., 300ms)
+          debounceTimer = setTimeout(() => {
+            booruLimit.set(Math.round(self.value * 100));
+          }, 300);
+        }}
+      />
+      <label>{bind(booruLimit)}</label>
+    </box>
+  );
+};
+
 const TagDisplay = () => (
-  <box className="tags" spacing={5} halign={Gtk.Align.CENTER}>
-    {bind(booruTags).as((tags) => tags.map((tag) => <button label={tag} />))}
+  <box className="tags" spacing={5}>
+    {bind(booruTags).as((tags) =>
+      tags.map((tag) => {
+        // check if tag is rating tag
+        if (tag.match(/[-+]rating:explicit/)) {
+          return (
+            <button
+              className={`rating ${tag.startsWith("+") ? "explicit" : "safe"}`}
+              label={tag}
+              onClicked={() => {
+                const newRatingTag = tag.startsWith("-")
+                  ? "+rating:explicit"
+                  : "-rating:explicit";
+                const newTags = booruTags
+                  .get()
+                  .filter((t) => !t.match(/[-+]rating:explicit/));
+                newTags.unshift(newRatingTag);
+                booruTags.set(newTags);
+              }}
+            />
+          );
+        }
+        return (
+          <button
+            label={tag}
+            onClicked={() => {
+              const newTags = booruTags.get().filter((t) => t !== tag);
+              booruTags.set(newTags);
+            }}
+          />
+        );
+      })
+    )}
   </box>
 );
 
 const Entry = () => {
-  const handleSubmit = (self: Gtk.Entry) => {
-    fetchImages();
+  const addTags = (self: Gtk.Entry) => {
+    const currentTags = booruTags.get();
+    const newTags = self.text.split(" ");
+
+    // Create a Set to remove duplicates
+    const uniqueTags = [...new Set([...currentTags, ...newTags])];
+
+    booruTags.set(uniqueTags);
   };
 
-  return (
-    <entry
-      hexpand
-      placeholderText="Type a message"
-      onChanged={(self) => {
-        booruTags.set(self.text.split(" "));
-      }}
-      onActivate={handleSubmit}
-    />
-  );
+  return <entry hexpand placeholderText="Add a Tag" onActivate={addTags} />;
 };
 
 const BottomBar = () => (
-  <box spacing={10} vertical>
+  <box className={"bottom"} spacing={10} vertical>
     <PageDisplay />
-    <Entry />
-    <TagDisplay />
+    <LimitDisplay />
+    <box className="input-bar" vertical spacing={10}>
+      <TagDisplay />
+      <Entry />
+    </box>
   </box>
 );
 
 export default () => {
+  ensureRatingTagFirst();
+  booruPage.subscribe(() => fetchImages());
+  booruTags.subscribe(() => fetchImages());
+  booruApi.subscribe(() => fetchImages());
+  booruLimit.subscribe(() => fetchImages());
+  cleanUp();
   fetchImages();
   return (
-    <box className="booru" vertical hexpand spacing={5}>
+    <box className="booru" vertical hexpand spacing={10}>
       <Apis />
       <Images />
       <BottomBar />

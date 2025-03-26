@@ -18,12 +18,12 @@ import BooruViewer from "./BooruViewer";
 const WidgetSelectors: WidgetSelector[] = [
   {
     name: "ChatBot",
-    icon: "AI",
+    icon: "",
     widget: () => ChatBot(),
   },
   {
     name: "BooruViewer",
-    icon: "🖼️",
+    icon: "",
     widget: () => BooruViewer(),
   },
 ];

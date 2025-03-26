@@ -19,9 +19,8 @@ import { readJSONFile } from "../../../utils/json";
 import hyprland from "gi://AstalHyprland";
 const Hyprland = hyprland.get_default();
 
-const waifuPath = "./assets/waifu/waifu.png";
-const jsonPath = "./assets/waifu/waifu.json";
-const favoritesPath = "./assets/waifu/favorites/";
+const waifuPath = "./assets/booru/waifu/waifu.webp";
+const jsonPath = "./assets/booru/waifu/waifu.json";
 
 const apiList: Api[] = [
   {
@@ -87,59 +86,6 @@ const OpenImage = () =>
     }
   );
 
-const addToFavorites = () => {
-  if (!waifuFavorites.get().find((fav) => fav.id === waifuCurrent.get().id)) {
-    if (waifuCurrent.get().id == 0) {
-      notify({ summary: "Waifu", body: "Only Api images could be favored" });
-      return;
-    }
-    execAsync(
-      `bash -c "curl -o ${favoritesPath + waifuCurrent.get().id}.jpg ${
-        waifuCurrent.get().preview
-      }"`
-    )
-      .then(() =>
-        waifuFavorites.set([...waifuFavorites.get(), waifuCurrent.get()])
-      )
-      .finally(() =>
-        notify({
-          summary: "Waifu",
-          body: `Image ${waifuCurrent.get().id} Added to favorites`,
-        })
-      )
-      .catch((err) => notify({ summary: "Error", body: err }));
-  } else {
-    notify({
-      summary: "Waifu",
-      body: `Image ${waifuCurrent.get().id} Already favored`,
-    });
-  }
-};
-
-const downloadAllFavorites = () => {
-  waifuFavorites.get().forEach((fav) => {
-    execAsync(
-      `bash -c "curl -o ${favoritesPath + fav.id}.jpg ${fav.preview}"`
-    ).catch((err) => notify({ summary: "Error", body: err }));
-  });
-};
-
-const removeFavorite = (favorite: any) => {
-  execAsync(`rm ${favoritesPath + favorite.id}.jpg`)
-    .then(() =>
-      notify({
-        summary: "Waifu",
-        body: `${favorite.id} Favorite removed`,
-      })
-    )
-    .finally(() => {
-      waifuFavorites.set(
-        waifuFavorites.get().filter((fav) => fav !== favorite)
-      );
-    })
-    .catch((err) => notify({ summary: "Error", body: err }));
-};
-
 const PinImageToTerminal = () => {
   execAsync(
     `bash -c "cmp -s ${waifuPath} ${terminalWaifuPath} && { rm ${terminalWaifuPath}; echo 1; } || { cp ${waifuPath} ${terminalWaifuPath}; echo 0; }"`
@@ -156,67 +102,16 @@ const PinImageToTerminal = () => {
 };
 
 function Actions() {
-  const favoritesDisplay = (
-    <revealer
-      transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
-      transitionDuration={globalTransition}
-      revealChild={false}
-      child={
-        <eventbox
-          className="favorite-event"
-          child={
-            <scrollable
-              vscroll={Gtk.PolicyType.NEVER}
-              child={
-                <box className="favorites" spacing={5}>
-                  {bind(waifuFavorites).as((favorites) => [
-                    ...favorites.map((favorite) => (
-                      <eventbox
-                        onClick={() =>
-                          GetImageFromApi(String(favorite.id), favorite.api)
-                        }
-                        child={
-                          <box
-                            className="favorite"
-                            css={`
-                              background-image: url("${favoritesPath +
-                              favorite.id}.jpg");
-                            `}
-                            child={
-                              <button
-                                valign={Gtk.Align.START}
-                                halign={Gtk.Align.END}
-                                className="delete"
-                                label=""
-                                onClicked={() => removeFavorite(favorite)}
-                              />
-                            }></box>
-                        }></eventbox>
-                    )),
-                    <button
-                      label=""
-                      className="add"
-                      onClicked={addToFavorites}
-                    />,
-                  ])}
-                </box>
-              }></scrollable>
-          }></eventbox>
-      }></revealer>
-  );
-
   const top = (
-    <box className="top" vertical vexpand>
-      {favoritesDisplay}
-      <ToggleButton
-        halign={Gtk.Align.START}
-        label=""
-        className="favorite"
-        onToggled={(self, on) => {
-          favoritesDisplay.reveal_child = on;
-        }}
-      />
-    </box>
+    <box
+      className="top"
+      child={
+        <button
+          label=""
+          className="pin"
+          onClicked={() => PinImageToTerminal()}
+        />
+      }></box>
   );
 
   const Entry = (
@@ -241,18 +136,6 @@ function Actions() {
           <box>
             <button label="" className="open" hexpand onClicked={OpenImage} />
             <button
-              label=""
-              hexpand
-              className="pin"
-              onClicked={() => PinImageToTerminal()}
-            />
-            <button
-              label=""
-              hexpand
-              className="random"
-              onClicked={() => GetImageFromApi()}
-            />
-            <button
               label=""
               hexpand
               className="browser"
@@ -268,14 +151,6 @@ function Actions() {
               onClicked={() => Entry.activate()}
             />
             {Entry}
-            <ToggleButton
-              label={""}
-              className={"nsfw"}
-              hexpand={true}
-              onToggled={(self, on) => {
-                nsfw.set(on);
-              }}
-            />
             <button
               hexpand
               label={""}
@@ -301,6 +176,7 @@ function Actions() {
                         height: Number(height) ?? 0,
                         width: Number(width) ?? 0,
                         api: {} as Api,
+                        url_path: waifuCurrent.get().url_path,
                       })
                     )
                     .finally(() =>
@@ -333,7 +209,7 @@ function Actions() {
   );
 
   const bottom = (
-    <box className="bottom" vertical valign={Gtk.Align.END}>
+    <box className="bottom" vertical vexpand valign={Gtk.Align.END}>
       {
         <ToggleButton
           label=""
@@ -372,7 +248,7 @@ function Image() {
               [bind(waifuCurrent), bind(rightPanelWidth)],
               (waifuCurrent, width) => {
                 return `
-                    background-image: url("${waifuPath}");
+                    background-image: url("${waifuCurrent.url_path}");
                     min-height: ${
                       (Number(waifuCurrent.height) /
                         Number(waifuCurrent.width)) *

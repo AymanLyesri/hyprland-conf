@@ -24,13 +24,13 @@ const main = () => App.get_monitors().map(monitor =>
 
     logTime("\t\t Bar", () => Bar(monitor));
     logTime("\t\t BarHover", () => BarHover(monitor));
+    logTime("\t\t Progress", () => Progress(monitor));
     logTime("\t\t RightPanel", () => RightPanel(monitor));
     logTime("\t\t RightPanelHover", () => RightPanelHover(monitor));
     logTime("\t\t LeftPanel", () => LeftPanel(monitor));
     logTime("\t\t LeftPanelHover", () => LeftPanelHover(monitor));
     logTime("\t\t NotificationPopups", () => NotificationPopups(monitor));
     logTime("\t\t AppLauncher", () => AppLauncher(monitor));
-    logTime("\t\t Progress", () => Progress(monitor));
     logTime("\t\t UserPanel", () => UserPanel(monitor));
     logTime("\t\t WallpaperSwitcher", () => WallpaperSwitcher(monitor));
     logTime("\t\t MediaPopups", () => MediaPopups(monitor));

@@ -52,7 +52,6 @@ export interface Settings
         input_history: string,
         current: Waifu,
         api: Api,
-        favorites: Waifu[],
     }
     rightPanel: {
         visibility: boolean,

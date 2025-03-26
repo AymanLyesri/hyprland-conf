@@ -69,14 +69,11 @@ const WidgetActions = () => {
             onToggled={(self, on) => {
               if (on) {
                 if (rightPanelWidgets.get().length >= widgetLimit) return;
-                if (!selector.widgetInstance) {
-                  selector.widgetInstance = selector.widget();
-                }
                 rightPanelWidgets.set([...rightPanelWidgets.get(), selector]);
               } else {
                 const newWidgets = rightPanelWidgets
                   .get()
-                  .filter((w) => w !== selector);
+                  .filter((w) => w.name !== selector.name);
                 rightPanelWidgets.set(newWidgets);
               }
             }}

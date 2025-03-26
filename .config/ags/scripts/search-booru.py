@@ -15,13 +15,12 @@ exclude_tags = ["-animated"]
 import requests
 from requests.auth import HTTPBasicAuth
 
-def fetch_danbooru(nsfw, tags, post_id, page=1, limit=6):
+def fetch_danbooru(tags, post_id, page=1, limit=6):
     if post_id == "random":
-        api_url = (f"https://danbooru.donmai.us/posts.json?limit={limit}&page={page}&tags={nsfw}rating%3Aexplicit+"
-                   f"{'+'.join(tags)}")
+        api_url = (f"https://danbooru.donmai.us/posts.json?limit={limit}&page={page}&tags="
+                   f"+{'+'.join(tags)}")
     else:
-        api_url = (f"https://danbooru.donmai.us/posts/{post_id}.json?tags={nsfw}rating%3Aexplicit+-rating%3Aquestionable+"
-                   f"{'+'.join(tags)}&ratio%3A>%3D1%2F3")
+        api_url = (f"https://danbooru.donmai.us/posts/{post_id}.json?")
     
     user_name = "publicapi"
     api_key = "Pr5ddYN7P889AnM6nq2nhgw1"  # Replace with your own API key
@@ -56,9 +55,9 @@ def fetch_danbooru(nsfw, tags, post_id, page=1, limit=6):
     return None
 
 
-def fetch_gelbooru(nsfw, tags, post_id, page=1, limit=6):
+def fetch_gelbooru(tags, post_id, page=1, limit=6):
     if post_id=="random": 
-        api_url = (f"https://gelbooru.com/index.php?limit={limit}&pid={page}&page=dapi&s=post&q=index&json=1&tags={nsfw}rating:explicit"
+        api_url = (f"https://gelbooru.com/index.php?limit={limit}&pid={page}&page=dapi&s=post&q=index&json=1&tags="
                f"+{'+'.join(tags)}"
                f"+{'+'.join(exclude_tags)}")
     else:
@@ -88,12 +87,11 @@ def fetch_gelbooru(nsfw, tags, post_id, page=1, limit=6):
 def main():
     # Check if the correct number of arguments is passed
     if len(sys.argv) < 9:
-        print("Usage: search-booru.py --api [danbooru/gelbooru] --nsfw [true/false] --id [id] --tags [tag,tag...] --page [page] --limit [limit]")
+        print("Usage: search-booru.py --api [danbooru/gelbooru] --id [id] --tags [tag,tag...] --page [page] --limit [limit]")
         sys.exit(1)
 
     # Initialize variables
     api_source = ""
-    nsfw = ""
     post_id = "random"
     tags = []
     page = 1  # Default page
@@ -103,8 +101,6 @@ def main():
     for i in range(1, len(sys.argv)):
         if sys.argv[i] == "--api":
             api_source = sys.argv[i + 1].lower()
-        elif sys.argv[i] == "--nsfw":
-            nsfw = "" if sys.argv[i + 1].lower() == "true" else "-"
         elif sys.argv[i] == "--id":
             post_id = sys.argv[i + 1]
         elif sys.argv[i] == "--page":
@@ -119,9 +115,9 @@ def main():
     os.makedirs(save_dir, exist_ok=True)
     
     if api_source == "danbooru":
-        data = fetch_danbooru(nsfw, tags, post_id, page, limit)
+        data = fetch_danbooru(tags, post_id, page, limit)
     elif api_source == "gelbooru":
-        data = fetch_gelbooru(nsfw, tags, post_id, page, limit)
+        data = fetch_gelbooru(tags, post_id, page, limit)
     else:
         print("Invalid API source. Use 'danbooru' or 'gelbooru'.")
         sys.exit(1)
