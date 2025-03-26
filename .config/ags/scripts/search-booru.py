@@ -4,12 +4,6 @@ import sys
 import requests
 from requests.auth import HTTPBasicAuth
 
-# Arguments
-# 1. API source (danbooru/gelbooru)
-# 2. NSFW (true/false)
-# 3. ID/Tag (id or tag)
-# 4. LIMIT (optional)
-
 exclude_tags = ["-animated"]
 
 import requests
@@ -86,7 +80,7 @@ def fetch_gelbooru(tags, post_id, page=1, limit=6):
 
 def main():
     # Check if the correct number of arguments is passed
-    if len(sys.argv) < 9:
+    if len(sys.argv) < 2:
         print("Usage: search-booru.py --api [danbooru/gelbooru] --id [id] --tags [tag,tag...] --page [page] --limit [limit]")
         sys.exit(1)
 

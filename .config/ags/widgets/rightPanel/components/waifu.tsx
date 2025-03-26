@@ -5,7 +5,6 @@ import {
   globalTransition,
   rightPanelWidth,
   waifuCurrent,
-  waifuFavorites,
 } from "../../../variables";
 import { Gtk } from "astal/gtk3";
 import ToggleButton from "../../toggleButton";
@@ -14,13 +13,12 @@ import { notify } from "../../../utils/notification";
 
 import { closeProgress, openProgress } from "../../Progress";
 import { Api } from "../../../interfaces/api.interface";
-import { readJSONFile } from "../../../utils/json";
-
 import hyprland from "gi://AstalHyprland";
 const Hyprland = hyprland.get_default();
 
-const waifuPath = "./assets/booru/waifu/waifu.webp";
-const jsonPath = "./assets/booru/waifu/waifu.json";
+import { Waifu } from "../../../interfaces/waifu.interface";
+import { readJson } from "../../../utils/json";
+const waifuDir = "./assets/booru/waifu";
 
 const apiList: Api[] = [
   {
@@ -35,36 +33,52 @@ const apiList: Api[] = [
   },
 ];
 
-const nsfw = Variable<boolean>(false);
-nsfw.subscribe((value) =>
-  notify({ summary: "Waifu", body: `NSFW is ${value ? "on" : "off"}` })
-);
-const terminalWaifuPath = `./assets/terminal/icon.jpg`;
+const terminalWaifuPath = `./assets/terminal/icon.webp`;
 
-const GetImageFromApi = (param = "", api: Api = {} as Api) => {
-  openProgress();
+const fetchImage = async (image: Waifu, saveDir: string) => {
+  const url = image.url!;
+  image.url_path = `${saveDir}/waifu.webp`;
 
-  let apiValue = api.value ?? waifuApi.get().value;
-  execAsync(
-    `python ./scripts/get-waifu.py ${apiValue} ${nsfw.get()} "${param}"`
-  )
-    .finally(() => {
-      closeProgress();
-      let imageDetails = readJSONFile(jsonPath);
-      waifuCurrent.set({
-        id: imageDetails.id,
-        preview: imageDetails.preview_file_url ?? imageDetails.preview_url,
-        height: imageDetails.image_height ?? imageDetails.height,
-        width: imageDetails.image_width ?? imageDetails.width,
-        api: waifuApi.get(),
-      });
-    })
-    .catch((error) => notify({ summary: "Error", body: error }));
+  await execAsync(`bash -c "mkdir -p ${saveDir}"`).catch((err) =>
+    notify({ summary: "Error", body: String(err) })
+  );
+
+  await execAsync(`curl -o ${image.url_path} ${url}`).catch((err) =>
+    notify({ summary: "Error", body: String(err) })
+  );
+  return image;
 };
 
-const OpenInBrowser = () =>
+const GetImageByid = async (id: number) => {
+  print(`python /home/ayman/.config/ags/scripts/search-booru.py 
+    --api ${waifuApi.get().value} 
+    --id ${id}`);
+  openProgress();
+  try {
+    const res = await execAsync(
+      `python /home/ayman/.config/ags/scripts/search-booru.py 
+    --api ${waifuApi.get().value} 
+    --id ${id}`
+    );
+
+    const image: Waifu = readJson(res)[0];
+
+    fetchImage(image, waifuDir).then((image: Waifu) => {
+      waifuCurrent.set({
+        ...image,
+        url_path: waifuCurrent.get().url_path,
+        api: waifuApi.get(),
+      });
+    });
+  } catch (err) {
+    notify({ summary: "Error", body: String(err) });
+  }
+  closeProgress();
+};
+
+const OpenInBrowser = (image: Waifu) =>
   execAsync(
-    `bash -c "xdg-open '${waifuApi.get().idSearchUrl}${
+    `bash -c "xdg-open '${image.api.idSearchUrl}${
       waifuCurrent.get().id
     }' && xdg-settings get default-web-browser | sed 's/\.desktop$//'"`
   )
@@ -73,22 +87,22 @@ const OpenInBrowser = () =>
     )
     .catch((err) => notify({ summary: "Error", body: err }));
 
-const CopyImage = () =>
-  execAsync(`bash -c "wl-copy --type image/png < ${waifuPath}"`).catch((err) =>
-    notify({ summary: "Error", body: err })
+const CopyImage = (image: Waifu) =>
+  execAsync(`bash -c "wl-copy --type image/png < ${image.url_path}"`).catch(
+    (err) => notify({ summary: "Error", body: err })
   );
 
-const OpenImage = () =>
+const OpenImage = (image: Waifu) =>
   Hyprland.message_async(
-    `dispatch exec [float;size 50%] feh --scale-down $HOME/.config/ags/${waifuPath}`,
+    `dispatch exec [float;size 50%] feh --scale-down $HOME/.config/ags/${image.url_path}`,
     (res) => {
-      notify({ summary: "Waifu", body: waifuPath });
+      notify({ summary: "Waifu", body: image.url_path! });
     }
   );
 
-const PinImageToTerminal = () => {
+const PinImageToTerminal = (image: Waifu) => {
   execAsync(
-    `bash -c "cmp -s ${waifuPath} ${terminalWaifuPath} && { rm ${terminalWaifuPath}; echo 1; } || { cp ${waifuPath} ${terminalWaifuPath}; echo 0; }"`
+    `bash -c "cmp -s ${image.url_path} ${terminalWaifuPath} && { rm ${terminalWaifuPath}; echo 1; } || { cp ${image.url_path} ${terminalWaifuPath}; echo 0; }"`
   )
     .then((output) =>
       notify({
@@ -109,7 +123,7 @@ function Actions() {
         <button
           label=""
           className="pin"
-          onClicked={() => PinImageToTerminal()}
+          onClicked={() => PinImageToTerminal(waifuCurrent.get())}
         />
       }></box>
   );
@@ -117,11 +131,11 @@ function Actions() {
   const Entry = (
     <entry
       className="input"
-      placeholderText="Tags / ID"
+      placeholderText="enter post ID"
       text={getSetting("waifu.input_history")}
       onActivate={(self) => {
         setSetting("waifu.input_history", self.text);
-        GetImageFromApi(self.text);
+        GetImageByid(Number(self.text));
       }}
     />
   );
@@ -134,14 +148,24 @@ function Actions() {
       child={
         <box vertical>
           <box>
-            <button label="" className="open" hexpand onClicked={OpenImage} />
+            <button
+              label=""
+              className="open"
+              hexpand
+              onClicked={() => OpenImage(waifuCurrent.get())}
+            />
             <button
               label=""
               hexpand
               className="browser"
-              onClicked={() => OpenInBrowser()}
+              onClicked={() => OpenInBrowser(waifuCurrent.get())}
             />
-            <button label="" hexpand className="copy" onClicked={CopyImage} />
+            <button
+              label=""
+              hexpand
+              className="copy"
+              onClicked={() => CopyImage(waifuCurrent.get())}
+            />
           </box>
           <box>
             <button
@@ -168,11 +192,11 @@ function Actions() {
                   let [height, width] = exec(
                     `identify -format "%h %w" ${filename}`
                   ).split(" ");
-                  execAsync(`cp ${filename} ${waifuPath}`)
+                  execAsync(`cp ${filename} ${waifuCurrent.get().url_path}`)
                     .then(() =>
                       waifuCurrent.set({
                         id: 0,
-                        preview: waifuPath,
+                        preview: waifuCurrent.get().url_path,
                         height: Number(height) ?? 0,
                         width: Number(width) ?? 0,
                         api: {} as Api,

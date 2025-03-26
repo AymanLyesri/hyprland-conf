@@ -20,4 +20,17 @@
   .main-content {
     padding: 5px;
   }
+
+  .widget-actions {
+    button {
+      border-radius: 5px;
+    }
+    button:first-child {
+      border-radius: 10px 10px 5px 5px;
+    }
+
+    button:last-child {
+      border-radius: 5px 5px 10px 10px;
+    }
+  }
 }

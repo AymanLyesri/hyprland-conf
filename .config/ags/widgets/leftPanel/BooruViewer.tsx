@@ -14,9 +14,9 @@ import {
 } from "../../variables";
 import ToggleButton from "../toggleButton";
 import { notify } from "../../utils/notification";
+import { closeProgress, openProgress } from "../Progress";
 
 import hyprland from "gi://AstalHyprland";
-import { closeProgress, openProgress } from "../Progress";
 const Hyprland = hyprland.get_default();
 
 const images = new Variable<Waifu[]>([]);
@@ -110,7 +110,6 @@ const fetchImages = async () => {
     const res = await execAsync(
       `python /home/ayman/.config/ags/scripts/search-booru.py 
       --api ${booruApi.get().value} 
-      --nsfw false 
       --tags '${booruTags.get().join(",")}' 
       --limit ${booruLimit.get()} 
       --page ${booruPage.get()}`
@@ -178,6 +177,7 @@ const imageActions = (image: Waifu) => {
   return (
     <revealer
       revealChild={false}
+      visible
       transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
       transitionDuration={globalTransition}
       child={
@@ -328,40 +328,48 @@ const LimitDisplay = () => {
 };
 
 const TagDisplay = () => (
-  <box className="tags" spacing={5}>
-    {bind(booruTags).as((tags) =>
-      tags.map((tag) => {
-        // check if tag is rating tag
-        if (tag.match(/[-+]rating:explicit/)) {
-          return (
-            <button
-              className={`rating ${tag.startsWith("+") ? "explicit" : "safe"}`}
-              label={tag}
-              onClicked={() => {
-                const newRatingTag = tag.startsWith("-")
-                  ? "+rating:explicit"
-                  : "-rating:explicit";
-                const newTags = booruTags
-                  .get()
-                  .filter((t) => !t.match(/[-+]rating:explicit/));
-                newTags.unshift(newRatingTag);
-                booruTags.set(newTags);
-              }}
-            />
-          );
-        }
-        return (
-          <button
-            label={tag}
-            onClicked={() => {
-              const newTags = booruTags.get().filter((t) => t !== tag);
-              booruTags.set(newTags);
-            }}
-          />
-        );
-      })
-    )}
-  </box>
+  <scrollable
+    hexpand
+    vscroll={Gtk.PolicyType.NEVER}
+    child={
+      <box className="tags" spacing={5}>
+        {bind(booruTags).as((tags) =>
+          tags.map((tag) => {
+            // check if tag is rating tag
+            if (tag.match(/[-+]rating:explicit/)) {
+              return (
+                <button
+                  className={`rating ${
+                    tag.startsWith("+") ? "explicit" : "safe"
+                  }`}
+                  label={tag}
+                  onClicked={() => {
+                    const newRatingTag = tag.startsWith("-")
+                      ? "+rating:explicit"
+                      : "-rating:explicit";
+                    const newTags = booruTags
+                      .get()
+                      .filter((t) => !t.match(/[-+]rating:explicit/));
+                    newTags.unshift(newRatingTag);
+                    booruTags.set(newTags);
+                  }}
+                />
+              );
+            }
+            return (
+              <button
+                label={tag}
+                onClicked={() => {
+                  const newTags = booruTags.get().filter((t) => t !== tag);
+                  booruTags.set(newTags);
+                }}
+              />
+            );
+          })
+        )}
+      </box>
+    }
+  />
 );
 
 const Entry = () => {
@@ -382,7 +390,7 @@ const BottomBar = () => (
   <box className={"bottom"} spacing={10} vertical>
     <PageDisplay />
     <LimitDisplay />
-    <box className="input-bar" vertical spacing={10}>
+    <box className="input-bar" vertical spacing={5}>
       <TagDisplay />
       <Entry />
     </box>

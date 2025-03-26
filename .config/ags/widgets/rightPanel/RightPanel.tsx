@@ -56,7 +56,11 @@ export const WidgetSelectors: WidgetSelector[] = [
 
 const WidgetActions = () => {
   return (
-    <box vertical={true} vexpand={true} className={"widget-actions"}>
+    <box
+      vertical={true}
+      vexpand={true}
+      className={"widget-actions"}
+      spacing={5}>
       {WidgetSelectors.map((selector) => {
         const isActive = rightPanelWidgets
           .get()

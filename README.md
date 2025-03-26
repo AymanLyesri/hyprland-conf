@@ -42,13 +42,17 @@ New official [Discord](https://discord.gg/ryN4PRHF) server.
     - Url forwarding to default browser
   - Wallpaper switcher for each workspace
   - Media player
-  - Right panel
+  - Right Panel
     - Waifu display -- using [Danbooru](https://danbooru.donmai.us) and [Gelbooru](https://gelbooru.com) APIs
     - Media Player
     - Notification history - filter
+    - Calendar
     - System resource monitor (WIP)
-    - Calendar (WIP)
     - System Updater (WIP)
+  - Left Panel
+    - Chat Bot -- multiple APIs
+    - Booru Viewer -- using [Danbooru](https://danbooru.donmai.us) and [Gelbooru](https://gelbooru.com) APIs
+  - Hyprland Settings widget
   - User Panel (logout etc...)
 - **High-quality wallpapers** from [Danbooru](https://danbooru.donmai.us), [Yandere](https://yande.re), and [Gelbooru](https://gelbooru.com)
 
@@ -136,15 +140,21 @@ update
 
 | Example Layout                                                                            | Example Layout                                                                            |
 | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| ![image](https://github.com/user-attachments/assets/c33d0f4e-a3bb-48e1-8f1b-d66abeaf3ddb) | ![image](https://github.com/user-attachments/assets/a75cf5c3-e397-40c2-b3e9-e12722e5d148) |
+| ![image](https://github.com/user-attachments/assets/0e8865aa-9e3e-4b20-af7c-cce5d7cd9206) | ![image](https://github.com/user-attachments/assets/bec585c9-aece-4517-bc09-6d739a7994e9) |
+
+## Left Panel
+
+| Chat Bot                                                                                  | Booru Viewer                                                                              |
+| ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| ![image](https://github.com/user-attachments/assets/7e8a472b-8195-4438-abd4-03e694b54352) | ![image](https://github.com/user-attachments/assets/f5ad3ee1-4c0a-4052-ad92-9b49b0123d11) |
 
 ## Media Player
 
-![image](https://github.com/user-attachments/assets/5de3ad0f-101c-49f0-ab17-1bde12c16257)
+![image](https://github.com/user-attachments/assets/1be9e780-88cd-4d9f-ba12-252784986bec)
 
 ## Wallpaper Switcher
 
-![image](https://github.com/user-attachments/assets/8426a309-f088-4200-a8d5-7386496223b3)
+![image](https://github.com/user-attachments/assets/6ea26575-a1bd-4abd-a46f-b62339ebf9b0)
 
 ## Theme Switching
 

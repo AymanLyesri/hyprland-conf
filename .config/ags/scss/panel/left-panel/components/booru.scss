@@ -35,6 +35,7 @@
       @extend .module;
       padding: 10px;
       .tags {
+        padding-bottom: 15px;
         .explicit {
           background: $red;
         }

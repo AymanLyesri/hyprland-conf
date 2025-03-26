@@ -1,13 +1,12 @@
 #!/bin/bash
 # Path to the image file
-IMAGE_PATH="$HOME/.config/ags/assets/terminal/icon.jpg"
+IMAGE_PATH="$HOME/.config/ags/assets/terminal/icon.webp"
 
 # Check if the image exists
 if [ ! -f "$IMAGE_PATH" ]; then
     # Fetch system information without logo
-    FETCH="fastfetch"
-    eval "$FETCH"
-    return 0
+    fastfetch
+    exit 0
 else
     # Get the image dimensions
     DIMENSIONS=$(identify -format "%wx%h" "$IMAGE_PATH")
@@ -19,6 +18,9 @@ else
     # Calculate the aspect ratio
     RATIO=$(echo "scale=2; $WIDTH/$HEIGHT" | bc)
 
+    # Ensure COLUMNS is set
+    COLUMNS=${COLUMNS:-$(tput cols)}
+
     ARGUMENTS=""
 
     # Determine fetch arguments based on ratio
@@ -29,6 +31,5 @@ else
     fi
 
     # Fetch system information with adjusted logo size
-    FETCH="fastfetch --logo-recache $ARGUMENTS --logo $HOME/.config/ags/assets/terminal/icon.jpg"
-    eval "$FETCH"
+    fastfetch --logo-recache $ARGUMENTS --logo "$IMAGE_PATH"
 fi

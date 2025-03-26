@@ -10,28 +10,6 @@ const Hyprland = hyprland.get_default();
 
 const isIcon = (icon: string) => !!Astal.Icon.lookup_icon(icon);
 
-// const fileExists = (path: string) => GLib.file_test(path, GLib.FileTest.EXISTS);
-
-// const urgency = (n: Notifd.Notification) => {
-//   const { LOW, NORMAL, CRITICAL } = Notifd.Urgency;
-//   // match operator when?
-//   switch (n.urgency) {
-//     case LOW:
-//       return "low";
-//     case CRITICAL:
-//       return "critical";
-//     case NORMAL:
-//     default:
-//       return "normal";
-//   }
-// };
-
-// type Props = {
-//   setup(self: EventBox): void;
-//   onHoverLost(self: EventBox): void;
-//   notification: Notifd.Notification;
-// };
-
 const TRANSITION = 200;
 
 function NotificationIcon(n: Notifd.Notification) {

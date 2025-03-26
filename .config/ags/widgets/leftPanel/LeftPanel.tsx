@@ -29,7 +29,7 @@ const WidgetSelectors: WidgetSelector[] = [
 ];
 
 const ProviderActions = () => (
-  <box className={"provider-actions"} vertical={true}>
+  <box className={"provider-actions"} vertical={true} spacing={10}>
     {WidgetSelectors.map((widgetSelector) => (
       <ToggleButton
         state={bind(leftPanelWidget).as((w) => w.name === widgetSelector.name)}
