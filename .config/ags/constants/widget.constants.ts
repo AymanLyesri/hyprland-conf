@@ -1,7 +1,8 @@
 import { WidgetSelector } from "../interfaces/widgetSelector.interface";
 import Calendar from "../widgets/Calendar";
-import BooruViewer from "../widgets/leftPanel/BooruViewer";
-import ChatBot from "../widgets/leftPanel/ChatBot";
+import BooruViewer from "../widgets/leftPanel/components/BooruViewer";
+import ChatBot from "../widgets/leftPanel/components/ChatBot";
+import CustomScripts from "../widgets/leftPanel/components/CustomScripts";
 import MediaWidget from "../widgets/MediaWidget";
 import Waifu from "../widgets/rightPanel/components/Waifu";
 import NotificationHistory from "../widgets/rightPanel/NotificationHistory";
@@ -50,4 +51,9 @@ export const leftPanelWidgetSelectors: WidgetSelector[] = [
         icon: "",
         widget: () => BooruViewer(),
     },
+    {
+        name: "CustomScripts",
+        icon: "",
+        widget: () => CustomScripts(),
+    }
 ];

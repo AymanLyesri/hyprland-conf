@@ -1,8 +1,8 @@
 import { Gtk } from "astal/gtk3";
-import { Waifu } from "../../interfaces/waifu.interface";
+import { Waifu } from "../../../interfaces/waifu.interface";
 import { bind, exec, execAsync, Variable } from "astal";
-import { Api } from "../../interfaces/api.interface";
-import { readJson } from "../../utils/json";
+import { Api } from "../../../interfaces/api.interface";
+import { readJson } from "../../../utils/json";
 import {
   booruApi,
   booruLimit,
@@ -11,13 +11,13 @@ import {
   globalTransition,
   leftPanelWidth,
   waifuCurrent,
-} from "../../variables";
-import ToggleButton from "../toggleButton";
-import { notify } from "../../utils/notification";
-import { closeProgress, openProgress } from "../Progress";
+} from "../../../variables";
+import ToggleButton from "../../toggleButton";
+import { notify } from "../../../utils/notification";
+import { closeProgress, openProgress } from "../../Progress";
 
 import hyprland from "gi://AstalHyprland";
-import { booruApis } from "../../constants/api.constants";
+import { booruApis } from "../../../constants/api.constants";
 const Hyprland = hyprland.get_default();
 
 const images = new Variable<Waifu[]>([]);

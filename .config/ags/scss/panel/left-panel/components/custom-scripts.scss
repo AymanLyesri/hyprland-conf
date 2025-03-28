@@ -1,0 +1,15 @@
+.custom-scripts {
+  .script-eventbox:hover {
+    .script {
+      background: $background;
+    }
+  }
+  .script {
+    @extend .module;
+    padding: 5px 15px;
+
+    .icon {
+      font-size: $ICON-SIZE + 5;
+    }
+  }
+}

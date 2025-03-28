@@ -1,11 +1,11 @@
 import { Gtk } from "astal/gtk3";
-import { Message } from "../../interfaces/chatbot.interface";
+import { Message } from "../../../interfaces/chatbot.interface";
 import { bind, execAsync, timeout, Variable } from "astal";
-import { notify } from "../../utils/notification";
-import { readJSONFile, writeJSONFile } from "../../utils/json";
-import { chatBotApi } from "../../variables";
-import ToggleButton from "../toggleButton";
-import { chatBotApis } from "../../constants/api.constants";
+import { notify } from "../../../utils/notification";
+import { readJSONFile, writeJSONFile } from "../../../utils/json";
+import { chatBotApi } from "../../../variables";
+import ToggleButton from "../../toggleButton";
+import { chatBotApis } from "../../../constants/api.constants";
 
 // Constants
 const MESSAGE_FILE_PATH = "./assets/chatbot";
