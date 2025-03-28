@@ -38,13 +38,13 @@ const fetchImage = async (image: Waifu, saveDir: string) => {
 };
 
 const GetImageByid = async (id: number) => {
-  print(`python /home/ayman/.config/ags/scripts/search-booru.py 
+  print(`python ./scripts/search-booru.py 
     --api ${waifuApi.get().value} 
     --id ${id}`);
   openProgress();
   try {
     const res = await execAsync(
-      `python /home/ayman/.config/ags/scripts/search-booru.py 
+      `python ./scripts/search-booru.py 
     --api ${waifuApi.get().value} 
     --id ${id}`
     );
@@ -58,10 +58,10 @@ const GetImageByid = async (id: number) => {
         api: waifuApi.get(),
       });
     });
+    closeProgress();
   } catch (err) {
     notify({ summary: "Error", body: String(err) });
   }
-  closeProgress();
 };
 
 const OpenInBrowser = (image: Waifu) =>

@@ -20,7 +20,9 @@ import hyprland from "gi://AstalHyprland";
 import { booruApis } from "../../../constants/api.constants";
 const Hyprland = hyprland.get_default();
 
-const images = new Variable<Waifu[]>([]);
+const images = Variable<Waifu[]>([]);
+
+const fetchedTags = Variable<string[]>([]);
 
 const imagePreviewPath = "./assets/booru/previews";
 const imageUrlPath = "./assets/booru/images";
@@ -98,7 +100,7 @@ const fetchImages = async () => {
   try {
     openProgress();
     const res = await execAsync(
-      `python /home/ayman/.config/ags/scripts/search-booru.py 
+      `python ./scripts/search-booru.py 
       --api ${booruApi.get().value} 
       --tags '${booruTags.get().join(",")}' 
       --limit ${booruLimit.get()} 
@@ -163,6 +165,16 @@ const Apis = () => (
     ))}
   </box>
 );
+
+const fetchTags = async (tag: string) => {
+  const res = await execAsync(
+    `python ./scripts/search-booru.py 
+    --api ${booruApi.get().value} 
+    --tag '${tag}'`
+  );
+  print(res);
+  fetchedTags.set(readJson(res));
+};
 
 const imageActions = (image: Waifu) => {
   return (
@@ -323,47 +335,76 @@ const TagDisplay = () => (
     hexpand
     vscroll={Gtk.PolicyType.NEVER}
     child={
-      <box className="tags" spacing={5}>
-        {bind(booruTags).as((tags) =>
-          tags.map((tag) => {
-            // check if tag is rating tag
-            if (tag.match(/[-+]rating:explicit/)) {
+      <box spacing={10}>
+        <box className="tags" spacing={5}>
+          {bind(booruTags).as((tags) =>
+            tags.map((tag) => {
+              // check if tag is rating tag
+              if (tag.match(/[-+]rating:explicit/)) {
+                return (
+                  <button
+                    className={`rating ${
+                      tag.startsWith("+") ? "explicit" : "safe"
+                    }`}
+                    label={tag}
+                    onClicked={() => {
+                      const newRatingTag = tag.startsWith("-")
+                        ? "+rating:explicit"
+                        : "-rating:explicit";
+                      const newTags = booruTags
+                        .get()
+                        .filter((t) => !t.match(/[-+]rating:explicit/));
+                      newTags.unshift(newRatingTag);
+                      booruTags.set(newTags);
+                    }}
+                  />
+                );
+              }
               return (
                 <button
-                  className={`rating ${
-                    tag.startsWith("+") ? "explicit" : "safe"
-                  }`}
                   label={tag}
                   onClicked={() => {
-                    const newRatingTag = tag.startsWith("-")
-                      ? "+rating:explicit"
-                      : "-rating:explicit";
-                    const newTags = booruTags
-                      .get()
-                      .filter((t) => !t.match(/[-+]rating:explicit/));
-                    newTags.unshift(newRatingTag);
+                    const newTags = booruTags.get().filter((t) => t !== tag);
                     booruTags.set(newTags);
                   }}
                 />
               );
-            }
-            return (
+            })
+          )}
+        </box>
+        <box className={"fetched-tags"} spacing={5}>
+          {bind(fetchedTags).as((tags) =>
+            tags.map((tag) => (
               <button
                 label={tag}
                 onClicked={() => {
-                  const newTags = booruTags.get().filter((t) => t !== tag);
-                  booruTags.set(newTags);
+                  booruTags.set([...new Set([...booruTags.get(), tag])]);
                 }}
               />
-            );
-          })
-        )}
+            ))
+          )}
+        </box>
       </box>
     }
   />
 );
 
 const Entry = () => {
+  let debounceTimer: any;
+  const onChanged = async (self: Gtk.Entry) => {
+    // Clear the previous timeout if any
+    if (debounceTimer) clearTimeout(debounceTimer);
+
+    // Set a new timeout with the desired delay (e.g., 300ms)
+    debounceTimer = setTimeout(() => {
+      if (!self.text) {
+        fetchedTags.set([]);
+        return;
+      }
+      fetchTags(self.text);
+    }, 200);
+  };
+
   const addTags = (self: Gtk.Entry) => {
     const currentTags = booruTags.get();
     const newTags = self.text.split(" ");
@@ -374,7 +415,14 @@ const Entry = () => {
     booruTags.set(uniqueTags);
   };
 
-  return <entry hexpand placeholderText="Add a Tag" onActivate={addTags} />;
+  return (
+    <entry
+      hexpand
+      placeholderText="Add a Tag"
+      onChanged={onChanged}
+      onActivate={addTags}
+    />
+  );
 };
 
 const BottomBar = () => (

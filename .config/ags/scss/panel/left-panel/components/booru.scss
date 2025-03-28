@@ -24,15 +24,26 @@
       padding: 10px;
       .tags {
         padding-bottom: 15px;
+
         .explicit {
           background: $red;
         }
-
         button {
           padding: 5px 10px;
 
           &:hover {
             background: $red;
+          }
+        }
+      }
+      .fetched-tags {
+        padding-bottom: 15px;
+        button {
+          padding: 5px 10px;
+          background: $background;
+
+          &:hover {
+            background: $green;
           }
         }
       }
