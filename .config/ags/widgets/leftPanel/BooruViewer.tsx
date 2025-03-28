@@ -17,6 +17,7 @@ import { notify } from "../../utils/notification";
 import { closeProgress, openProgress } from "../Progress";
 
 import hyprland from "gi://AstalHyprland";
+import { booruApis } from "../../constants/api.constants";
 const Hyprland = hyprland.get_default();
 
 const images = new Variable<Waifu[]>([]);
@@ -24,19 +25,6 @@ const images = new Variable<Waifu[]>([]);
 const imagePreviewPath = "./assets/booru/previews";
 const imageUrlPath = "./assets/booru/images";
 const waifuPath = "./assets/booru/waifu";
-
-const apiList: Api[] = [
-  {
-    name: "Danbooru",
-    value: "danbooru",
-    idSearchUrl: "https://danbooru.donmai.us/posts/",
-  },
-  {
-    name: "Gelbooru",
-    value: "gelbooru",
-    idSearchUrl: "https://gelbooru.com/index.php?page=post&s=view&id=",
-  },
-];
 
 const ensureRatingTagFirst = () => {
   let tags: string[] = booruTags.get();
@@ -59,6 +47,7 @@ const fetchImage = async (
   savePath: string,
   name: string = ""
 ) => {
+  openProgress();
   const url = image.url!;
   name = name || String(image.id);
   image.url_path = `${savePath}/${name}.webp`;
@@ -70,6 +59,7 @@ const fetchImage = async (
   await execAsync(`curl -o ${savePath}/${name}.webp ${url}`).catch((err) =>
     notify({ summary: "Error", body: String(err) })
   );
+  closeProgress();
 };
 
 const waifuThisImage = (image: Waifu) => {
@@ -162,8 +152,9 @@ const fetchImages = async () => {
 };
 const Apis = () => (
   <box className="api-list" spacing={5}>
-    {apiList.map((api) => (
+    {booruApis.map((api) => (
       <ToggleButton
+        hexpand
         state={bind(booruApi).as((a) => a.name === api.name)}
         className="api"
         label={api.name}
@@ -299,7 +290,7 @@ const PageDisplay = () => (
 );
 
 const LimitDisplay = () => {
-  let debounceTimer: NodeJS.Timeout;
+  let debounceTimer: any;
 
   return (
     <box className="limits" spacing={5} hexpand>

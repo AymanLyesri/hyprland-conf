@@ -1,24 +1,11 @@
 import { Gtk } from "astal/gtk3";
-import { Message, Provider } from "../../interfaces/chatbot.interface";
+import { Message } from "../../interfaces/chatbot.interface";
 import { bind, execAsync, timeout, Variable } from "astal";
 import { notify } from "../../utils/notification";
 import { readJSONFile, writeJSONFile } from "../../utils/json";
-import { aiProvider } from "../../variables";
+import { chatBotApi } from "../../variables";
 import ToggleButton from "../toggleButton";
-
-const aiProviders: Provider[] = [
-  {
-    name: "pollinations",
-    icon: "Po",
-    description: "Completely free, default model is gpt-4o",
-    imageGenerationSupport: true,
-  },
-  {
-    name: "phind",
-    icon: "Ph",
-    description: "Uses Phind Model. Great for developers",
-  },
-];
+import { chatBotApis } from "../../constants/api.constants";
 
 // Constants
 const MESSAGE_FILE_PATH = "./assets/chatbot";
@@ -27,11 +14,10 @@ const DEBOUNCE_TIME = 100;
 // State
 const imageGeneration = Variable<boolean>(false);
 const messages = Variable<Message[]>([]);
-messages.subscribe(() => saveMessages());
 
 // Utils
 const getMessageFilePath = () =>
-  `${MESSAGE_FILE_PATH}/${aiProvider.get().name}.json`;
+  `${MESSAGE_FILE_PATH}/${chatBotApi.get().value}.json`;
 
 const formatTextWithCodeBlocks = (text: string) => {
   const parts = text.split(/```(\w*)?\n?([\s\S]*?)```/gs);
@@ -91,7 +77,7 @@ const sendMessage = async (message: Message) => {
   try {
     const imgFlag = imageGeneration.get() ? "-img" : "";
     const response = await execAsync(
-      `tgpt -q ${imgFlag} --provider ${aiProvider.get().name} ` +
+      `tgpt -q ${imgFlag} --provider ${chatBotApi.get().value} ` +
         `--preprompt 'short and straight forward response' '${message.content}'`
     );
 
@@ -99,7 +85,7 @@ const sendMessage = async (message: Message) => {
 
     const newMessage: Message = {
       id: (messages.get().length + 1).toString(),
-      sender: aiProvider.get().name,
+      sender: chatBotApi.get().value,
       receiver: "user",
       content: response,
       timestamp: Date.now(),
@@ -114,14 +100,15 @@ const sendMessage = async (message: Message) => {
   }
 };
 
-const Providers = () => (
-  <box className="providers" spacing={5}>
-    {aiProviders.map((provider) => (
+const ApiList = () => (
+  <box className="api-list" spacing={5}>
+    {chatBotApis.map((provider) => (
       <ToggleButton
-        state={bind(aiProvider).as((p) => p.name === provider.name)}
+        hexpand
+        state={bind(chatBotApi).as((p) => p.name === provider.name)}
         className="provider"
-        label={provider.icon}
-        onToggled={() => aiProvider.set(provider)}
+        label={provider.name}
+        onToggled={() => chatBotApi.set(provider)}
       />
     ))}
   </box>
@@ -130,7 +117,7 @@ const Providers = () => (
 // Components
 const Info = () => (
   <box className="info" vertical spacing={5}>
-    {bind(aiProvider).as(({ name, description }) => [
+    {bind(chatBotApi).as(({ name, description }) => [
       <label className="name" hexpand wrap label={`[${name}]`} />,
       <label className="description" hexpand wrap label={description} />,
     ])}
@@ -213,12 +200,12 @@ const ClearButton = () => (
 );
 
 // const ImageGenerationSwitch = ({
-//   aiProvider,
+//   chatBotApi,
 // }: {
-//   aiProvider: Variable<Provider>;
+//   chatBotApi: Variable<Provider>;
 // }) => (
 //   <switch
-//     visible={aiProvider.get().imageGenerationSupport}
+//     visible={chatBotApi.get().imageGenerationSupport}
 //     active={imageGeneration.get()}
 //     onButtonPressEvent={() => imageGeneration.set(!imageGeneration.get())}
 //   />
@@ -232,7 +219,7 @@ const MessageEntry = () => {
     const newMessage: Message = {
       id: (messages.get().length + 1).toString(),
       sender: "user",
-      receiver: aiProvider.get().name,
+      receiver: chatBotApi.get().value,
       content: text,
       timestamp: Date.now(),
     };
@@ -255,10 +242,14 @@ const BottomBar = () => (
 );
 
 export default () => {
+  chatBotApi.subscribe(() => fetchMessages());
+  messages.subscribe(() => saveMessages());
+
   fetchMessages();
+
   return (
     <box className="chat-bot" vertical hexpand spacing={5}>
-      <Providers />
+      <ApiList />
       <Info />
       <Messages />
       <BottomBar />

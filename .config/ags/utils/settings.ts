@@ -2,9 +2,9 @@ import { execAsync } from "astal";
 import { readJSONFile, writeJSONFile } from "./json";
 import { globalSettings } from "../variables";
 import { Settings } from "../interfaces/settings.interface";
-import { WidgetSelectors } from "../widgets/rightPanel/RightPanel";
-import { WidgetSelector } from "../interfaces/widgetSelector.interface";
-
+import { leftPanelWidgetSelectors } from "../constants/widget.constants";
+import { booruApis, chatBotApis } from "../constants/api.constants";
+import { WaifuClass } from "../interfaces/waifu.interface";
 export const settingsPath = "./assets/settings/settings.json";
 
 
@@ -37,58 +37,35 @@ export const defaultSettings: Settings = {
   waifu: {
     input_history: "",
     visibility: true,
-    current: {
-      id: 0,
-      preview: "",
-      width: 0,
-      height: 0,
-      api: {
-        name: "Danbooru",
-        value: "danbooru",
-        idSearchUrl: "https://danbooru.donmai.us/posts/",
-      },
-    },
-    api: {
-      name: "Danbooru",
-      value: "danbooru",
-      idSearchUrl: "https://danbooru.donmai.us/posts/",
-    },
+    current: new WaifuClass(),
+    api: booruApis[0],
   },
   rightPanel: {
     exclusivity: true,
     lock: true,
     width: 300,
-    visibility: true,
+    visibility: false,
     widgets: []
   },
   leftPanel: {
     exclusivity: true,
     lock: true,
     width: 400,
-    visibility: true,
-    widget: {} as WidgetSelector
+    visibility: false,
+    widget: leftPanelWidgetSelectors[0],
   },
   chatBot: {
-    provider: {
-      name: "pollinations",
-      icon: "Po",
-      description: "Completely free, default model is gpt-4o",
-      imageGenerationSupport: true,
-    },
+    api: chatBotApis[0],
   },
   booru: {
-    api: {
-      name: "Danbooru",
-      value: "danbooru",
-      idSearchUrl: "https://danbooru.donmai.us/posts/",
-    },
+    api: booruApis[0],
     tags: [],
     limit: 20,
     page: 1,
   },
   quickLauncher: {
     apps: [
-      { name: "Browser", app_name: "zen-browser", exec: "zen-browser", icon: "" },
+      { name: "Browser", app_name: "browser", exec: "xdg-open https://google.com", icon: "" },
       { name: "Terminal", app_name: "kitty", exec: "kitty", icon: "" },
       { name: "Files", app_name: "thunar", exec: "thunar", icon: "" },
       { name: "Calculator", app_name: "kitty", exec: "kitty bc", icon: "" },
@@ -97,33 +74,52 @@ export const defaultSettings: Settings = {
   }
 }
 
-function deepMerge(target: any, source: any): any
+function deepMergePreserveStructure(target: any, source: any): any
 {
-  for (const key in source) {
-    if (source.hasOwnProperty(key)) {
-      const sourceValue = source[key];
-      const targetValue = target[key];
+  // Fast path for non-object cases
+  if (source === undefined) return target;
+  if (typeof target !== 'object' || target === null || Array.isArray(target)) {
+    return source !== undefined ? source : target;
+  }
 
-      // Check if both values are objects and not arrays
-      if (sourceValue && typeof sourceValue === 'object' && !Array.isArray(sourceValue) &&
-        targetValue && typeof targetValue === 'object' && !Array.isArray(targetValue)) {
-        // Recursively merge objects if types match
-        target[key] = deepMerge(targetValue, sourceValue);
-      } else if (typeof sourceValue === typeof targetValue || targetValue === undefined) {
-        // Assign source value if types match or if target doesn't have the key
-        target[key] = sourceValue;
-      }
-      // If types don't match, prioritize the target's type by skipping the assignment
+  // Check if we need to do any merging at all
+  if (typeof source !== 'object' || source === null || Array.isArray(source)) {
+    return target;
+  }
+
+  // Optimized object creation and property copying
+  const result: Record<string, any> = Object.create(Object.getPrototypeOf(target));
+
+  // Cache target keys for faster iteration
+  const targetKeys = Object.keys(target);
+
+  for (let i = 0; i < targetKeys.length; i++) {
+    const key = targetKeys[i];
+    const targetValue = target[key];
+    const sourceValue = source[key];
+
+    // Fast path for primitive values
+    if (typeof targetValue !== 'object' || targetValue === null || Array.isArray(targetValue)) {
+      result[key] = sourceValue !== undefined ? sourceValue : targetValue;
+      continue;
+    }
+
+    // Recursive case for objects
+    if (typeof sourceValue === 'object' && sourceValue !== null && !Array.isArray(sourceValue)) {
+      result[key] = deepMergePreserveStructure(targetValue, sourceValue);
+    } else {
+      result[key] = sourceValue !== undefined ? sourceValue : targetValue;
     }
   }
-  return target;
+
+  return result;
 }
 
 // Settings are stored in a json file, containing all the settings, check if it exists, if not, create it
 export function autoCreateSettings()
 {
   if (Object.keys(readJSONFile(settingsPath)).length !== 0) {
-    globalSettings.set(deepMerge(defaultSettings, readJSONFile(settingsPath)))
+    globalSettings.set(deepMergePreserveStructure(defaultSettings, readJSONFile(settingsPath)))
   } else {
     writeJSONFile(settingsPath, globalSettings.get());
   }

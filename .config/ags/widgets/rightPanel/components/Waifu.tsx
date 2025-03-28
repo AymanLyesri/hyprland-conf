@@ -18,20 +18,8 @@ const Hyprland = hyprland.get_default();
 
 import { Waifu } from "../../../interfaces/waifu.interface";
 import { readJson } from "../../../utils/json";
+import { booruApis } from "../../../constants/api.constants";
 const waifuDir = "./assets/booru/waifu";
-
-const apiList: Api[] = [
-  {
-    name: "Danbooru",
-    value: "danbooru",
-    idSearchUrl: "https://danbooru.donmai.us/posts/",
-  },
-  {
-    name: "Gelbooru",
-    value: "gelbooru",
-    idSearchUrl: "https://gelbooru.com/index.php?page=post&s=view&id=",
-  },
-];
 
 const terminalWaifuPath = `./assets/terminal/icon.webp`;
 
@@ -216,7 +204,7 @@ function Actions() {
             />
           </box>
           <box>
-            {apiList.map((api) => (
+            {booruApis.map((api) => (
               <ToggleButton
                 hexpand
                 className={"api"}

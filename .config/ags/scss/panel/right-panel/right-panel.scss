@@ -1,36 +1,3 @@
 .right-panel {
-  &.exclusive {
-    border-radius: 0px;
-    border-left: 1px solid $secondary;
-  }
-  &.normal {
-    > box {
-      border-radius: 15px;
-      margin: 0px;
-      padding: 0px;
-      border: 1px solid $secondary;
-    }
-    .right-panel-actions {
-      border-radius: 15px;
-    }
-  }
-
-  @extend .module;
-
-  .main-content {
-    padding: 5px;
-  }
-
-  .widget-actions {
-    button {
-      border-radius: 5px;
-    }
-    button:first-child {
-      border-radius: 10px 10px 5px 5px;
-    }
-
-    button:last-child {
-      border-radius: 5px 5px 10px 10px;
-    }
-  }
+  @extend .panel;
 }

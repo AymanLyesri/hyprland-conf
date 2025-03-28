@@ -1,5 +1,4 @@
 import { Api } from "./api.interface"
-import { Provider } from "./chatbot.interface"
 import { Waifu } from "./waifu.interface"
 import { WidgetSelector } from "./widgetSelector.interface"
 
@@ -61,7 +60,7 @@ export interface Settings
         lock: boolean,
     },
     chatBot: {
-        provider: Provider,
+        api: Api,
     },
     booru: {
         api: Api,

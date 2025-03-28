@@ -9,28 +9,14 @@ import {
   leftPanelWidget,
   leftPanelWidth,
 } from "../../variables";
-import ChatBot from "./chatBot";
+
 import { WindowActions } from "../../utils/window";
 import ToggleButton from "../toggleButton";
-import { WidgetSelector } from "../../interfaces/widgetSelector.interface";
-import BooruViewer from "./BooruViewer";
+import { leftPanelWidgetSelectors } from "../../constants/widget.constants";
 
-const WidgetSelectors: WidgetSelector[] = [
-  {
-    name: "ChatBot",
-    icon: "",
-    widget: () => ChatBot(),
-  },
-  {
-    name: "BooruViewer",
-    icon: "",
-    widget: () => BooruViewer(),
-  },
-];
-
-const ProviderActions = () => (
-  <box className={"provider-actions"} vertical={true} spacing={10}>
-    {WidgetSelectors.map((widgetSelector) => (
+const WidgetActions = () => (
+  <box className={"widget-actions"} vertical={true} spacing={10}>
+    {leftPanelWidgetSelectors.map((widgetSelector) => (
       <ToggleButton
         state={bind(leftPanelWidget).as((w) => w.name === widgetSelector.name)}
         label={widgetSelector.icon}
@@ -42,7 +28,7 @@ const ProviderActions = () => (
 
 const Actions = () => (
   <box className={"panel-actions"} vertical={true}>
-    <ProviderActions />
+    <WidgetActions />
     <WindowActions
       windowWidth={leftPanelWidth}
       windowExclusivity={leftPanelExclusivity}
@@ -57,9 +43,13 @@ function Panel() {
     <box>
       <Actions />
       <box
+        className={"main-content"}
         widthRequest={bind(leftPanelWidth)}
-        child={bind(leftPanelWidget).as((widget) =>
-          WidgetSelectors.find((ws) => ws.name === widget.name)?.widget()
+        child={bind(leftPanelWidget).as(
+          (widget) =>
+            leftPanelWidgetSelectors
+              .find((ws) => ws.name === widget.name)
+              ?.widget() || <box />
         )}></box>
       <eventbox
         onHoverLost={() => {

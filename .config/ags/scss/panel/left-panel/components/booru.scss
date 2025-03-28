@@ -1,16 +1,4 @@
 .booru {
-  padding: 5px 0px 5px 5px;
-
-  .api-list {
-    button {
-      border-bottom: 5px solid $background;
-      padding: 5px 15px;
-    }
-    button.checked {
-      border-bottom: 5px solid $foreground;
-    }
-  }
-
   .images {
     .image {
       border-radius: 15px;

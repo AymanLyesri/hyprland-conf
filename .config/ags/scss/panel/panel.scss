@@ -1,21 +1,78 @@
-.panel-actions {
-  background: $background;
-  padding: 5px;
-  button,
-  .icon {
+.panel {
+  @extend .module;
+
+  &.exclusive {
     border-radius: 0px;
-    padding: 10px 0px;
-    min-width: 20px;
+    // &.left-panel {
+    //   border-right: 1px solid $secondary;
+    // }
+    // &.right-panel {
+    //   border-left: 1px solid $secondary;
+    // }
   }
-  .custom-revealer {
-    border-radius: 10px 10px 0px 0px;
+  &.normal {
+    > box {
+      border-radius: 15px;
+      margin: 0px;
+      padding: 0px;
+      // border: 1px solid $secondary;
+    }
+    .panel-actions {
+      border-radius: 15px;
+    }
   }
 
-  button:first-child {
-    border-radius: 10px 10px 0px 0px;
+  .panel-actions {
+    background: $background;
+    padding: 5px;
+
+    button,
+    .icon {
+      border-radius: 0px;
+      padding: 10px 0px;
+      min-width: 20px;
+    }
+
+    .widget-actions {
+      button {
+        border-radius: 5px;
+      }
+      button:first-child {
+        border-radius: 10px 10px 5px 5px;
+      }
+
+      button:last-child {
+        border-radius: 5px 5px 10px 10px;
+      }
+    }
+
+    .window-actions {
+      .custom-revealer {
+        border-radius: 10px 10px 0px 0px;
+      }
+
+      button:first-child {
+        border-radius: 10px 10px 0px 0px;
+      }
+
+      button:last-child {
+        border-radius: 0px 0px 10px 10px;
+      }
+    }
   }
 
-  button:last-child {
-    border-radius: 0px 0px 10px 10px;
+  .main-content {
+    padding: 5px;
+
+    .api-list {
+      border-bottom: 1px solid $secondary;
+      button {
+        padding: 5px 15px;
+        border-radius: 10px 10px 0px 0px;
+      }
+      // button.checked {
+      //   border-bottom: 5px solid $foreground;
+      // }
+    }
   }
 }

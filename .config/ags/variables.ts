@@ -10,7 +10,6 @@ import { writeJSONFile } from "./utils/json";
 import { AGSSetting, Settings } from "./interfaces/settings.interface";
 import { Api } from "./interfaces/api.interface";
 import { Waifu } from "./interfaces/waifu.interface";
-import { Provider } from "./interfaces/chatbot.interface";
 
 export const NOTIFICATION_DELAY = 5000
 
@@ -49,8 +48,6 @@ export const waifuApi = Variable<Api>(getSetting("waifu.api"));
 waifuApi.subscribe((value) => setSetting("waifu.api", value));
 export const waifuCurrent = Variable<Waifu>(getSetting("waifu.current"));
 waifuCurrent.subscribe((value) => setSetting("waifu.current", value));
-export const waifuFavorites = Variable<Waifu[]>(getSetting("waifu.favorites"));
-waifuFavorites.subscribe((value) => setSetting("waifu.favorites", value));
 
 export const focusedClient: Binding<Hyprland.Client> = bind(hyprland, "focusedClient");
 export const emptyWorkspace: Binding<boolean> = focusedClient.as((client) => !client);
@@ -83,11 +80,11 @@ leftPanelWidth.subscribe((value) => setSetting("leftPanel.width", value));
 export const leftPanelLock = Variable<boolean>(getSetting("leftPanel.lock"));
 leftPanelLock.subscribe((value) => setSetting("leftPanel.lock", value));
 
-export const leftPanelWidget = Variable<WidgetSelector>(getSetting("leftPanel.widget"))
+export const leftPanelWidget = Variable<WidgetSelector>(getSetting("leftPanel.widget"));
 leftPanelWidget.subscribe((value) => setSetting("leftPanel.widget", value));
 
-export const aiProvider = Variable<Provider>(getSetting("chatBot.provider"));
-aiProvider.subscribe((value) => setSetting("chatBot.provider", value));
+export const chatBotApi = Variable<Api>(getSetting("chatBot.api"));
+chatBotApi.subscribe((value) => setSetting("chatBot.api", value));
 
 export const booruApi = Variable<Api>(getSetting("booru.api"));
 booruApi.subscribe((value) => setSetting("booru.api", value));

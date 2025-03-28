@@ -1,6 +1,6 @@
 import { App, Astal, Gdk, Gtk } from "astal/gtk3";
 import { WidgetSelector } from "../../interfaces/widgetSelector.interface";
-import waifu, { WaifuVisibility } from "./components/waifu";
+import waifu, { WaifuVisibility } from "./components/Waifu";
 import {
   globalMargin,
   rightPanelExclusivity,
@@ -10,49 +10,11 @@ import {
   rightPanelWidth,
   widgetLimit,
 } from "../../variables";
-import { bind, Variable } from "astal";
-import CustomRevealer from "../CustomRevealer";
+import { bind } from "astal";
 import ToggleButton from "../toggleButton";
-import { exportSettings, setSetting } from "../../utils/settings";
-import MediaWidget from "../MediaWidget";
-import NotificationHistory from "./NotificationHistory";
-import Calendar from "../Calendar";
 import { getMonitorName } from "../../utils/monitor";
 import { WindowActions } from "../../utils/window";
-
-// Name need to match the name of the widget()
-export const WidgetSelectors: WidgetSelector[] = [
-  {
-    name: "Waifu",
-    icon: "",
-    widget: () => waifu(),
-  },
-  {
-    name: "Media",
-    icon: "",
-    widget: () => MediaWidget(),
-  },
-  {
-    name: "NotificationHistory",
-    icon: "",
-    widget: () => NotificationHistory(),
-  },
-  {
-    name: "Calendar",
-    icon: "",
-    widget: () => Calendar(),
-  },
-  // {
-  //   name: "Resources",
-  //   icon: "",
-  //   widget: () => Resources(),
-  // },
-  // {
-  //   name: "Update",
-  //   icon: "󰚰",
-  //   widget: () => Update(),
-  // },
-];
+import { rightPanelWidgetSelectors } from "../../constants/widget.constants";
 
 const WidgetActions = () => {
   return (
@@ -61,7 +23,7 @@ const WidgetActions = () => {
       vexpand={true}
       className={"widget-actions"}
       spacing={5}>
-      {WidgetSelectors.map((selector) => {
+      {rightPanelWidgetSelectors.map((selector) => {
         const isActive = rightPanelWidgets
           .get()
           .some((w) => w.name === selector.name);
@@ -116,7 +78,7 @@ function Panel() {
         {bind(rightPanelWidgets).as((widgets) => {
           return widgets
             .map((widget) =>
-              WidgetSelectors.find((w) => w.name === widget.name)
+              rightPanelWidgetSelectors.find((w) => w.name === widget.name)
             ) // Find and call the widget function
             .filter((widget) => widget && widget.widget) // Filter out invalid widgets
             .map((widget) => {
