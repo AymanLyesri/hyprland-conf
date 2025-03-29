@@ -30,6 +30,19 @@ globalIconSize.subscribe((value) =>
     setSetting("globalIconSize", value)
     refreshCss()
 });
+export const globalScale = Variable<AGSSetting>(getSetting("globalScale"))
+globalScale.subscribe((value) =>
+{
+    setSetting("globalScale", value)
+    refreshCss()
+});
+
+export const globalFontSize = Variable<AGSSetting>(getSetting("globalFontSize"))
+globalFontSize.subscribe((value) =>
+{
+    setSetting("globalFontSize", value)
+    refreshCss()
+});
 
 export const globalMargin = 14
 export const globalTransition = 500

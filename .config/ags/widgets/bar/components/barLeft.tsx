@@ -1,4 +1,4 @@
-import { App, Gtk } from "astal/gtk3";
+import { Gtk } from "astal/gtk3";
 import {
   focusedWorkspace,
   globalTransition,
@@ -14,7 +14,7 @@ import { hideWindow, showWindow } from "../../../utils/window";
 const Hyprland = hyprland.get_default();
 
 // workspaces icons
-const workspaceToIcon = ["󰻃", "", "", "", "", "", "󰙯", "󰓓", "", "", ""];
+const workspaceToIcon = ["", "", "", "", "", "", "󰙯", "󰓓", "", "", ""];
 
 function Workspaces() {
   let previousWorkspace: number = 0; // Variable to store the previous workspace ID

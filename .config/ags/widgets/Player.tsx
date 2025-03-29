@@ -171,15 +171,18 @@ export default ({
             <box vexpand={true}></box>
             {title}
             {positionSlider}
-            <centerbox>
-              {positionLabel}
-              <box>
-                {prev}
-                {playPause}
-                {next}
-              </box>
-              {lengthLabel}
-            </centerbox>
+            <centerbox
+              spacing={5}
+              startWidget={positionLabel}
+              centerWidget={
+                <box spacing={5}>
+                  {prev}
+                  {playPause}
+                  {next}
+                </box>
+              }
+              endWidget={lengthLabel}
+            />
           </box>
         </box>
       }

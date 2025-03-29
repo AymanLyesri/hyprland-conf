@@ -1,30 +1,17 @@
 .bar {
   border-radius: 50px;
   padding: 5px 10px;
-  background: $module-background;
+  background: $background-transparent;
+
+  .module {
+    padding: $SCALE - 10 $SCALE;
+  }
 
   &.full {
-    background: $module-background;
-    // .bar-left {
-    //   .actions {
-    //     button:first-child {
-    //       border-radius: 0px;
-    //     }
-    //   }
-    // }
-    // .bar-right {
-    //   .dnd-toggle {
-    //     border-radius: 10px 5px 5px 10px;
-    //   }
-    // }
+    background: $background-transparent;
   }
 
   &.empty {
-    // transition: background 0s;
     background-color: rgba($color: #000000, $alpha: 0.1);
-    // background: transparent;
-    // button {
-    //   padding: 5px 10px;
-    // }
   }
 }

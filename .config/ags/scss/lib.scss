@@ -4,8 +4,10 @@
   transition: all 0.5s;
 }
 
+// $SCALE: 10;
+
 .module {
-  background: $module-background;
+  background: $background-transparent;
   color: $foreground;
   min-height: 1px;
   border: none;
@@ -14,7 +16,7 @@
   font-size: 0.8rem;
   font-weight: 700;
   text-shadow: none;
-  padding: 0 10px;
+  padding: $SCALE - 10;
   margin: 0;
 }
 
@@ -27,8 +29,13 @@ image {
 button,
 .button {
   @extend .module;
+  padding: $SCALE;
   font-size: $ICON-SIZE;
-  background: $secondary-background;
+  background: $background-secondary;
+
+  min-width: 20px;
+  min-height: 20px;
+
   &:hover {
     background: $background;
     text-shadow: $foreground 0 0 1px;
@@ -73,12 +80,13 @@ filechooserbutton * {
 }
 
 entry {
+  padding: $SCALE;
+  border-radius: 10px;
   color: $foreground;
-  background: transparent;
+  background: $background-secondary;
   border: unset;
   &:focus {
-    box-shadow: none;
-    background: $module-background;
+    box-shadow: 0px 4px 10px $background; // Only bottom shadow
   }
 }
 
@@ -105,7 +113,7 @@ levelbar {
   margin: 0;
   padding: 0;
   trough {
-    background: $module-background;
+    background: $background-transparent;
     border: unset;
     min-height: 5px;
     padding: 5px;
@@ -150,11 +158,11 @@ scrolledwindow {
 }
 
 .slider {
-  padding: 0px 2px;
+  padding: 0px;
 
   trough {
     border-radius: 10px;
-    background: $module-background;
+    background: $background-transparent;
     color: black;
 
     slider {
@@ -175,11 +183,12 @@ scrolledwindow {
 }
 
 .custom-revealer {
-  @extend .module;
-  &:hover {
-    background: $background;
-    text-shadow: $foreground 0 0 1px;
-  }
+  @extend button;
+
+  // .content {
+  //   padding: 0 10px;
+  // }
+
   label {
     margin: 0 10px;
   }

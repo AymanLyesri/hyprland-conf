@@ -6,65 +6,28 @@
 
   .actions {
     .top {
-      margin: 5px;
-    }
-    .favorite-event:hover {
-      background: $module-background;
-      .favorite {
-        min-height: 169px;
-      }
-    }
-    .favorites {
-      @extend .module;
-      padding: 5px;
-      margin-bottom: 5px;
-
-      .favorite {
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: cover;
-
-        // border-top: 5px solid $background;
-        // border-bottom: 5px solid $background;
-        border-radius: 10px;
-
-        min-width: 69px;
-        min-height: 69px;
-        font-size: 10px;
-        padding: 5px;
-
-        .delete {
-          padding: 1px;
-        }
-      }
-      .add {
+      > button {
+        margin: 5px;
+        padding: $SCALE / 2;
       }
     }
     .bottom {
-      // margin: 5px;
-      .action-trigger {
-        // font-size: 15px;
+      > button {
         margin: 5px;
-        min-width: 30px;
-        padding: 0px;
-        border-radius: 10px;
-      }
-      entry {
-        background: $module-background;
-        border-radius: 0px;
-        padding: 0px;
-        margin: 0px;
+        padding: $SCALE / 2;
       }
 
-      button,
-      .button {
-        min-height: 0px;
-        min-width: 0px;
-        border-radius: 0px;
+      .actions {
+        entry {
+          // background: $background;
+          border-radius: 0px;
+          padding: 0px;
+          margin: 0px;
+        }
 
-        // &.pin {
-        //   border-radius: 10px;
-        // }
+        button {
+          border-radius: 0px;
+        }
       }
     }
   }

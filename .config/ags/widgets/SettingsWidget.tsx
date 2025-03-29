@@ -1,9 +1,11 @@
 import { App, Astal, Gdk, Gtk, Widget } from "astal/gtk3";
 import hyprland from "gi://AstalHyprland";
 import {
+  globalFontSize,
   globalIconSize,
   globalMargin,
   globalOpacity,
+  globalScale,
   globalSettings,
 } from "../variables";
 import { bind, execAsync, Variable } from "astal";
@@ -46,7 +48,8 @@ const agsSetting = (setting: Variable<AGSSetting>) => {
         label={bind(setting).as(
           (setting) =>
             `${Math.round(
-              (setting.value / (setting.max - setting.min)) * 100
+              ((setting.value - setting.min) / (setting.max - setting.min)) *
+                100
             )}%`
         )}
       />
@@ -58,14 +61,13 @@ const agsSetting = (setting: Variable<AGSSetting>) => {
         step={1}
         width_request={169}
         className="slider"
-        value={setting.get().value / (setting.get().max - setting.get().min)}
+        min={setting.get().min}
+        max={setting.get().max}
+        value={setting.get().value}
         onValueChanged={({ value }) =>
           setting.set({
             name: setting.get().name,
-            value: normalizeValue(
-              value * (setting.get().max - setting.get().min),
-              setting.get().type
-            ),
+            value: normalizeValue(value, setting.get().type),
             type: setting.get().type,
             min: setting.get().min,
             max: setting.get().max,
@@ -288,6 +290,8 @@ const Settings = () => {
           <label className={"category"} label="AGS" />
           {agsSetting(globalOpacity)}
           {agsSetting(globalIconSize)}
+          {agsSetting(globalScale)}
+          {agsSetting(globalFontSize)}
           <label className={"category"} label="Hyprland" />
           {hyprlandSettings}
         </box>

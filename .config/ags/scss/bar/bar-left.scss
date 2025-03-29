@@ -65,7 +65,7 @@ $custom-background: linear-gradient(
 
 @keyframes workspace-focus {
   0% {
-    background: $module-background;
+    background: $background-transparent;
   }
   100% {
     background: $custom-background;
@@ -77,6 +77,6 @@ $custom-background: linear-gradient(
     background: $custom-background;
   }
   100% {
-    background: $module-background;
+    background: $background-transparent;
   }
 }

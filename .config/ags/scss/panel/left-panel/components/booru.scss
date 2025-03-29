@@ -6,7 +6,6 @@
     .actions {
       background: $background;
       button {
-        padding: 2px;
         border-radius: 0px;
       }
     }
@@ -15,7 +14,7 @@
   .bottom {
     .pages {
       button {
-        padding: 5px;
+        padding: $SCALE / 2 $SCALE;
       }
     }
 
@@ -23,13 +22,11 @@
       @extend .module;
       padding: 10px;
       .tags {
-        padding-bottom: 15px;
-
         .explicit {
           background: $red;
         }
         button {
-          padding: 5px 10px;
+          padding: $SCALE / 2 $SCALE;
 
           &:hover {
             background: $red;
@@ -37,9 +34,8 @@
         }
       }
       .fetched-tags {
-        padding-bottom: 15px;
         button {
-          padding: 5px 10px;
+          padding: $SCALE / 2 $SCALE;
           background: $background;
 
           &:hover {

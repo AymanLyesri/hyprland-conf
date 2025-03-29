@@ -29,6 +29,8 @@ export const defaultSettings: Settings = {
   },
   globalOpacity: { name: "Global Opacity", value: 0.9, type: "float", min: 0, max: 1 },
   globalIconSize: { name: "Global Icon Size", value: 10, type: "int", min: 5, max: 20 },
+  globalScale: { name: "Global Scale", value: 10, type: "int", min: 10, max: 30 },
+  globalFontSize: { name: "Global Font Size", value: 16, type: "int", min: 10, max: 30 },
   bar: {
     visibility: true,
     lock: true,

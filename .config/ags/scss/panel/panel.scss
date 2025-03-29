@@ -29,8 +29,7 @@
     button,
     .icon {
       border-radius: 0px;
-      padding: 10px 0px;
-      min-width: 20px;
+      padding: $SCALE $SCALE - 10;
     }
 
     .widget-actions {
@@ -67,7 +66,7 @@
     .api-list {
       border-bottom: 1px solid $secondary;
       button {
-        padding: 5px 15px;
+        padding: $SCALE / 2;
         border-radius: 10px 10px 0px 0px;
       }
       // button.checked {

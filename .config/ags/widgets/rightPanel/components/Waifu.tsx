@@ -134,7 +134,7 @@ function Actions() {
       transitionDuration={globalTransition}
       transition_type={Gtk.RevealerTransitionType.SLIDE_UP}
       child={
-        <box vertical>
+        <box className={"actions"} vertical>
           <box>
             <button
               label=""
@@ -255,20 +255,17 @@ function Image() {
           className="image"
           hexpand={false}
           vexpand={false}
-          css={bind(
+          heightRequest={bind(
             Variable.derive(
-              [bind(waifuCurrent), bind(rightPanelWidth)],
-              (waifuCurrent, width) => {
-                return `
-                    background-image: url("${waifuCurrent.url_path}");
-                    min-height: ${
-                      (Number(waifuCurrent.height) /
-                        Number(waifuCurrent.width)) *
-                      width
-                    }px;
-                    `;
-              }
+              [waifuCurrent, rightPanelWidth],
+              (waifuCurrent, width) =>
+                (Number(waifuCurrent.height) / Number(waifuCurrent.width)) *
+                width
             )
+          )}
+          css={bind(waifuCurrent).as(
+            (waifuCurrent) =>
+              `background-image: url("${waifuCurrent.url_path}");`
           )}
           child={Actions()}></box>
       }></eventbox>

@@ -32,7 +32,7 @@ export default (
       }}
       onClick={on_primary_click}
       child={
-        <box vertical={vertical}>
+        <box className={"content"} vertical={vertical}>
           {trigger}
           {revealer}
         </box>

@@ -38,8 +38,13 @@ interface Result {
 
 const Results = Variable<Result[]>([]);
 const quickApps = globalSettings.get().quickLauncher.apps;
-
 const QuickApps = () => {
+  // Group quickApps into pairs for two-in-a-row display
+  const appPairs = [];
+  for (let i = 0; i < quickApps.length; i += 2) {
+    appPairs.push(quickApps.slice(i, i + 2));
+  }
+
   const apps = (
     <revealer
       transition_type={Gtk.RevealerTransitionType.SLIDE_DOWN}
@@ -47,40 +52,38 @@ const QuickApps = () => {
       revealChild={bind(Results).as((results) => results.length === 0)}
       child={
         <scrollable
-          vexpand={true}
-          hexpand={true}
-          widthRequest={500}
-          hscroll={Gtk.PolicyType.ALWAYS}
-          vscroll={Gtk.PolicyType.NEVER}
+          heightRequest={100}
           child={
-            <box className="quick-apps" spacing={5}>
-              {quickApps.map((app) => (
-                <button
-                  className="quick-app"
-                  onClicked={() => {
-                    hyprland.message_async(`dispatch exec ${app.exec}`, () => {
-                      hideWindow(`app-launcher-${monitorName.get()}`);
-                    });
-                  }}
-                  child={
-                    <box spacing={5}>
-                      <label className="icon" label={app.icon} />
-                      <label label={app.name} />
-                    </box>
-                  }></button>
+            <box className="quick-apps" spacing={5} vertical>
+              {appPairs.map((pair, index) => (
+                <box spacing={5}>
+                  {pair.map((app) => (
+                    <button
+                      hexpand
+                      className="quick-app"
+                      onClicked={() => {
+                        hyprland.message_async(
+                          `dispatch exec ${app.exec}`,
+                          () => {
+                            hideWindow(`app-launcher-${monitorName.get()}`);
+                          }
+                        );
+                      }}
+                      child={
+                        <box spacing={5}>
+                          <label className="icon" label={app.icon} />
+                          <label label={app.name} />
+                        </box>
+                      }></button>
+                  ))}
+                </box>
               ))}
             </box>
           }></scrollable>
       }></revealer>
   );
 
-  return (
-    <box
-      className="quick-launcher"
-      halign={Gtk.Align.CENTER}
-      spacing={5}
-      child={apps}></box>
-  );
+  return <box className="quick-launcher" spacing={5} child={apps}></box>;
 };
 
 let debounceTimer: any;

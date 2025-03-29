@@ -41,6 +41,8 @@ export interface Settings
     }
     globalOpacity: AGSSetting,
     globalIconSize: AGSSetting,
+    globalScale: AGSSetting,
+    globalFontSize: AGSSetting,
     bar: {
         visibility: boolean,
         lock: boolean,

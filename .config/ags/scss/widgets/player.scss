@@ -2,7 +2,6 @@
   @extend .module;
   padding: 0px;
   border-radius: 15px;
-  // background: black;
 
   .player-content {
     border-radius: 15px;
@@ -29,26 +28,20 @@
 
   .title {
     margin: 5px 0px;
+    background: $background-secondary;
+    padding: 0px 10px;
+    border-radius: 50px;
     color: $secondary;
   }
 
   .artist {
     margin: 5px 0px;
-  }
-
-  .icon {
-    margin: 0px;
-    padding: 0px;
-    // font-size: 1px;
+    background: $background-secondary;
+    padding: 0px 10px;
+    border-radius: 50px;
   }
 
   button {
-    min-height: 1rem;
-    min-width: 1rem;
-    // padding: 0.3rem;
-  }
-
-  button.play-pause {
-    margin: 0 0.3rem;
+    padding: $SCALE - 10 $SCALE;
   }
 }
