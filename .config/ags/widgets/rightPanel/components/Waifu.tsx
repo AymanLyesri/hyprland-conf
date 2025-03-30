@@ -19,6 +19,7 @@ const Hyprland = hyprland.get_default();
 import { Waifu } from "../../../interfaces/waifu.interface";
 import { readJson } from "../../../utils/json";
 import { booruApis } from "../../../constants/api.constants";
+import { previewFloatImage } from "../../../utils/image";
 const waifuDir = "./assets/booru/waifu";
 
 const terminalWaifuPath = `./assets/terminal/icon.webp`;
@@ -38,9 +39,6 @@ const fetchImage = async (image: Waifu, saveDir: string) => {
 };
 
 const GetImageByid = async (id: number) => {
-  print(`python ./scripts/search-booru.py 
-    --api ${waifuApi.get().value} 
-    --id ${id}`);
   openProgress();
   try {
     const res = await execAsync(
@@ -54,7 +52,7 @@ const GetImageByid = async (id: number) => {
     fetchImage(image, waifuDir).then((image: Waifu) => {
       waifuCurrent.set({
         ...image,
-        url_path: waifuCurrent.get().url_path,
+        url_path: waifuDir + "/waifu.webp",
         api: waifuApi.get(),
       });
     });
@@ -80,13 +78,7 @@ const CopyImage = (image: Waifu) =>
     (err) => notify({ summary: "Error", body: err })
   );
 
-const OpenImage = (image: Waifu) =>
-  Hyprland.message_async(
-    `dispatch exec [float;size 50%] feh --scale-down $HOME/.config/ags/${image.url_path}`,
-    (res) => {
-      notify({ summary: "Waifu", body: image.url_path! });
-    }
-  );
+const OpenImage = (image: Waifu) => previewFloatImage(image.url_path!);
 
 const PinImageToTerminal = (image: Waifu) => {
   execAsync(

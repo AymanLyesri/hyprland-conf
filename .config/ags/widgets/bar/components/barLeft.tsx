@@ -91,9 +91,7 @@ function Workspaces() {
             className={class_names.join(" ")}
             label={icon}
             onClicked={() => {
-              Hyprland.message_async(`dispatch workspace ${id}`, (res) =>
-                print(res)
-              );
+              Hyprland.message_async(`dispatch workspace ${id}`, (res) => {});
             }}
           />
         );
@@ -129,9 +127,7 @@ const Special = (
     className="special"
     label={workspaceToIcon[0]}
     onClicked={() =>
-      Hyprland.message_async(`dispatch togglespecialworkspace`, (res) =>
-        print(res)
-      )
+      Hyprland.message_async(`dispatch togglespecialworkspace`, (res) => {})
     }
   />
 );
@@ -142,9 +138,7 @@ function OverView() {
       className="overview"
       label="󱗼"
       onClicked={() =>
-        Hyprland.message_async("dispatch hyprexpo:expo toggle", (res) =>
-          print(res)
-        )
+        Hyprland.message_async("dispatch hyprexpo:expo toggle", (res) => {})
       }
     />
   );

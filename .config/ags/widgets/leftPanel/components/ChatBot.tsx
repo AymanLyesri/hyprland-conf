@@ -14,6 +14,7 @@ const DEBOUNCE_TIME = 100;
 // State
 const imageGeneration = Variable<boolean>(false);
 const messages = Variable<Message[]>([]);
+const chatHistory = Variable<Message[]>([]);
 
 // Utils
 const getMessageFilePath = () =>
@@ -75,10 +76,15 @@ const saveMessages = () => {
 
 const sendMessage = async (message: Message) => {
   try {
-    const imgFlag = imageGeneration.get() ? "-img" : "";
+    // const imgFlag = imageGeneration.get() ? "-img" : "";
     const response = await execAsync(
-      `tgpt -q ${imgFlag} --provider ${chatBotApi.get().value} ` +
-        `--preprompt 'short and straight forward response' '${message.content}'`
+      `tgpt --quiet ` +
+        `--provider ${chatBotApi.get().value} ` +
+        `--preprompt 'short and straight forward response, 
+        ${JSON.stringify(chatHistory.get())
+          .replace(/'/g, `'"'"'`)
+          .replace(/`/g, "\\`")}' ` +
+        `'${message.content}'`
     );
 
     notify({ summary: "Message sent", body: response });
@@ -243,7 +249,11 @@ const BottomBar = () => (
 
 export default () => {
   chatBotApi.subscribe(() => fetchMessages());
-  messages.subscribe(() => saveMessages());
+  messages.subscribe(() => {
+    saveMessages();
+    // set the last 10 messages to chat history
+    chatHistory.set(messages.get().slice(-10));
+  });
 
   fetchMessages();
 

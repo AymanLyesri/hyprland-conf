@@ -16,9 +16,8 @@ import ToggleButton from "../../toggleButton";
 import { notify } from "../../../utils/notification";
 import { closeProgress, openProgress } from "../../Progress";
 
-import hyprland from "gi://AstalHyprland";
 import { booruApis } from "../../../constants/api.constants";
-const Hyprland = hyprland.get_default();
+import { ImageDialog } from "./ImageDialog";
 
 const images = Variable<Waifu[]>([]);
 
@@ -26,7 +25,6 @@ const fetchedTags = Variable<string[]>([]);
 
 const imagePreviewPath = "./assets/booru/previews";
 const imageUrlPath = "./assets/booru/images";
-const waifuPath = "./assets/booru/waifu";
 
 const ensureRatingTagFirst = () => {
   let tags: string[] = booruTags.get();
@@ -44,58 +42,6 @@ const cleanUp = () => {
   execAsync(`bash -c "rm -rf ${imageUrlPath}/*"`);
 };
 
-const fetchImage = async (
-  image: Waifu,
-  savePath: string,
-  name: string = ""
-) => {
-  openProgress();
-  const url = image.url!;
-  name = name || String(image.id);
-  image.url_path = `${savePath}/${name}.webp`;
-
-  await execAsync(`bash -c "mkdir -p ${savePath}"`).catch((err) =>
-    notify({ summary: "Error", body: String(err) })
-  );
-
-  await execAsync(`curl -o ${savePath}/${name}.webp ${url}`).catch((err) =>
-    notify({ summary: "Error", body: String(err) })
-  );
-  closeProgress();
-};
-
-const waifuThisImage = (image: Waifu) => {
-  fetchImage(image, waifuPath, "waifu").then(() => {
-    waifuCurrent.set(image);
-  });
-};
-
-const OpenInBrowser = (image: Waifu) =>
-  execAsync(
-    `bash -c "xdg-open '${booruApi.get().idSearchUrl}${
-      image.id
-    }' && xdg-settings get default-web-browser | sed 's/\.desktop$//'"`
-  )
-    .then((browser) =>
-      notify({ summary: "Waifu", body: `opened in ${browser}` })
-    )
-    .catch((err) => notify({ summary: "Error", body: err }));
-
-const CopyImage = (image: Waifu) =>
-  fetchImage(image, imageUrlPath).then(() => {
-    execAsync(
-      `bash -c "wl-copy --type image/png < ${imageUrlPath}/${image.id}.webp"`
-    ).catch((err) => notify({ summary: "Error", body: err }));
-  });
-
-const OpenImage = (image: Waifu) => {
-  fetchImage(image, imageUrlPath).then(() => {
-    Hyprland.message_async(
-      `dispatch exec [float;size 50%] feh --scale-down $HOME/.config/ags/${imageUrlPath}/${image.id}.webp`,
-      (res) => {}
-    );
-  });
-};
 const fetchImages = async () => {
   try {
     openProgress();
@@ -125,10 +71,10 @@ const fetchImages = async () => {
     // 5. Download images in parallel
     const downloadPromises = newImages.map((image) =>
       execAsync(
-        `bash -c "[ -e "${imagePreviewPath}/${image.id}.jpg" ] || curl -o "${imagePreviewPath}/${image.id}.jpg" "${image.preview}""`
+        `bash -c "[ -e "${imagePreviewPath}/${image.id}.webp" ] || curl -o "${imagePreviewPath}/${image.id}.webp" "${image.preview}""`
       )
         .then(() => {
-          image.preview_path = `${imagePreviewPath}/${image.id}.jpg`;
+          image.preview_path = `${imagePreviewPath}/${image.id}.webp`;
           return image;
         })
         .catch((err) => {
@@ -172,50 +118,7 @@ const fetchTags = async (tag: string) => {
     --api ${booruApi.get().value} 
     --tag '${tag}'`
   );
-  print(res);
   fetchedTags.set(readJson(res));
-};
-
-const imageActions = (image: Waifu) => {
-  return (
-    <revealer
-      revealChild={false}
-      visible
-      transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
-      transitionDuration={globalTransition}
-      child={
-        <box
-          className="actions"
-          hexpand
-          valign={Gtk.Align.END}
-          halign={Gtk.Align.BASELINE}>
-          <button
-            valign={Gtk.Align.START}
-            label=""
-            onClicked={() => OpenInBrowser(image)}
-            hexpand
-          />
-          <button
-            valign={Gtk.Align.START}
-            label=""
-            onClicked={() => CopyImage(image)}
-            hexpand
-          />
-          <button
-            valign={Gtk.Align.START}
-            label=""
-            onClicked={() => OpenImage(image)}
-            hexpand
-          />
-          <button
-            valign={Gtk.Align.START}
-            label=""
-            onClicked={() => waifuThisImage(image)}
-            hexpand
-          />
-        </box>
-      }></revealer>
-  );
 };
 
 const Images = () => {
@@ -235,26 +138,17 @@ const Images = () => {
               .map((row) => (
                 <box spacing={5}>
                   {row.map((image) => {
-                    const revealer = imageActions(image);
                     return (
-                      <eventbox
-                        onHover={() => (revealer.reveal_child = true)}
-                        onHoverLost={() => (revealer.reveal_child = false)}
-                        child={
-                          <box
-                            hexpand
-                            heightRequest={bind(leftPanelWidth).as(
-                              (w) => w / 2
-                            )}
-                            className="image"
-                            css={`
-                              background-image: url("${image.preview_path}");
-                              background-size: cover;
-                              background-position: center;
-                            `}
-                            child={revealer}
-                          />
-                        }
+                      <button
+                        onClick={() => {
+                          new ImageDialog(image);
+                        }}
+                        hexpand
+                        heightRequest={bind(leftPanelWidth).as((w) => w / 2)}
+                        className="image"
+                        css={`
+                          background-image: url("${image.preview_path}");
+                        `}
                       />
                     );
                   })}
@@ -317,7 +211,6 @@ const LimitDisplay = () => {
         onValueChanged={(self) => {
           // Clear the previous timeout if any
           if (debounceTimer) clearTimeout(debounceTimer);
-          print(self.value);
 
           // Set a new timeout with the desired delay (e.g., 300ms)
           debounceTimer = setTimeout(() => {

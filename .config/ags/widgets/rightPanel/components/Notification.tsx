@@ -145,7 +145,9 @@ export default ({
       className="copy"
       label=""
       onClicked={() =>
-        execAsync(`wl-copy "${n.body}"`).catch((err) => print(err))
+        execAsync(`wl-copy "${n.body}"`).catch((err) =>
+          notify({ summary: "Error", body: err })
+        )
       }
     />
   );

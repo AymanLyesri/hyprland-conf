@@ -176,6 +176,7 @@ const Entry = (
                 .map((app) => ({
                   app_name: app.name,
                   app_icon: app.iconName,
+                  app_type: "app",
                   app_arg: args.join(" "),
                   app_launch: () =>
                     !args.join("")
@@ -198,7 +199,10 @@ const Entry = (
             }
           }
         } catch (err) {
-          print(err);
+          notify({
+            summary: "Error",
+            body: err instanceof Error ? err.message : String(err),
+          });
         }
       }, 100); // 100ms delay
     }}
@@ -222,11 +226,7 @@ const organizeResults = (results: Result[]) => {
       halign={
         element.app_type === "emoji" ? Gtk.Align.CENTER : Gtk.Align.START
       }>
-      {element.app_type === "emoji" ? (
-        <icon icon={element.app_icon} />
-      ) : (
-        <box />
-      )}
+      {element.app_type === "app" ? <icon icon={element.app_icon} /> : <box />}
       <label label={element.app_name} />
       <label className="argument" label={element.app_arg || ""} />
     </box>

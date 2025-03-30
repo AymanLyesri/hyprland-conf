@@ -21,6 +21,14 @@
     padding: 0px;
     margin: 0px;
 
+    &:hover {
+      min-height: 100px;
+      min-width: 200px;
+      background-position: center;
+      background-repeat: no-repeat;
+      border-radius: 20px;
+    }
+
     &.focused {
       min-height: 150px;
       min-width: 150px;
@@ -29,15 +37,6 @@
         min-width: 300px;
         border-radius: 50px;
       }
-    }
-
-    &:hover {
-      min-height: 100px;
-      min-width: 200px;
-      background-position: center;
-      background-size: 400px;
-      background-repeat: no-repeat;
-      border-radius: 20px;
     }
 
     &:active {

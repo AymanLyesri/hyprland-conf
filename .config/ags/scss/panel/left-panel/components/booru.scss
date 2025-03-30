@@ -2,11 +2,17 @@
   .images {
     .image {
       border-radius: 15px;
-    }
-    .actions {
-      background: $background;
-      button {
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+
+      &:hover {
         border-radius: 0px;
+      }
+
+      &:active {
+        box-shadow: 0px 0px 20px 100px $background inset;
+        transition: all 0.2s;
       }
     }
   }

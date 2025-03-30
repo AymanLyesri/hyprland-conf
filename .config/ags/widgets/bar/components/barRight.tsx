@@ -19,6 +19,7 @@ import {
   rightPanelLock,
   rightPanelVisibility,
 } from "../../../variables";
+import { notify } from "../../../utils/notification";
 
 function Theme() {
   function getIcon() {
@@ -94,7 +95,9 @@ function Volume() {
   );
 
   return CustomRevealer(icon, slider, "", () =>
-    execAsync(`pavucontrol`).catch((err) => print(err))
+    execAsync(`pavucontrol`).catch((err) =>
+      notify({ summary: "pavu", body: err })
+    )
   );
 }
 

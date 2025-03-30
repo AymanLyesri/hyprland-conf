@@ -154,7 +154,7 @@ function Media({ monitorName }: { monitorName: string }) {
         <eventbox
           className="media-event"
           onClick={() =>
-            hyprland.message_async("dispatch workspace 4", (res) => print(res))
+            hyprland.message_async("dispatch workspace 4", (res) => {})
           }
           on_hover={() => {
             showWindow(`media-${monitorName}`);
