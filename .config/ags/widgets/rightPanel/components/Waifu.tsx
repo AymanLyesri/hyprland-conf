@@ -96,17 +96,17 @@ const PinImageToTerminal = (image: Waifu) => {
 };
 
 function Actions() {
-  const top = (
-    <box
-      className="top"
-      child={
-        <button
-          label=""
-          className="pin"
-          onClicked={() => PinImageToTerminal(waifuCurrent.get())}
-        />
-      }></box>
-  );
+  // const top = (
+  //   <box
+  //     className="top"
+  //     child={
+  //       <button
+  //         label=""
+  //         className="pin"
+  //         onClicked={() => PinImageToTerminal(waifuCurrent.get())}
+  //       />
+  //     }></box>
+  // );
 
   const Entry = (
     <entry
@@ -139,6 +139,12 @@ function Actions() {
               hexpand
               className="browser"
               onClicked={() => OpenInBrowser(waifuCurrent.get())}
+            />
+            <button
+              label=""
+              hexpand
+              className="pin"
+              onClicked={() => PinImageToTerminal(waifuCurrent.get())}
             />
             <button
               label=""
@@ -231,9 +237,8 @@ function Actions() {
   );
 
   return (
-    <box className="actions" vertical>
-      {top}
-      {bottom}
+    <box className="actions" vertical child={bottom}>
+      {/* {top} */}
     </box>
   );
 }

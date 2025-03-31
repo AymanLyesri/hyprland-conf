@@ -51,7 +51,13 @@ const PinImageToTerminal = (image: Waifu) => {
 };
 
 const waifuThisImage = async (image: Waifu) => {
-  waifuCurrent.set(image);
+  execAsync(
+    `bash -c "mkdir -p ${waifuPath} && cp ${image.url_path} ${waifuPath}/waifu.webp"`
+  )
+    .then(() =>
+      waifuCurrent.set({ ...image, url_path: waifuPath + "/waifu.webp" })
+    )
+    .catch((err) => notify({ summary: "Error", body: String(err) }));
 };
 
 const OpenInBrowser = (image: Waifu) =>
@@ -93,16 +99,33 @@ export class ImageDialog {
     // Create main vertical box to hold everything
     const mainBox = new Gtk.Box({
       orientation: Gtk.Orientation.VERTICAL,
-      spacing: 10,
-      margin: 10,
+      margin: 5,
     });
     contentArea.add(mainBox);
+
+    // create button box
+    const buttonBoxTop = new Gtk.Box({
+      orientation: Gtk.Orientation.HORIZONTAL,
+      halign: Gtk.Align.END,
+      spacing: 10,
+    });
+    const closeButton = new Button({
+      label: "",
+      halign: Gtk.Align.CENTER,
+      valign: Gtk.Align.CENTER,
+    });
+    closeButton.connect("clicked", () => {
+      this.dialog.destroy();
+    });
+    buttonBoxTop.add(closeButton);
+    mainBox.add(buttonBoxTop);
 
     // Add image
     const image = new Gtk.Image({
       file: img.preview_path,
       hexpand: false,
       vexpand: false,
+      marginTop: 10,
     });
     mainBox.add(image);
 
@@ -111,7 +134,7 @@ export class ImageDialog {
       orientation: Gtk.Orientation.HORIZONTAL,
       halign: Gtk.Align.CENTER,
       spacing: 10,
-      margin_top: 10,
+      marginTop: 10,
     });
 
     // Create buttons with icons

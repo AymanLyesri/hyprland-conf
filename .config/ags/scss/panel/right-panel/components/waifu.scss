@@ -5,18 +5,11 @@
   border-radius: 10px;
 
   .actions {
-    .top {
-      > button {
-        margin: 5px;
-        padding: $SCALE / 2;
-      }
-    }
     .bottom {
-      > button {
+      .action-trigger {
         margin: 5px;
-        padding: $SCALE / 2;
+        padding: 5px;
       }
-
       .actions {
         entry {
           // background: $background;
