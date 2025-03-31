@@ -21,6 +21,7 @@ export interface AGSSetting
 
 export interface Settings
 {
+    dateFormat: string,
     hyprsunset: {
         kelvin: number,
     },

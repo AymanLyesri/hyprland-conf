@@ -10,7 +10,7 @@
   .window-actions {
     .close {
       padding: 10px 20px;
-      font-size: 1.5rem;
+      font-size: 1.5em;
     }
   }
 
@@ -23,14 +23,14 @@
   .date {
     @extend .module;
     padding: 20px;
-    font-size: 3rem;
+    font-size: 3em;
   }
   .profile {
     @extend .module;
     padding: 33px;
     .user-name {
       margin: 25px 0px;
-      font-size: 1.5rem;
+      font-size: 1.5em;
       .name {
         color: $secondary;
       }
@@ -60,7 +60,7 @@
     button {
       min-height: 69px;
       min-width: 69px;
-      font-size: 3rem;
+      font-size: 3em;
       background: $background-transparent;
       &:hover {
         background: $background;

@@ -43,6 +43,6 @@ App.start({
     css: getCssPath(),
     main()
     {
-        logTime("Main", main);
+        main();
     },
 });

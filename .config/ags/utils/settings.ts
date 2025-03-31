@@ -5,10 +5,12 @@ import { Settings } from "../interfaces/settings.interface";
 import { leftPanelWidgetSelectors } from "../constants/widget.constants";
 import { booruApis, chatBotApis } from "../constants/api.constants";
 import { WaifuClass } from "../interfaces/waifu.interface";
+import { dateFormats } from "../constants/date.constants";
 export const settingsPath = "./assets/settings/settings.json";
 
 
 export const defaultSettings: Settings = {
+  dateFormat: dateFormats[0],
   hyprsunset: {
     kelvin: 6500
   },
@@ -30,7 +32,7 @@ export const defaultSettings: Settings = {
   globalOpacity: { name: "Global Opacity", value: 0.9, type: "float", min: 0, max: 1 },
   globalIconSize: { name: "Global Icon Size", value: 10, type: "int", min: 5, max: 20 },
   globalScale: { name: "Global Scale", value: 10, type: "int", min: 10, max: 30 },
-  globalFontSize: { name: "Global Font Size", value: 16, type: "int", min: 10, max: 30 },
+  globalFontSize: { name: "Global Font Size", value: 12, type: "int", min: 12, max: 30 },
   bar: {
     visibility: true,
     lock: true,

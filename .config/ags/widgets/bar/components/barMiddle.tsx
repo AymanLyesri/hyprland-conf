@@ -10,6 +10,7 @@ import { lookupIcon, playerToIcon } from "../../../utils/icon";
 import {
   date_less,
   date_more,
+  dateFormat,
   emptyWorkspace,
   focusedClient,
   globalTransition,
@@ -19,6 +20,7 @@ import { App, Astal, Gtk } from "astal/gtk3";
 import CustomRevealer from "../../CustomRevealer";
 import { notify } from "../../../utils/notification";
 import { showWindow } from "../../../utils/window";
+import { dateFormats } from "../../../constants/date.constants";
 
 cava?.set_bars(12);
 const bars = Variable("");
@@ -171,7 +173,16 @@ function Clock() {
 
   const trigger = <label className="trigger" label={bind(date_less)}></label>;
 
-  return CustomRevealer(trigger, revealer, "clock");
+  return (
+    <eventbox
+      onClick={() => {
+        const currentFormat = dateFormat.get();
+        const currentIndex = dateFormats.indexOf(currentFormat);
+        dateFormat.set(dateFormats[(currentIndex + 1) % dateFormats.length]);
+      }}
+      child={CustomRevealer(trigger, revealer, "clock")}
+    />
+  );
 }
 
 function Bandwidth() {

@@ -47,8 +47,15 @@ globalFontSize.subscribe((value) =>
 export const globalMargin = 14
 export const globalTransition = 500
 
-export const date_less = Variable("").poll(1000, () => GLib.DateTime.new_now_local().format("%H:%M")!);
+export const dateFormat = Variable<string>(getSetting("dateFormat"));
+export const date_less = Variable("").poll(1000, () => GLib.DateTime.new_now_local().format(dateFormat.get())!);
 export const date_more = Variable("").poll(1000, () => GLib.DateTime.new_now_local().format(":%S %b %e, %A.")!);
+dateFormat.subscribe((value) =>
+{
+    setSetting("date.format", value);
+    date_less.set(GLib.DateTime.new_now_local().format(value)!);
+    // date_more.set(GLib.DateTime.new_now_local().format(value)!);
+});
 
 export const barVisibility = Variable<boolean>(getSetting("bar.visibility"));
 barVisibility.subscribe((value) => setSetting("bar.visibility", value));

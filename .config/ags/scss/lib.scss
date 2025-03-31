@@ -2,7 +2,6 @@
 
 * {
   transition: all 0.5s;
-  font-family: "JetBrainsMono NFP", "Noto Font";
 }
 
 // $SCALE: 10;
@@ -14,16 +13,18 @@
   border: none;
   box-shadow: none;
   border-radius: 10px;
-  font-size: 0.8rem;
-  font-weight: 700;
+  font-size: $FONT-SIZE;
   text-shadow: none;
   padding: $SCALE - 10;
   margin: 0;
 }
 
 .icon,
-image {
+image,
+button,
+.button {
   font-size: $ICON-SIZE;
+  font-family: "JetBrainsMono NFP";
   color: $foreground;
 }
 
@@ -31,11 +32,11 @@ button,
 .button {
   @extend .module;
   padding: $SCALE;
-  font-size: $ICON-SIZE;
-  background: $background-secondary;
 
   min-width: 20px;
   min-height: 20px;
+
+  background: $background-secondary;
 
   &:hover {
     background: $background;
@@ -57,9 +58,6 @@ filechooserbutton * {
   min-height: 0px;
   padding: 0px;
   margin: 0px;
-  image {
-    font-size: 0rem;
-  }
 }
 
 .danger {
@@ -152,7 +150,7 @@ scrolledwindow {
   padding: 0;
   slider {
     border-radius: 10px;
-    font-size: 0.8rem;
+    font-size: 0.9em;
     margin: 5px;
     background: mix($foreground, $secondary, 50%);
   }
@@ -184,7 +182,14 @@ scrolledwindow {
 }
 
 .custom-revealer {
-  @extend button;
+  @extend .module;
+
+  background: $background-secondary;
+
+  &:hover {
+    background: $background;
+    text-shadow: $foreground 0 0 1px;
+  }
 
   // .content {
   //   padding: 0 10px;

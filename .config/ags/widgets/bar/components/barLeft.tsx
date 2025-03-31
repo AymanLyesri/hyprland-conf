@@ -51,7 +51,7 @@ function Workspaces() {
             : emptyIcon; // Icon for extra workspaces beyond 10
         const isFocused = currentWorkspace == id; // Determine if the current ID is focused
 
-        let class_names: string[] = ["button"]; // Default class names
+        let class_names: string[] = []; // Default class names
 
         if (isFocused) {
           if (previousWorkspace !== currentWorkspace) {

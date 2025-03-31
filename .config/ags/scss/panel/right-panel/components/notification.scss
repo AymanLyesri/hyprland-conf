@@ -16,22 +16,15 @@
     min-width: 20px;
     min-height: 10px;
     font-size: 5px;
-
-    // label {
-    //   font-size: 10px;
-    //   font-weight: 800;
-    //   color: $foreground;
-    // }
   }
 
   .app-name {
-    font-size: 0.7rem;
-    font-weight: 900;
+    font-size: 0.9em;
     color: $foreground;
   }
 
   .time {
-    font-size: 0.7rem;
+    font-size: 0.9em;
     color: $foreground-secondary;
   }
 
@@ -65,13 +58,12 @@
 
   .title {
     color: $secondary;
-    font-size: 0.9rem;
-    font-weight: 900;
+    // font-size: 0.9em;
   }
 
   .body {
     color: $foreground-secondary;
-    font-size: 0.8rem;
+    font-size: 0.9em;
   }
   .actions {
     button {
@@ -95,8 +87,6 @@
         border-radius: 0px 10px 10px 0px;
       }
     }
-    // margin: 0 0.4rem;
-    // margin-top: 0.8rem;
   }
 }
 

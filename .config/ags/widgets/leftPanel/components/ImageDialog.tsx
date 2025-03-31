@@ -1,5 +1,5 @@
 import { closeProgress, openProgress } from "../../Progress";
-import { execAsync } from "astal";
+import { bind, execAsync, Variable } from "astal";
 import { notify } from "../../../utils/notification";
 import { booruApi, waifuCurrent } from "../../../variables";
 import { Waifu } from "../../../interfaces/waifu.interface";
@@ -7,10 +7,13 @@ import { Waifu } from "../../../interfaces/waifu.interface";
 import hyprland from "gi://AstalHyprland";
 import { previewFloatImage } from "../../../utils/image";
 import { Gdk, Gtk } from "astal/gtk3";
+import { Button } from "astal/gtk3/widget";
 const Hyprland = hyprland.get_default();
 
 const waifuPath = "./assets/booru/waifu";
 const imageUrlPath = "./assets/booru/images";
+
+const terminalWaifuPath = `./assets/terminal/icon.webp`;
 
 const fetchImage = async (
   image: Waifu,
@@ -30,16 +33,25 @@ const fetchImage = async (
     `bash -c "[ -e "${imageUrlPath}/${image.id}.webp" ] || curl -o ${savePath}/${name}.webp ${url}"`
   ).catch((err) => notify({ summary: "Error", body: String(err) }));
   closeProgress();
+};
 
-  return image;
+const PinImageToTerminal = (image: Waifu) => {
+  execAsync(
+    `bash -c "cmp -s ${image.url_path} ${terminalWaifuPath} && { rm ${terminalWaifuPath}; echo 1; } || { cp ${image.url_path} ${terminalWaifuPath}; echo 0; }"`
+  )
+    .then((output) =>
+      notify({
+        summary: "Waifu",
+        body: `${
+          Number(output) == 0 ? "Pinned To Terminal" : "UN-Pinned from Terminal"
+        }`,
+      })
+    )
+    .catch((err) => notify({ summary: "Error", body: err }));
 };
 
 const waifuThisImage = async (image: Waifu) => {
-  execAsync(`bash -c "curl -o ${waifuPath}/waifu.webp ${image.url}"`)
-    .then(() => {
-      waifuCurrent.set(image);
-    })
-    .catch((err) => notify({ summary: "Error", body: String(err) }));
+  waifuCurrent.set(image);
 };
 
 const OpenInBrowser = (image: Waifu) =>
@@ -54,23 +66,20 @@ const OpenInBrowser = (image: Waifu) =>
     .catch((err) => notify({ summary: "Error", body: err }));
 
 const CopyImage = (image: Waifu) =>
-  fetchImage(image, imageUrlPath).then(() => {
-    execAsync(
-      `bash -c "wl-copy --type image/png < ${imageUrlPath}/${image.id}.webp"`
-    ).catch((err) => notify({ summary: "Error", body: err }));
-  });
+  execAsync(
+    `bash -c "wl-copy --type image/png < ${imageUrlPath}/${image.id}.webp"`
+  ).catch((err) => notify({ summary: "Error", body: err }));
 
 const OpenImage = (image: Waifu) => {
-  fetchImage(image, imageUrlPath).then(() => {
-    previewFloatImage(`${imageUrlPath}/${image.id}.webp`);
-  });
+  previewFloatImage(`${imageUrlPath}/${image.id}.webp`);
 };
 
 export class ImageDialog {
   private dialog: Gtk.Dialog;
+  private imageDownloaded = Variable<boolean>(false);
 
   constructor(img: Waifu) {
-    fetchImage(img, imageUrlPath);
+    fetchImage(img, imageUrlPath).finally(() => this.imageDownloaded.set(true));
     // Create dialog without default action area
     this.dialog = new Gtk.Dialog({
       title: "booru-image",
@@ -107,22 +116,49 @@ export class ImageDialog {
 
     // Create buttons with icons
     const buttons = [
-      { icon: "", tooltip: "Open in browser", response: 1 },
-      { icon: "", tooltip: "Copy image", response: 2 },
-      { icon: "", tooltip: "Open image", response: 3 },
-      { icon: "", tooltip: "Waifu this image", response: 4 },
+      {
+        icon: "",
+        needImageDownload: false,
+        tooltip: "Open in browser",
+        response: 1,
+      },
+      {
+        icon: "",
+        needImageDownload: true,
+        tooltip: "Copy image",
+        response: 2,
+      },
+      {
+        icon: "",
+        needImageDownload: true,
+        tooltip: "Waifu this image",
+        response: 3,
+      },
+      {
+        icon: "",
+        needImageDownload: true,
+        tooltip: "Open image",
+        response: 4,
+      },
+      {
+        icon: "",
+        needImageDownload: true,
+        tooltip: "Pin to terminal",
+        response: 5,
+      },
     ];
 
     buttons.forEach((btn) => {
-      const button = new Gtk.Button({
+      const button = new Button({
         label: btn.icon,
         halign: Gtk.Align.CENTER, // Center horizontally
         valign: Gtk.Align.CENTER, // Center vertically
+        sensitive: btn.needImageDownload ? bind(this.imageDownloaded) : true,
       });
 
       // Add CSS class for styling
-      const ctx = button.get_style_context();
-      ctx.add_class("image-dialog-button");
+      // const ctx = button.get_style_context();
+      // ctx.add_class("image-dialog-button");
 
       button.connect("clicked", () => {
         this.handleResponse(btn.response, img);
@@ -146,10 +182,12 @@ export class ImageDialog {
         CopyImage(img);
         break;
       case 3:
-        OpenImage(img);
+        waifuThisImage(img);
         break;
       case 4:
-        waifuThisImage(img);
+        OpenImage(img);
+      case 5:
+        PinImageToTerminal(img);
         break;
     }
   }
