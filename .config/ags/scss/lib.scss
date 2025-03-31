@@ -2,6 +2,7 @@
 
 * {
   transition: all 0.5s;
+  font-weight: 500;
 }
 
 // $SCALE: 10;
@@ -190,10 +191,6 @@ scrolledwindow {
     background: $background;
     text-shadow: $foreground 0 0 1px;
   }
-
-  // .content {
-  //   padding: 0 10px;
-  // }
 
   label {
     margin: 0 10px;

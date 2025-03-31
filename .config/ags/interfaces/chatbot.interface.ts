@@ -5,6 +5,7 @@ export interface Message
     receiver: string,
     content: string,
     timestamp: number,
+    responseTime?: number,
 }
 
 export interface Provider

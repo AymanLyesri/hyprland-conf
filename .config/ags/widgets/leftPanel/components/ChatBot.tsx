@@ -3,13 +3,11 @@ import { Message } from "../../../interfaces/chatbot.interface";
 import { bind, execAsync, timeout, Variable } from "astal";
 import { notify } from "../../../utils/notification";
 import { readJSONFile, writeJSONFile } from "../../../utils/json";
-import { chatBotApi } from "../../../variables";
+import { chatBotApi, globalTransition } from "../../../variables";
 import ToggleButton from "../../toggleButton";
 import { chatBotApis } from "../../../constants/api.constants";
-
 // Constants
 const MESSAGE_FILE_PATH = "./assets/chatbot";
-const DEBOUNCE_TIME = 100;
 
 // State
 const imageGeneration = Variable<boolean>(false);
@@ -76,7 +74,8 @@ const saveMessages = () => {
 
 const sendMessage = async (message: Message) => {
   try {
-    // const imgFlag = imageGeneration.get() ? "-img" : "";
+    const beginTime = Date.now();
+
     const response = await execAsync(
       `tgpt --quiet ` +
         `--provider ${chatBotApi.get().value} ` +
@@ -86,8 +85,9 @@ const sendMessage = async (message: Message) => {
           .replace(/`/g, "\\`")}' ` +
         `'${message.content}'`
     );
+    const endTime = Date.now();
 
-    notify({ summary: "Message sent", body: response });
+    notify({ summary: chatBotApi.get().name, body: response });
 
     const newMessage: Message = {
       id: (messages.get().length + 1).toString(),
@@ -95,6 +95,7 @@ const sendMessage = async (message: Message) => {
       receiver: "user",
       content: response,
       timestamp: Date.now(),
+      responseTime: endTime - beginTime,
     };
 
     messages.set([...messages.get(), newMessage]);
@@ -130,55 +131,85 @@ const Info = () => (
   </box>
 );
 
-const MessageItem = ({ message }: { message: Message }) => (
-  <box
-    className={`message ${message.sender}`}
-    spacing={5}
-    halign={message.sender === "user" ? Gtk.Align.END : Gtk.Align.START}>
-    {message.sender !== "user" ? (
-      <box
-        className="actions"
-        vexpand={false}
-        vertical
-        child={
-          <button
-            valign={Gtk.Align.END}
-            vexpand
-            className="copy"
-            label=""
-            onClicked={() =>
-              execAsync(`wl-copy "${message.content}"`).catch(print)
+const MessageItem = ({ message }: { message: Message }) => {
+  const Revealer = () => (
+    <revealer
+      revealChild={false}
+      transitionDuration={globalTransition}
+      transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
+      child={
+        <box className={"info"} spacing={10}>
+          <label
+            wrap
+            className="time"
+            label={new Date(message.timestamp).toLocaleString(undefined, {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            })}
+          />
+          <label
+            wrap
+            className="response-time"
+            label={
+              message.responseTime
+                ? `Response Time: ${message.responseTime} ms`
+                : ""
             }
           />
-        }></box>
-    ) : (
-      <box />
-    )}
-    {message.sender === "user" ? (
-      <box className="body" spacing={5}>
-        <label wrap label={message.content} />
+        </box>
+      }
+    />
+  );
+
+  const Actions = () => (
+    <box
+      className="actions"
+      spacing={5}
+      valign={message.sender === "user" ? Gtk.Align.START : Gtk.Align.END}
+      vertical>
+      {[
         <button
           className="copy"
           label=""
-          halign={Gtk.Align.END}
-          valign={Gtk.Align.START}
           onClicked={() =>
             execAsync(`wl-copy "${message.content}"`).catch(print)
           }
-        />
-      </box>
-    ) : (
-      formatTextWithCodeBlocks(message.content)
-    )}
-  </box>
-);
+        />,
+      ]}
+    </box>
+  );
+
+  const revealerInstance = Revealer();
+  return (
+    <eventbox
+      className={"message-eventbox"}
+      onHover={() => (revealerInstance.reveal_child = true)}
+      onHoverLost={() => (revealerInstance.reveal_child = false)}
+      halign={message.sender === "user" ? Gtk.Align.END : Gtk.Align.START}
+      child={
+        <box
+          className={`message ${message.sender}`}
+          halign={Gtk.Align.START}
+          vertical>
+          <box className={"main"}>
+            {message.sender !== "user"
+              ? [<Actions />, formatTextWithCodeBlocks(message.content)]
+              : [formatTextWithCodeBlocks(message.content), <Actions />]}
+          </box>
+          {revealerInstance}
+        </box>
+      }
+    />
+  );
+};
 
 const Messages = () => (
   <scrollable
     vexpand
     setup={(self) => {
       self.hook(messages, () => {
-        timeout(DEBOUNCE_TIME, () => {
+        timeout(100, () => {
           self.get_vadjustment().set_value(self.get_vadjustment().get_upper());
         });
       });

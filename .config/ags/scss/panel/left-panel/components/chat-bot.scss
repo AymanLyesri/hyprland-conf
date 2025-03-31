@@ -1,13 +1,8 @@
 .chat-bot {
-  .info {
+  > .info {
     @extend .module;
     padding: 10px 5px;
     color: $secondary;
-  }
-
-  .copy {
-    padding: 5px;
-    margin: 0px;
   }
 
   .messages {
@@ -15,16 +10,20 @@
       @extend .module;
       padding: 5px;
 
-      &.user {
-        border-radius: 50px;
-        padding: 0px;
-        padding-left: 10px;
-        padding-right: 10px;
+      .copy {
+        padding: 5px;
+        margin: 5px;
       }
 
-      .actions {
-        padding: 5px;
+      &.user {
+        border-radius: 20px;
       }
+
+      .info {
+        padding: 5px;
+        font-size: 0.9em;
+      }
+
       .body {
         padding: 10px;
         font-size: 1em;
@@ -33,8 +32,11 @@
           background: $background-transparent;
           border-radius: 10px;
           padding: 10px;
-          font-size: 0.9em;
           color: $secondary;
+
+          .copy {
+            margin: 0px;
+          }
         }
       }
     }
