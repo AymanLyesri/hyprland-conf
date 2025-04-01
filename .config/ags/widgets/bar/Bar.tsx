@@ -1,9 +1,10 @@
-import { App, Astal, Gdk } from "astal/gtk3";
+import { App, Astal, Gdk, Gtk } from "astal/gtk3";
 import { bind } from "astal";
-import barLeft from "./components/barLeft";
-import barMiddle from "./components/barMiddle";
-import barRight from "./components/barRight";
+import Workspaces from "./components/Workspaces";
+import Information from "./components/Information";
+import Utilities from "./components/Utilities";
 import {
+  barLayout,
   barLock,
   barOrientation,
   barVisibility,
@@ -11,9 +12,12 @@ import {
   globalMargin,
 } from "../../variables";
 import { getMonitorName } from "../../utils/monitor";
+import { LeftPanelVisibility } from "../leftPanel/LeftPanel";
+import { RightPanelVisibility } from "../rightPanel/RightPanel";
 
 export default (monitor: Gdk.Monitor) => {
   const monitorName = getMonitorName(monitor.get_display(), monitor)!;
+
   return (
     <window
       gdkmonitor={monitor}
@@ -40,19 +44,45 @@ export default (monitor: Gdk.Monitor) => {
             if (!barLock.get()) barVisibility.set(false);
           }}
           child={
-            <centerbox
+            <box
+              spacing={5}
               className={emptyWorkspace.as((empty) =>
                 empty ? "bar empty" : "bar full"
-              )}
-              startWidget={
-                <box name="start-widget" child={barLeft(monitorName)}></box>
-              }
-              centerWidget={
-                <box name="center-widget" child={barMiddle(monitorName)}></box>
-              }
-              endWidget={
-                <box name="end-widget" child={barRight(monitorName)}></box>
-              }></centerbox>
+              )}>
+              <LeftPanelVisibility />
+              <centerbox hexpand>
+                {bind(barLayout).as((layout) =>
+                  layout.map((widgetSelector, key) => {
+                    // set halign based on the key
+                    const halign = key === 0 ? Gtk.Align.START : Gtk.Align.END;
+                    switch (widgetSelector.name) {
+                      case "workspaces":
+                        return (
+                          <Workspaces
+                            halign={halign}
+                            monitorName={monitorName}
+                          />
+                        );
+                      case "information":
+                        return (
+                          <Information
+                            halign={halign}
+                            monitorName={monitorName}
+                          />
+                        );
+                      case "utilities":
+                        return (
+                          <Utilities
+                            halign={halign}
+                            monitorName={monitorName}
+                          />
+                        );
+                    }
+                  })
+                )}
+              </centerbox>
+              <RightPanelVisibility />
+            </box>
           }></eventbox>
       }></window>
   );

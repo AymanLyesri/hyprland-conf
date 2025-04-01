@@ -7,6 +7,29 @@ import MediaWidget from "../widgets/MediaWidget";
 import Waifu from "../widgets/rightPanel/components/Waifu";
 import NotificationHistory from "../widgets/rightPanel/NotificationHistory";
 
+import Workspaces from "../widgets/bar/components/Workspaces";
+import Information from "../widgets/bar/components/Information";
+import Utilities from "../widgets/bar/components/Utilities";
+
+
+export const barWidgetSelectors: WidgetSelector[] = [
+    {
+        name: "workspaces",
+        icon: "󰒘",
+        widget: (monitorName: string) => Workspaces({ monitorName }),
+    },
+    {
+        name: "information",
+        icon: "󰒘",
+        widget: (monitorName: string) => Information({ monitorName }),
+    },
+    {
+        name: "utilities",
+        icon: "󰒘",
+        widget: (monitorName: string) => Utilities({ monitorName }),
+    },
+]
+
 export const rightPanelWidgetSelectors: WidgetSelector[] = [
     {
         name: "Waifu",

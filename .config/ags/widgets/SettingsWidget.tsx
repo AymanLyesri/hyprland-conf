@@ -1,6 +1,7 @@
 import { App, Astal, Gdk, Gtk, Widget } from "astal/gtk3";
 import hyprland from "gi://AstalHyprland";
 import {
+  barLayout,
   globalFontSize,
   globalIconSize,
   globalMargin,
@@ -14,6 +15,8 @@ import { notify } from "../utils/notification";
 import { AGSSetting, HyprlandSetting } from "../interfaces/settings.interface";
 import { hideWindow } from "../utils/window";
 import { getMonitorName } from "../utils/monitor";
+import ToggleButton from "./toggleButton";
+import { barWidgetSelectors } from "../constants/widget.constants";
 const Hyprland = hyprland.get_default();
 
 const hyprCustomDir: string = "$HOME/.config/hypr/configs/custom/";
@@ -35,6 +38,36 @@ const normalizeValue = (value: any, type: string) => {
     default:
       return value;
   }
+};
+
+const setBarLayout = () => {
+  return (
+    <box spacing={5} vertical>
+      <label label={"bar Layout"} />
+      <box className="setting" spacing={10} hexpand>
+        {barWidgetSelectors.map((widget) => {
+          return (
+            <ToggleButton
+              hexpand
+              state={barLayout.get().some((w) => w.name === widget.name)}
+              className="widget"
+              label={widget.name}
+              onToggled={(self, on) => {
+                if (on) {
+                  if (barLayout.get().length >= 3) return;
+                  barLayout.set([...barLayout.get(), widget]);
+                } else {
+                  const newWidgets = barLayout
+                    .get()
+                    .filter((w) => w.name !== widget.name);
+                  barLayout.set(newWidgets);
+                }
+              }}></ToggleButton>
+          );
+        })}
+      </box>
+    </box>
+  );
 };
 
 const agsSetting = (setting: Variable<AGSSetting>) => {
@@ -288,6 +321,7 @@ const Settings = () => {
       child={
         <box vertical={true} spacing={5} className="settings">
           <label className={"category"} label="AGS" />
+          {setBarLayout()}
           {agsSetting(globalOpacity)}
           {agsSetting(globalIconSize)}
           {agsSetting(globalScale)}

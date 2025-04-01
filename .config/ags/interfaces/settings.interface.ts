@@ -48,6 +48,7 @@ export interface Settings
         visibility: boolean,
         lock: boolean,
         orientation: boolean,
+        layout: WidgetSelector[]
     }
     waifu: {
         visibility: boolean,

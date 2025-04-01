@@ -1,8 +1,7 @@
 import { App, Astal, Gdk, Gtk } from "astal/gtk3";
-import { WidgetSelector } from "../../interfaces/widgetSelector.interface";
-import waifu, { WaifuVisibility } from "./components/Waifu";
 import {
   globalMargin,
+  globalTransition,
   rightPanelExclusivity,
   rightPanelLock,
   rightPanelVisibility,
@@ -125,3 +124,21 @@ export default (monitor: Gdk.Monitor) => {
     />
   );
 };
+
+export function RightPanelVisibility() {
+  return (
+    <revealer
+      revealChild={bind(rightPanelLock).as((lock) => lock)}
+      transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
+      transitionDuration={globalTransition}
+      child={
+        <ToggleButton
+          state={bind(rightPanelVisibility)}
+          label={bind(rightPanelVisibility).as((v) => (v ? "" : ""))}
+          onToggled={(self, on) => rightPanelVisibility.set(on)}
+          className="panel-trigger icon"
+        />
+      }
+    />
+  );
+}

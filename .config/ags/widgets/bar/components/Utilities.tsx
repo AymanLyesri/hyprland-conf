@@ -199,24 +199,6 @@ function DndToggle() {
   });
 }
 
-function RightPanel() {
-  return (
-    <revealer
-      revealChild={bind(rightPanelLock).as((lock) => lock)}
-      transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
-      transitionDuration={globalTransition}
-      child={
-        <ToggleButton
-          state={bind(rightPanelVisibility)}
-          label={bind(rightPanelVisibility).as((v) => (v ? "" : ""))}
-          onToggled={(self, on) => rightPanelVisibility.set(on)}
-          className="panel-trigger icon"
-        />
-      }
-    />
-  );
-}
-
 function BarOrientation() {
   return (
     <button
@@ -229,9 +211,15 @@ function BarOrientation() {
   );
 }
 
-export default (monitorName: string) => {
+export default ({
+  monitorName,
+  halign,
+}: {
+  monitorName: string;
+  halign: Gtk.Align;
+}) => {
   return (
-    <box className="bar-right" hexpand halign={Gtk.Align.END} spacing={5}>
+    <box className="bar-right" spacing={5} halign={halign} hexpand>
       <BatteryWidget />
       <BrightnessWidget />
       <Volume />
@@ -240,7 +228,6 @@ export default (monitorName: string) => {
       <PinBar />
       <DndToggle />
       <BarOrientation />
-      <RightPanel />
     </box>
   );
 };

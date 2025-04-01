@@ -2,7 +2,7 @@ import { execAsync } from "astal";
 import { readJSONFile, writeJSONFile } from "./json";
 import { globalSettings } from "../variables";
 import { Settings } from "../interfaces/settings.interface";
-import { leftPanelWidgetSelectors } from "../constants/widget.constants";
+import { barWidgetSelectors, leftPanelWidgetSelectors } from "../constants/widget.constants";
 import { booruApis, chatBotApis } from "../constants/api.constants";
 import { WaifuClass } from "../interfaces/waifu.interface";
 import { dateFormats } from "../constants/date.constants";
@@ -36,7 +36,8 @@ export const defaultSettings: Settings = {
   bar: {
     visibility: true,
     lock: true,
-    orientation: true
+    orientation: true,
+    layout: barWidgetSelectors,
   },
   waifu: {
     input_history: "",

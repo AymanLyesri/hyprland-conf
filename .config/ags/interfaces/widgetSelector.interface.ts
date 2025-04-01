@@ -5,6 +5,7 @@ export interface WidgetSelector
 {
     name: string;
     icon: string;
-    widget: () => Gtk.Widget;
+    // make arg0 not necessary
+    widget: (arg0?: any) => Gtk.Widget;
     widgetInstance?: Gtk.Widget;  // To track the active widget instance
 }

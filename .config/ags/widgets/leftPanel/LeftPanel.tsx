@@ -1,8 +1,9 @@
-import { App, Astal, Gdk } from "astal/gtk3";
+import { App, Astal, Gdk, Gtk } from "astal/gtk3";
 import { getMonitorName } from "../../utils/monitor";
 import { bind, Variable } from "astal";
 import {
   globalMargin,
+  globalTransition,
   leftPanelExclusivity,
   leftPanelLock,
   leftPanelVisibility,
@@ -90,3 +91,21 @@ export default (monitor: Gdk.Monitor) => {
     />
   );
 };
+
+export function LeftPanelVisibility() {
+  return (
+    <revealer
+      revealChild={bind(leftPanelLock).as((lock) => lock)}
+      transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
+      transitionDuration={globalTransition}
+      child={
+        <ToggleButton
+          state={bind(leftPanelVisibility)}
+          label={bind(leftPanelVisibility).as((v) => (v ? "" : ""))}
+          onToggled={(self, on) => leftPanelVisibility.set(on)}
+          className="panel-trigger icon"
+        />
+      }
+    />
+  );
+}

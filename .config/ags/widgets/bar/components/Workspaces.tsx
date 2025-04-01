@@ -11,6 +11,7 @@ import hyprland from "gi://AstalHyprland";
 import { bind, Variable } from "astal";
 import ToggleButton from "../../toggleButton";
 import { hideWindow, showWindow } from "../../../utils/window";
+import { LeftPanelVisibility } from "../../leftPanel/LeftPanel";
 const Hyprland = hyprland.get_default();
 
 // workspaces icons
@@ -104,25 +105,7 @@ function Workspaces() {
   return <box className="workspaces">{bind(workspaces)}</box>;
 }
 
-function LeftPanel() {
-  return (
-    <revealer
-      revealChild={bind(leftPanelLock).as((lock) => lock)}
-      transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
-      transitionDuration={globalTransition}
-      child={
-        <ToggleButton
-          state={bind(leftPanelVisibility)}
-          label={bind(leftPanelVisibility).as((v) => (v ? "" : ""))}
-          onToggled={(self, on) => leftPanelVisibility.set(on)}
-          className="panel-trigger icon"
-        />
-      }
-    />
-  );
-}
-
-const Special = (
+const Special = () => (
   <button
     className="special"
     label={workspaceToIcon[0]}
@@ -196,13 +179,18 @@ const Actions = ({ monitorName }: { monitorName: string }) => {
   );
 };
 
-export default (monitorName: string) => {
+export default ({
+  monitorName,
+  halign,
+}: {
+  monitorName: string;
+  halign: Gtk.Align;
+}) => {
   return (
-    <box className="bar-left" spacing={5}>
-      <LeftPanel />
+    <box className="bar-left" spacing={5} halign={halign} hexpand>
       <Actions monitorName={monitorName} />
       <OverView />
-      {Special}
+      <Special />
       <Workspaces />
     </box>
   );

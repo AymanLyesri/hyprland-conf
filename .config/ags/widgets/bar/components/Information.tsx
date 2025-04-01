@@ -230,9 +230,15 @@ function ClientTitle() {
   );
 }
 
-export default (monitorName: string) => {
+export default ({
+  monitorName,
+  halign,
+}: {
+  monitorName: string;
+  halign: Gtk.Align;
+}) => {
   return (
-    <box className="bar-middle" spacing={5}>
+    <box className="bar-middle" spacing={5} halign={halign} hexpand>
       <AudioVisualizer />
       <Media monitorName={monitorName} />
       <Clock />

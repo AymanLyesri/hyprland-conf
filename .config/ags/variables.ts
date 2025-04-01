@@ -63,6 +63,8 @@ export const barLock: Variable<boolean> = Variable(getSetting("bar.lock"));
 barLock.subscribe((value) => setSetting("bar.lock", value));
 export const barOrientation = Variable<boolean>(getSetting("bar.orientation"));
 barOrientation.subscribe((value) => setSetting("bar.orientation", value));
+export const barLayout = Variable<WidgetSelector[]>(getSetting("bar.layout"));
+barLayout.subscribe((value) => setSetting("bar.layout", value));
 
 export const waifuApi = Variable<Api>(getSetting("waifu.api"));
 waifuApi.subscribe((value) => setSetting("waifu.api", value));

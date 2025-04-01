@@ -32,7 +32,7 @@ button,
 button,
 .button {
   @extend .module;
-  padding: $SCALE;
+  padding: $SCALE / 2 $SCALE;
 
   min-width: 20px;
   min-height: 20px;
