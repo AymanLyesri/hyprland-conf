@@ -90,8 +90,8 @@ def fetch_danbooru_tags(tag: str, limit: int = 10):
     # Search for tags containing the input string (wildcard search)
     params = {
         "search[name_matches]": f"*{tag}*",
-        "limit": 1000,  # Fetch extra to ensure we get the most popular
-        "order": "count",  # Sort by post count (descending)
+        "limit": 10,  # Fetch extra to ensure we get the most popular
+        "search[order]": "count",  # Order by post count (highest first)
     }
 
     try:
@@ -100,15 +100,11 @@ def fetch_danbooru_tags(tag: str, limit: int = 10):
         
         tags = response.json()
         
-        # Handle cases where post_count is None (treat as 0)
-        sorted_tags = sorted(
-            tags,
-            key=lambda x: x.get("post_count", 0) or 0,
-            reverse=True
-        )
+        if not tags:
+            return []
         
         # Extract tag names from the top 10 most popular
-        top_tags = [tag["name"] for tag in sorted_tags[:limit]]
+        top_tags = [tag["name"] for tag in tags[:limit]]
         
         return top_tags
         

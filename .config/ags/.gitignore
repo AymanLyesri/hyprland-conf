@@ -10,9 +10,6 @@ assets/images/*
 assets/thumbnails/*
 !assets/thumbnails/
 
-assets/terminal/*
-!assets/terminal/
-
 assets/settings/*
 !assets/settings/
 

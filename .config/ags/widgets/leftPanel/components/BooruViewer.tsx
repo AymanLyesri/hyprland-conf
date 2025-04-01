@@ -184,9 +184,10 @@ const PageDisplay = () => (
       for (let pageNum = startPage; pageNum <= endPage; pageNum++) {
         buttons.push(
           <button
-            label={String(pageNum)}
-            sensitive={pageNum !== p}
-            onClicked={() => booruPage.set(pageNum)}
+            label={pageNum !== p ? String(pageNum) : ""}
+            onClicked={() =>
+              pageNum !== p ? booruPage.set(pageNum) : fetchImages()
+            }
           />
         );
       }

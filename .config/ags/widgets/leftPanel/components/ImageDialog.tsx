@@ -5,15 +5,13 @@ import { booruApi, waifuCurrent } from "../../../variables";
 import { Waifu } from "../../../interfaces/waifu.interface";
 
 import hyprland from "gi://AstalHyprland";
-import { previewFloatImage } from "../../../utils/image";
+import { PinImageToTerminal, previewFloatImage } from "../../../utils/image";
 import { Gdk, Gtk } from "astal/gtk3";
 import { Button } from "astal/gtk3/widget";
 const Hyprland = hyprland.get_default();
 
 const waifuPath = "./assets/booru/waifu";
 const imageUrlPath = "./assets/booru/images";
-
-const terminalWaifuPath = `./assets/terminal/icon.webp`;
 
 const fetchImage = async (
   image: Waifu,
@@ -33,21 +31,6 @@ const fetchImage = async (
     `bash -c "[ -e "${imageUrlPath}/${image.id}.webp" ] || curl -o ${savePath}/${name}.webp ${url}"`
   ).catch((err) => notify({ summary: "Error", body: String(err) }));
   closeProgress();
-};
-
-const PinImageToTerminal = (image: Waifu) => {
-  execAsync(
-    `bash -c "cmp -s ${image.url_path} ${terminalWaifuPath} && { rm ${terminalWaifuPath}; echo 1; } || { cp ${image.url_path} ${terminalWaifuPath}; echo 0; }"`
-  )
-    .then((output) =>
-      notify({
-        summary: "Waifu",
-        body: `${
-          Number(output) == 0 ? "Pinned To Terminal" : "UN-Pinned from Terminal"
-        }`,
-      })
-    )
-    .catch((err) => notify({ summary: "Error", body: err }));
 };
 
 const waifuThisImage = async (image: Waifu) => {
@@ -209,6 +192,7 @@ export class ImageDialog {
         break;
       case 4:
         OpenImage(img);
+        break;
       case 5:
         PinImageToTerminal(img);
         break;

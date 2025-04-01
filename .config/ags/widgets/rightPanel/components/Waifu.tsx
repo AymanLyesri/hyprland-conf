@@ -19,7 +19,7 @@ const Hyprland = hyprland.get_default();
 import { Waifu } from "../../../interfaces/waifu.interface";
 import { readJson } from "../../../utils/json";
 import { booruApis } from "../../../constants/api.constants";
-import { previewFloatImage } from "../../../utils/image";
+import { PinImageToTerminal, previewFloatImage } from "../../../utils/image";
 const waifuDir = "./assets/booru/waifu";
 
 const terminalWaifuPath = `./assets/terminal/icon.webp`;
@@ -79,21 +79,6 @@ const CopyImage = (image: Waifu) =>
   );
 
 const OpenImage = (image: Waifu) => previewFloatImage(image.url_path!);
-
-const PinImageToTerminal = (image: Waifu) => {
-  execAsync(
-    `bash -c "cmp -s ${image.url_path} ${terminalWaifuPath} && { rm ${terminalWaifuPath}; echo 1; } || { cp ${image.url_path} ${terminalWaifuPath}; echo 0; }"`
-  )
-    .then((output) =>
-      notify({
-        summary: "Waifu",
-        body: `${
-          Number(output) == 0 ? "Pinned To Terminal" : "UN-Pinned from Terminal"
-        }`,
-      })
-    )
-    .catch((err) => notify({ summary: "Error", body: err }));
-};
 
 function Actions() {
   // const top = (

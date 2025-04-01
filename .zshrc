@@ -56,6 +56,10 @@ alias f=fastfetch
 zle -N fastfetch
 bindkey '^F' fastfetch
 
+TRAPUSR1() {
+    fastfetch
+}
+
 # Aliase functions
 function code() {
     /bin/code $1 && exit

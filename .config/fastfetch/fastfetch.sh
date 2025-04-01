@@ -1,6 +1,6 @@
 #!/bin/bash
 # Path to the image file
-IMAGE_PATH="$HOME/.config/ags/assets/terminal/icon.webp"
+IMAGE_PATH="$HOME/.config/fastfetch/assets/logo.webp"
 
 # Check if the image exists
 if [ ! -f "$IMAGE_PATH" ]; then

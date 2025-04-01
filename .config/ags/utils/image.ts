@@ -1,6 +1,8 @@
 import { exec, execAsync } from "astal"
 import { notify } from "./notification"
+import { Waifu } from "../interfaces/waifu.interface";
 
+const terminalWaifuPath = `$HOME/.config/fastfetch/assets/logo.webp`;
 
 export function getDominantColor(imagePath: string)
 {
@@ -14,3 +16,18 @@ export function previewFloatImage(imagePath: string)
     execAsync(`swayimg -w 690,690 --class 'previewImage' ${imagePath}`)
         .catch(err => notify({ summary: 'Error', body: err }))
 }
+
+export const PinImageToTerminal = (image: Waifu) =>
+{
+    execAsync(
+        `bash -c "cmp -s ${image.url_path} ${terminalWaifuPath} && { rm ${terminalWaifuPath}; echo 1; } || { cp ${image.url_path} ${terminalWaifuPath}; echo 0; } && pkill -SIGUSR1 zsh"`
+    )
+        .then((output) =>
+            notify({
+                summary: "Waifu",
+                body: `${Number(output) == 0 ? "Pinned To Terminal" : "UN-Pinned from Terminal"
+                    }`,
+            })
+        )
+        .catch((err) => notify({ summary: "Error", body: err }));
+};
