@@ -10,7 +10,7 @@ I use Arch BTW.. :)
 
 # Discord
 
-New official [Discord](https://discord.gg/ryN4PRHF) server.
+New official [Discord](https://discord.gg/fMGt4vH6s5) server.
 
 # See Wiki
 
