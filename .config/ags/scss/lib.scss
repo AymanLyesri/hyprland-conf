@@ -54,6 +54,10 @@ button,
   }
 }
 
+dialog {
+  @extend .module;
+}
+
 filechooserbutton * {
   min-width: 0px;
   min-height: 0px;

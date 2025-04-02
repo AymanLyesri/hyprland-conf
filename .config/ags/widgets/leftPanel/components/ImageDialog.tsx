@@ -84,6 +84,8 @@ export class ImageDialog {
       orientation: Gtk.Orientation.VERTICAL,
       margin: 5,
     });
+    // const ctx = mainBox.get_style_context();
+    // ctx.add_class("module");
     contentArea.add(mainBox);
 
     // create button box

@@ -1,0 +1,29 @@
+.bar-right {
+  .system-tray {
+    @extend .module;
+    button {
+      background: transparent;
+
+      &:hover {
+        background: $background;
+      }
+    }
+    // button {
+    //   border-radius: 0px;
+    //   // padding: 0px 0px;
+    // }
+    // button:first-child {
+    //   border-radius: 10px 0px 0px 10px;
+    //   padding: 0px 0px 0px 5px;
+    // }
+
+    // button:last-child {
+    //   border-radius: 0px 10px 10px 0px;
+    //   padding: 0px 5px 0px 0px;
+    // }
+
+    // button:only-child {
+    //   border-radius: 10px;
+    // }
+  }
+}

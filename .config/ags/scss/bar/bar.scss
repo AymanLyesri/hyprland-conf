@@ -1,10 +1,10 @@
 .bar {
   border-radius: 50px;
-  padding: 5px 10px;
+  padding: 5px;
   background: $background-transparent;
 
   .module {
-    padding: $SCALE - 10 $SCALE;
+    padding: ($SCALE - 10) / 10 $SCALE / 2;
   }
 
   &.full {

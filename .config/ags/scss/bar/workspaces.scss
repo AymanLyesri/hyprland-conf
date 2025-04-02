@@ -10,18 +10,27 @@ $custom-background: linear-gradient(
   .actions {
     button {
       border-radius: 0px;
-      padding: 0px 5px;
     }
     button:first-child {
       border-radius: 10px 0px 0px 10px;
-      padding-left: 10px;
     }
     button:last-child {
       border-radius: 0px 10px 10px 0px;
-      padding-right: 10px;
     }
   }
   .workspaces {
+    .workspace-group {
+      background: $background;
+      // button {
+      //   border-radius: 0px;
+      // }
+      // button:first-child {
+      //   border-radius: 10px 0px 0px 10px;
+      // }
+      // button:last-child {
+      //   border-radius: 0px 10px 10px 0px;
+      // }
+    }
     button {
       padding: 0px 5px;
       border-radius: 0px;
@@ -42,12 +51,10 @@ $custom-background: linear-gradient(
       &.first {
         border-top-left-radius: 10px;
         border-bottom-left-radius: 10px;
-        padding-left: 10px;
       }
       &.last {
         border-top-right-radius: 10px;
         border-bottom-right-radius: 10px;
-        padding-right: 10px;
       }
       &.between {
         border-radius: 0px;

@@ -16,7 +16,7 @@ echo "Setting up where is my sddm theme..."
 sudo tee /usr/share/sddm/themes/where_is_my_sddm_theme/theme.conf >/dev/null <<EOF
 [General]
 # Password mask character
-passwordCharacter=✵
+passwordCharacter=*
 # Mask password characters or not ("true" or "false")
 passwordMask=true
 # value "1" is all display width, "0.5" is a half of display width etc.
