@@ -41,6 +41,7 @@ class NotificationMap implements Subscribable {
         id,
         Notification({
           n: notifd.get_notification(id)!,
+          newNotification: true,
           popup: true,
         })
       );
@@ -88,7 +89,7 @@ export default (monitor: Gdk.Monitor) => {
       name="notification-popups"
       namespace="notification-popups"
       application={App}
-      exclusivity={Astal.Exclusivity.EXCLUSIVE}
+      exclusivity={Astal.Exclusivity.NORMAL}
       layer={Astal.Layer.OVERLAY}
       anchor={TOP | RIGHT}
       margin={globalMargin}

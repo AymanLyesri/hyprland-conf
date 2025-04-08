@@ -11,36 +11,16 @@ const battery = Battery.get_default();
 import Tray from "gi://AstalTray";
 import ToggleButton from "../../toggleButton";
 import { Gtk } from "astal/gtk3";
-import {
-  barLock,
-  barOrientation,
-  DND,
-  globalTransition,
-  rightPanelLock,
-  rightPanelVisibility,
-} from "../../../variables";
+import { barLock, barOrientation, DND, globalTheme } from "../../../variables";
 import { notify } from "../../../utils/notification";
+import { switchGlobalTheme } from "../../../utils/theme";
 
 function Theme() {
-  function getIcon() {
-    return execAsync([
-      "bash",
-      "-c",
-      "$HOME/.config/hypr/theme/scripts/system-theme.sh get",
-    ]).then((theme) => (theme.includes("dark") ? "" : ""));
-  }
   return (
     <ToggleButton
-      onToggled={(self, on) => {
-        execAsync([
-          "bash",
-          "-c",
-          "$HOME/.config/hypr/theme/scripts/set-global-theme.sh switch",
-        ]).then(() => getIcon().then((icon) => (self.label = icon)));
-      }}
-      label=""
+      onToggled={(self, on) => switchGlobalTheme()}
+      label={bind(globalTheme).as((theme) => (theme ? "" : ""))}
       className="theme icon"
-      setup={(self) => getIcon().then((icon) => (self.label = icon))}
     />
   );
 }

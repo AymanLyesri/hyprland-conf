@@ -19,21 +19,20 @@ $custom-background: linear-gradient(
     }
   }
   .workspaces {
+    background: $background-transparent;
+    border-radius: 10px;
     .workspace-group {
-      background: $background;
-      // button {
-      //   border-radius: 0px;
-      // }
-      // button:first-child {
-      //   border-radius: 10px 0px 0px 10px;
-      // }
-      // button:last-child {
-      //   border-radius: 0px 10px 10px 0px;
-      // }
+      border-radius: 10px;
+      &.active {
+        background: $background-secondary;
+      }
+      &.inactive button {
+        background: transparent;
+        padding: 0px;
+      }
     }
     button {
       padding: 0px 5px;
-      border-radius: 0px;
       ////////////////////////////
       &.focused {
         background-image: $custom-background;
@@ -43,28 +42,11 @@ $custom-background: linear-gradient(
         background-image: $custom-background;
       }
       &.unfocused {
+        background-image: $custom-background;
         animation: workspace-unfocus 1s;
       }
       &.new-app {
         @extend .danger;
-      }
-      &.first {
-        border-top-left-radius: 10px;
-        border-bottom-left-radius: 10px;
-      }
-      &.last {
-        border-top-right-radius: 10px;
-        border-bottom-right-radius: 10px;
-      }
-      &.between {
-        border-radius: 0px;
-      }
-      &.only {
-        border-radius: 10px;
-      }
-      &.inactive {
-        background: transparent;
-        padding: 0px;
       }
     }
   }

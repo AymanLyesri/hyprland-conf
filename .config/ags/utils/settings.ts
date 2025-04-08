@@ -29,7 +29,7 @@ export const defaultSettings: Settings = {
   notifications: {
     dnd: false
   },
-  globalOpacity: { name: "Global Opacity", value: 0.9, type: "float", min: 0, max: 1 },
+  globalOpacity: { name: "Global Opacity", value: 0.5, type: "float", min: 0, max: 1 },
   globalIconSize: { name: "Global Icon Size", value: 10, type: "int", min: 5, max: 20 },
   globalScale: { name: "Global Scale", value: 10, type: "int", min: 10, max: 30 },
   globalFontSize: { name: "Global Font Size", value: 12, type: "int", min: 12, max: 30 },

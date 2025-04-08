@@ -10,6 +10,7 @@ import { writeJSONFile } from "./utils/json";
 import { AGSSetting, Settings } from "./interfaces/settings.interface";
 import { Api } from "./interfaces/api.interface";
 import { Waifu } from "./interfaces/waifu.interface";
+import { getGlobalTheme } from "./utils/theme";
 
 export const NOTIFICATION_DELAY = 5000
 
@@ -43,6 +44,9 @@ globalFontSize.subscribe((value) =>
     setSetting("globalFontSize", value)
     refreshCss()
 });
+
+export const globalTheme = Variable<boolean>(false)
+getGlobalTheme()
 
 export const globalMargin = 14
 export const globalTransition = 500

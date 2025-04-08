@@ -15,10 +15,9 @@ import {
   focusedClient,
   globalTransition,
 } from "../../../variables";
-import { bind, Variable } from "../../../../../../../usr/share/astal/gjs";
-import { App, Astal, Gtk } from "astal/gtk3";
+import { bind, GLib, Variable } from "../../../../../../../usr/share/astal/gjs";
+import { Gtk } from "astal/gtk3";
 import CustomRevealer from "../../CustomRevealer";
-import { notify } from "../../../utils/notification";
 import { showWindow } from "../../../utils/window";
 import { dateFormats } from "../../../constants/date.constants";
 
@@ -34,16 +33,13 @@ const blocks = [
   "\u2587",
   "\u2588",
 ];
+// Assuming blocks is constant, move it outside
+const BLOCKS_LENGTH = blocks.length;
+const EMPTY_BARS = "".padEnd(12, "\u2581");
 
 function AudioVisualizer() {
   const revealer = (
     <revealer
-      // reveal_child={bind(
-      //   mpris.players.find(
-      //     (player) => player.playbackStatus === Mpris.PlaybackStatus.PLAYING
-      //   ) || mpris.players[0],
-      //   "playbackStatus"
-      // ).as((status) => status === Mpris.PlaybackStatus.PLAYING)}
       revealChild={false}
       transitionDuration={globalTransition}
       transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
@@ -57,21 +53,29 @@ function AudioVisualizer() {
     />
   );
 
+  let pendingUpdate = false;
+
   cava?.connect("notify::values", () => {
-    const values = cava.get_values();
-    const blocksLength = blocks.length;
-    const barArray = new Array(values.length);
+    if (pendingUpdate) return;
+    pendingUpdate = true;
 
-    for (let i = 0; i < values.length; i++) {
-      const val = values[i];
-      const index = Math.min(Math.floor(val * 8), blocksLength - 1);
-      barArray[i] = blocks[index];
-    }
+    GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+      const values = cava.get_values();
+      const barArray = new Array(values.length);
 
-    const b = barArray.join("");
-    bars.set(b);
+      for (let i = 0; i < values.length; i++) {
+        const val = values[i];
+        const index = Math.min(Math.floor(val * 8), BLOCKS_LENGTH - 1);
+        barArray[i] = blocks[index];
+      }
 
-    revealer.reveal_child = b !== "".padEnd(12, "\u2581");
+      const b = barArray.join("");
+      bars.set(b);
+      revealer.reveal_child = b !== EMPTY_BARS;
+
+      pendingUpdate = false;
+      return GLib.SOURCE_REMOVE;
+    });
   });
 
   return revealer;
@@ -101,7 +105,7 @@ function Media({ monitorName }: { monitorName: string }) {
 
   const title = (player: Mpris.Player) => (
     <label
-      className="label"
+      className="title"
       max_width_chars={20}
       truncate={true}
       label={bind(player, "title").as((t) => t || "Unknown Track")}></label>
@@ -109,7 +113,7 @@ function Media({ monitorName }: { monitorName: string }) {
 
   const artist = (player: Mpris.Player) => (
     <label
-      className="label"
+      className="artist"
       max_width_chars={20}
       truncate={true}
       label={bind(player, "artist").as(
@@ -121,10 +125,11 @@ function Media({ monitorName }: { monitorName: string }) {
     bind(player, "coverArt").as(
       (c) =>
         `
-          background-image: linear-gradient(
-              to right,
-              #000000,
-              rgba(0, 0, 0, 0.5)
+        color: ${playerToColor(player.entry)};
+        background-image: linear-gradient(
+          to right,
+        #000000,
+        rgba(0, 0, 0, 0.5)
             ),
             url("${c}");
         `
@@ -132,7 +137,7 @@ function Media({ monitorName }: { monitorName: string }) {
 
   function Player(player: Mpris.Player) {
     return (
-      <box className="media" css={coverArtToCss(player)} spacing={10}>
+      <box className={"media"} css={coverArtToCss(player)} spacing={10}>
         {progress(player)}
         {title(player)}
         {artist(player)}

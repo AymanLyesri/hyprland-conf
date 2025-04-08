@@ -22,21 +22,15 @@ const apps = new Apps.Apps();
 import Hyprland from "gi://AstalHyprland";
 import { hideWindow } from "../utils/window";
 import { getMonitorName } from "../utils/monitor";
+import { LauncherApp } from "../interfaces/app.interface";
+import { customApps } from "../constants/app.constants";
 const hyprland = Hyprland.get_default();
 
 const MAX_ITEMS = 10;
 
 const monitorName = Variable<string>("");
 
-interface Result {
-  app_name: string;
-  app_arg?: string;
-  app_type?: string;
-  app_icon?: string;
-  app_launch: () => void;
-}
-
-const Results = Variable<Result[]>([]);
+const Results = Variable<LauncherApp[]>([]);
 const quickApps = globalSettings.get().quickLauncher.apps;
 const QuickApps = () => {
   // Group quickApps into pairs for two-in-a-row display
@@ -106,7 +100,14 @@ const Entry = (
           }
           args = text.split(" ");
 
-          if (args[0].includes("translate")) {
+          if (args[0].includes(">")) {
+            const filteredCommands = customApps.filter((app) =>
+              app.app_name
+                .toLowerCase()
+                .includes(text.replace(">", "").trim().toLowerCase())
+            );
+            Results.set(filteredCommands);
+          } else if (args[0].includes("translate")) {
             const language = text.includes(">")
               ? text.split(">")[1].trim()
               : "en";
@@ -214,13 +215,13 @@ const Entry = (
   />
 );
 
-const launchApp = (app: Result) => {
+const launchApp = (app: LauncherApp) => {
   app.app_launch();
   hideWindow(`app-launcher-${monitorName.get()}`);
 };
 
-const organizeResults = (results: Result[]) => {
-  const buttonContent = (element: Result) => (
+const organizeResults = (results: LauncherApp[]) => {
+  const buttonContent = (element: LauncherApp) => (
     <box
       spacing={10}
       halign={
@@ -236,7 +237,7 @@ const organizeResults = (results: Result[]) => {
     element,
     className,
   }: {
-    element: Result;
+    element: LauncherApp;
     className?: string;
   }) => {
     return (

@@ -16,95 +16,139 @@ const Hyprland = hyprland.get_default();
 
 // workspaces icons
 const workspaceToIcon = ["", "", "", "", "", "", "󰙯", "󰓓", "", "", ""];
-
 function Workspaces() {
-  let previousWorkspace: number = 0; // Variable to store the previous workspace ID
+  // Track the previously focused workspace for transition effects
+  let previousWorkspace = 0;
 
+  // Icons configuration
   const emptyIcon = ""; // Icon for empty workspaces
-  const extraWorkspaceIcon = ""; // Icon for workspaces beyond the maximum limit
-  const maxWorkspaces = 10; // Maximum number of workspaces to display with custom icons
+  const extraWorkspaceIcon = ""; // Icon for workspaces beyond maxWorkspaces
+  const maxWorkspaces = 10; // Maximum number of workspaces with custom icons
 
+  /**
+   * Creates a workspace button element with proper classes and click handler
+   * @param id - Workspace ID number
+   * @param isActive - Whether the workspace contains windows
+   * @param isFocused - Whether the workspace is currently focused
+   * @param icon - The icon to display for this workspace
+   * @returns A button element for the workspace
+   */
+  const createWorkspaceButton = (
+    id: number,
+    isActive: boolean,
+    isFocused: boolean,
+    icon: string
+  ) => {
+    // Determine button classes based on state
+    const buttonClass = [
+      isFocused ? (previousWorkspace !== id ? "focused" : "same-focused") : "",
+      isActive ? "" : "inactive",
+    ]
+      .filter(Boolean) // Remove empty strings
+      .join(" "); // Combine into space-separated string
+
+    return (
+      <button
+        className={buttonClass}
+        label={icon}
+        onClicked={() =>
+          Hyprland.message_async(`dispatch workspace ${id}`, () => {})
+        }
+      />
+    );
+  };
+
+  // Reactive workspace state that updates when workspaces or focus changes
   const workspaces = Variable.derive(
     [
-      // bind(newAppWorkspace, "value"),
-      bind(Hyprland, "workspaces"),
-      focusedWorkspace.as((workspace) => workspace.id),
+      bind(Hyprland, "workspaces"), // Bind to Hyprland workspace list
+      focusedWorkspace.as((w) => w.id), // Bind to currently focused workspace ID
     ],
     (workspaces, currentWorkspace) => {
-      // Get the IDs of active workspaces and fill in empty slots
+      // Get array of active workspace IDs
       const workspaceIds = workspaces.map((w) => w.id);
-      const totalWorkspaces = Math.max(...workspaceIds, maxWorkspaces); // Get the total number of workspaces, accounting for more than 10
+      // Calculate total workspaces needed (active ones or maxWorkspaces, whichever is larger)
+      const totalWorkspaces = Math.max(...workspaceIds, maxWorkspaces);
+      // Create array of all workspace IDs [1, 2, ..., totalWorkspaces]
       const allWorkspaces = Array.from(
         { length: totalWorkspaces },
         (_, i) => i + 1
-      ); // Create all workspace slots from 1 to totalWorkspaces
+      );
 
-      let inActiveGroup = false; // Flag to track if we're in an active group
-      let previousWorkspace_ = currentWorkspace; // Store the previous workspace ID
+      // Update previous workspace tracker
+      previousWorkspace = currentWorkspace;
 
-      const results = allWorkspaces.map((id) => {
-        const isActive = workspaceIds.includes(id); // Check if this workspace ID is active
+      // Array to hold the final grouped workspace elements
+      const groupElements: any[] = [];
+      // Current group of adjacent active workspaces being built
+      let currentGroup: any[] = [];
+      // Flag indicating if current group contains active workspaces
+      let currentGroupIsActive = false;
+
+      /**
+       * Finalizes the current workspace group by adding it to groupElements
+       * with proper classes and resetting group state
+       */
+      const finalizeCurrentGroup = () => {
+        if (currentGroup.length > 0) {
+          groupElements.push(
+            <box
+              className={`workspace-group ${
+                currentGroupIsActive ? "active" : "inactive"
+              }`}>
+              {currentGroup}
+            </box>
+          );
+          // Reset group state
+          currentGroup = [];
+          currentGroupIsActive = false;
+        }
+      };
+
+      // Process each workspace in order
+      allWorkspaces.forEach((id) => {
+        const isActive = workspaceIds.includes(id); // Does workspace have windows?
+        // Determine which icon to use based on workspace state
         const icon =
           id > maxWorkspaces
             ? extraWorkspaceIcon
             : isActive
             ? workspaceToIcon[id]
-            : emptyIcon; // Icon for extra workspaces beyond 10
-        const isFocused = currentWorkspace == id; // Determine if the current ID is focused
+            : emptyIcon;
+        const isFocused = currentWorkspace === id; // Is this the current workspace?
 
-        let class_names: string[] = []; // Default class names
-
-        if (isFocused) {
-          if (previousWorkspace !== currentWorkspace) {
-            // Workspace has changed, mark it as `focused`
-            class_names.push("focused");
-          } else {
-            // Same workspace remains focused, mark it as `same-focused`
-            class_names.push("same-focused");
-          }
-          // Update the previous workspace ID
-          previousWorkspace_ = currentWorkspace;
+        // Handle inactive workspaces (no windows)
+        if (!isActive) {
+          // Finalize any active group we were building
+          finalizeCurrentGroup();
+          // Add inactive workspace as single-element group
+          groupElements.push(
+            <box
+              className="workspace-group inactive"
+              child={createWorkspaceButton(id, isActive, isFocused, icon)}
+            />
+          );
+          return;
         }
 
-        // Handle active groups
-        if (isActive) {
-          if (!inActiveGroup) {
-            if (workspaceIds.includes(id + 1)) {
-              class_names.push("first");
-              inActiveGroup = true; // Set the flag to indicate we're in an active group
-            } else {
-              class_names.push("only");
-            }
-          } else {
-            if (workspaceIds.includes(id + 1)) {
-              class_names.push("between");
-            } else {
-              class_names.push("last");
-              inActiveGroup = false;
-            }
-          }
-        } else {
-          class_names.push("inactive");
-        }
+        // If we get here, workspace is active
+        currentGroupIsActive = true;
+        // Add button to current group
+        currentGroup.push(createWorkspaceButton(id, isActive, isFocused, icon));
 
-        return (
-          <button
-            className={class_names.join(" ")}
-            label={icon}
-            onClicked={() => {
-              Hyprland.message_async(`dispatch workspace ${id}`, (res) => {});
-            }}
-          />
-        );
+        // Finalize group if we've reached the end or next workspace is inactive
+        if (id === allWorkspaces.length || !workspaceIds.includes(id + 1)) {
+          finalizeCurrentGroup();
+        }
       });
-      previousWorkspace = previousWorkspace_;
-      return results;
+
+      return groupElements;
     }
   );
 
+  // Render the workspaces container with bound workspace elements
   return <box className="workspaces">{bind(workspaces)}</box>;
 }
-
 const Special = () => (
   <button
     className="special"

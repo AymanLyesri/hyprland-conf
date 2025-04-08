@@ -320,7 +320,7 @@ const Entry = () => {
 };
 
 const BottomBar = () => (
-  <box className={"bottom"} spacing={10} vertical>
+  <box className={"bottom"} spacing={5} vertical>
     <PageDisplay />
     <LimitDisplay />
     <box className="input-bar" vertical spacing={5}>

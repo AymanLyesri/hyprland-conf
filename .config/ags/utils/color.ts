@@ -21,7 +21,7 @@ export function getComplementaryColor(hex: string): string
     }).join('');
 }
 
-export function playerToColor(name)
+export function playerToColor(name: string)
 {
     let colors = {
         spotify: "#1ED760",
@@ -34,6 +34,9 @@ export function playerToColor(name)
         Firefox: "#FF9500",
         firefox: "#FF9500",
     }
+
+    if (!name)
+        return "#FFFFFF"
 
     return colors[name]
 }

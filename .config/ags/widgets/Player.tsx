@@ -78,14 +78,14 @@ export default ({
 
   const positionLabel = (
     <label
-      className="position"
+      className="position time"
       halign={Gtk.Align.START}
       label={bind(player, "position").as(lengthStr)}
       visible={bind(player, "length").as((l) => l > 0)}></label>
   );
   const lengthLabel = (
     <label
-      className="length"
+      className="length time"
       halign={Gtk.Align.END}
       visible={bind(player, "length").as((l) => l > 0)}
       label={bind(player, "length").as(lengthStr)}></label>
@@ -172,7 +172,6 @@ export default ({
                 {artist}
               </box>
 
-              {positionSlider}
               <centerbox
                 spacing={5}
                 startWidget={positionLabel}
@@ -185,6 +184,7 @@ export default ({
                 }
                 endWidget={lengthLabel}
               />
+              {positionSlider}
             </box>
           }
         />

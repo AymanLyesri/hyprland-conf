@@ -83,10 +83,6 @@ KeyBinds are displayed and organized [Here](https://github.com/AymanLyesri/hyprl
 
 # Installation and Update
 
-## Things To Avoid
-
-> **Important:** If you previously installed another config and aren't sure what you're doing, it's recommended to do a clean Arch install, before proceeding.
-
 ## Required Dependencies and packages
 
 - [Arch Linux](https://archlinux.org/) (I use Arch linux BTW)
@@ -154,7 +150,7 @@ update
 
 ## Wallpaper Switcher
 
-![image](https://github.com/user-attachments/assets/6ea26575-a1bd-4abd-a46f-b62339ebf9b0)
+![image](https://github.com/user-attachments/assets/5fc90393-cd4e-4641-8f7a-f1d3d5880aa1)
 
 ## Theme Switching
 
@@ -165,3 +161,13 @@ update
 ## User Panel
 
 ![image](https://github.com/user-attachments/assets/d88f9a5e-c7da-4e31-80db-38073dc0278c)
+
+# Tutorials
+
+## App launcher
+
+- `>` `[name]` : Custom Apps
+- `emoji` `[name]` : emojis
+- `translate` `[text]` `>` `fr|en|es|jp...` : translate text into other languages
+- `[...1+2...]` : arithmetics (maths)
+- `[link]` : open the link in browser

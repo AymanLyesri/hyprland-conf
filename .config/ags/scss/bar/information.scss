@@ -1,12 +1,9 @@
 .bar-middle {
-  // padding: 0px 5px;
-  // background: black;
-
   .cava {
     padding: 0px;
     margin: 0px;
     color: $secondary;
-    font-size: 0.5em;
+    font-size: 0.69em;
   }
 
   .clock {
@@ -28,6 +25,7 @@
     background-position: center;
     margin: 0px;
     padding: 0px 10px;
+    color: grey;
 
     .progress {
       min-width: 15px; /* its size is min(min-height, min-width) */
@@ -40,6 +38,13 @@
         color: unset; /* you can set color on it */
       }
     }
+
+    .title {
+      font-weight: 700;
+    }
+
+    // .artist {
+    // }
   }
 
   .bandwidth {

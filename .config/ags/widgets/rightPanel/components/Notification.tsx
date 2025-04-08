@@ -233,10 +233,9 @@ export default ({
 
   const Revealer = (
     <revealer
-      transition_type={Gtk.RevealerTransitionType.SLIDE_DOWN}
+      transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
       transitionDuration={TRANSITION}
       reveal_child={!newNotification}
-      visible={true}
       setup={(self) => {
         timeout(1, () => {
           self.reveal_child = true;
@@ -247,29 +246,12 @@ export default ({
 
   const Parent = (
     <box
-      visible={true}
       setup={(self) =>
         timeout(NOTIFICATION_DELAY, () => {
           if (!IsLocked.get() && popup) closeNotification();
         })
       }
-      child={
-        <eventbox
-          visible={true}
-          onHover={() => {
-            leftRevealer.reveal_child = true;
-            closeRevealer.reveal_child = true;
-          }}
-          onHoverLost={() => {
-            if (!IsLocked.get()) leftRevealer.reveal_child = false;
-            closeRevealer.reveal_child = false;
-          }}
-          onClick={() =>
-            popup ? lockButton.activate() : copyButton.activate()
-          }
-          // onSecondaryClick={() => closeRevealer.child.activate()}
-          child={Revealer}></eventbox>
-      }></box>
+      child={Revealer}></box>
   );
 
   return Parent;

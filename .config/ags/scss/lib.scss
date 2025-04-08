@@ -82,7 +82,7 @@ filechooserbutton * {
 }
 
 entry {
-  padding: $SCALE;
+  padding: $SCALE / 2;
   border-radius: 10px;
   color: $foreground;
   background: $background-secondary;
@@ -165,7 +165,8 @@ scrolledwindow {
   trough {
     background: $background-transparent;
     color: black;
-    min-height: 5px;
+    min-height: 6.9px;
+    padding: 0px;
 
     slider {
       background: transparent;
