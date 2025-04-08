@@ -1,20 +1,25 @@
 .player {
   @extend .module;
-  padding: 0px;
-  border-radius: 15px;
+  padding: 10px;
 
-  .player-content {
-    border-radius: 15px;
-    padding: 10px;
-  }
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 
   &.popup {
     min-width: 400px;
   }
 
   &.widget {
-    background-size: cover;
-    background-position: center;
+    .bottom-event:hover {
+      .bottom {
+        background-color: $background-secondary;
+      }
+    }
+    .bottom {
+      background: $background-transparent;
+      padding: 5px;
+    }
   }
 
   .img {
@@ -26,24 +31,25 @@
     margin-right: 10px;
   }
 
-  .title {
-    margin: 5px 0px;
-    background: $background-secondary;
-    padding: 0px 10px;
-    border-radius: 50px;
-    color: $secondary;
-    font-size: 0.9em;
-  }
+  .bottom {
+    border-radius: 10px;
 
-  .artist {
-    margin: 5px 0px;
-    background: $background-secondary;
-    padding: 0px 10px;
-    border-radius: 50px;
-    font-size: 0.9em;
+    .title {
+      color: $secondary;
+      font-weight: 700;
+    }
+
+    .artist {
+      font-size: 0.9em;
+      font-weight: 400;
+    }
   }
 
   button {
     padding: $SCALE - 10 $SCALE;
+    background: transparent;
+    &:hover {
+      background: $background;
+    }
   }
 }

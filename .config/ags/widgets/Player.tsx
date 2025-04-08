@@ -1,8 +1,8 @@
-import { bind } from "astal";
 import AstalMpris from "gi://AstalMpris?version=0.1";
 import { getDominantColor } from "../utils/image";
 import { Gtk } from "astal/gtk3";
 import { rightPanelWidth } from "../variables";
+import { bind } from "astal";
 
 const FALLBACK_ICON = "audio-x-generic-symbolic";
 const PLAY_ICON = "media-playback-start-symbolic";
@@ -154,38 +154,41 @@ export default ({
       css={bind(player, "coverArt").as((p) =>
         playerType == "widget"
           ? `
-              min-height:${rightPanelWidth.get()}px;
+              min-height:${rightPanelWidth.get() - 20}px;
               background-image: url('${p}');
-              background-color: rgba(0, 0, 0, 0.5);
               `
           : ``
-      )}
-      child={
-        <box className={"player-content"} vexpand={true}>
-          {img()}
-          <box vertical={true} hexpand={true} spacing={5}>
-            <box>
-              {artist}
-              {icon}
+      )}>
+      {img()}
+      <box vertical={true} hexpand={true}>
+        {/* <box>{icon}</box> */}
+        <box vexpand={true}></box>
+        <eventbox
+          className={"bottom-event"}
+          child={
+            <box className={"bottom"} spacing={5} vertical>
+              <box className={"info"} vertical>
+                {title}
+                {artist}
+              </box>
+
+              {positionSlider}
+              <centerbox
+                spacing={5}
+                startWidget={positionLabel}
+                centerWidget={
+                  <box spacing={5}>
+                    {prev}
+                    {playPause}
+                    {next}
+                  </box>
+                }
+                endWidget={lengthLabel}
+              />
             </box>
-            <box vexpand={true}></box>
-            {title}
-            {positionSlider}
-            <centerbox
-              spacing={5}
-              startWidget={positionLabel}
-              centerWidget={
-                <box spacing={5}>
-                  {prev}
-                  {playPause}
-                  {next}
-                </box>
-              }
-              endWidget={lengthLabel}
-            />
-          </box>
-        </box>
-      }
-    />
+          }
+        />
+      </box>
+    </box>
   );
 };

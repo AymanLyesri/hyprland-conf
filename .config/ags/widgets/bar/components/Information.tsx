@@ -117,10 +117,10 @@ function Media({ monitorName }: { monitorName: string }) {
       )}></label>
   );
 
-  const coverArt = (player: Mpris.Player) =>
+  const coverArtToCss = (player: Mpris.Player) =>
     bind(player, "coverArt").as(
-      (c) => `
-          color: ${playerToColor(player.entry)};
+      (c) =>
+        `
           background-image: linear-gradient(
               to right,
               #000000,
@@ -132,7 +132,7 @@ function Media({ monitorName }: { monitorName: string }) {
 
   function Player(player: Mpris.Player) {
     return (
-      <box className="media" css={coverArt(player)} spacing={10}>
+      <box className="media" css={coverArtToCss(player)} spacing={10}>
         {progress(player)}
         {title(player)}
         {artist(player)}

@@ -1,13 +1,9 @@
 .bar-right {
   .system-tray {
-    @extend .module;
-    button {
-      background: transparent;
+    background: $background-secondary;
+    border-radius: 10px;
+    padding: 0px;
 
-      &:hover {
-        background: $background;
-      }
-    }
     // button {
     //   border-radius: 0px;
     //   // padding: 0px 0px;
