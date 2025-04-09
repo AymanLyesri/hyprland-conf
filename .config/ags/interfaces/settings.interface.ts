@@ -65,6 +65,7 @@ export interface Settings
     },
     chatBot: {
         api: Api,
+        imageGeneration: boolean,
     },
     booru: {
         api: Api,

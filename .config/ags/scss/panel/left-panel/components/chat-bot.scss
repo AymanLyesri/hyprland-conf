@@ -10,6 +10,11 @@
       @extend .module;
       padding: 5px;
 
+      .image {
+        background-position: center;
+        background-size: cover;
+        border-radius: 10px;
+      }
       .copy {
         padding: 5px;
         margin: 5px;
@@ -42,13 +47,18 @@
     }
   }
 
-  entry {
+  .bottom {
+    background: $background-secondary;
+    border-radius: 10px;
     padding: 10px;
-    border-radius: 50px;
-  }
 
-  .clear {
-    @extend .danger;
-    padding: 5px;
+    entry {
+      border-radius: 50px;
+    }
+
+    .clear {
+      @extend .danger;
+      padding: 5px;
+    }
   }
 }

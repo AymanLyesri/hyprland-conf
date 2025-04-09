@@ -18,8 +18,8 @@ assets/waifu/*
 assets/waifu/favorites/*
 !assets/waifu/favorites/
 
-!assets/chatbot/
 assets/chatbot/*
+!assets/chatbot/
 
 !assets/booru/
 assets/booru/*

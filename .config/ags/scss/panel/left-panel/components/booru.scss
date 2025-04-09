@@ -25,28 +25,31 @@
     }
 
     .input-bar {
-      @extend .module;
+      background: $background-secondary;
+      border-radius: 10px;
       padding: 10px;
       .tags {
-        padding-bottom: 5px;
-        .explicit {
-          background: $red;
-        }
-        button {
-          padding: $SCALE / 2 $SCALE;
-
-          &:hover {
+        padding-bottom: 10px;
+        .applied-tags {
+          .explicit {
             background: $red;
           }
-        }
-      }
-      .fetched-tags {
-        button {
-          padding: $SCALE / 2 $SCALE;
-          background: $background;
+          button {
+            padding: $SCALE / 2 $SCALE;
 
-          &:hover {
-            background: $green;
+            &:hover {
+              background: $red;
+            }
+          }
+        }
+        .fetched-tags {
+          button {
+            padding: $SCALE / 2 $SCALE;
+            background: $background;
+
+            &:hover {
+              background: $green;
+            }
           }
         }
       }

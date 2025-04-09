@@ -3,20 +3,25 @@ import { Message } from "../../../interfaces/chatbot.interface";
 import { bind, execAsync, timeout, Variable } from "astal";
 import { notify } from "../../../utils/notification";
 import { readJSONFile, writeJSONFile } from "../../../utils/json";
-import { chatBotApi, globalTransition } from "../../../variables";
+import {
+  chatBotApi,
+  chatBotImageGeneration,
+  globalTransition,
+  leftPanelWidth,
+} from "../../../variables";
 import ToggleButton from "../../toggleButton";
 import { chatBotApis } from "../../../constants/api.constants";
+import { Api } from "../../../interfaces/api.interface";
 // Constants
 const MESSAGE_FILE_PATH = "./assets/chatbot";
 
 // State
-const imageGeneration = Variable<boolean>(false);
 const messages = Variable<Message[]>([]);
 const chatHistory = Variable<Message[]>([]);
 
 // Utils
 const getMessageFilePath = () =>
-  `${MESSAGE_FILE_PATH}/${chatBotApi.get().value}.json`;
+  `${MESSAGE_FILE_PATH}/${chatBotApi.get().value}/history.json`;
 
 const formatTextWithCodeBlocks = (text: string) => {
   const parts = text.split(/```(\w*)?\n?([\s\S]*?)```/gs);
@@ -53,7 +58,7 @@ const formatTextWithCodeBlocks = (text: string) => {
   }
 
   return (
-    <box className="body" vertical spacing={10}>
+    <box visible={text !== ""} className="body" vertical spacing={10}>
       {elements}
     </box>
   );
@@ -76,8 +81,14 @@ const sendMessage = async (message: Message) => {
   try {
     const beginTime = Date.now();
 
+    const imagePath = `./assets/chatbot/${chatBotApi.get().value}/images/${
+      message.id
+    }.jpg`;
+
     const response = await execAsync(
       `tgpt --quiet ` +
+        `${chatBotImageGeneration.get() ? "--img" : ""} ` +
+        `--out ${imagePath} ` +
         `--provider ${chatBotApi.get().value} ` +
         `--preprompt 'short and straight forward response, 
         ${JSON.stringify(chatHistory.get())
@@ -96,6 +107,7 @@ const sendMessage = async (message: Message) => {
       content: response,
       timestamp: Date.now(),
       responseTime: endTime - beginTime,
+      image: chatBotImageGeneration.get() ? imagePath : undefined,
     };
 
     messages.set([...messages.get(), newMessage]);
@@ -180,22 +192,39 @@ const MessageItem = ({ message }: { message: Message }) => {
     </box>
   );
 
+  const messageContent = (
+    <box vertical hexpand>
+      {formatTextWithCodeBlocks(message.content)}
+      <box
+        visible={message.image !== undefined}
+        className={"image"}
+        css={`
+          background-image: url("${message.image}");
+        `}
+        heightRequest={bind(leftPanelWidth)}
+        hexpand></box>
+    </box>
+  );
+
   const revealerInstance = Revealer();
   return (
     <eventbox
       className={"message-eventbox"}
       onHover={() => (revealerInstance.reveal_child = true)}
       onHoverLost={() => (revealerInstance.reveal_child = false)}
-      halign={message.sender === "user" ? Gtk.Align.END : Gtk.Align.START}
+      halign={
+        message.image === undefined
+          ? message.sender === "user"
+            ? Gtk.Align.END
+            : Gtk.Align.START
+          : undefined
+      }
       child={
-        <box
-          className={`message ${message.sender}`}
-          halign={Gtk.Align.START}
-          vertical>
+        <box className={`message ${message.sender}`} vertical>
           <box className={"main"}>
             {message.sender !== "user"
-              ? [<Actions />, formatTextWithCodeBlocks(message.content)]
-              : [formatTextWithCodeBlocks(message.content), <Actions />]}
+              ? [<Actions />, messageContent]
+              : [messageContent, <Actions />]}
           </box>
           {revealerInstance}
         </box>
@@ -232,21 +261,22 @@ const ClearButton = () => (
     className="clear"
     onClicked={() => {
       messages.set([]);
+      execAsync(
+        `rm ${MESSAGE_FILE_PATH}/${chatBotApi.get().value}/images/*`
+      ).catch((err) => notify({ summary: "err", body: err }));
     }}
   />
 );
 
-// const ImageGenerationSwitch = ({
-//   chatBotApi,
-// }: {
-//   chatBotApi: Variable<Provider>;
-// }) => (
-//   <switch
-//     visible={chatBotApi.get().imageGenerationSupport}
-//     active={imageGeneration.get()}
-//     onButtonPressEvent={() => imageGeneration.set(!imageGeneration.get())}
-//   />
-// );
+const ImageGenerationSwitch = () => (
+  <ToggleButton
+    visible={bind(chatBotApi).as((api) => api.imageGenerationSupport)}
+    state={chatBotImageGeneration.get()}
+    className="image-generation"
+    label={" Image Generation"}
+    onToggled={(self, on) => chatBotImageGeneration.set(on)}
+  />
+);
 
 const MessageEntry = () => {
   const handleSubmit = (self: Gtk.Entry) => {
@@ -272,14 +302,33 @@ const MessageEntry = () => {
 };
 
 const BottomBar = () => (
-  <box spacing={5}>
-    <MessageEntry />
-    <ClearButton />
+  <box className={"bottom"} spacing={10} vertical>
+    <box spacing={5}>
+      <MessageEntry />
+      <ClearButton />
+    </box>
+    <box child={<ImageGenerationSwitch />}></box>
   </box>
 );
 
+const EnsurePaths = async () => {
+  const paths = [
+    `${MESSAGE_FILE_PATH}`,
+    `${MESSAGE_FILE_PATH}/${chatBotApi.get().value}`,
+    `${MESSAGE_FILE_PATH}/${chatBotApi.get().value}/images`,
+    `${MESSAGE_FILE_PATH}/${chatBotApi.get().value}/history.json`,
+  ];
+
+  paths.forEach((path) => {
+    execAsync(`mkdir -p ${path}`);
+  });
+};
+
 export default () => {
-  chatBotApi.subscribe(() => fetchMessages());
+  chatBotApi.subscribe(() => {
+    EnsurePaths();
+    fetchMessages();
+  });
   messages.subscribe(() => {
     saveMessages();
     // set the last 10 messages to chat history

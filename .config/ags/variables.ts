@@ -111,6 +111,8 @@ leftPanelWidget.subscribe((value) => setSetting("leftPanel.widget", value));
 
 export const chatBotApi = Variable<Api>(getSetting("chatBot.api"));
 chatBotApi.subscribe((value) => setSetting("chatBot.api", value));
+export const chatBotImageGeneration = Variable<boolean>(getSetting("chatBot.imageGeneration"));
+chatBotImageGeneration.subscribe((value) => setSetting("chatBot.imageGeneration", value));
 
 export const booruApi = Variable<Api>(getSetting("booru.api"));
 booruApi.subscribe((value) => setSetting("booru.api", value));

@@ -6,6 +6,7 @@ export interface Message
     content: string,
     timestamp: number,
     responseTime?: number,
+    image?: string,
 }
 
 export interface Provider

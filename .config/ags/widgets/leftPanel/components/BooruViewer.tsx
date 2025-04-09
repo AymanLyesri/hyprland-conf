@@ -229,8 +229,8 @@ const TagDisplay = () => (
     hexpand
     vscroll={Gtk.PolicyType.NEVER}
     child={
-      <box spacing={10}>
-        <box className="tags" spacing={5}>
+      <box className={"tags"} spacing={10}>
+        <box className="applied-tags" spacing={5}>
           {bind(booruTags).as((tags) =>
             tags.map((tag) => {
               // check if tag is rating tag
