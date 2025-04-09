@@ -28,6 +28,7 @@
       @extend .module;
       padding: 10px;
       .tags {
+        padding-bottom: 5px;
         .explicit {
           background: $red;
         }

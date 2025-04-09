@@ -4,22 +4,45 @@
   background-position: center;
   border-radius: 10px;
 
-  .actions {
-    .bottom {
-      .action-trigger {
-        margin: 5px;
-        padding: 5px;
-      }
-      .actions {
-        entry {
-          // background: $background;
-          border-radius: 0px;
-          padding: 0px;
-          margin: 0px;
-        }
+  padding: 10px;
 
-        button {
-          border-radius: 0px;
+  .bottom {
+    border-radius: 10px;
+    .action-trigger {
+      padding: 5px;
+      background: $background-transparent;
+      &:hover {
+        background: $background;
+      }
+    }
+    .actions {
+      margin-top: 10px;
+      entry {
+        // background: $background;
+        border-radius: 0px;
+        padding: 0px;
+        margin: 0px;
+      }
+
+      button {
+        border-radius: 0px;
+      }
+
+      .top button {
+        &:first-child {
+          border-radius: 10px 0px 0px 0px;
+        }
+        &:last-child {
+          border-radius: 0px 10px 0px 0px;
+        }
+      }
+
+      .bottom button {
+        &:first-child {
+          border-radius: 0px 0px 0px 10px;
+        }
+        &:last-child {
+          border-radius: 0px 0px 10px 0px;
         }
       }
     }

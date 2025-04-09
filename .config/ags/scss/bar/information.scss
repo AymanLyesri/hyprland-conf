@@ -25,7 +25,31 @@
     background-position: center;
     margin: 0px;
     padding: 0px 10px;
-    color: grey;
+
+    &.spotify {
+      color: #1ed760;
+    }
+    &.vlc {
+      color: #ff9500;
+    }
+    &.youtube {
+      color: #ff0000;
+    }
+    &.brave {
+      color: #ff9500;
+    }
+    &.audacious {
+      color: #ff9500;
+    }
+    &.rhythmbox {
+      color: #ff9500;
+    }
+    &.chromium {
+      color: #ff9500;
+    }
+    &.firefox {
+      color: #ff9500;
+    }
 
     .progress {
       min-width: 15px; /* its size is min(min-height, min-width) */

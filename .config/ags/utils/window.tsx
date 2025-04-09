@@ -22,7 +22,7 @@ export function WindowActions({
   windowVisibility: Variable<boolean>;
 }) {
   const maxRightPanelWidth = 600;
-  const minRightPanelWidth = 200;
+  const minRightPanelWidth = 250;
   return (
     <box
       className={"window-actions"}

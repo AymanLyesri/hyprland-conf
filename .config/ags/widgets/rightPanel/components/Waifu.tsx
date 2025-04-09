@@ -112,7 +112,7 @@ function Actions() {
       transition_type={Gtk.RevealerTransitionType.SLIDE_UP}
       child={
         <box className={"actions"} vertical>
-          <box>
+          <box className={"top"}>
             <button
               label=""
               className="open"
@@ -186,7 +186,7 @@ function Actions() {
               }}
             />
           </box>
-          <box>
+          <box className={"bottom"}>
             {booruApis.map((api) => (
               <ToggleButton
                 hexpand
@@ -222,7 +222,7 @@ function Actions() {
   );
 
   return (
-    <box className="actions" vertical child={bottom}>
+    <box className="layout" vertical child={bottom}>
       {/* {top} */}
     </box>
   );

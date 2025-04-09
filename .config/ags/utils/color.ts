@@ -35,7 +35,7 @@ export function playerToColor(name: string)
         firefox: "#FF9500",
     }
 
-    if (!name)
+    if (colors[name] === undefined)
         return "#FFFFFF"
 
     return colors[name]
