@@ -150,7 +150,7 @@ update
 
 ## Wallpaper Switcher
 
-![image](https://github.com/user-attachments/assets/5fc90393-cd4e-4641-8f7a-f1d3d5880aa1)
+![image](https://github.com/user-attachments/assets/50c6a84a-6073-4f57-8389-3e279d2d628a)
 
 ## Theme Switching
 
