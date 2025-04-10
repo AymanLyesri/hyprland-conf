@@ -14,20 +14,15 @@ get_bytes() {
 rx_old=$(get_bytes "RX")
 tx_old=$(get_bytes "TX")
 
-while true; do
-    # Get new values
-    rx_new=$(get_bytes "RX")
-    tx_new=$(get_bytes "TX")
+sleep 1
 
-    # Calculate speed
-    rx_speed=$((($rx_new - $rx_old) / 1024 / 3)) # KB per second
-    tx_speed=$((($tx_new - $tx_old) / 1024))     # KB per second
+# Get new values
+rx_new=$(get_bytes "RX")
+tx_new=$(get_bytes "TX")
 
-    # Display results
-    echo "[$tx_speed,$rx_speed]"
+# Calculate speed
+rx_speed=$((($rx_new - $rx_old) / 1024 / 3)) # KB per second
+tx_speed=$((($tx_new - $tx_old) / 1024))     # KB per second
 
-    # Update old values
-    rx_old=$rx_new
-    tx_old=$tx_new
-    sleep 3
-done
+# Display results
+echo "[$tx_speed,$rx_speed]"

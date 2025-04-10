@@ -4,6 +4,9 @@ types
 
 !assets/
 
+assets/binaries/*
+!assets/binaries/
+
 assets/images/*
 !assets/images/
 

@@ -67,7 +67,6 @@ export default ({
   async function closeNotification(dismiss = false) {
     Revealer.reveal_child = false;
     timeout(globalTransition, () => {
-      Parent.destroy();
       if (dismiss) n.dismiss();
     });
   }
@@ -199,12 +198,11 @@ export default ({
       rounded={true}
       value={1}
       setup={(self) => {
-        while (self.value >= 0 && !self.destroyed) {
+        while (self.value >= 0 && self.destroyed) {
           self.value -= 0.01;
           asyncSleep(50);
         }
         self.visible = false;
-        self.destroy();
       }}
     />
   );

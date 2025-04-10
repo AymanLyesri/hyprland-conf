@@ -16,33 +16,44 @@ import { getMonitorName } from "./utils/monitor"
 import { logTime } from "./utils/time"
 import LeftPanel from "./widgets/leftPanel/LeftPanel"
 import LeftPanelHover from "./widgets/leftPanel/LeftPanelHover"
+import { compileBinaries } from "./utils/gcc"
 
 
-const main = () => App.get_monitors().map(monitor =>
+const perMonitorDisplay = () => App.get_monitors().map(monitor =>
 {
     print("\t MONITOR: " + getMonitorName(monitor.get_display(), monitor));
 
-    logTime("\t\t Bar", () => Bar(monitor));
-    logTime("\t\t BarHover", () => BarHover(monitor));
-    logTime("\t\t Progress", () => Progress(monitor));
-    logTime("\t\t RightPanel", () => RightPanel(monitor));
-    logTime("\t\t RightPanelHover", () => RightPanelHover(monitor));
-    logTime("\t\t LeftPanel", () => LeftPanel(monitor));
-    logTime("\t\t LeftPanelHover", () => LeftPanelHover(monitor));
-    logTime("\t\t NotificationPopups", () => NotificationPopups(monitor));
-    logTime("\t\t AppLauncher", () => AppLauncher(monitor));
-    logTime("\t\t UserPanel", () => UserPanel(monitor));
-    logTime("\t\t WallpaperSwitcher", () => WallpaperSwitcher(monitor));
-    logTime("\t\t MediaPopups", () => MediaPopups(monitor));
-    logTime("\t\t SettingsWidget", () => SettingsWidget(monitor));
-    logTime("\t\t OSD", () => OSD(monitor));
+    // List of widget initializers
+    const widgetInitializers = [
+        { name: "Bar", fn: () => Bar(monitor) },
+        { name: "BarHover", fn: () => BarHover(monitor) },
+        { name: "Progress", fn: () => Progress(monitor) },
+        { name: "RightPanel", fn: () => RightPanel(monitor) },
+        { name: "RightPanelHover", fn: () => RightPanelHover(monitor) },
+        { name: "LeftPanel", fn: () => LeftPanel(monitor) },
+        { name: "LeftPanelHover", fn: () => LeftPanelHover(monitor) },
+        { name: "NotificationPopups", fn: () => NotificationPopups(monitor) },
+        { name: "AppLauncher", fn: () => AppLauncher(monitor) },
+        { name: "UserPanel", fn: () => UserPanel(monitor) },
+        { name: "WallpaperSwitcher", fn: () => WallpaperSwitcher(monitor) },
+        { name: "MediaPopups", fn: () => MediaPopups(monitor) },
+        { name: "SettingsWidget", fn: () => SettingsWidget(monitor) },
+        { name: "OSD", fn: () => OSD(monitor) }
+    ];
+
+    // Launch each widget independently without waiting
+    widgetInitializers.forEach(({ name, fn }) =>
+    {
+        logTime(`\t\t ${name}`, fn);
+    });
 });
 
 
 App.start({
     css: getCssPath(),
-    main()
+    main: () =>
     {
-        main();
+        logTime("\t Compiling Binaries", () => compileBinaries());
+        perMonitorDisplay();
     },
 });

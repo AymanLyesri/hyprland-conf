@@ -15,7 +15,12 @@ import {
   focusedClient,
   globalTransition,
 } from "../../../variables";
-import { bind, GLib, Variable } from "../../../../../../../usr/share/astal/gjs";
+import {
+  bind,
+  exec,
+  GLib,
+  Variable,
+} from "../../../../../../../usr/share/astal/gjs";
 import { Gtk } from "astal/gtk3";
 import CustomRevealer from "../../CustomRevealer";
 import { showWindow } from "../../../utils/window";
@@ -193,9 +198,12 @@ function Clock() {
 }
 
 function Bandwidth() {
-  const bandwidth = Variable<string[]>([]).watch(
-    `bash ./scripts/bandwidth.sh`,
-    (out) => [String(JSON.parse(out)[0]), String(JSON.parse(out)[1])]
+  const bandwidth = Variable<string[]>(["0", "0"]).poll(
+    1000,
+    ["./assets/binaries/bandwidth"],
+    (out) => {
+      return [String(JSON.parse(out)[0]), String(JSON.parse(out)[1])];
+    }
   );
 
   const packet = (icon: string, value: string) => (

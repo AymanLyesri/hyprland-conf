@@ -15,21 +15,18 @@ export function asyncSleep(INTERVAL: number)
 export function logTime(label: string, fn: () => void)
 {
     const start = GLib.get_monotonic_time();
-    fn();
+    fn(); // Ensure async execution
     const end = GLib.get_monotonic_time();
+    const duration = (end - start) / 1000;
 
-    const time = (end - start) / 1000;  // Convert to ms
+    // Color coding remains the same
+    const colors = {
+        fast: "\x1b[32m",
+        medium: "\x1b[33m",
+        slow: "\x1b[31m"
+    };
+    const color = duration > 100 ? colors.slow :
+        duration > 10 ? colors.medium : colors.fast;
 
-    // Define colors
-    const reset = "\x1b[0m";
-    const green = "\x1b[32m";
-    const yellow = "\x1b[33m";
-    const red = "\x1b[31m";
-
-    // Choose color based on time
-    let color = green;  // Fast
-    if (time > 10) color = yellow; // Medium
-    if (time > 100) color = red;  // Slow
-
-    print(`${label}: ${color}${time} ms${reset}`);
+    print(`${label}: ${color}${duration} ms\x1b[0m`);
 }
