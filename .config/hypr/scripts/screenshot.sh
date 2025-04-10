@@ -1,8 +1,9 @@
 #!/bin/bash
 
-file="$HOME/Pictures/Screenshots/$(date +'%s_grim.png')"
+file="$(date +'%s_hyprshot.jpg')"
+screenshot_dir="$HOME/Pictures/Screenshots"
 
-#check if file argument is passed as second argument
+# check if file argument is passed as second argument
 if [[ "$2" ]]; then
     file=$2
     echo "File : $file"
@@ -30,7 +31,7 @@ screenshotAll() {
     for id in "${workspace_ids[@]}"; do
         hyprctl dispatch workspace "$id"
         sleep 2
-        file="$ScreenshotsDir/$(date +'%s_grim.png')"
+        file="$ScreenshotsDir/$(date +'%s_hyprshot.jpg')"
         $HOME/.config/hypr/scripts/screenshot.sh --now "$file" && screenshots+=("$file")
     done
 
@@ -38,27 +39,27 @@ screenshotAll() {
     screenshots=("${screenshots[@]:1}" "${screenshots[0]}")
 
     # merge screenshots
-    convert -append ${screenshots[@]} $ScreenshotsDir/$(date +'%s_grim_result.jpg')
+    convert -append ${screenshots[@]} "$ScreenshotsDir/$(date +'%s_hyprshot_result.jpg')"
 
     # copy to clipboard
-    wl-copy -t image/png <$ScreenshotsDir/$(date +'%s_grim_result.jpg')
-
+    wl-copy -t image/jpg <"$ScreenshotsDir/$(date +'%s_hyprshot_result.jpg')"
 }
 
 # notify and view screenshot
 
 if [[ "$1" == "--now" ]]; then
 
-    grim -c - | wl-copy && wl-paste >$file
+    hyprshot -s -z -m output -o $screenshot_dir -f $file
 
 elif [[ "$1" == "--area" ]]; then
 
-    grim -c -g "$(slurp)" - | wl-copy && wl-paste >$file
+    hyprshot -s -z -m region -o $screenshot_dir -f $file
 
 elif [[ "$1" == "--all" ]]; then
 
     screenshotAll
+
 else
 
-    echo -e "Available Options : --now --area"
+    echo -e "Available Options : --now --area --all"
 fi

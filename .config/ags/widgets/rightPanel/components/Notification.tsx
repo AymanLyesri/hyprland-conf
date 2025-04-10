@@ -13,27 +13,38 @@ const isIcon = (icon: string) => !!Astal.Icon.lookup_icon(icon);
 const TRANSITION = 200;
 
 function NotificationIcon(n: Notifd.Notification) {
-  if (n.image) {
-    return (
-      <box
-        className="image"
-        css={`
-          background-image: url("${n.image}");
-          background-size: cover;
-          background-repeat: no-repeat;
-          background-position: center;
-          border-radius: 10px;
-        `}
-      />
-    );
+  const notificationIcon = n.image || n.app_icon || n.desktopEntry;
+
+  if (!notificationIcon)
+    return <icon className="icon" icon={"dialog-information-symbolic"} />;
+
+  return (
+    <box
+      className="image"
+      css={`
+        background-image: url("${notificationIcon}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        border-radius: 10px;
+      `}
+    />
+  );
+}
+
+function copyNotificationContent(n: Notifd.Notification) {
+  if (n.appIcon) {
+    execAsync(`bash -c "wl-copy --type image/png < '${n.appIcon}'"`)
+      .finally(() => notify({ summary: "Copied", body: n.appIcon }))
+      .catch((err) => notify({ summary: "Error", body: err }));
+    return;
   }
 
-  let icon = "dialog-information-symbolic";
-  if (isIcon(n.app_icon)) icon = n.app_icon;
-
-  if (n.desktopEntry && isIcon(n.desktopEntry)) icon = n.desktopEntry;
-
-  return <icon className="icon" icon={icon} />;
+  const content = n.body || n.app_name;
+  if (!content) return;
+  execAsync(`wl-copy "${content}"`).catch((err) =>
+    notify({ summary: "Error", body: err })
+  );
 }
 
 export default ({
@@ -53,10 +64,11 @@ export default ({
       });
   });
 
-  function closeNotification() {
+  async function closeNotification(dismiss = false) {
     Revealer.reveal_child = false;
-    timeout(globalTransition - 300, () => {
+    timeout(globalTransition, () => {
       Parent.destroy();
+      if (dismiss) n.dismiss();
     });
   }
 
@@ -110,23 +122,31 @@ export default ({
   //             notify(err)
   //           );
   //         }}
-  //         hexpand={true}>
-  //         <label label={action[0].includes("Delete") ? "󰆴" : action[0]} />
-  //       </button>
+  //         hexpand={true}
+  //         child={
+  //           <label label={action[0].includes("Delete") ? "󰆴" : action[0]} />
+  //         }></button>
   //     ))}
   //   </box>
   // );
 
-  const expand = (
-    <ToggleButton
-      className="expand"
-      state={false}
-      onToggled={(self, on) => {
-        title.set_property("truncate", !on);
-        body.set_property("truncate", !on);
-        self.label = on ? "" : "";
-      }}
-      label=""
+  const expandRevealer = (
+    <revealer
+      reveal_child={false}
+      transition_type={Gtk.RevealerTransitionType.CROSSFADE}
+      transitionDuration={globalTransition}
+      child={
+        <ToggleButton
+          className="expand"
+          state={false}
+          onToggled={(self, on) => {
+            title.set_property("truncate", !on);
+            body.set_property("truncate", !on);
+            self.label = on ? "" : "";
+          }}
+          label=""
+        />
+      }
     />
   );
 
@@ -144,18 +164,14 @@ export default ({
     <button
       className="copy"
       label=""
-      onClicked={() =>
-        execAsync(`wl-copy "${n.body}"`).catch((err) =>
-          notify({ summary: "Error", body: err })
-        )
-      }
+      onClicked={() => copyNotificationContent(n)}
     />
   );
 
   const leftRevealer = (
     <revealer
       reveal_child={false}
-      transition_type={Gtk.RevealerTransitionType.SLIDE_LEFT}
+      transition_type={Gtk.RevealerTransitionType.CROSSFADE}
       transitionDuration={globalTransition}
       child={popup ? lockButton : copyButton}
     />
@@ -164,15 +180,14 @@ export default ({
   const closeRevealer = (
     <revealer
       reveal_child={false}
-      transition_type={Gtk.RevealerTransitionType.SLIDE_RIGHT}
+      transition_type={Gtk.RevealerTransitionType.CROSSFADE}
       transitionDuration={globalTransition}
       child={
         <button
           className="close"
           label=""
           onClicked={() => {
-            closeNotification();
-            n.dismiss();
+            closeNotification(true);
           }}
         />
       }></revealer>
@@ -183,12 +198,12 @@ export default ({
       className="circular-progress"
       rounded={true}
       value={1}
-      visible={true}
-      setup={async (self) => {
-        while (self.value >= 0) {
+      setup={(self) => {
+        while (self.value >= 0 && !self.destroyed) {
           self.value -= 0.01;
-          await asyncSleep(50);
+          asyncSleep(50);
         }
+        self.visible = false;
         self.destroy();
       }}
     />
@@ -196,19 +211,28 @@ export default ({
 
   const topBar = (
     <box className="top-bar" hexpand={true} spacing={5}>
-      {leftRevealer}
-      {popup ? CircularProgress : <box />}
-      <label
-        hexpand={true}
-        wrap={true}
-        xalign={0}
-        truncate={popup}
-        className="app-name"
-        label={n.app_name}
-      />
-      <label hexpand={true} xalign={1} className="time" label={time(n.time)} />
-      {expand}
-      {closeRevealer}
+      <box spacing={5} hexpand>
+        <box
+          visible={popup}
+          className={"circular-progress-box"}
+          child={CircularProgress}
+        />
+
+        <label
+          wrap={true}
+          xalign={0}
+          truncate={popup}
+          className="app-name"
+          label={n.app_name}
+        />
+        {leftRevealer}
+      </box>
+      <box className={"quick-actions"}>
+        {closeRevealer}
+        {expandRevealer}
+      </box>
+
+      <label xalign={1} className="time" label={time(n.time)} />
     </box>
   );
 
@@ -253,14 +277,17 @@ export default ({
       }
       child={
         <eventbox
+          className={"notification-eventbox"}
           visible={true}
           onHover={() => {
             leftRevealer.reveal_child = true;
             closeRevealer.reveal_child = true;
+            expandRevealer.reveal_child = true;
           }}
           onHoverLost={() => {
             if (!IsLocked.get()) leftRevealer.reveal_child = false;
             closeRevealer.reveal_child = false;
+            expandRevealer.reveal_child = false;
           }}
           onClick={() =>
             popup ? lockButton.activate() : copyButton.activate()

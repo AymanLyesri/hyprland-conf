@@ -1,46 +1,63 @@
+.notification-eventbox {
+  &:hover .top-bar {
+    background-color: $background-secondary;
+  }
+}
+
 .notification {
   @extend .module;
-  min-height: 2px;
-  // min-width: 300px;
   margin: 0px;
   padding: 0px;
   transition: opacity 0.5s ease-out; /* Adjust timing */
 
-  separator {
-    margin-bottom: 5px;
-  }
-
-  .circular-progress {
-    margin: 0px;
-    padding: 0px;
-    min-width: 20px;
-    min-height: 10px;
-    font-size: 5px;
-  }
-
-  .app-name {
-    font-size: 0.9em;
-    color: $foreground;
-  }
-
-  .time {
-    font-size: 0.9em;
-    color: $foreground-secondary;
-  }
-
-  .lock,
-  .copy,
-  .expand {
-    padding: 0px 5px;
-  }
-
-  .close {
-    padding: 0px;
-    @extend .danger;
-  }
-
   .main-content {
     padding: 10px;
+  }
+
+  .top-bar {
+    padding: 0px 5px;
+    border-radius: 5px;
+    background: $background-transparent;
+
+    .circular-progress-box {
+      padding-right: 5px;
+    }
+
+    .circular-progress {
+      margin: 0px;
+      padding: 0px;
+      min-width: 20px;
+      min-height: 10px;
+      font-size: 5px;
+    }
+
+    .app-name {
+      font-size: 0.9em;
+      color: $foreground;
+    }
+
+    .lock,
+    .copy,
+    .close,
+    .expand {
+      padding: 0px 5px;
+      &:not(:hover) {
+        background: transparent;
+      }
+    }
+
+    .close {
+      @extend .danger;
+    }
+
+    .time {
+      font-size: 0.8em;
+      color: $foreground-secondary;
+    }
+  }
+
+  separator {
+    margin-bottom: 5px;
   }
 
   &.Spotify .app-name {
