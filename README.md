@@ -27,7 +27,6 @@ New official [Discord](https://discord.gg/fMGt4vH6s5) server.
 # Features
 
 - **Dynamic wallpapers** based on workspaces: Custom scripts & [Hyprpaper](https://github.com/hyprwm/hyprpaper)
-- **Screenshot all active workspaces** into one image: Custom script
 - **Dynamic color schemes** based on current wallpaper: Custom scripts & [PyWal](https://github.com/dylanaraps/pywal)
 - **Global Theme switcher (Light/Dark)**: Custom scripts
 - **Ags V2 widgets** ~~(Eww replaced)~~: _these are just some of the features_
@@ -40,6 +39,7 @@ New official [Discord](https://discord.gg/fMGt4vH6s5) server.
     - Emojis
     - Arithmetics
     - Url forwarding to default browser
+    - custom commands
   - Wallpaper switcher for each workspace
   - Media player
   - Right Panel
@@ -47,10 +47,8 @@ New official [Discord](https://discord.gg/fMGt4vH6s5) server.
     - Media Player
     - Notification history - filter
     - Calendar
-    - System resource monitor (WIP)
-    - System Updater (WIP)
   - Left Panel
-    - Chat Bot -- multiple APIs
+    - Chat Bot -- multiple APIs + image generation
     - Booru Viewer -- using [Danbooru](https://danbooru.donmai.us) and [Gelbooru](https://gelbooru.com) APIs
   - Hyprland Settings widget
   - User Panel (logout etc...)
@@ -150,7 +148,7 @@ update
 
 ## Wallpaper Switcher
 
-![image](https://github.com/user-attachments/assets/50c6a84a-6073-4f57-8389-3e279d2d628a)
+![image](https://github.com/user-attachments/assets/55aea0b2-dea0-46f2-bb33-84ce66b4cb16)
 
 ## Theme Switching
 
