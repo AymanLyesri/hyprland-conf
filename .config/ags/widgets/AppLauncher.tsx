@@ -33,12 +33,6 @@ const monitorName = Variable<string>("");
 const Results = Variable<LauncherApp[]>([]);
 const quickApps = globalSettings.get().quickLauncher.apps;
 const QuickApps = () => {
-  // Group quickApps into pairs for two-in-a-row display
-  const appPairs = [];
-  for (let i = 0; i < quickApps.length; i += 2) {
-    appPairs.push(quickApps.slice(i, i + 2));
-  }
-
   const apps = (
     <revealer
       transition_type={Gtk.RevealerTransitionType.SLIDE_DOWN}
@@ -46,31 +40,24 @@ const QuickApps = () => {
       revealChild={bind(Results).as((results) => results.length === 0)}
       child={
         <scrollable
-          heightRequest={100}
+          heightRequest={quickApps.length * 40}
           child={
             <box className="quick-apps" spacing={5} vertical>
-              {appPairs.map((pair, index) => (
-                <box spacing={5}>
-                  {pair.map((app) => (
-                    <button
-                      hexpand
-                      className="quick-app"
-                      onClicked={() => {
-                        hyprland.message_async(
-                          `dispatch exec ${app.exec}`,
-                          () => {
-                            hideWindow(`app-launcher-${monitorName.get()}`);
-                          }
-                        );
-                      }}
-                      child={
-                        <box spacing={5}>
-                          <label className="icon" label={app.icon} />
-                          <label label={app.name} />
-                        </box>
-                      }></button>
-                  ))}
-                </box>
+              {quickApps.map((app, index) => (
+                <button
+                  hexpand
+                  className="quick-app"
+                  onClicked={() => {
+                    hyprland.message_async(`dispatch exec ${app.exec}`, () => {
+                      hideWindow(`app-launcher-${monitorName.get()}`);
+                    });
+                  }}
+                  child={
+                    <box spacing={5}>
+                      <label className="icon" label={app.icon} />
+                      <label label={app.name} />
+                    </box>
+                  }></button>
               ))}
             </box>
           }></scrollable>
@@ -256,25 +243,17 @@ const organizeResults = (results: LauncherApp[]) => {
 
   const rows = (
     <box className="results" vertical={true} spacing={5}>
-      {Array.from({ length: Math.ceil(results.length / 2) }).map((_, i) => (
-        <box vertical={false} spacing={5}>
-          {results.slice(i * 2, i * 2 + 2).map((element, j) => (
-            <AppButton
-              element={element}
-              className={i === 0 && j === 0 ? "checked" : ""}
-            />
-          ))}
-        </box>
+      {results.map((result, i) => (
+        <AppButton element={result} className={i === 0 ? "checked" : ""} />
       ))}
     </box>
   );
 
   const maxHeight = 500;
-
   return (
     <scrollable
       heightRequest={bind(Results).as((results) =>
-        results.length * 20 > maxHeight ? maxHeight : results.length * 20
+        results.length * 45 > maxHeight ? maxHeight : results.length * 45
       )}
       child={rows}
     />

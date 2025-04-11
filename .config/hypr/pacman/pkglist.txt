@@ -41,7 +41,6 @@ rclone
 visual-studio-code-bin
 zsh
 zsh-auto-notify
-zsh-directory-history
 zsh-history-substring-search
 zsh-syntax-highlighting
 zsh-autosuggestions-git

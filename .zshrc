@@ -1,5 +1,4 @@
 (cat ~/.cache/wal/sequences &)
-# (nohup $HOME/.config/hypr/theme/scripts/wal-theme.sh > /dev/null 2>&1 &) # set wallpaper theme
 
 eval "$(starship init zsh)"
 
@@ -15,8 +14,8 @@ source /usr/share/zsh/plugins/fzf-tab-git/fzf-tab.plugin.zsh
 
 #Zsh Auto-Suggestions
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#696969,bold"
-HISTSIZE=10000            # Maximum events for internal history
-SAVEHIST=10000            # Maximum events in history file
+HISTSIZE=1000             # Maximum events for internal history
+SAVEHIST=1000             # Maximum events in history file
 HISTDIR=~/.cache/zsh      # History directory
 HISTFILE=$HISTDIR/history # History filepath
 mkdir -p "$HISTDIR"       # Create history directory if it doesn't exist

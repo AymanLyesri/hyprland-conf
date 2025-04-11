@@ -37,6 +37,7 @@ class NotificationMap implements Subscribable {
 
     notifd.connect("notified", (_, id) => {
       if (DND.get()) return;
+      // this.clearOldNotifications(); // Clear old notifications before adding new one
       this.set(
         id,
         Notification({
@@ -67,6 +68,31 @@ class NotificationMap implements Subscribable {
     this.notify();
   }
 
+  // private clearOldNotifications() {
+  //   const now = Date.now();
+
+  //   const notifd = Notifd.get_default();
+
+  //   // Clear notifications that are older than TIMEOUT_DELAY
+  //   for (const [id, widget] of this.notificationMap.entries()) {
+  //     const notification = notifd.get_notification(id);
+  //     if (!notification) {
+  //       // If notification doesn't exist in notifd, remove it
+  //       this.delete(id);
+  //       continue;
+  //     }
+
+  //     // Calculate age of notification in milliseconds
+  //     const age = now - notification.get_time() * 1000;
+
+  //     print(`Notification ${id} age: ${age} milliseconds`);
+
+  //     if (age > TIMEOUT_DELAY) {
+  //       this.delete(id);
+  //     }
+  //   }
+  // }
+
   // needed by the Subscribable interface
   get() {
     return this.notifications.get();
@@ -95,7 +121,11 @@ export default (monitor: Gdk.Monitor) => {
       margin={globalMargin}
       widthRequest={400}
       child={
-        <box vertical vexpand={true} spacing={globalMargin} noImplicitDestroy>
+        <box
+          className={"notification-popups"}
+          vertical
+          vexpand={true}
+          noImplicitDestroy>
           {bind(notifications)}
         </box>
       }></window>

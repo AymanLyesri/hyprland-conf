@@ -62,6 +62,8 @@ install_discord_client
 
 continue_prompt "Sddm theme setup" "$MAINTENANCE_DIR/SDDM.sh"
 
+$MAINTENANCE_DIR/LOCALES.sh
+
 $MAINTENANCE_DIR/DEFAULTS.sh
 
 $MAINTENANCE_DIR/WAL.sh

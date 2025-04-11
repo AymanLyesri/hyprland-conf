@@ -1,13 +1,9 @@
-window.notification-popups {
+.notification-popups {
   padding: 0px;
   margin: 0px;
   border-radius: 10px;
-  .notifications {
-    padding: 0px;
-    margin: 0px;
 
-    .notification {
-      // margin-bottom: 10px;
-    }
+  .notification {
+    margin-bottom: 10px;
   }
 }

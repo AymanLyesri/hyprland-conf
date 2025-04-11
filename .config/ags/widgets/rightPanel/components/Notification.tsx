@@ -197,10 +197,10 @@ export default ({
       className="circular-progress"
       rounded={true}
       value={1}
-      setup={(self) => {
-        while (self.value >= 0 && self.destroyed) {
+      setup={async (self) => {
+        while (self.value >= 0) {
           self.value -= 0.01;
-          asyncSleep(50);
+          await asyncSleep(50);
         }
         self.visible = false;
       }}
@@ -215,7 +215,6 @@ export default ({
           className={"circular-progress-box"}
           child={CircularProgress}
         />
-
         <label
           wrap={true}
           xalign={0}

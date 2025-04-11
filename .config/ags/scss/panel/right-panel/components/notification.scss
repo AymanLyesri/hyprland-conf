@@ -41,13 +41,13 @@
     .close,
     .expand {
       padding: 0px 5px;
-      &:not(:hover) {
-        background: transparent;
-      }
     }
 
     .close {
       @extend .danger;
+      &:not(:hover) {
+        background: transparent;
+      }
     }
 
     .time {

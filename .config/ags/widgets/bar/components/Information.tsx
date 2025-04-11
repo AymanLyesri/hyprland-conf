@@ -59,13 +59,20 @@ function AudioVisualizer() {
   );
 
   let pendingUpdate = false;
+  let lastValues: any = null;
+  const UPDATE_INTERVAL = 50; // ms
 
   cava?.connect("notify::values", () => {
-    if (pendingUpdate) return;
-    pendingUpdate = true;
+    if (pendingUpdate) {
+      lastValues = cava.get_values(); // Store latest values
+      return;
+    }
 
-    GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
-      const values = cava.get_values();
+    pendingUpdate = true;
+    lastValues = cava.get_values();
+
+    GLib.timeout_add(GLib.PRIORITY_DEFAULT, UPDATE_INTERVAL, () => {
+      const values = lastValues;
       const barArray = new Array(values.length);
 
       for (let i = 0; i < values.length; i++) {
