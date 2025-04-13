@@ -1,10 +1,9 @@
 # ~/.config/starship.toml
 
 add_newline = false
-command_timeout = 1000
+command_timeout = 10000
 
 format = """
-$character\
 $os$hostname\
 $directory\
 [](#1C3A5E)$time[ ](#1C3A5E)$cmd_duration\
@@ -26,7 +25,7 @@ $package\
 $buf\
 $memory_usage\
 $docker_context
-[└─>](bold green)
+$character\
 """
 
 
@@ -43,7 +42,7 @@ style = "bg:#1d2230"
 format = '[[ 󱑍 $time ](bg:#1C3A5E fg:#8DFBD2)]($style)'
 
 [cmd_duration]
-format = 'last command: [$duration](bold yellow)'
+format = 'last command: [$duration](bold yellow) '
 
 [os]
 format = '[ ](bold white) '
@@ -87,7 +86,7 @@ ahead = '⇡${count}'
 diverged = '⇕⇡${ahead_count}⇣${behind_count}'
 behind = '⇣${count}'
 stashed = ' '
-modified = ' '
+modified = '   '
 staged = '[++\($count\)](green)'
 renamed = '襁 '
 deleted = ' '
