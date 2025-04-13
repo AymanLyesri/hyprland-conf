@@ -26,8 +26,6 @@ function Theme() {
 }
 
 function BrightnessWidget() {
-  if (brightness.screen == 0) return <box />;
-
   const slider = (
     <slider
       widthRequest={100}
@@ -40,7 +38,7 @@ function BrightnessWidget() {
 
   const label = (
     <label
-      className="icon"
+      className="trigger"
       label={bind(brightness, "screen").as((v) => {
         `${Math.round(v * 100)}%`;
         switch (true) {
@@ -57,12 +55,18 @@ function BrightnessWidget() {
     />
   );
 
-  return CustomRevealer(label, slider);
+  return (
+    <CustomRevealer
+      trigger={label}
+      child={slider}
+      visible={brightness.screen != 0}
+    />
+  );
 }
 
 function Volume() {
   const speaker = Wp.get_default()?.audio.defaultSpeaker!;
-  const icon = <icon className="icon" icon={bind(speaker, "volumeIcon")} />;
+  const icon = <icon className="trigger" icon={bind(speaker, "volumeIcon")} />;
 
   const slider = (
     <slider
@@ -74,21 +78,27 @@ function Volume() {
     />
   );
 
-  return CustomRevealer(icon, slider, "", () =>
-    execAsync(`pavucontrol`).catch((err) =>
-      notify({ summary: "pavu", body: err })
-    )
+  return (
+    <CustomRevealer
+      trigger={icon}
+      child={slider}
+      on_primary_click={() => {
+        execAsync(`pavucontrol`).catch((err) =>
+          notify({ summary: "pavu", body: err })
+        );
+      }}
+    />
   );
 }
 
 function BatteryWidget() {
   const value = bind(battery, "percentage").as((p) => p);
 
-  if (battery.percentage <= 0) return <box />;
+  // if (battery.percentage <= 0) return <box />;
 
   const label = (
     <label
-      className="icon"
+      className="trigger"
       label={bind(battery, "percentage").as((p) => {
         p *= 100;
         switch (true) {
@@ -112,7 +122,7 @@ function BatteryWidget() {
   );
 
   const info = (
-    <label className={"icon"} label={value.as((v) => `${v * 100}%`)} />
+    <label className={"trigger"} label={value.as((v) => `${v * 100}%`)} />
   );
 
   const slider = (
@@ -124,13 +134,19 @@ function BatteryWidget() {
   );
 
   const box = (
-    <box className="battery">
+    <box>
       {info}
       {slider}
     </box>
   );
 
-  return CustomRevealer(label, box);
+  return (
+    <CustomRevealer
+      trigger={label}
+      child={box}
+      visible={battery.percentage > 0}
+    />
+  );
 }
 
 function SysTray() {

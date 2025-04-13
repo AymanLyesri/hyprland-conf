@@ -1,28 +1,31 @@
 import { Gtk } from "astal/gtk3";
 import { globalTransition } from "../variables";
 
-export default (
-  trigger: any,
-  child: any,
+export default ({
+  trigger,
+  child,
+  visible = true,
   custom_class = "",
   on_primary_click = () => {},
-  vertical = false
-) => {
+}: {
+  trigger: Gtk.Widget;
+  child: Gtk.Widget;
+  visible?: boolean;
+  custom_class?: string;
+  on_primary_click?: () => void;
+}) => {
   const revealer = (
     <revealer
       revealChild={false}
       transitionDuration={globalTransition}
-      transitionType={
-        vertical
-          ? Gtk.RevealerTransitionType.SLIDE_UP
-          : Gtk.RevealerTransitionType.SLIDE_RIGHT
-      }
+      transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
       child={child}
     />
   );
 
   const eventBox = (
     <eventbox
+      visible={visible}
       className={"custom-revealer " + custom_class}
       on_hover={(self) => {
         revealer.reveal_child = true;
@@ -32,7 +35,7 @@ export default (
       }}
       onClick={on_primary_click}
       child={
-        <box className={"content"} vertical={vertical}>
+        <box className={"content"}>
           {trigger}
           {revealer}
         </box>
