@@ -186,19 +186,13 @@ scrolledwindow {
 }
 
 .custom-revealer {
-  @extend .module;
+  @extend .button;
 
-  background: $background-secondary;
-
-  &:hover {
-    background: $background;
-    text-shadow: $foreground 0 0 1px;
+  .slider {
+    margin: 0px 5px;
   }
 
-  label {
-    margin: 0 10px;
-  }
-  .icon {
-    min-width: 35px;
+  .trigger {
+    @extend .button;
   }
 }

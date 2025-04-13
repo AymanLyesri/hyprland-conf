@@ -199,7 +199,13 @@ function Clock() {
         const currentIndex = dateFormats.indexOf(currentFormat);
         dateFormat.set(dateFormats[(currentIndex + 1) % dateFormats.length]);
       }}
-      child={CustomRevealer(trigger, revealer, "clock")}
+      child={
+        <CustomRevealer
+          trigger={trigger}
+          child={revealer}
+          custom_class="clock"
+        />
+      }
     />
   );
 }

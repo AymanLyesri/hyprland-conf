@@ -28,6 +28,11 @@
       background: $background-secondary;
       border-radius: 10px;
       padding: 10px;
+
+      .clear {
+        @extend .danger;
+        font-size: 1em;
+      }
       .tags {
         padding-bottom: 10px;
         .applied-tags {

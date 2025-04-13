@@ -20,11 +20,18 @@ import { booruApis } from "../../../constants/api.constants";
 import { ImageDialog } from "./ImageDialog";
 
 const images = Variable<Waifu[]>([]);
+const cacheSize = Variable<string>("0kb");
 
 const fetchedTags = Variable<string[]>([]);
 
 const imagePreviewPath = "./assets/booru/previews";
 const imageUrlPath = "./assets/booru/images";
+
+const calculateCacheSize = async () =>
+  execAsync(`bash -c "du -sb ${imagePreviewPath} | cut -f1"`).then((res) => {
+    // Convert bytes to megabytes
+    cacheSize.set(`${Math.round(Number(res) / (1024 * 1024))}mb`);
+  });
 
 const ensureRatingTagFirst = () => {
   let tags: string[] = booruTags.get();
@@ -90,6 +97,7 @@ const fetchImages = async () => {
         (img) => img !== null
       );
       images.set(successfulDownloads);
+      calculateCacheSize();
       closeProgress();
     });
   } catch (err) {
@@ -319,13 +327,31 @@ const Entry = () => {
   );
 };
 
+const ClearCacheButton = () => {
+  return (
+    <button
+      halign={Gtk.Align.CENTER}
+      valign={Gtk.Align.CENTER}
+      label={bind(cacheSize)}
+      className="clear"
+      onClicked={(self) => {
+        cleanUp();
+        self.label = "0kb";
+      }}
+    />
+  );
+};
+
 const BottomBar = () => (
   <box className={"bottom"} spacing={5} vertical>
     <PageDisplay />
     <LimitDisplay />
     <box className="input-bar" vertical spacing={5}>
       <TagDisplay />
-      <Entry />
+      <box>
+        <Entry />
+        <ClearCacheButton />
+      </box>
     </box>
   </box>
 );
@@ -336,7 +362,6 @@ export default () => {
   booruTags.subscribe(() => fetchImages());
   booruApi.subscribe(() => fetchImages());
   booruLimit.subscribe(() => fetchImages());
-  cleanUp();
   fetchImages();
   return (
     <box className="booru" vertical hexpand spacing={10}>
