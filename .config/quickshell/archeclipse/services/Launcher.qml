@@ -18,24 +18,25 @@ import qs.theme
 //   "name > args"     custom commands filtered
 //   fallback          fuzzy app search (DesktopEntries), then terminal hint
 //
-// Data files are the SAME ones AGS reads/writes (source of truth) so launcher
-// state (history, notes, clipboard, quick-apps) is shared with AGS.
+// Data files live in the quickshell cache (single source of truth). The old
+// AGS cache dirs are symlinked here, so anything still referencing them
+// follows along.
 
 QtObject {
     id: root
 
     readonly property int maxItems: 10
-    readonly property string historyPath: `${Quickshell.env("HOME")}/.config/ags/cache/launcher/app-history.json`
-    readonly property string notesPath: `${Quickshell.env("HOME")}/.config/ags/cache/launcher/notes.json`
-    readonly property string clipboardPath: `${Quickshell.env("HOME")}/.config/ags/cache/launcher/clipboard-history.json`
+    readonly property string historyPath: `${Quickshell.env("HOME")}/.cache/quickshell/launcher/app-history.json`
+    readonly property string notesPath: `${Quickshell.env("HOME")}/.cache/quickshell/launcher/notes.json`
+    readonly property string clipboardPath: `${Quickshell.env("HOME")}/.cache/quickshell/launcher/clipboard-history.json`
     readonly property string emojisPath: `${Quickshell.env("HOME")}/.config/ags/assets/emojis/emojis.json`
-    readonly property string quickAppHistoryPath: `${Quickshell.env("HOME")}/.config/ags/cache/launcher/quick-app-history.json`
+    readonly property string quickAppHistoryPath: `${Quickshell.env("HOME")}/.cache/quickshell/launcher/quick-app-history.json`
 
     property var results: []
     property int selectedIndex: 0
     property string lastQuery: ""
 
-    // launch history persisted to AGS app-history.json
+    // launch history persisted to quickshell app-history.json
     property FileView _historyFile: FileView { path: root.historyPath; watchChanges: false; printErrors: false }
     property var history: {
         try { return JSON.parse(_historyFile.text() || "[]"); } catch (e) { return []; }

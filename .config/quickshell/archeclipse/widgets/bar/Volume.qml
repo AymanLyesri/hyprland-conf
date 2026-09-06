@@ -3,6 +3,7 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Services.Pipewire
 import qs.theme
+import qs.widgets.shared
 
 // Port of sub-components/Volume.tsx — icon + %, click opens pavucontrol,
 // hover reveals slider. Also used as the transient "volume" pulse page.
@@ -73,7 +74,7 @@ Rectangle {
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontSize
         }
-        Slider {
+        AppSlider {
             id: slider
             visible: root.pulse || root.sliderRevealed || hover.hovered
             width: visible ? 100 : 0

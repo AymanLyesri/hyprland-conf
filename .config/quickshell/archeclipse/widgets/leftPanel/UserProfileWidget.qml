@@ -22,7 +22,7 @@ Item {
     readonly property string supabaseUrl: "https://skekmjmsgcbfhbwgpzkp.supabase.co"
     readonly property string supabaseKey: "sb_publishable_PLXFIwBsb79Gfu3YkW5B-w_rHozkZ1y"
     readonly property string homeDir: Quickshell.env("HOME")
-    readonly property string authSessionPath: homeDir + "/.config/ags/cache/auth/session.json"
+    readonly property string authSessionPath: homeDir + "/.cache/quickshell/auth/session.json"
     readonly property string settingsPath: homeDir + "/.cache/quickshell/settings/settings.json"
     readonly property string settingsMetaPath: homeDir + "/.cache/quickshell/settings/settings-sync.json"
     readonly property string avatarPath: homeDir + "/.face.icon"

@@ -17,7 +17,7 @@ run_ags() {
 
 run_quickshell() {
   # qs instances are per-config; kill any stale instance of this config
-  qs kill -p "$QS_CONF" >/dev/null 2>&1
+  killall qs >/dev/null 2>&1 || true
   # MANGOHUD=0: MangoHud's Vulkan layer segfaults QtMultimedia's ffmpeg
   # hw-device probe when MediaPlayer is constructed (crash #1).
   # QML_DISABLE_DISK_CACHE=1: avoids Qt 6.11 QV4 checksum crash in

@@ -3,6 +3,7 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
 import qs.theme
+import qs.widgets.shared
 
 // Port of sub-components/BrightnessWidget.tsx (brightnessctl backend, same as
 // services/brightness.ts). Reproduces the AGS behaviors:
@@ -97,7 +98,7 @@ Rectangle {
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontSize
         }
-        Slider {
+        AppSlider {
             id: briSlider
             visible: root.pulse || root.sliderRevealed || briHover.hovered
             width: visible ? 100 : 0

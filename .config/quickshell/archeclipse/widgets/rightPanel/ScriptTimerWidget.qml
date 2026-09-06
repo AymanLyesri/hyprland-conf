@@ -37,7 +37,7 @@ Item {
 
     function loadTasks() {
         try {
-            const fileView = Qt.createQmlObject('import Quickshell.Io; FileView { path: "' + Quickshell.env("HOME") + '/.config/ags/cache/script-timer/tasks.json" }', root);
+            const fileView = Qt.createQmlObject('import Quickshell.Io; FileView { path: "' + Quickshell.env("HOME") + '/.cache/quickshell/script-timer/tasks.json" }', root);
             const text = fileView.text();
             if (text !== "" && text.trim().startsWith("[")) {
                 const tasks = JSON.parse(text);
@@ -52,7 +52,7 @@ Item {
 
     function saveTasks() {
         try {
-            const fileView = Qt.createQmlObject('import Quickshell.Io; FileView { path: "' + Quickshell.env("HOME") + '/.config/ags/cache/script-timer/tasks.json" }', root);
+            const fileView = Qt.createQmlObject('import Quickshell.Io; FileView { path: "' + Quickshell.env("HOME") + '/.cache/quickshell/script-timer/tasks.json" }', root);
             fileView.setText(JSON.stringify(scriptTasks, null, 2));
             fileView.destroy();
         } catch (e) {

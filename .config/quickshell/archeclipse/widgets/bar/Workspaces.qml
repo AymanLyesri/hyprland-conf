@@ -130,10 +130,6 @@ Row {
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: Hyprland.dispatch(`hl.dsp.focus({workspace=${btn.wid}})`)
-                    onContainsMouseChanged: {
-                        if (containsMouse) wsHoverTimer.restart()
-                        else { wsHoverTimer.stop(); wsPopup.close() }
-                    }
                 }
 
                 // Drop target — accepts a client tile dragged from another
@@ -163,36 +159,7 @@ Row {
                     }
                 }
 
-                // Hover delay before showing popup (matches AGS 50ms)
-                Timer {
-                    id: wsHoverTimer
-                    interval: 80
-                    onTriggered: wsPopup.open()
-                }
-
-                // Workspace client preview popup (AGS workspaceClientLayout popover)
-                Popup {
-                    id: wsPopup
-                    x: (btn.width - implicitWidth) / 2
-                    y: -implicitHeight - 6
-                    width: Math.min(280, Screen.width * 0.3)
-                    height: Math.min(200, Screen.height * 0.3)
-                    closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnReleaseOutside
-                    margins: 8
-
-                    background: Rectangle {
-                        color: Theme.moduleBg
-                        radius: Theme.radius
-                        border.width: 1
-                        border.color: Theme.border
-                    }
-
-                    contentItem: WorkspaceClientPopup {
-                        anchors.fill: parent
-                        workspaceId: btn.wid
-                        Component.onCompleted: fetchClients()
-                    }
-                }
+                
             }
         }
     }

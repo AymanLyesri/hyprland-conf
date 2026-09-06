@@ -61,7 +61,7 @@ PanelWindow {
 
     function toThumbnailPath(file) {
         return file
-            .replace(home + "/.config/wallpapers/", home + "/.config/ags/cache/thumbnails/")
+            .replace(home + "/.config/wallpapers/", home + "/.cache/quickshell/thumbnails/")
             .replace(/\.[^/.]+$/, ".jpg");
     }
 
@@ -290,7 +290,7 @@ PanelWindow {
         const targetDir = root.home + "/.config/wallpapers/custom";
         const basename = sourcePath.split("/").pop();
         const targetPath = targetDir + "/" + basename;
-        const thumbDir = root.home + "/.config/ags/cache/thumbnails/custom";
+        const thumbDir = root.home + "/.cache/quickshell/thumbnails/custom";
         const thumbPath = thumbDir + "/" + basename.replace(/\.[^/.]+$/, ".jpg");
         const isVideo = /\.(mp4|webm)$/i.test(sourcePath);
         const thumbCmd = isVideo

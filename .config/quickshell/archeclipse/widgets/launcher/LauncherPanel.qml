@@ -398,7 +398,7 @@ Rectangle {
         }
     }
 
-    // keyboard nav comes from SearchBar signals; reset state on close
+    // keyboard nav comes from SearchIsland signals; reset state on close
     Connections {
         target: BarState
         function onStateChanged() {

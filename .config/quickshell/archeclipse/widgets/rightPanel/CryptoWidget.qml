@@ -25,7 +25,7 @@ Item {
 
     function loadEntries() {
         try {
-            const fileView = Qt.createQmlObject('import Quickshell.Io; FileView { path: "' + Quickshell.env("HOME") + '/.config/ags/cache/crypto/entries.json" }', root);
+            const fileView = Qt.createQmlObject('import Quickshell.Io; FileView { path: "' + Quickshell.env("HOME") + '/.cache/quickshell/crypto/entries.json" }', root);
             const text = fileView.text();
             if (text !== "" && text.trim().startsWith("[")) {
                 cryptoEntries = JSON.parse(text);
@@ -39,7 +39,7 @@ Item {
 
     function saveEntries() {
         try {
-            const fileView = Qt.createQmlObject('import Quickshell.Io; FileView { path: "' + Quickshell.env("HOME") + '/.config/ags/cache/crypto/entries.json" }', root);
+            const fileView = Qt.createQmlObject('import Quickshell.Io; FileView { path: "' + Quickshell.env("HOME") + '/.cache/quickshell/crypto/entries.json" }', root);
             fileView.setText(JSON.stringify(cryptoEntries, null, 2));
             fileView.destroy();
         } catch (e) {

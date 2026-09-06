@@ -1,35 +1,23 @@
 import QtQuick
 import QtQuick.Controls
 import Quickshell
-import Quickshell.Wayland
-import Quickshell.Hyprland
 import Quickshell.Services.Pipewire
 import qs.theme
 import qs.services
+import qs.widgets.shared
 
-// Port of ControlPanel.tsx — the vertical quick-settings sidebar:
-//   [ Volume slider (dynamic icon) ]
-//   [ Brightness slider (dynamic icon) ]
-//   [ Theme | DND | UserPanel | AppLauncher | WallpaperSwitcher ]
-// Toggled by the ControlPanelButton in the utilities row / expanded bar.
-// All action buttons have tooltips with keyboard shortcuts (matching AGS).
-PanelWindow {
-    id: root
+// Quick-settings body: volume + brightness sliders + action buttons.
+// Extracted verbatim from the old ControlPanel sidebar so it can live in
+// the bar's dynamic island (ControlIsland) instead of a side window.
+// Close behavior = BarState.deactivate("control").
+Item {
+    id: body
 
-    required property ShellScreen screen
-    anchors { top: true; bottom: true; right: true }
-    exclusiveZone: -1
-    visible: false
-    aboveWindows: true
-    implicitWidth: 300
+    property string monitorName: ""
+    readonly property string effectiveMonitor: body.monitorName || Registry.monitorName
 
-    color: Theme.backgroundTransparent
-
-    property string monitorName: (Hyprland.monitorFor(screen)?.name) ?? ""
-    Component.onCompleted: Registry.register(`control-panel-${monitorName}`, root)
-    Component.onDestruction: Registry.unregister(`control-panel-${monitorName}`)
-
-    WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+    width: 320
+    height: contentCol.height + 32
 
     // ---- default sink for the volume slider ----
     readonly property PwNode controlSink: Pipewire.defaultAudioSink
@@ -52,41 +40,37 @@ PanelWindow {
         return "\u{F00DE}";                        // low (󰃞)
     }
 
-    // ---- esc dismiss ----
-    Item {
-        anchors.fill: parent
-        focus: true
-        Keys.onEscapePressed: root.visible = false
-    }
-
     // ---- content ----
     Column {
+        id: contentCol
         width: parent.width
-        anchors.fill: parent
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
         anchors.margins: 16
         spacing: 16
 
         // ===== Volume =====
         Column { width: parent.width; spacing: 6
             Row { width: parent.width; spacing: 8
-                Text { text: root.volumeIcon; color: Theme.foreground; font.family: "JetBrainsMono NFP"; font.pixelSize: 18; verticalAlignment: Text.AlignVCenter }
+                Text { text: body.volumeIcon; color: Theme.foreground; font.family: "JetBrainsMono NFP"; font.pixelSize: 18; verticalAlignment: Text.AlignVCenter }
                 Text { text: "Volume"; color: Theme.foregroundSecondary; font.family: Theme.fontFamily; font.pixelSize: Theme.fontSize - 1 }
             }
-            Slider {
+            AppSlider {
                 id: volSlider; width: parent.width
                 from: 0; to: 1; stepSize: 0.01
-                value: root.controlSink?.audio?.volume ?? 0
-                onMoved: if (root.controlSink?.audio) root.controlSink.audio.volume = volSlider.value
+                value: body.controlSink?.audio?.volume ?? 0
+                onMoved: if (body.controlSink?.audio) body.controlSink.audio.volume = volSlider.value
             }
         }
 
         // ===== Brightness =====
         Column { width: parent.width; spacing: 6; visible: Brightness.hasBacklight
             Row { width: parent.width; spacing: 8
-                Text { text: root.brightnessIcon; color: Theme.foreground; font.family: "JetBrainsMono NFP"; font.pixelSize: 18; verticalAlignment: Text.AlignVCenter }
+                Text { text: body.brightnessIcon; color: Theme.foreground; font.family: "JetBrainsMono NFP"; font.pixelSize: 18; verticalAlignment: Text.AlignVCenter }
                 Text { text: "Brightness"; color: Theme.foregroundSecondary; font.family: Theme.fontFamily; font.pixelSize: Theme.fontSize - 1 }
             }
-            Slider {
+            AppSlider {
                 id: brightSlider; width: parent.width
                 from: 0; to: 1; stepSize: 0.01
                 value: Brightness.screen
@@ -140,7 +124,7 @@ PanelWindow {
                 ToolTip.delay: 600
                 Text { anchors.centerIn: parent; text: "\u{F058C}"; color: Theme.foreground; font.family: Theme.fontFamily; font.pixelSize: Theme.fontSize + 2 }
                 MouseArea { id: upM; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
-                    onClicked: { root.visible = false; Registry.toggle(`user-panel-${root.monitorName}`) } }
+                    onClicked: { BarState.deactivate("control"); Registry.toggle(`user-panel-${body.effectiveMonitor}`) } }
             }
             // AppLauncher (SUPER)
             Rectangle { width: 46; height: 46; radius: Theme.radius
@@ -150,7 +134,7 @@ PanelWindow {
                 ToolTip.delay: 600
                 Text { anchors.centerIn: parent; text: "\u{F0580}"; color: Theme.foreground; font.family: Theme.fontFamily; font.pixelSize: Theme.fontSize + 2 }
                 MouseArea { id: alM; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
-                    onClicked: { root.visible = false; BarState.activate("search", 0) } }
+                    onClicked: { BarState.deactivate("control"); BarState.activate("search", 0) } }
             }
             // WallpaperSwitcher (SUPER+W)
             Rectangle { width: 46; height: 46; radius: Theme.radius
@@ -160,7 +144,7 @@ PanelWindow {
                 ToolTip.delay: 600
                 Text { anchors.centerIn: parent; text: "\u{F0F82}"; color: Theme.foreground; font.family: Theme.fontFamily; font.pixelSize: Theme.fontSize + 2 }
                 MouseArea { id: wsM; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
-                    onClicked: { root.visible = false; Registry.toggle(`wallpaper-switcher-${root.monitorName}`) } }
+                    onClicked: { BarState.deactivate("control"); Registry.toggle(`wallpaper-switcher-${body.effectiveMonitor}`) } }
             }
         }
     }

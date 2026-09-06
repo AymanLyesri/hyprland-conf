@@ -29,7 +29,7 @@ Item {
     property int _sendTime: 0
     property bool _shouldScroll: true
     property var sessionFirsts: ({})
-    property string cacheDir: Quickshell.env("HOME") + "/.config/ags/cache/chatbot"
+    property string cacheDir: Quickshell.env("HOME") + "/.cache/quickshell/chatbot"
     property string pythonScript: Quickshell.env("HOME") + "/.config/ags/scripts/chatbot.py"
 
     // Provider list (from api.constants.ts)

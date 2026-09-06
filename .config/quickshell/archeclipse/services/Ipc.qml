@@ -30,6 +30,15 @@ Item {
             return "search open";
         }
 
+        function toggleControl(): string {
+            if (BarState.state === "control") {
+                BarState.deactivate("control");
+                return "control closed";
+            }
+            BarState.activate("control", 0);
+            return "control open";
+        }
+
         // Diagnostic: force the network pulse state (mirrors a network change).
         function pulseNetwork(): string {
             BarState.activate("network", 3000);

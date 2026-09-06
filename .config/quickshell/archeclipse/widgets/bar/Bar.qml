@@ -6,6 +6,7 @@ import Quickshell.Io
 import qs.theme
 import qs.services
 import qs.widgets.bar
+import qs.widgets.bar.islands
 import qs.widgets.launcher
 
 // Port of widgets/bar/Bar.tsx — the floating ArchEclipse bar pill.
@@ -24,15 +25,19 @@ PanelWindow {
     anchors { left: true; right: true; top: Settings.barOrientation; bottom: !Settings.barOrientation }
 
     // layer-shell keyboard grab while the search island is open
+    // (the control island stays OnDemand so typing elsewhere keeps working)
     WlrLayershell.keyboardFocus: BarState.state === "search"
         ? WlrKeyboardFocus.Exclusive
         : WlrKeyboardFocus.OnDemand
-    exclusiveZone: Settings.barLock ? implicitHeight : -1
+    exclusiveZone: Settings.barLock ? barHeight : -1
     color: "transparent"
     aboveWindows: true
 
     readonly property int barHeight: 32
-    implicitHeight: barHeight
+    // Snap the layer surface to content (no Behavior here — animating the
+    // PanelWindow renegotiates with the compositor every frame and stutters).
+    // Inner content (pill width spring + island expand spring) carries motion.
+    implicitHeight: pill.height
 
     readonly property bool fullWidth: Settings.barFullWidth
 
@@ -57,7 +62,7 @@ PanelWindow {
 
     readonly property bool barVisible: {
         if (fullscreenActive) return false;
-        if (BarState.state === "search") return true;
+        if (BarState.state === "search" || BarState.state === "control") return true;
         const override = (BarState.barShown || {})[monitorName];
         if (override !== undefined) return override;
         BarState.hyprlandTick; // reap the reactive dependency
@@ -87,7 +92,7 @@ PanelWindow {
             // then conceal the bar when unlocked and search isn't pinning it.
             if (!root.hovered && BarState.popupCount <= 0 && !Settings.barExpanded)
                 BarState.deactivate("expanded");
-            if (BarState.state !== "search" &&
+            if (BarState.state !== "search" && BarState.state !== "control" &&
                 !Settings.barLock &&
                 !root.hovered && BarState.popupCount <= 0)
                 BarState.concealBar(root.monitorName);
@@ -108,7 +113,7 @@ PanelWindow {
         running: (BarState.barShown || {})[root.monitorName] === true
         onTriggered: {
             if (Settings.barLock) return;
-            if (BarState.state === "search") { idleTimer.restart(); return; }
+            if (BarState.state === "search" || BarState.state === "control") { idleTimer.restart(); return; }
             // AGS watchdog parity: don't trust the hover read alone (reveals
             // can fire without an enter/leave cycle). Ask Hyprland where the
             // cursor actually is; if it is over the bar band or a popup is
@@ -175,7 +180,10 @@ PanelWindow {
         Rectangle {
             id: pill
             anchors.horizontalCenter: parent.horizontalCenter
-            height: root.barHeight
+            y: Settings.barOrientation ? 0 : parent.height - height
+            // Grows with content: 32 for normal states, tall when the
+            // search island (input + launcher) is shown.
+            height: Math.max(root.barHeight, stack.height + 10)
             width: Math.max(stack.width + 10, 100)
             bottomRightRadius: Theme.radius
             bottomLeftRadius: Theme.radius
@@ -293,17 +301,19 @@ PanelWindow {
                     sourceComponent: {
                         switch (stack.current) {
                         case "expanded": return expandedPage;
-                        case "volume": return volumePage;
-                        case "brightness": return brightnessPage;
+                        case "volume": return controlPage;
+                        case "brightness": return controlPage;
                         case "recording": return recordingPage;
                         case "player": return playerPage;
                         case "network": return networkPage;
                         case "search": return searchPage;
+                        case "control": return controlPage;
                         default: return compactPage;
                         }
                     }
                     // Feed the per-state width registry (AGS barWidths)
                     onLoaded: {
+                        if (item && item["monitorName"] !== undefined) item.monitorName = root.monitorName;
                         if (item && item.width > 0) {
                             var c = Object.assign({}, stack.widthCache)
                             c[stack.current] = item.width
@@ -314,28 +324,12 @@ PanelWindow {
 
                 Component { id: compactPage; CompactBar {} }
                 Component { id: expandedPage; ExpandedBar {} }
-                Component { id: volumePage; VolumePulse {} }
-                Component { id: brightnessPage; BrightnessPulse {} }
-                Component { id: recordingPage; RecordingIndicator {} }
-                Component { id: playerPage; PlayerPulse {} }
+                Component { id: recordingPage; RecordingIsland {} }
+                Component { id: playerPage; PlayerIsland {} }
                 Component { id: networkPage; NetworkWidget {} }
-                Component { id: searchPage; SearchBar {} }
+                Component { id: searchPage; SearchIsland {} }
+                Component { id: controlPage; ControlIsland {} }
             }
-        }
-
-        // ---- launcher results popup ----
-        PopupWindow {
-            id: launcherPopup
-            visible: BarState.state === "search"
-            anchor.window: root
-            anchor.item: pill
-            anchor.edges: Edges.Bottom
-            anchor.gravity: Edges.Bottom
-            anchor.margins.top: 8
-            color: "transparent"
-            implicitWidth: 1100
-            implicitHeight: Math.min(launcherPanel.height + 4, 520)
-            LauncherPanel { id: launcherPanel }
         }
 
         // ---- hot zones (left/right panel reveal strips) ----

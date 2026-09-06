@@ -20,6 +20,7 @@ Singleton {
         "brightness": 80,
         "network": 80,
         "player": 80,
+        "control": 90,
         "search": 100
     }
 
