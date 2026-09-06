@@ -145,7 +145,7 @@ Item {
                 AppImage {
                     anchors.fill: parent
                     source: root.avatarPath
-                    fillMode: Image.PreserveAspectCrop
+         
                 }
             }
 

@@ -8,6 +8,8 @@ ClippingRectangle {
     property alias source: img.source
     property alias fillMode: img.fillMode
     property alias status: img.status
+    property alias implicitImageWidth: img.implicitWidth
+    property alias implicitImageHeight: img.implicitHeight
     property int sourceWidth: 0
 
     radius: Theme.radius

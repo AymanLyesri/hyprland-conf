@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Window
-import Quickshell
 import Quickshell.Hyprland
 import qs.theme
 import qs.services
@@ -29,13 +28,22 @@ Row {
             const tops = Hyprland.toplevels.values.filter(t => t.workspace?.id === w.id);
             if (tops.length > 0)
                 icon = WorkspaceIcons.forClientClass(tops[0].lastIpcObject?.class ?? "");
-            map.set(w.id, { id: w.id, exists: true, icon });
+            map.set(w.id, {
+                id: w.id,
+                exists: true,
+                icon
+            });
         }
         const maxId = Math.max(10, ...map.keys());
         const out = [];
         for (let i = 1; i <= maxId; i++) {
-            if (compact && !map.has(i)) continue;   // compact shows only existing 1..10
-            out.push(map.get(i) ?? { id: i, exists: false, icon: WorkspaceIcons.emptyIcon });
+            if (compact && !map.has(i))
+                continue;   // compact shows only existing 1..10
+            out.push(map.get(i) ?? {
+                id: i,
+                exists: false,
+                icon: WorkspaceIcons.emptyIcon
+            });
         }
         return out.slice(0, compact ? 10 : maxId);
     }
@@ -54,7 +62,11 @@ Row {
         height: parent.height - 6
         anchors.verticalCenter: parent.verticalCenter
 
-        Behavior on color { ColorAnimation { duration: 200 } }
+        Behavior on color {
+            ColorAnimation {
+                duration: 200
+            }
+        }
 
         Text {
             id: specialLabel
@@ -68,23 +80,6 @@ Row {
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor
             onClicked: Hyprland.dispatch("hl.dsp.workspace.toggle_special()")
-        }
-        // Drop target — move a dragged client to the special workspace.
-        DropArea {
-            anchors.fill: parent
-            keys: ["application/x-qs-client"]
-            onEntered: { parent.color = Qt.lighter(Theme.accentBg, 1.15) }
-            onExited: { parent.color = root.specialActive ? Theme.buttonCheckedBg : "transparent" }
-            onDropped: function(drop) {
-                drop.accepted = true
-                const data = drop.mimeData.getData("application/x-qs-client")
-                const pid = (data.match(/pid:(\d+)/) || [])[1] || ""
-                if (pid) {
-                    console.log("[Workspaces] drag-drop move pid", pid, "to special workspace")
-                    Quickshell.execDetached(["hyprctl", "dispatch", `hl.dsp.window.move({workspace="special",window="pid:${pid}"})`])
-                }
-                parent.color = root.specialActive ? Theme.buttonCheckedBg : "transparent"
-            }
         }
     }
 
@@ -109,17 +104,28 @@ Row {
                 implicitHeight: root.height > 0 ? root.height - 6 : 22
                 anchors.verticalCenter: parent.verticalCenter
 
-                Behavior on color { ColorAnimation { duration: 300 } }
-                Behavior on implicitWidth { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
-                Behavior on opacity { NumberAnimation { duration: 300 } }
+                Behavior on color {
+                    ColorAnimation {
+                        duration: 300
+                    }
+                }
+                Behavior on implicitWidth {
+                    NumberAnimation {
+                        duration: 300
+                        easing.type: Easing.OutCubic
+                    }
+                }
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 300
+                    }
+                }
 
                 Text {
                     id: label
                     anchors.centerIn: parent
                     textFormat: Text.RichText
-                    text: Settings.workspaceNumbers && root.compact === false
-                          ? modelData.icon + WorkspaceIcons.numberBadge(btn.wid)
-                          : (Settings.workspaceNumbers ? modelData.icon + WorkspaceIcons.numberBadge(btn.wid) : modelData.icon)
+                    text: Settings.workspaceNumbers && root.compact === false ? modelData.icon + WorkspaceIcons.numberBadge(btn.wid) : (Settings.workspaceNumbers ? modelData.icon + WorkspaceIcons.numberBadge(btn.wid) : modelData.icon)
                     color: btn.focused && !root.compact ? Theme.buttonCheckedFg : Theme.foreground
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontSize
@@ -131,35 +137,6 @@ Row {
                     cursorShape: Qt.PointingHandCursor
                     onClicked: Hyprland.dispatch(`hl.dsp.focus({workspace=${btn.wid}})`)
                 }
-
-                // Drop target — accepts a client tile dragged from another
-                // workspace preview and moves it here (AGS Gtk.DropTarget).
-                DropArea {
-                    id: wsDrop
-                    anchors.fill: parent
-                    keys: ["application/x-qs-client"]
-                    onEntered: {
-                        btn.color = Qt.lighter(Theme.accentBg, 1.15)
-                        btn.scale = 1.08
-                    }
-                    onExited: {
-                        btn.color = btn.focused ? (root.compact ? Theme.background : Theme.buttonCheckedBg) : "transparent"
-                        btn.scale = 1.0
-                    }
-                    onDropped: function(drop) {
-                        drop.accepted = true
-                        const data = drop.mimeData.getData("application/x-qs-client")
-                        const pid = (data.match(/pid:(\d+)/) || [])[1] || ""
-                        if (pid) {
-                            console.log("[Workspaces] drag-drop move pid", pid, "to workspace", btn.wid)
-                            Quickshell.execDetached(["hyprctl", "dispatch", `hl.dsp.window.move({workspace=${btn.wid},window="pid:${pid}"})`])
-                        }
-                        btn.color = btn.focused ? (root.compact ? Theme.background : Theme.buttonCheckedBg) : "transparent"
-                        btn.scale = 1.0
-                    }
-                }
-
-                
             }
         }
     }

@@ -600,7 +600,7 @@ Item {
                                 width: parent.width
                                 height: 200
                                 source: modelData.image && modelData.image.length > 0 ? modelData.image : ""
-                                fillMode: Image.PreserveAspectFit
+       
                                 clip: true
                                 visible: source !== ""
                             }

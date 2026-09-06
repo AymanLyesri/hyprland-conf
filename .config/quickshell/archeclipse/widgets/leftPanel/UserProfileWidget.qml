@@ -466,7 +466,7 @@ Item {
                     id: minAvatarImg
                     anchors.fill: parent
                     source: root.avatarSrc
-                    fillMode: Image.PreserveAspectCrop
+
                     visible: status === Image.Ready
                 }
                 Rectangle {
@@ -579,7 +579,7 @@ Item {
                             id: avatarImg
                             anchors.fill: parent
                             source: root.avatarSrc
-                            fillMode: Image.PreserveAspectCrop
+
                             visible: status === Image.Ready
                         }
                         Rectangle {

@@ -389,7 +389,6 @@ PanelWindow {
                             anchors.fill: parent
                             anchors.margins: 2
                             source: wsTile.modelData === "" ? "" : "file://" + root.toThumbnailPath(wsTile.modelData)
-                            fillMode: Image.PreserveAspectCrop
                         }
                         Text {
                             visible: wsTile.modelData === ""
@@ -520,7 +519,6 @@ PanelWindow {
                                 anchors.fill: parent
                                 anchors.margins: 3
                                 source: "file://" + root.toThumbnailPath(tile.modelData)
-                                fillMode: Image.PreserveAspectCrop
                             }
 
                             ToolTip.visible: tileMa.containsMouse

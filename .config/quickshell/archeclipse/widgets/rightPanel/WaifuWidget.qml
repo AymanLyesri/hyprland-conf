@@ -35,6 +35,24 @@ Item {
     readonly property string imagePath: root.hasWaifu ? `${root.booruPath}/${root.wd_apiValue}/images/${root.wd_id}.${root.wd_extension || "jpg"}` : ""
     readonly property bool isVideo: ["mp4", "webm", "mkv", "gif", "zip"].includes(root.wd_extension.toLowerCase())
 
+    // Dynamic height from aspect ratio: metadata first, loaded image intrinsic as fallback
+    readonly property real aspectRatio: {
+        if (root.wd_width > 0 && root.wd_height > 0)
+            return root.wd_width / root.wd_height;
+        if (imageDisplay.implicitImageWidth > 0 && imageDisplay.implicitImageHeight > 0)
+            return imageDisplay.implicitImageWidth / imageDisplay.implicitImageHeight;
+        return 1.0;
+    }
+    readonly property real mediaHeight: {
+        if (!root.hasWaifu)
+            return 0;
+        var w = root.widgetWidth - 20;
+        if (w <= 0)
+            w = root.widgetWidth;
+        var h = w / root.aspectRatio;
+        return Math.min(Math.max(h, 120), 520);
+    }
+
     // Loading state for fetch-by-ID
     property string loadingState: "idle"   // "loading" | "error" | "success" | "idle"
     property int selectedApiIndex: 0
@@ -149,16 +167,14 @@ Item {
     Item {
         id: mediaContainer
         anchors.top: parent.top
-        anchors.bottom: actionsRow.top
         anchors.left: parent.left
         anchors.right: parent.right
+        height: root.mediaHeight
         visible: root.hasWaifu
 
         AppImage {
             id: imageDisplay
             anchors.fill: parent
-            anchors.margins: 4
-            fillMode: Image.PreserveAspectFit
             source: root.imagePath
             sourceWidth: parent.width
             visible: !root.isVideo

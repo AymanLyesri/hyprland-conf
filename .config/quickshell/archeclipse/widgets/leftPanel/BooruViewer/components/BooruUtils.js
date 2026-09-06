@@ -46,7 +46,11 @@ function gridSource(booruPath, downloadedIds, previewIds, img) {
         return "file://" + getIconPath(booruPath, img, "images")
     if (img && previewIds[String(img.id)])
         return "file://" + getIconPath(booruPath, img, "previews")
-    return img.preview ? img.preview : "file://" + getIconPath(booruPath, img, "previews")
+    // No remote fallback: Qt's TLS backend segfaults in libcrypto
+    // (OSSL_DECODER path) on cdn.donmai.us handshakes, and Qt gets
+    // 403 there anyway (no Referer). downloadPreviews() fetches via
+    // headered curl first; the grid repaints blank until cached.
+    return ""
 }
 
 function clonify(img, currentApiObj) {

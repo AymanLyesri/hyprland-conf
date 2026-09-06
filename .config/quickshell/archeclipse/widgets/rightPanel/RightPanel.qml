@@ -263,6 +263,7 @@ PanelWindow {
                 height: parent.height
                 clip: true
                 ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
                 Column {
                     id: contentColumn
@@ -270,7 +271,7 @@ PanelWindow {
                     // the viewport (parent.width): the viewport width negotiates
                     // with content size, which feeds back through delegates and
                     // wedges the scene in a silent polish loop (0-width freeze).
-                    width: contentScroll.width
+                    width: contentScroll.availableWidth
                     spacing: 8
                     padding: 8
 
@@ -290,14 +291,21 @@ PanelWindow {
 
                         delegate: Item {
                             required property var modelData
-                            width: parent.width
+                            width: parent.width - parent.leftPadding - parent.rightPadding
                             // Panel-card heights per widget (AGS stacks natural-height
                             // cards; QS cards have fixed heights with internal scroll).
                             // Heights must stay in sync with each widget's content.
                             height: {
                                 switch (modelData.name) {
-                                case "Waifu":
-                                    return 360;
+                                case "Waifu": {
+                                    const wd = Settings.waifu;
+                                    if (!wd || !(wd.id > 0))
+                                        return 200;
+                                    const w = width - 20;
+                                    const a = (wd.width > 0 && wd.height > 0) ? wd.width / wd.height : 1.0;
+                                    const h = Math.min(Math.max(w / a, 120), 520);
+                                    return h + 36 + 8 + 10;
+                                }
                                 case "Media":
                                     return 240;
                                 case "NotificationHistory":

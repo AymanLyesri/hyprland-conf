@@ -397,7 +397,7 @@ Item {
                                     // AGS aspect-aware height: (h/w) * panelWidth, fallback panelWidth
                                     height: (modelData.cover_width && modelData.cover_height) ? (modelData.cover_height / modelData.cover_width) * width : Settings.leftPanelWidth
                                     source: modelData.cover_path
-                                    fillMode: Image.PreserveAspectCrop
+
                                     clip: true
                                 }
 

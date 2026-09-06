@@ -26,7 +26,7 @@ Rectangle {
     // cached instead of re-downloading the remote URL.
     AppImage {
         anchors.fill: parent
-        fillMode: Image.PreserveAspectCrop
+
         source: viewer.gridSource(image)
         visible: !card.isVideo
     }
@@ -47,7 +47,6 @@ Rectangle {
             font.pixelSize: 10
             anchors.centerIn: parent
         }
-
     }
 
     MouseArea {
@@ -57,7 +56,7 @@ Rectangle {
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
         acceptedButtons: Qt.LeftButton | Qt.RightButton
-        onClicked: (mouse) => {
+        onClicked: mouse => {
             if (mouse.button === Qt.RightButton) {
                 // Right-click: set as waifu (AGS renderAsWaifuWidget)
                 Settings.waifu = image;
@@ -97,9 +96,6 @@ Rectangle {
                 color: "white"
                 font.pixelSize: 9
             }
-
         }
-
     }
-
 }

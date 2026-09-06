@@ -92,7 +92,7 @@ Item {
             AppImage {
                 anchors.fill: parent
                 source: root._lastCover || ""
-                fillMode: Image.PreserveAspectCrop
+
                 opacity: 0.35
                 visible: root._lastCover !== ""
             }
@@ -122,7 +122,6 @@ Item {
                             id: coverImg
                             anchors.fill: parent
                             source: root._lastCover || ""
-                            fillMode: Image.PreserveAspectCrop
                         }
                         Rectangle {
                             anchors.fill: parent

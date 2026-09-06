@@ -532,7 +532,8 @@ Item {
     }
 
     // Grid source: full image file if downloaded, else cached preview file,
-    // else the remote preview URL.
+    // else blank until downloadPreviews() caches it (no remote fallback —
+    // Qt TLS segfaults on cdn.donmai.us and gets 403 anyway).
     function gridSource(img) {
         return BooruUtils.gridSource(root.booruPath, root.downloadedIds, root.previewIds, img);
     }
