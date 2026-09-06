@@ -21,11 +21,13 @@ Row {
         Item {
             id: entry
             required property var modelData
-            width: 20; height: 20
+            width: 20
+            height: 20
 
             IconImage {
                 anchors.centerIn: parent
-                width: 14; height: 14
+                width: 14
+                height: 14
                 source: entry.modelData.icon
                 asynchronous: true
             }
@@ -34,7 +36,7 @@ Row {
                 anchors.fill: parent
                 acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
                 cursorShape: Qt.PointingHandCursor
-                onClicked: (mouse) => {
+                onClicked: mouse => {
                     if (mouse.button === Qt.LeftButton)
                         entry.modelData.activate();
                     else if (mouse.button === Qt.MiddleButton)
@@ -42,7 +44,7 @@ Row {
                     else if (entry.modelData.hasMenu)
                         menu.open();
                 }
-                onWheel: (wheel) => entry.modelData.scroll(wheel.angleDelta.y > 0, false)
+                onWheel: wheel => entry.modelData.scroll(wheel.angleDelta.y > 0, false)
             }
 
             QsMenuAnchor {
@@ -58,11 +60,13 @@ Row {
     Item {
         id: overflow
         visible: SystemTray.items.values.length > root.maxVisible
-        width: 20; height: 20
+        width: 20
+        height: 20
 
         IconImage {
             anchors.centerIn: parent
-            width: 12; height: 12
+            width: 12
+            height: 12
             source: "view-more-symbolic"
         }
 
@@ -85,7 +89,11 @@ Row {
             x: overflow.x - overflowPopup.implicitWidth / 2 + overflow.width / 2
             padding: 6
             closePolicy: Popup.CloseOnPressOutside
-            background: Rectangle { color: Theme.moduleBg; radius: 8; border.color: Theme.border }
+            background: Rectangle {
+                color: Theme.moduleBg
+                radius: 8
+                border.color: Theme.border
+            }
             // AGS Window.popupIsOpen parity: hold the bar expanded while open
             onOpened: BarState.holdPopup()
             onClosed: BarState.releasePopup()
@@ -97,12 +105,13 @@ Row {
                     delegate: Item {
                         id: hiddenEntry
                         required property var modelData
-                        width: 160; height: 28
+                        width: 160
+                        height: 28
 
                         MouseArea {
                             anchors.fill: parent
                             acceptedButtons: Qt.LeftButton | Qt.RightButton
-                            onClicked: (mouse) => {
+                            onClicked: mouse => {
                                 if (mouse.button === Qt.LeftButton)
                                     modelData.activate();
                                 else if (modelData.hasMenu)
@@ -116,7 +125,8 @@ Row {
                             anchors.margins: 6
 
                             IconImage {
-                                width: 16; height: 16
+                                width: 16
+                                height: 16
                                 source: modelData.icon
                             }
                             Text {

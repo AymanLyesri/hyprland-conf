@@ -26,9 +26,12 @@ Item {
         command: [`/tmp/ags-${Quickshell.env("USER")}/bandwidth-loop-ags`]
         stdout: SplitParser {
             splitMarker: "\n"
-            onRead: (data) => root.parse(data)
+            onRead: data => root.parse(data)
         }
-        onExited: (code, status) => { if (root.active) Qt.callLater(() => running = true) }
+        onExited: (code, status) => {
+            if (root.active)
+                Qt.callLater(() => running = true);
+        }
     }
 
     // Hover popover (AGS bandwidth popover, Network Statistics)
@@ -39,7 +42,11 @@ Item {
         x: root.width / 2 - bwPopup.implicitWidth / 2
         padding: 8
         closePolicy: Popup.CloseOnPressOutside
-        background: Rectangle { color: Theme.moduleBg; radius: 8; border.color: Theme.border }
+        background: Rectangle {
+            color: Theme.moduleBg
+            radius: 8
+            border.color: Theme.border
+        }
 
         Column {
             spacing: 8
@@ -56,18 +63,38 @@ Item {
                 // Upload section
                 Column {
                     spacing: 4
-                    Text { text: "Upload"; color: Theme.foregroundSecondary; font.pixelSize: Theme.fontSize }
+                    Text {
+                        text: "Upload"
+                        color: Theme.foregroundSecondary
+                        font.pixelSize: Theme.fontSize
+                    }
                     Row {
                         spacing: 16
                         Column {
                             spacing: 2
-                            Text { text: "Packets"; color: Theme.foregroundSecondary; font.pixelSize: Theme.fontSize - 2 }
-                            Text { text: root.uploadSpeed + " KB/s"; color: Theme.foreground; font.pixelSize: Theme.fontSize }
+                            Text {
+                                text: "Packets"
+                                color: Theme.foregroundSecondary
+                                font.pixelSize: Theme.fontSize - 2
+                            }
+                            Text {
+                                text: root.uploadSpeed + " KB/s"
+                                color: Theme.foreground
+                                font.pixelSize: Theme.fontSize
+                            }
                         }
                         Column {
                             spacing: 2
-                            Text { text: "Data"; color: Theme.foregroundSecondary; font.pixelSize: Theme.fontSize - 2 }
-                            Text { text: root.formatData(root.todayUpload); color: Theme.foreground; font.pixelSize: Theme.fontSize }
+                            Text {
+                                text: "Data"
+                                color: Theme.foregroundSecondary
+                                font.pixelSize: Theme.fontSize - 2
+                            }
+                            Text {
+                                text: root.formatData(root.todayUpload)
+                                color: Theme.foreground
+                                font.pixelSize: Theme.fontSize
+                            }
                         }
                     }
                 }
@@ -75,18 +102,38 @@ Item {
                 // Download section
                 Column {
                     spacing: 4
-                    Text { text: "Download"; color: Theme.foregroundSecondary; font.pixelSize: Theme.fontSize }
+                    Text {
+                        text: "Download"
+                        color: Theme.foregroundSecondary
+                        font.pixelSize: Theme.fontSize
+                    }
                     Row {
                         spacing: 16
                         Column {
                             spacing: 2
-                            Text { text: "Packets"; color: Theme.foregroundSecondary; font.pixelSize: Theme.fontSize - 2 }
-                            Text { text: root.downloadSpeed + " KB/s"; color: Theme.foreground; font.pixelSize: Theme.fontSize }
+                            Text {
+                                text: "Packets"
+                                color: Theme.foregroundSecondary
+                                font.pixelSize: Theme.fontSize - 2
+                            }
+                            Text {
+                                text: root.downloadSpeed + " KB/s"
+                                color: Theme.foreground
+                                font.pixelSize: Theme.fontSize
+                            }
                         }
                         Column {
                             spacing: 2
-                            Text { text: "Data"; color: Theme.foregroundSecondary; font.pixelSize: Theme.fontSize - 2 }
-                            Text { text: root.formatData(root.todayDownload); color: Theme.foreground; font.pixelSize: Theme.fontSize }
+                            Text {
+                                text: "Data"
+                                color: Theme.foregroundSecondary
+                                font.pixelSize: Theme.fontSize - 2
+                            }
+                            Text {
+                                text: root.formatData(root.todayDownload)
+                                color: Theme.foreground
+                                font.pixelSize: Theme.fontSize
+                            }
                         }
                     }
                 }
@@ -118,14 +165,34 @@ Item {
             anchors.margins: 6
 
             // Upload (tx) — b[0]
-            Row { spacing: 1
-                Text { text: root.uploadSpeed; color: Theme.foreground; font.pixelSize: 10; font.family: Theme.fontFamily }
-                Text { text: "\u{F062}"; color: Theme.accent; font.pixelSize: 10 }
+            Row {
+                spacing: 1
+                Text {
+                    text: root.uploadSpeed
+                    color: Theme.foreground
+                    font.pixelSize: 10
+                    font.family: Theme.fontFamily
+                }
+                Text {
+                    text: "\u{F062}"
+                    color: Theme.accent
+                    font.pixelSize: 10
+                }
             }
             // Download (rx) — b[1]
-            Row { spacing: 1
-                Text { text: root.downloadSpeed; color: Theme.foreground; font.pixelSize: 10; font.family: Theme.fontFamily }
-                Text { text: "\u{F063}"; color: Theme.accent; font.pixelSize: 10 }
+            Row {
+                spacing: 1
+                Text {
+                    text: root.downloadSpeed
+                    color: Theme.foreground
+                    font.pixelSize: 10
+                    font.family: Theme.fontFamily
+                }
+                Text {
+                    text: "\u{F063}"
+                    color: Theme.accent
+                    font.pixelSize: 10
+                }
             }
         }
     }
@@ -135,9 +202,11 @@ Item {
     // Parse "[tx,rx,today_tx,today_rx]" -> KB/s for speeds, bytes for data
     function parse(line) {
         const m = line.match(/\[([^\]]+)\]/);
-        if (!m) return;
+        if (!m)
+            return;
         const parts = m[1].split(",").map(x => parseInt(x, 10));
-        if (parts.length !== 4) return;
+        if (parts.length !== 4)
+            return;
         root.uploadSpeed = Math.round(parts[0] / 1024 * 100) / 100;
         root.downloadSpeed = Math.round(parts[1] / 1024 * 100) / 100;
         root.todayUpload = parts[2];
@@ -146,9 +215,12 @@ Item {
 
     // formatKiloBytes equivalent (AGS utils/bytes)
     function formatData(bytes) {
-        if (bytes >= 1024 * 1024 * 1024) return (bytes / (1024 * 1024 * 1024)).toFixed(2) + " GB";
-        if (bytes >= 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(2) + " MB";
-        if (bytes >= 1024) return (bytes / 1024).toFixed(2) + " KB";
+        if (bytes >= 1024 * 1024 * 1024)
+            return (bytes / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+        if (bytes >= 1024 * 1024)
+            return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+        if (bytes >= 1024)
+            return (bytes / 1024).toFixed(2) + " KB";
         return bytes + " B";
     }
 }

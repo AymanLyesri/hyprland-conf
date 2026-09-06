@@ -10,198 +10,220 @@ import qs.services
 // NOTE: original `width: tagText2.implicitWidth` referenced a missing id
 // (runtime error when suggestions show); binding dropped, AppButton
 // sizes to content.
-    Rectangle {
+Rectangle {
+    id: settingsReveal
     property var viewer
-        id: settingsReveal
+    width: parent.width
+    height: bottomRevealed ? settingsCol.implicitHeight + 16 : 0
+    color: "transparent"
+    clip: true
+    border.width: 0
+
+    Behavior on height {
+        NumberAnimation {
+            duration: 200
+            easing.type: Easing.InOutQuad
+        }
+    }
+
+    Column {
+        id: settingsCol
+        spacing: 8
         width: parent.width
-        height: bottomRevealed ? settingsCol.implicitHeight + 16 : 0
-        color: "transparent"
-        clip: true
-        border.width: 0
+        anchors.margins: 8
 
-        Behavior on height { NumberAnimation { duration: 200; easing.type: Easing.InOutQuad } }
-
-        Column {
-            id: settingsCol
+        // Limit slider
+        Row {
             spacing: 8
             width: parent.width
-            anchors.margins: 8
-
-            // Limit slider
-            Row {
-                spacing: 8
-                width: parent.width
-                Text { text: "Limit: " + viewer.limit; color: Theme.fg; font.pixelSize: Theme.fontSize - 2 }
-                Slider {
-                    id: limitSlider
-                    from: 0; to: 100; stepSize: 10
-                    value: viewer.limit
-                    Layout.fillWidth: true
-                    onValueChanged: {
-                        // Guard: creating the slider (or a settings reload)
-                        // sets value from viewer.limit — writing it back
-                        // unconditionally would break the Settings binding
-                        // (seen: limit stuck at 100 after restart).
-                        const v = Math.round(limitSlider.value)
-                        if (v === viewer.limit) return
-                        viewer.limit = v
-                        Settings.booru.limit = viewer.limit
-                        Settings.updateSetting("booru.limit", viewer.limit)
-                        // AGS LimitDisplay setValue triggers fetchImages (debounced 300ms)
-                        viewer._limitDebounce.restart()
-                    }
+            Text {
+                text: "Limit: " + viewer.limit
+                color: Theme.fg
+                font.pixelSize: Theme.fontSize - 2
+            }
+            Slider {
+                id: limitSlider
+                from: 0
+                to: 100
+                stepSize: 10
+                value: viewer.limit
+                Layout.fillWidth: true
+                onValueChanged: {
+                    // Guard: creating the slider (or a settings reload)
+                    // sets value from viewer.limit — writing it back
+                    // unconditionally would break the Settings binding
+                    // (seen: limit stuck at 100 after restart).
+                    const v = Math.round(limitSlider.value);
+                    if (v === viewer.limit)
+                        return;
+                    viewer.limit = v;
+                    Settings.booru.limit = viewer.limit;
+                    Settings.updateSetting("booru.limit", viewer.limit);
+                    // AGS LimitDisplay setValue triggers fetchImages (debounced 300ms)
+                    viewer._limitDebounce.restart();
                 }
             }
+        }
 
-            // Columns slider
-            Row {
-                spacing: 8
-                width: parent.width
-                Text { text: "Columns: " + viewer.columns; color: Theme.fg; font.pixelSize: Theme.fontSize - 2 }
-                Slider {
-                    id: columnsSlider
-                    from: 1; to: 5; stepSize: 1
-                    value: viewer.columns
-                    Layout.fillWidth: true
-                    onValueChanged: {
-                        // Same binding guard as the limit slider above.
-                        const v = Math.round(columnsSlider.value)
-                        if (v === viewer.columns) return
-                        viewer.columns = v
-                        Settings.booru.columns = viewer.columns
-                        Settings.updateSetting("booru.columns", viewer.columns)
-                        // AGS ColumnDisplay setValue triggers fetchImages (debounced 300ms)
-                        viewer._limitDebounce.restart()
-                    }
+        // Columns slider
+        Row {
+            spacing: 8
+            width: parent.width
+            Text {
+                text: "Columns: " + viewer.columns
+                color: Theme.fg
+                font.pixelSize: Theme.fontSize - 2
+            }
+            Slider {
+                id: columnsSlider
+                from: 1
+                to: 5
+                stepSize: 1
+                value: viewer.columns
+                Layout.fillWidth: true
+                onValueChanged: {
+                    // Same binding guard as the limit slider above.
+                    const v = Math.round(columnsSlider.value);
+                    if (v === viewer.columns)
+                        return;
+                    viewer.columns = v;
+                    Settings.booru.columns = viewer.columns;
+                    Settings.updateSetting("booru.columns", viewer.columns);
+                    // AGS ColumnDisplay setValue triggers fetchImages (debounced 300ms)
+                    viewer._limitDebounce.restart();
                 }
             }
+        }
 
-            // Tags
-            Column {
+        // Tags
+        Column {
+            spacing: 4
+            width: parent.width
+
+            // Tags flow (AGS TagDisplay)
+            Flow {
                 spacing: 4
                 width: parent.width
+                Repeater {
+                    model: viewer.currentTags
+                    delegate: Rectangle {
+                        readonly property bool isRating: modelData.match(/[-]rating:explicit|rating:explicit/) !== null
+                        width: tagText.implicitWidth + 16
+                        height: 22
+                        color: isRating ? Theme.accentBg : Theme.bg
+                        radius: 4
+                        border.color: isRating ? Theme.accent : Theme.border
 
-                // Tags flow (AGS TagDisplay)
-                Flow {
-                    spacing: 4
-                    width: parent.width
-                    Repeater {
-                        model: viewer.currentTags
-                        delegate: Rectangle {
-                            readonly property bool isRating: modelData.match(/[-]rating:explicit|rating:explicit/) !== null
-                            width: tagText.implicitWidth + 16
-                            height: 22
-                            color: isRating ? Theme.accentBg : Theme.bg
-                            radius: 4
-                            border.color: isRating ? Theme.accent : Theme.border
-                            border.width: 1
-                            Text {
-                                id: tagText
-                                anchors.centerIn: parent
-                                text: modelData
-                                color: isRating ? Theme.accent : Theme.fg
-                                font.pixelSize: Theme.fontSize - 2
-                            }
-                            MouseArea {
-                                anchors.fill: parent
-                                onClicked: {
-                                    // Hoist: assigning currentTags rebuilds this
-                                    // Repeater and destroys the delegate
-                                    // mid-click, after which bare `viewer`
-                                    // lookups throw (ReferenceError) and the
-                                    // refetch below never runs.
-                                    const v = viewer;
-                                    if (isRating) {
-                                        // AGS: toggle -rating:explicit <-> rating:explicit, move to front, refetch
-                                        const newRating = modelData.startsWith("-")
-                                            ? "rating:explicit" : "-rating:explicit"
-                                        let newTags = v.currentTags.filter(t => !t.match(/[-]rating:explicit|rating:explicit/))
-                                        newTags.unshift(newRating)
-                                        v.currentTags = newTags
-                                        Settings.booru.tags = newTags
-                                        Settings.updateSetting("booru.tags", newTags)
-                                    } else {
-                                        // AGS: remove tag, refetch
-                                        const newTags = v.currentTags.filter(t => t !== modelData)
-                                        console.info("[Booru] chip remove:", modelData, "->", JSON.stringify(newTags))
-                                        v.currentTags = newTags
-                                        Settings.booru.tags = newTags
-                                        Settings.updateSetting("booru.tags", newTags)
-                                    }
-                                    // AGS refetches except in Bookmarks/Pins tabs
-                                    if (v.selectedTab !== "Bookmarks" && v.selectedTab !== "Pins") {
-                                        v.fetchImages()
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Add tag entry + search
-                Row {
-                    spacing: 4
-                    width: parent.width
-                    TextField {
-                        id: tagEntry
-                        placeholderText: "Search tags..."
-                        font.pixelSize: Theme.fontSize - 2
-                        width: parent.width - 60
-                        background: Rectangle { color: Theme.bg; radius: 4; border.color: Theme.border }
-                        onTextChanged: {
-                            // Debounced tag fetch
-                            if (text.length > 0) {
-                                viewer.fetchTags(text)
-                            }
-                        }
-                        Keys.onReturnPressed: {
-                            if (text.trim()) {
-                                const newTags = [...new Set([...viewer.currentTags, ...text.trim().split(" ")])]
-                                viewer.currentTags = newTags
-                                Settings.booru.tags = newTags
-                                Settings.updateSetting("booru.tags", newTags)
-                                tagEntry.text = ""
-                                // AGS Entry addTags always refetches
-                                if (viewer.selectedTab !== "Bookmarks" && viewer.selectedTab !== "Pins") {
-                                    viewer.fetchImages()
-                                }
-                            }
-                        }
-                    }
-                    AppButton {
-                        text: viewer.cacheSize
-                        width: 50; height: 24
-                        tooltipText: "Clear cache"
-                        onClicked: viewer.cleanCache()
-                    }
-                }
-
-                // Fetched tag suggestions
-                Flow {
-                    spacing: 4
-                    width: parent.width
-                    visible: viewer.fetchedTags.length > 0
-                    Repeater {
-                        model: viewer.fetchedTags
-                        delegate: AppButton {
+                        Text {
+                            id: tagText
+                            anchors.centerIn: parent
                             text: modelData
-                            height: 20
-                            pixelSize: Theme.fontSize - 3
+                            color: isRating ? Theme.accent : Theme.fg
+                            font.pixelSize: Theme.fontSize - 2
+                        }
+                        MouseArea {
+                            anchors.fill: parent
                             onClicked: {
-                                // Hoist (same delegate-destruction hazard as
-                                // the tag chips above).
+                                // Hoist: assigning currentTags rebuilds this
+                                // Repeater and destroys the delegate
+                                // mid-click, after which bare `viewer`
+                                // lookups throw (ReferenceError) and the
+                                // refetch below never runs.
                                 const v = viewer;
-                                if (v.currentTags.includes(modelData)) {
-                                    return
+                                if (isRating) {
+                                    // AGS: toggle -rating:explicit <-> rating:explicit, move to front, refetch
+                                    const newRating = modelData.startsWith("-") ? "rating:explicit" : "-rating:explicit";
+                                    let newTags = v.currentTags.filter(t => !t.match(/[-]rating:explicit|rating:explicit/));
+                                    newTags.unshift(newRating);
+                                    v.currentTags = newTags;
+                                    Settings.booru.tags = newTags;
+                                    Settings.updateSetting("booru.tags", newTags);
+                                } else {
+                                    // AGS: remove tag, refetch
+                                    const newTags = v.currentTags.filter(t => t !== modelData);
+                                    console.info("[Booru] chip remove:", modelData, "->", JSON.stringify(newTags));
+                                    v.currentTags = newTags;
+                                    Settings.booru.tags = newTags;
+                                    Settings.updateSetting("booru.tags", newTags);
                                 }
-                                const newTags = [...v.currentTags, modelData]
-                                v.currentTags = newTags
-                                Settings.booru.tags = newTags
-                                Settings.updateSetting("booru.tags", newTags)
-                                // AGS fetched-tag click refetches (except local tabs)
+                                // AGS refetches except in Bookmarks/Pins tabs
                                 if (v.selectedTab !== "Bookmarks" && v.selectedTab !== "Pins") {
-                                    v.fetchImages()
+                                    v.fetchImages();
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Add tag entry + search
+            Row {
+                spacing: 4
+                width: parent.width
+                TextField {
+                    id: tagEntry
+                    placeholderText: "Search tags..."
+                    font.pixelSize: Theme.fontSize - 2
+                    width: parent.width - 60
+                    background: Rectangle {
+                        color: Theme.bg
+                        radius: 4
+                        border.color: Theme.border
+                    }
+                    onTextChanged: {
+                        // Debounced tag fetch
+                        if (text.length > 0) {
+                            viewer.fetchTags(text);
+                        }
+                    }
+                    Keys.onReturnPressed: {
+                        if (text.trim()) {
+                            const newTags = [...new Set([...viewer.currentTags, ...text.trim().split(" ")])];
+                            viewer.currentTags = newTags;
+                            Settings.booru.tags = newTags;
+                            Settings.updateSetting("booru.tags", newTags);
+                            tagEntry.text = "";
+                            // AGS Entry addTags always refetches
+                            if (viewer.selectedTab !== "Bookmarks" && viewer.selectedTab !== "Pins") {
+                                viewer.fetchImages();
+                            }
+                        }
+                    }
+                }
+                AppButton {
+                    text: viewer.cacheSize
+                    width: 50
+                    height: 24
+                    tooltipText: "Clear cache"
+                    onClicked: viewer.cleanCache()
+                }
+            }
+
+            // Fetched tag suggestions
+            Flow {
+                spacing: 4
+                width: parent.width
+                visible: viewer.fetchedTags.length > 0
+                Repeater {
+                    model: viewer.fetchedTags
+                    delegate: AppButton {
+                        text: modelData
+                        height: 20
+                        pixelSize: Theme.fontSize - 3
+                        onClicked: {
+                            // Hoist (same delegate-destruction hazard as
+                            // the tag chips above).
+                            const v = viewer;
+                            if (v.currentTags.includes(modelData)) {
+                                return;
+                            }
+                            const newTags = [...v.currentTags, modelData];
+                            v.currentTags = newTags;
+                            Settings.booru.tags = newTags;
+                            Settings.updateSetting("booru.tags", newTags);
+                            // AGS fetched-tag click refetches (except local tabs)
+                            if (v.selectedTab !== "Bookmarks" && v.selectedTab !== "Pins") {
+                                v.fetchImages();
                             }
                         }
                     }
@@ -209,3 +231,4 @@ import qs.services
             }
         }
     }
+}

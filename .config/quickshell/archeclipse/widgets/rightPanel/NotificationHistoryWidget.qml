@@ -37,16 +37,24 @@ Item {
                 return;
 
             const key = summary || "Unknown";
-            if (!stacks.has(key)) stacks.set(key, []);
+            if (!stacks.has(key))
+                stacks.set(key, []);
             stacks.get(key).push(n);
         });
 
-        const result = [...stacks.entries()].map(([title, notifications]) => ({ title, notifications }));
+        const result = [...stacks.entries()].map(([title, notifications]) => ({
+                    title,
+                    notifications
+                }));
 
         // Flatten manually since flatMap might not be available
         const flat = [];
         result.forEach(s => s.notifications.forEach(n => flat.push(n)));
-        flat.slice(MAX_NOTIFICATIONS).forEach(n => { try { n.notif.dismiss(); } catch (e) {} });
+        flat.slice(MAX_NOTIFICATIONS).forEach(n => {
+            try {
+                n.notif.dismiss();
+            } catch (e) {}
+        });
 
         return result;
     }
@@ -76,7 +84,7 @@ Item {
                 background: Rectangle {
                     color: Theme.bg
                     radius: 4
-                    border.width: 1
+
                     border.color: Theme.border
                 }
             }
@@ -94,18 +102,20 @@ Item {
             // (AGS NotificationHistory savedScrollPosition + idle_add).
             property real savedPosition: 0
             onContentItemChanged: {
-                if (contentItem) contentItem.contentYChanged.connect(function(){
-                    nScroll.savedPosition = contentItem.contentY
-                })
+                if (contentItem)
+                    contentItem.contentYChanged.connect(function () {
+                        nScroll.savedPosition = contentItem.contentY;
+                    });
             }
             onContentHeightChanged: {
                 // model updated → restore (clamped) scroll position
-                Qt.callLater(function(){
-                    const c = nScroll.contentItem
-                    if (!c) return
-                    const max = Math.max(0, c.contentHeight - nScroll.height)
-                    c.contentY = Math.min(nScroll.savedPosition, max)
-                })
+                Qt.callLater(function () {
+                    const c = nScroll.contentItem;
+                    if (!c)
+                        return;
+                    const max = Math.max(0, c.contentHeight - nScroll.height);
+                    c.contentY = Math.min(nScroll.savedPosition, max);
+                });
             }
 
             Column {

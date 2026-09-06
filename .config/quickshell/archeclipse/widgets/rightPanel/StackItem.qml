@@ -36,7 +36,7 @@ Item {
                 // ALWAYS renders (AGS ClearNotifications, no length guard).
                 AppButton {
                     visible: stack.notifications.length > 1
-                    icon: isExpanded ? "▲" : "▼"
+                    icon: isExpanded ? "\u{f106}" : "\u{f107}"
                     pixelSize: Theme.fontSize - 2
                     cornerRadius: 4
                     idleBg: Theme.accentBg
@@ -46,16 +46,16 @@ Item {
                     onClicked: root.toggleExpanded()
                 }
                 AppButton {
-                    icon: "🗑"
-                    pixelSize: Theme.fontSize - 2
-                    cornerRadius: 4
-                    idleBg: Theme.dangerBg
-                    idleFg: Theme.danger
-                    outlined: true
-                    outlineColor: Theme.danger
-                    tooltipText: "Clear all"
-                    onClicked: root.clearStack()
-                }
+                                    icon: "\u{f014}"
+                                    pixelSize: Theme.fontSize - 2
+                                    cornerRadius: 4
+                                    idleBg: Theme.dangerBg
+                                    idleFg: Theme.danger
+                                    outlined: true
+                                    outlineColor: Theme.danger
+                                    tooltipText: "Clear all"
+                                    onClicked: root.clearStack()
+                                }
             }
         }
 

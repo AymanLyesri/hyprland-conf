@@ -13,11 +13,13 @@ Item {
 
     // Derive the primary (most relevant) device: first connected, else first available.
     readonly property var device: {
-        if (!Networking.devices?.values) return null
+        if (!Networking.devices?.values)
+            return null;
         for (const d of Networking.devices.values) {
-            if (d && d.connected) return d
+            if (d && d.connected)
+                return d;
         }
-        return Networking.devices.values.length > 0 ? Networking.devices.values[0] : null
+        return Networking.devices.values.length > 0 ? Networking.devices.values[0] : null;
     }
     readonly property bool connected: device?.connected ?? false
     readonly property int devState: device?.state ?? 0
@@ -28,40 +30,47 @@ Item {
     // If no primaryDevice, show "Disconnected". If wired, show the interface name (e.g. "enp0s3").
     // WifiNetwork has id (ssid). Check activeWifiDevice.
     readonly property string label: {
-        if (!device || !connected) return "Disconnected"
+        if (!device || !connected)
+            return "Disconnected";
         if (isWifi) {
             // Look for connected network in the device's networks list (Network.name = SSID)
             if (device.networks?.values) {
                 for (const nw of device.networks.values) {
-                    if (nw && nw.connected) return nw.name ?? devName
+                    if (nw && nw.connected)
+                        return nw.name ?? devName;
                 }
             }
-            return devName
+            return devName;
         }
-        return devName
+        return devName;
     }
 
     // Signal strength (wifi only, from WifiNetwork if available)
     readonly property int signal: {
-        if (!isWifi || !device?.networks?.values) return 0
+        if (!isWifi || !device?.networks?.values)
+            return 0;
         for (const nw of device.networks.values) {
-            if (nw && nw.connected) return Math.round((nw.signalStrength ?? 0) * 100)
+            if (nw && nw.connected)
+                return Math.round((nw.signalStrength ?? 0) * 100);
         }
-        return 0
+        return 0;
     }
 
     // Icons (Nerd Font glyphs)
     readonly property string icon: {
         if (connected) {
             if (isWifi) {
-                if (signal > 75) return "\uF0E2"  // 󰗉
-                if (signal > 50) return "\uF067"  // 󰚧
-                if (signal > 25) return "\uF068"  // 󰚨
-                return "\uF069"                    // 󰚩
+                if (signal > 75)
+                    return "\uF0E2";  // 󰗉
+                if (signal > 50)
+                    return "\uF067";  // 󰚧
+                if (signal > 25)
+                    return "\uF068";  // 󰚨
+                return "\uF069";                    // 󰚩
             }
-            return "\uF020"  // 󰈀 (ethernet)
+            return "\uF020";  // 󰈀 (ethernet)
         }
-        return "\uF074"  // 󰑴 (disconnected)
+        return "\uF074";  // 󰑴 (disconnected)
     }
 
     Rectangle {
@@ -70,7 +79,6 @@ Item {
         radius: 8
         color: root.connected ? Theme.moduleBg : Theme.color0
         border.color: Theme.color8
-        border.width: 1
 
         Row {
             anchors.fill: parent
@@ -113,6 +121,7 @@ Item {
     }
 
     HoverHandler {
-        onHoveredChanged: if (hovered) BarState.activate("network", 3000)
+        onHoveredChanged: if (hovered)
+            BarState.activate("network", 3000)
     }
 }

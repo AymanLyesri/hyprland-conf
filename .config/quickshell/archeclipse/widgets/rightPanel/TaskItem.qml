@@ -19,7 +19,7 @@ Item {
         anchors.fill: parent
         color: task.active ? Theme.moduleBg : Theme.bg
         radius: Theme.radius
-        border.width: 1
+
         border.color: task.active ? Theme.border : Theme.fgDim
         clip: true
 
@@ -57,7 +57,9 @@ Item {
                     }
                 }
 
-                Item { Layout.fillWidth: true }
+                Item {
+                    Layout.fillWidth: true
+                }
 
                 // Hover actions
                 Row {
@@ -65,7 +67,11 @@ Item {
                     spacing: 4
                     visible: isHovered
                     opacity: isHovered ? 1 : 0
-                    Behavior on opacity { NumberAnimation { duration: 150 } }
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 150
+                        }
+                    }
 
                     CheckBox {
                         id: activeCheck
@@ -73,7 +79,7 @@ Item {
                         onToggled: root.toggleClicked(task.id)
                     }
                     AppButton {
-                        icon: "✏"
+                        icon: "\u{f040}"
                         idleBg: Theme.accentBg
                         idleFg: Theme.accent
                         outlined: true
@@ -82,7 +88,7 @@ Item {
                         onClicked: root.editClicked(task)
                     }
                     AppButton {
-                        icon: "✕"
+                        icon: "\u{f00d}"
                         idleBg: Theme.dangerBg
                         idleFg: Theme.danger
                         outlined: true
@@ -111,14 +117,25 @@ Item {
     }
 
     function formatNextRun(nextRun) {
-        if (!nextRun) return "Not scheduled";
+        if (!nextRun)
+            return "Not scheduled";
         const date = new Date(nextRun);
         const now = new Date();
         const isToday = date.toDateString() === now.toDateString();
 
         if (isToday) {
-            return "Today, " + date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
+            return "Today, " + date.toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false
+            });
         }
-        return date.toLocaleString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false, month: "short", day: "numeric" });
+        return date.toLocaleString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+            month: "short",
+            day: "numeric"
+        });
     }
 }

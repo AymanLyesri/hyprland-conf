@@ -27,14 +27,17 @@ PanelWindow {
     // Bottom-anchored overlay panel, not a full-screen dimmer — matches the
     // original AGS window (LEFT|BOTTOM|RIGHT anchor, OVERLAY layer, IGNORE
     // exclusivity, ON_DEMAND keyboard focus).
-    anchors { left: true; right: true; bottom: true }
+    anchors {
+        left: true
+        right: true
+        bottom: true
+    }
     exclusiveZone: -1
     implicitHeight: 340
     color: "transparent"
     visible: false
 
     WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.namespace: "wallpaper-switcher"
     WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
     // Namespace matches AGS ("wallpaper-switcher") so the hypr
@@ -45,7 +48,8 @@ PanelWindow {
         fetchWallpapers();
         fetchCurrentWallpapers();
         const ws = Hyprland.focusedWorkspace;
-        if (ws) root.selectedWorkspaceId = ws.id;
+        if (ws)
+            root.selectedWorkspaceId = ws.id;
     }
 
     Item {
@@ -60,9 +64,7 @@ PanelWindow {
     readonly property string reloadScript: home + "/.config/hypr/wallpaper-daemon/reload.sh"
 
     function toThumbnailPath(file) {
-        return file
-            .replace(home + "/.config/wallpapers/", home + "/.cache/quickshell/thumbnails/")
-            .replace(/\.[^/.]+$/, ".jpg");
+        return file.replace(home + "/.config/wallpapers/", home + "/.cache/quickshell/thumbnails/").replace(/\.[^/.]+$/, ".jpg");
     }
 
     // ---------------------------------------------------------------- state
@@ -92,8 +94,7 @@ PanelWindow {
             Settings.wallpaperCategory = selectedCategory;
     }
     onCategoriesChanged: if (!categories.includes(selectedCategory))
-        selectedCategory = categories.includes(Settings.wallpaperCategory)
-            ? Settings.wallpaperCategory : (categories[0] ?? "")
+        selectedCategory = categories.includes(Settings.wallpaperCategory) ? Settings.wallpaperCategory : (categories[0] ?? "")
     readonly property var selectedWallpapers: wallpapers[selectedCategory] ?? []
 
     property var currentWallpapers: []           // path per workspace index, this monitor
@@ -109,14 +110,18 @@ PanelWindow {
         target: Hyprland
         function onFocusedWorkspaceChanged() {
             const ws = Hyprland.focusedWorkspace;
-            if (ws) root.selectedWorkspaceId = ws.id;
+            if (ws)
+                root.selectedWorkspaceId = ws.id;
         }
     }
 
     function notifyError(context, err) {
         setProgress("error");
         console.warn("[WallpaperSwitcher]", context, err);
-        Notifications.notify({ summary: "Error", body: String(err) }); // adjust to your notify service
+        Notifications.notify({
+            summary: "Error",
+            body: String(err)
+        }); // adjust to your notify service
     }
 
     // ---------------------------------------------------------- data fetch
@@ -134,7 +139,9 @@ PanelWindow {
             }
         }
     }
-    function fetchWallpapers() { fetchProc.running = true; }
+    function fetchWallpapers() {
+        fetchProc.running = true;
+    }
 
     Process {
         id: fetchCurrentProc
@@ -149,21 +156,25 @@ PanelWindow {
             }
         }
     }
-    function fetchCurrentWallpapers() { fetchCurrentProc.running = true; }
+    function fetchCurrentWallpapers() {
+        fetchCurrentProc.running = true;
+    }
 
     // ----------------------------------------------------------- set/apply
 
     Process {
         id: setProc
-        onExited: (code) => {
+        onExited: code => {
             if (code === 0) {
                 root.fetchCurrentWallpapers();
                 // Share the global theme: regenerate pywal/cwal colors from
                 // the new wallpaper (wal-theme.sh honors autocolor=false
                 // itself; _pendingThemeRegen is only set when workspace
                 // target + Settings.dynamicThemeColors).
-                if (root._pendingThemeRegen !== "") root.regenTheme(root._pendingThemeRegen);
-                else root.setProgress("success");
+                if (root._pendingThemeRegen !== "")
+                    root.regenTheme(root._pendingThemeRegen);
+                else
+                    root.setProgress("success");
             } else {
                 root._pendingThemeRegen = "";
                 root.setProgress("error");
@@ -174,13 +185,11 @@ PanelWindow {
     function commandFor(target, path) {
         switch (target) {
         case "sddm":
-            return ["pkexec", "bash", "-c",
-                `sed -i "s|^background=.*|background=${path}|" /usr/share/sddm/themes/where_is_my_sddm_theme/theme.conf`];
+            return ["pkexec", "bash", "-c", `sed -i "s|^background=.*|background=${path}|" /usr/share/sddm/themes/where_is_my_sddm_theme/theme.conf`];
         case "lockscreen":
-            return ["bash", "-c",
-                `mkdir -p ${JSON.stringify(root.home + "/.config/wallpapers/lockscreen")} && ` +
-                `cp ${JSON.stringify(path)} ${JSON.stringify(root.home + "/.config/wallpapers/lockscreen/wallpaper")}`];
-        default: // workspace
+            return ["bash", "-c", `mkdir -p ${JSON.stringify(root.home + "/.config/wallpapers/lockscreen")} && ` + `cp ${JSON.stringify(path)} ${JSON.stringify(root.home + "/.config/wallpapers/lockscreen/wallpaper")}`];
+        default:
+            // workspace
             return [root.setScript, String(root.selectedWorkspaceId), root.monitorName, path];
         }
     }
@@ -197,12 +206,14 @@ PanelWindow {
     readonly property string walThemeScript: home + "/.config/hypr/theme/scripts/wal-theme.sh"
     Process {
         id: themeProc
-        onExited: (code) => {
+        onExited: code => {
             // Variant may have auto-switched (autovariant) — re-read it so
             // the ControlPanel toggle and GlobalTheme state stay correct.
             GlobalTheme.refresh();
-            if (code === 0) root.setProgress("success");
-            else root.notifyError("updating theme colors", "wal-theme.sh failed");
+            if (code === 0)
+                root.setProgress("success");
+            else
+                root.notifyError("updating theme colors", "wal-theme.sh failed");
         }
     }
     function regenTheme(path) {
@@ -213,7 +224,8 @@ PanelWindow {
 
     function setRandomWallpaper() {
         const list = root.selectedWallpapers;
-        if (list.length === 0) return;
+        if (list.length === 0)
+            return;
         applyWallpaper(list[Math.floor(Math.random() * list.length)]);
     }
 
@@ -221,10 +233,13 @@ PanelWindow {
 
     Process {
         id: deleteProc
-        onExited: (code) => {
+        onExited: code => {
             root.fetchWallpapers();
             if (code === 0) {
-                Notifications.notify({ summary: "Success", body: "Wallpaper deleted successfully!" });
+                Notifications.notify({
+                    summary: "Success",
+                    body: "Wallpaper deleted successfully!"
+                });
                 root.setProgress("success");
             } else {
                 root.setProgress("error");
@@ -233,8 +248,7 @@ PanelWindow {
     }
     function deleteWallpaper(path) {
         setProgress("loading");
-        deleteProc.command = ["bash", "-c",
-            `rm -f ${JSON.stringify(root.toThumbnailPath(path))} && rm -f ${JSON.stringify(path)}`];
+        deleteProc.command = ["bash", "-c", `rm -f ${JSON.stringify(root.toThumbnailPath(path))} && rm -f ${JSON.stringify(path)}`];
         deleteProc.running = true;
     }
 
@@ -242,8 +256,9 @@ PanelWindow {
 
     Process {
         id: reloadProc
-        onExited: (code) => {
-            if (code === 0) root.fetchWallpapers();
+        onExited: code => {
+            if (code === 0)
+                root.fetchWallpapers();
             root.setProgress(code === 0 ? "success" : "error");
         }
     }
@@ -257,27 +272,34 @@ PanelWindow {
 
     Process {
         id: pickProc
-        command: ["zenity", "--file-selection", "--title=Select Wallpaper",
-            "--file-filter=Images (png, jpg, webp, gif, mp4) | *.png *.jpg *.jpeg *.webp *.gif *.mp4"]
+        command: ["zenity", "--file-selection", "--title=Select Wallpaper", "--file-filter=Images (png, jpg, webp, gif, mp4) | *.png *.jpg *.jpeg *.webp *.gif *.mp4"]
         stdout: StdioCollector {
             onStreamFinished: {
                 const path = text.trim();
-                if (path.length > 0) root.importWallpaper(path);
-                else root.progressStatus = "idle";
+                if (path.length > 0)
+                    root.importWallpaper(path);
+                else
+                    root.progressStatus = "idle";
             }
         }
-        onExited: (code) => {
+        onExited: code => {
             // zenity exits 1 on Cancel — that's not a real error.
-            if (code !== 0 && code !== 1) root.setProgress("error");
+            if (code !== 0 && code !== 1)
+                root.setProgress("error");
         }
     }
-    function pickWallpaper() { pickProc.running = true; }
+    function pickWallpaper() {
+        pickProc.running = true;
+    }
 
     Process {
         id: importProc
-        onExited: (code) => {
+        onExited: code => {
             if (code === 0) {
-                Notifications.notify({ summary: "Success", body: "Wallpaper added successfully!" });
+                Notifications.notify({
+                    summary: "Success",
+                    body: "Wallpaper added successfully!"
+                });
                 root.fetchWallpapers();
                 root.setProgress("success");
             } else {
@@ -293,14 +315,9 @@ PanelWindow {
         const thumbDir = root.home + "/.cache/quickshell/thumbnails/custom";
         const thumbPath = thumbDir + "/" + basename.replace(/\.[^/.]+$/, ".jpg");
         const isVideo = /\.(mp4|webm)$/i.test(sourcePath);
-        const thumbCmd = isVideo
-            ? `ffmpeg -i ${JSON.stringify(targetPath)} -vframes 1 -vf "scale=500:-1" -y ${JSON.stringify(thumbPath)}`
-            : `magick ${JSON.stringify(targetPath)} -resize "500x500^" -gravity center -extent 500x500 ${JSON.stringify(thumbPath)}`;
+        const thumbCmd = isVideo ? `ffmpeg -i ${JSON.stringify(targetPath)} -vframes 1 -vf "scale=500:-1" -y ${JSON.stringify(thumbPath)}` : `magick ${JSON.stringify(targetPath)} -resize "500x500^" -gravity center -extent 500x500 ${JSON.stringify(thumbPath)}`;
 
-        importProc.command = ["bash", "-c",
-            `mkdir -p ${JSON.stringify(targetDir)} ${JSON.stringify(thumbDir)} && ` +
-            `cp -- ${JSON.stringify(sourcePath)} ${JSON.stringify(targetPath)} && ` +
-            thumbCmd];
+        importProc.command = ["bash", "-c", `mkdir -p ${JSON.stringify(targetDir)} ${JSON.stringify(thumbDir)} && ` + `cp -- ${JSON.stringify(sourcePath)} ${JSON.stringify(targetPath)} && ` + thumbCmd];
         importProc.running = true;
     }
 
@@ -308,33 +325,39 @@ PanelWindow {
     // Path passed as argv (no shell quoting) so names with quotes still work.
     property var fileSizes: ({})
     function getFileSize(path) {
-        if (root.fileSizes[path] !== undefined) return root.fileSizes[path]
-        const p = Qt.createQmlObject('import Quickshell.Io; Process { stdout: StdioCollector {} }', root)
-        p.command = ["stat", "-c", "%s", path]
-        p.running = true
-        p.stdout.onStreamFinished.connect(function() {
-            const sz = parseInt(p.stdout.text.trim()) || 0
-            const fs = root.fileSizes
-            fs[path] = sz
-            root.fileSizes = fs
-            p.destroy()
-        })
-        return 0
+        if (root.fileSizes[path] !== undefined)
+            return root.fileSizes[path];
+        const p = Qt.createQmlObject('import Quickshell.Io; Process { stdout: StdioCollector {} }', root);
+        p.command = ["stat", "-c", "%s", path];
+        p.running = true;
+        p.stdout.onStreamFinished.connect(function () {
+            const sz = parseInt(p.stdout.text.trim()) || 0;
+            const fs = root.fileSizes;
+            fs[path] = sz;
+            root.fileSizes = fs;
+            p.destroy();
+        });
+        return 0;
     }
     function formatBytes(bytes) {
-        if (bytes === 0) return "N/A"
-        const units = ["B", "KB", "MB", "GB"]
-        let i = 0
-        let b = bytes
-        while (b >= 1024 && i < units.length - 1) { b /= 1024; i++ }
-        return b.toFixed(i === 0 ? 0 : 1) + " " + units[i]
+        if (bytes === 0)
+            return "N/A";
+        const units = ["B", "KB", "MB", "GB"];
+        let i = 0;
+        let b = bytes;
+        while (b >= 1024 && i < units.length - 1) {
+            b /= 1024;
+            i++;
+        }
+        return b.toFixed(i === 0 ? 0 : 1) + " " + units[i];
     }
 
     // ------------------------------------------------------------------ UI
 
     Rectangle {
+        id: wallpaperSwitcher
         anchors.fill: parent
-        color: Theme.background
+        color: Theme.moduleBg
         radius: Theme.radius
 
         ColumnLayout {
@@ -354,19 +377,19 @@ PanelWindow {
                         required property int index
                         readonly property bool isFocused: Hyprland.focusedWorkspace?.id === index + 1
 
-                        width: 140; height: 90
+                        width: 140
+                        height: 90
                         radius: 6
                         color: modelData === "" ? "black" : "transparent"
-                        border.width: isFocused ? 2 : 0
-                        border.color: Theme.accent ?? Theme.foreground
+                        border.width: isFocused ? 1 : 0
+                        border.color: Theme.secondary
 
-                        Image {
+                        AppImage {
                             visible: wsTile.modelData !== ""
                             anchors.fill: parent
                             anchors.margins: 2
                             source: wsTile.modelData === "" ? "" : "file://" + root.toThumbnailPath(wsTile.modelData)
                             fillMode: Image.PreserveAspectCrop
-                            asynchronous: true
                         }
                         Text {
                             visible: wsTile.modelData === ""
@@ -411,8 +434,7 @@ PanelWindow {
                 }
 
                 Text {
-                    text: `Wallpaper -> ${root.targetType}` +
-                        (root.targetType === "workspace" ? " " + root.selectedWorkspaceId : "")
+                    text: `Wallpaper -> ${root.targetType}` + (root.targetType === "workspace" ? " " + root.selectedWorkspaceId : "")
                     color: Theme.foreground
                     font.family: Theme.fontFamily
                 }
@@ -424,7 +446,9 @@ PanelWindow {
                         model: [Theme.color0, Theme.color1, Theme.color2, Theme.color3, Theme.color4, Theme.color8, Theme.foreground]
                         delegate: Rectangle {
                             required property string modelData
-                            width: 12; height: 12; radius: 6
+                            width: 12
+                            height: 12
+                            radius: 6
                             color: modelData
                         }
                     }
@@ -436,17 +460,35 @@ PanelWindow {
                     onActivated: root.selectedCategory = root.categories[currentIndex]
                 }
 
-                AppButton { text: "Random"; onClicked: root.setRandomWallpaper() }
-                AppButton { text: "Reload"; onClicked: root.reloadDaemon() }
-                AppButton { text: "Add…"; onClicked: root.pickWallpaper() }
+                AppButton {
+                    text: "Random"
+                    onClicked: root.setRandomWallpaper()
+                }
+                AppButton {
+                    text: "Reload"
+                    onClicked: root.reloadDaemon()
+                }
+                AppButton {
+                    text: "Add…"
+                    onClicked: root.pickWallpaper()
+                }
 
                 BusyIndicator {
                     running: root.progressStatus === "loading"
                     visible: running
-                    implicitWidth: 20; implicitHeight: 20
+                    implicitWidth: 20
+                    implicitHeight: 20
                 }
-                Text { visible: root.progressStatus === "error"; text: "⚠"; color: "red" }
-                Text { visible: root.progressStatus === "success"; text: "✓"; color: "lightgreen" }
+                Text {
+                    visible: root.progressStatus === "error"
+                    text: "⚠"
+                    color: "red"
+                }
+                Text {
+                    visible: root.progressStatus === "success"
+                    text: "✓"
+                    color: "lightgreen"
+                }
             }
 
             // all wallpapers in the selected category — horizontal strip
@@ -467,18 +509,18 @@ PanelWindow {
                         delegate: Rectangle {
                             id: tile
                             required property string modelData
-                            width: 150; height: Math.max(0, wallScroll.height - 4)
+                            width: 150
+                            height: Math.max(0, wallScroll.height - 4)
                             radius: 6
                             color: tileMa.containsMouse ? Theme.buttonHoverBg : Theme.moduleBg
                             border.width: tileMa.containsMouse ? 2 : 0
                             border.color: Theme.foregroundSecondary
 
-                            Image {
+                            AppImage {
                                 anchors.fill: parent
                                 anchors.margins: 3
                                 source: "file://" + root.toThumbnailPath(tile.modelData)
                                 fillMode: Image.PreserveAspectCrop
-                                asynchronous: true
                             }
 
                             ToolTip.visible: tileMa.containsMouse
@@ -490,7 +532,7 @@ PanelWindow {
                                 hoverEnabled: true
                                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                                 cursorShape: Qt.PointingHandCursor
-                                onClicked: (mouse) => {
+                                onClicked: mouse => {
                                     if (mouse.button === Qt.RightButton)
                                         root.deleteWallpaper(tile.modelData);
                                     else

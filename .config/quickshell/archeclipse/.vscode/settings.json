@@ -1,3 +1,5 @@
 {
-  "qt-qml.qmlls.customExePath": "/usr/lib/qt6/bin/qmlls"
+  "qt-qml.qmlls.customExePath": "/usr/lib/qt6/bin/qmlls",
+  "qt-qml.qmlls.useNoCMakeCalls": true,
+  "qt-qml.qmlls.useQmlImportPathEnvVar": true
 }

@@ -17,12 +17,23 @@ PanelWindow {
 
     required property ShellScreen screen
     readonly property string monitorName: {
-        const hmon = Hyprland.monitorFor(screen)
-        return hmon ? hmon.name : screen.name
+        const hmon = Hyprland.monitorFor(screen);
+        return hmon ? hmon.name : screen.name;
     }
 
     // Window geometry / layer
-    anchors { left: true; top: true; bottom: true }
+    anchors {
+        left: true
+        top: true
+        bottom: true
+    }
+    // Overlap the centered bar's top reservation so the panel spans the
+    // full height (bar pill is centered, so no visual clash at the edge).
+    // Only when exclusive: overlays already get the full monitor height,
+    // and the margin would push them off the top of the screen.
+    margins {
+        top: Settings.leftPanelExclusivity ? -32 : 0
+    }
     // +216 while the BooruViewer detail revealer is open (binding:
     // auto-reverts on close/tab-switch, never persists, can't stack).
     // Instant snap: the smooth motion is the internal detailW slide, NOT a
@@ -39,14 +50,14 @@ PanelWindow {
     property string selectedWidget: Settings.leftPanelWidget
     onSelectedWidgetChanged: {
         if (Settings.leftPanelWidget !== selectedWidget)
-            Settings.leftPanelWidget = selectedWidget
-        switchAnim.restart()
+            Settings.leftPanelWidget = selectedWidget;
+        switchAnim.restart();
     }
     Connections {
         target: Settings
         function onLeftPanelWidgetChanged() {
             if (root.selectedWidget !== Settings.leftPanelWidget)
-                root.selectedWidget = Settings.leftPanelWidget
+                root.selectedWidget = Settings.leftPanelWidget;
         }
     }
     // Expose the StackLayout's current child so IPC can poke into the live
@@ -56,16 +67,16 @@ PanelWindow {
 
     // Map a tab name (matching the launcher's quick-app selectors) to a widget.
     function selectTab(name) {
-        root.selectedWidget = name
+        root.selectedWidget = name;
     }
 
     // Register with Registry for IPC togglePanel
     Component.onCompleted: {
-        Registry.register(`left-panel-${root.monitorName}`, root)
-        visible = false
+        Registry.register(`left-panel-${root.monitorName}`, root);
+        visible = false;
     }
     Component.onDestruction: {
-        Registry.unregister(`left-panel-${root.monitorName}`)
+        Registry.unregister(`left-panel-${root.monitorName}`);
     }
 
     // Idle hide timer (AGS: 0ms = next tick; matches Astal's "timeout 0")
@@ -73,7 +84,8 @@ PanelWindow {
         id: hideTimer
         interval: 0
         onTriggered: {
-            if (!Settings.leftPanelLock) root.visible = false
+            if (!Settings.leftPanelLock)
+                root.visible = false;
         }
     }
 
@@ -82,13 +94,15 @@ PanelWindow {
     // `popupIsOpen()` walking Astal's popup tree). root.children is sometimes
     // undefined on PanelWindow, so guard the iteration.
     property bool popupOpen: {
-        const kids = root.children
-        if (!kids || typeof kids.length !== "number") return false
+        const kids = root.children;
+        if (!kids || typeof kids.length !== "number")
+            return false;
         for (let i = 0; i < kids.length; i++) {
-            const c = kids[i]
-            if (c && c.visible && c.activeFocus) return true
+            const c = kids[i];
+            if (c && c.visible && c.activeFocus)
+                return true;
         }
-        return false
+        return false;
     }
 
     // Hover handling — keep open while mouse is over panel or any child popup
@@ -97,8 +111,10 @@ PanelWindow {
         id: panelHover
         enabled: true
         onHoveredChanged: {
-            if (hovered) hideTimer.stop()
-            else if (!Settings.leftPanelLock && !root.popupOpen) hideTimer.restart()
+            if (hovered)
+                hideTimer.stop();
+            else if (!Settings.leftPanelLock && !root.popupOpen)
+                hideTimer.restart();
         }
     }
 
@@ -120,13 +136,16 @@ PanelWindow {
             color: Theme.bg
             radius: Theme.radius
             clip: true
-            border.width: 1
-            border.color: Theme.border
 
             // Widget selector buttons
             Column {
                 id: selectorColumn
-                anchors { left: parent.left; right: parent.right; top: parent.top; margins: 8 }
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: parent.top
+                    margins: 8
+                }
                 spacing: 8
 
                 Repeater {
@@ -136,14 +155,38 @@ PanelWindow {
                     // KeyBinds, Donations. Names keep the QS "Widget"
                     // suffix (IPC showWidget/widgetState compat).
                     model: [
-                        { name: "UserProfile",     icon: "\u{F007}" },
-                        { name: "BooruViewer",     icon: "\u{F03E}" },
-                        { name: "ChatBot",         icon: "\u{EE0D}" },
-                        { name: "MangaViewer",     icon: "\u{EAA4}" },
-                        { name: "SettingsWidget",  icon: "\u{F013}" },
-                        { name: "CustomScripts",   icon: "\u{F120}" },
-                        { name: "KeyBinds",        icon: "\u{F11C}" },
-                        { name: "Donations",       icon: "\u{F0F4}" }
+                        {
+                            name: "UserProfile",
+                            icon: "\u{F007}"
+                        },
+                        {
+                            name: "BooruViewer",
+                            icon: "\u{F03E}"
+                        },
+                        {
+                            name: "ChatBot",
+                            icon: "\u{EE0D}"
+                        },
+                        {
+                            name: "MangaViewer",
+                            icon: "\u{EAA4}"
+                        },
+                        {
+                            name: "SettingsWidget",
+                            icon: "\u{F013}"
+                        },
+                        {
+                            name: "CustomScripts",
+                            icon: "\u{F120}"
+                        },
+                        {
+                            name: "KeyBinds",
+                            icon: "\u{F11C}"
+                        },
+                        {
+                            name: "Donations",
+                            icon: "\u{F0F4}"
+                        }
                     ]
                     // Same 40px cell structure as RightPanel's widget
                     // selectors: fixed-height full-width cell, icon centered.
@@ -161,11 +204,9 @@ PanelWindow {
                             idleBg: modelData.name === "Donations" ? "#f96854" : "transparent"
                             idleFg: modelData.name === "Donations" ? "#052d49" : Theme.fg
                             borderColor: modelData.name === "Donations" ? "#f96854" : Theme.accent
-                            tooltipText: modelData.name === "Donations"
-                                ? "Click to open Donations\n<b>＼(o￣∇￣)／</b> — Support the project"
-                                : "Click to open " + modelData.name
+                            tooltipText: modelData.name === "Donations" ? "Click to open Donations\n<b>＼(o￣∇￣)／</b> — Support the project" : "Click to open " + modelData.name
                             onClicked: {
-                                root.selectedWidget = modelData.name
+                                root.selectedWidget = modelData.name;
                             }
                         }
                     }
@@ -180,69 +221,72 @@ PanelWindow {
                 anchors.margins: 8
                 width: parent.width
                 spacing: 4
-                    Item { width: 1; height: 8 } // spacer
-                    // Expand (+50 to max 1500, AGS WindowActions defaults)
-                    AppButton {
-                        width: parent.width
-                        icon: "\u{F067}"
-                        pixelSize: 14
-                        cornerRadius: 6
-                        hoverBg: Theme.moduleBg
-                        hoverFg: Theme.accent
-                        tooltipText: "Expand panel"
-                        // implicitWidth tracks Settings via binding — only
-                        // write the setting (AGS setGlobalSetting + queueResize).
-                        onClicked: Settings.leftPanelWidth = Math.min(1500, Settings.leftPanelWidth + 50)
-                    }
-                    // Shrink (−50 to min 400, AGS LeftPanel minPanelWidth={400})
-                    AppButton {
-                        width: parent.width
-                        icon: "\u{F068}"
-                        pixelSize: 14
-                        cornerRadius: 6
-                        hoverBg: Theme.moduleBg
-                        hoverFg: Theme.accent
-                        tooltipText: "Shrink panel"
-                        onClicked: Settings.leftPanelWidth = Math.max(400, Settings.leftPanelWidth - 50)
-                    }
-                    // Exclusivity (AGS: active = non-exclusive, inverted)
-                    AppButton {
-                        width: parent.width
-                        icon: "\u{F2D2}"
-                        pixelSize: 14
-                        cornerRadius: 6
-                        toggle: true
-                        checked: !Settings.leftPanelExclusivity
-                        hoverBg: Theme.moduleBg
-                        tooltipText: Settings.leftPanelExclusivity ? "Exclusive zone: on" : "Exclusive zone: off"
-                        // checked is the inverse of the setting: writing it
-                        // back as-is toggles exclusivity.
-                        onClicked: Settings.leftPanelExclusivity = checked
-                    }
-                    // Lock (AGS FA lock F023 / unlock F2FC)
-                    AppButton {
-                        width: parent.width
-                        icon: Settings.leftPanelLock ? "\u{F023}" : "\u{F2FC}"
-                        pixelSize: 14
-                        cornerRadius: 6
-                        toggle: true
-                        checked: Settings.leftPanelLock
-                        hoverBg: Theme.moduleBg
-                        tooltipText: Settings.leftPanelLock ? "Unlock panel" : "Lock panel"
-                        onClicked: Settings.leftPanelLock = !checked
-                    }
-                    // Close (AGS WindowActions close F00D)
-                    AppButton {
-                        width: parent.width
-                        icon: "\u{F00D}"
-                        pixelSize: 14
-                        cornerRadius: 6
-                        hoverBg: Theme.moduleBg
-                        hoverFg: Theme.danger
-                        tooltipText: "Close panel"
-                        onClicked: root.visible = false
-                    }
-                } // WindowActions (bottom-pinned)
+                Item {
+                    width: 1
+                    height: 8
+                } // spacer
+                // Expand (+50 to max 1500, AGS WindowActions defaults)
+                AppButton {
+                    width: parent.width
+                    icon: "\u{F067}"
+                    pixelSize: 14
+                    cornerRadius: 6
+                    hoverBg: Theme.moduleBg
+                    hoverFg: Theme.accent
+                    tooltipText: "Expand panel"
+                    // implicitWidth tracks Settings via binding — only
+                    // write the setting (AGS setGlobalSetting + queueResize).
+                    onClicked: Settings.leftPanelWidth = Math.min(1500, Settings.leftPanelWidth + 50)
+                }
+                // Shrink (−50 to min 400, AGS LeftPanel minPanelWidth={400})
+                AppButton {
+                    width: parent.width
+                    icon: "\u{F068}"
+                    pixelSize: 14
+                    cornerRadius: 6
+                    hoverBg: Theme.moduleBg
+                    hoverFg: Theme.accent
+                    tooltipText: "Shrink panel"
+                    onClicked: Settings.leftPanelWidth = Math.max(400, Settings.leftPanelWidth - 50)
+                }
+                // Exclusivity (AGS: active = non-exclusive, inverted)
+                AppButton {
+                    width: parent.width
+                    icon: "\u{F2D2}"
+                    pixelSize: 14
+                    cornerRadius: 6
+                    toggle: true
+                    checked: !Settings.leftPanelExclusivity
+                    hoverBg: Theme.moduleBg
+                    tooltipText: Settings.leftPanelExclusivity ? "Exclusive zone: on" : "Exclusive zone: off"
+                    // checked is the inverse of the setting: writing it
+                    // back as-is toggles exclusivity.
+                    onClicked: Settings.leftPanelExclusivity = checked
+                }
+                // Lock (AGS FA lock F023 / unlock F2FC)
+                AppButton {
+                    width: parent.width
+                    icon: Settings.leftPanelLock ? "\u{F023}" : "\u{F2FC}"
+                    pixelSize: 14
+                    cornerRadius: 6
+                    toggle: true
+                    checked: Settings.leftPanelLock
+                    hoverBg: Theme.moduleBg
+                    tooltipText: Settings.leftPanelLock ? "Unlock panel" : "Lock panel"
+                    onClicked: Settings.leftPanelLock = !checked
+                }
+                // Close (AGS WindowActions close F00D)
+                AppButton {
+                    width: parent.width
+                    icon: "\u{F00D}"
+                    pixelSize: 14
+                    cornerRadius: 6
+                    hoverBg: Theme.moduleBg
+                    hoverFg: Theme.danger
+                    tooltipText: "Close panel"
+                    onClicked: root.visible = false
+                }
+            } // WindowActions (bottom-pinned)
         }
 
         // Main content area
@@ -265,7 +309,8 @@ PanelWindow {
             // Fade-in on switch mirrors AGS `.main-content > *` opacity-in 0.6s.
             OpacityAnimator on opacity {
                 id: switchAnim
-                from: 0; to: 1
+                from: 0
+                to: 1
                 duration: 600
                 easing.type: Easing.OutCubic
             }
@@ -274,15 +319,24 @@ PanelWindow {
                 anchors.fill: parent
                 currentIndex: {
                     switch (root.selectedWidget) {
-                    case "UserProfile":     return 0
-                    case "BooruViewer":     return 1
-                    case "ChatBot":         return 2
-                    case "MangaViewer":     return 3
-                    case "SettingsWidget":  return 4
-                    case "CustomScripts":   return 5
-                    case "KeyBinds":        return 6
-                    case "Donations":       return 7
-                    default: return 0
+                    case "UserProfile":
+                        return 0;
+                    case "BooruViewer":
+                        return 1;
+                    case "ChatBot":
+                        return 2;
+                    case "MangaViewer":
+                        return 3;
+                    case "SettingsWidget":
+                        return 4;
+                    case "CustomScripts":
+                        return 5;
+                    case "KeyBinds":
+                        return 6;
+                    case "Donations":
+                        return 7;
+                    default:
+                        return 0;
                     }
                 }
                 UserProfileWidget {}
@@ -304,10 +358,13 @@ PanelWindow {
         focus: true
         Keys.onEscapePressed: {
             if (root.visible) {
-                root.visible = false
-                event.accepted = true
+                root.visible = false;
+                event.accepted = true;
             }
         }
     }
-    onVisibleChanged: { if (visible) keyHandler.forceActiveFocus() }
+    onVisibleChanged: {
+        if (visible)
+            keyHandler.forceActiveFocus();
+    }
 }

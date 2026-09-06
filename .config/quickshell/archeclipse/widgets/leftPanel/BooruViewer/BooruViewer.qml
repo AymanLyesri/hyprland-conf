@@ -736,6 +736,27 @@ Item {
             _bootTimer.start();
     }
 
+    // Follow external Settings.booru changes (file reload, bookmark script
+    // response): keep viewer state in sync without refetching here — tab
+    // switches already load/fetch at their call sites. Guards prevent
+    // feedback loops with our own writes.
+    Connections {
+        target: Settings
+        function onBooruChanged() {
+            const b = Settings.booru || {};
+            if (b.selectedTab && b.selectedTab !== root.selectedTab)
+                root.selectedTab = b.selectedTab;
+            if (b.page && b.page !== root.page)
+                root.page = b.page;
+            if (b.limit && b.limit !== root.limit)
+                root.limit = b.limit;
+            if (b.columns && b.columns !== root.columns)
+                root.columns = b.columns;
+            if (Array.isArray(b.tags) && JSON.stringify(b.tags) !== JSON.stringify(root.currentTags))
+                root.currentTags = b.tags.slice();
+        }
+    }
+
     Timer {
         id: _closeTimer
 
@@ -847,21 +868,13 @@ Item {
         }
         Keys.onLeftPressed: {
             if (root.keyEnabled && root.progressStatus !== "loading" && root.page > 1) {
-                root.pageDirection = "prev";
-                root.page = root.page - 1;
-                Settings.booru.page = root.page;
-                Settings.updateSetting("booru.page", root.page);
-                root.fetchImages();
+                root.gotoPage(root.page - 1);
             }
             event.accepted = true;
         }
         Keys.onRightPressed: {
             if (root.keyEnabled && root.progressStatus !== "loading") {
-                root.pageDirection = "next";
-                root.page = root.page + 1;
-                Settings.booru.page = root.page;
-                Settings.updateSetting("booru.page", root.page);
-                root.fetchImages();
+                root.gotoPage(root.page + 1);
             }
             event.accepted = true;
         }

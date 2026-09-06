@@ -15,10 +15,16 @@ PanelWindow {
     id: root
 
     required property ShellScreen screen
-    anchors { top: true; right: true }
+    anchors {
+        top: true
+        right: true
+    }
     exclusiveZone: -1
     color: "transparent"
-    margins { top: 10; right: 10 }
+    margins {
+        top: 10
+        right: 10
+    }
     implicitWidth: 400
     implicitHeight: popColumn.childrenRect.height + 4
     visible: Notifications.popups.length > 0
@@ -37,8 +43,7 @@ PanelWindow {
                 id: card
                 required property var modelData
                 readonly property var notif: modelData.notif
-                readonly property bool critical:
-                    notif && notif.urgency === NotificationUrgency.Critical
+                readonly property bool critical: notif && notif.urgency === NotificationUrgency.Critical
                 property bool bodyExpanded: false
 
                 width: 400
@@ -46,25 +51,35 @@ PanelWindow {
                 radius: Theme.radius
                 color: critical ? Qt.rgba(0.66, 0.27, 0.27, 0.95) : Theme.moduleBg
                 border.color: Qt.alpha(Theme.foreground, 0.1)
-                border.width: 1
 
                 opacity: 0
                 Component.onCompleted: opacity = 1
-                Behavior on opacity { NumberAnimation { duration: 200 } }
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 200
+                    }
+                }
 
                 // Icon chain (AGS getNotificationIcon): file path → theme
                 // name → desktopEntry → critical warning glyph → info glyph.
                 readonly property string iconFile: {
-                    if (!card.notif) return "";
-                    if (card.notif.appIcon && String(card.notif.appIcon).startsWith("/")) return card.notif.appIcon;
-                    if (card.notif.image && String(card.notif.image).startsWith("/")) return card.notif.image;
+                    if (!card.notif)
+                        return "";
+                    if (card.notif.appIcon && String(card.notif.appIcon).startsWith("/"))
+                        return card.notif.appIcon;
+                    if (card.notif.image && String(card.notif.image).startsWith("/"))
+                        return card.notif.image;
                     return "";
                 }
                 readonly property string iconName: {
-                    if (!card.notif) return "";
-                    if (card.notif.appIcon && !String(card.notif.appIcon).startsWith("/")) return card.notif.appIcon;
-                    if (card.notif.image && !String(card.notif.image).startsWith("/")) return card.notif.image;
-                    if (card.notif.desktopEntry) return card.notif.desktopEntry;
+                    if (!card.notif)
+                        return "";
+                    if (card.notif.appIcon && !String(card.notif.appIcon).startsWith("/"))
+                        return card.notif.appIcon;
+                    if (card.notif.image && !String(card.notif.image).startsWith("/"))
+                        return card.notif.image;
+                    if (card.notif.desktopEntry)
+                        return card.notif.desktopEntry;
                     return "";
                 }
 
@@ -92,7 +107,8 @@ PanelWindow {
                             }
                             Text {
                                 visible: !iconImg.visible
-                                width: parent.width; height: parent.height
+                                width: parent.width
+                                height: parent.height
                                 text: card.critical ? "\u{F0266}" : "\u{F059A}"
                                 color: card.critical ? "white" : Theme.foreground
                                 font.family: Theme.fontFamily
@@ -121,9 +137,11 @@ PanelWindow {
                                     font.pixelSize: Theme.fontSize
                                 }
                                 Text {
-                                    text: (card.modelData.time || 0) > 0
-                                        ? new Date(card.modelData.time * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })
-                                        : ""
+                                    text: (card.modelData.time || 0) > 0 ? new Date(card.modelData.time * 1000).toLocaleTimeString([], {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        hour12: false
+                                    }) : ""
                                     color: card.critical ? Qt.alpha("white", 0.7) : Theme.fgDim
                                     font.pixelSize: Theme.fontSize - 2
                                     visible: text !== ""
@@ -161,7 +179,11 @@ PanelWindow {
                                 cornerRadius: 4
                                 idleBg: Theme.moduleBg
                                 outlined: true
-                                onClicked: { try { modelData.invoke(); } catch (e) {} }
+                                onClicked: {
+                                    try {
+                                        modelData.invoke();
+                                    } catch (e) {}
+                                }
                             }
                         }
                     }
@@ -179,22 +201,28 @@ PanelWindow {
                             outlined: true
                             onClicked: {
                                 const n = card.notif;
-                                if (!n) return;
+                                if (!n)
+                                    return;
                                 // AGS: image payload via wl-copy image/png + toast
                                 if (n.image && String(n.image).startsWith("/")) {
                                     const p = Qt.createQmlObject("import Quickshell.Io; Process {}", card);
                                     p.command = ["bash", "-c", "wl-copy --type image/png < " + JSON.stringify(n.image)];
-                                    p.exited.connect((code) => {
-                                        Notifications.notify(code === 0
-                                            ? { summary: "Copied", body: n.image }
-                                            : { summary: "Error", body: "Copy failed" });
+                                    p.exited.connect(code => {
+                                        Notifications.notify(code === 0 ? {
+                                            summary: "Copied",
+                                            body: n.image
+                                        } : {
+                                            summary: "Error",
+                                            body: "Copy failed"
+                                        });
                                         p.destroy();
                                     });
                                     p.running = true;
                                     return;
                                 }
                                 const t = n.body || n.summary;
-                                if (t) Quickshell.execDetached(["wl-copy", t]);
+                                if (t)
+                                    Quickshell.execDetached(["wl-copy", t]);
                             }
                         }
                         AppButton {
@@ -225,7 +253,7 @@ PanelWindow {
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     onEntered: card.isHovered = true
                     onExited: card.isHovered = false
-                    onClicked: (mouse) => {
+                    onClicked: mouse => {
                         if (mouse.button === Qt.RightButton)
                             Notifications.closePopup(card.modelData.id, true);   // AGS right-click dismiss
                     }

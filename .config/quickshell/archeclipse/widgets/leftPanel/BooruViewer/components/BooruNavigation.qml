@@ -68,11 +68,7 @@ Column {
             enabled: viewer.progressStatus !== "loading"
             onClicked: {
                 if (viewer.page > 1) {
-                    viewer.pageDirection = "prev";
-                    viewer.page = viewer.page - 1;
-                    Settings.booru.page = viewer.page;
-                    Settings.updateSetting("booru.page", viewer.page);
-                    viewer.fetchImages();
+                    viewer.gotoPage(viewer.page - 1);
                 }
             }
         }
@@ -90,11 +86,7 @@ Column {
             height: 28
             enabled: viewer.progressStatus !== "loading"
             onClicked: {
-                viewer.pageDirection = "next";
-                viewer.page = viewer.page + 1;
-                Settings.booru.page = viewer.page;
-                Settings.updateSetting("booru.page", viewer.page);
-                viewer.fetchImages();
+                viewer.gotoPage(viewer.page + 1);
             }
         }
 

@@ -30,17 +30,24 @@ Item {
     // name → image path → image theme name → desktopEntry → urgency fallback
     readonly property string iconFile: {
         const n = root.notification;
-        if (!n) return "";
-        if (n.appIcon && String(n.appIcon).startsWith("/")) return n.appIcon;
-        if (n.image && String(n.image).startsWith("/")) return n.image;
+        if (!n)
+            return "";
+        if (n.appIcon && String(n.appIcon).startsWith("/"))
+            return n.appIcon;
+        if (n.image && String(n.image).startsWith("/"))
+            return n.image;
         return "";
     }
     readonly property string iconName: {
         const n = root.notification;
-        if (!n) return "";
-        if (n.appIcon && !String(n.appIcon).startsWith("/")) return n.appIcon;
-        if (n.image && !String(n.image).startsWith("/")) return n.image;
-        if (n.desktopEntry) return n.desktopEntry;
+        if (!n)
+            return "";
+        if (n.appIcon && !String(n.appIcon).startsWith("/"))
+            return n.appIcon;
+        if (n.image && !String(n.image).startsWith("/"))
+            return n.image;
+        if (n.desktopEntry)
+            return n.desktopEntry;
         return "";
     }
 
@@ -48,7 +55,7 @@ Item {
         anchors.fill: parent
         color: Theme.moduleBg
         radius: Theme.radius
-        border.width: 1
+
         border.color: Theme.border
         clip: true
 
@@ -64,7 +71,8 @@ Item {
 
                 Item {
                     id: appIconWrap
-                    width: 20; height: 20
+                    width: 20
+                    height: 20
                     visible: root.iconFile !== "" || root.iconName !== "" || (root.notification && root.notification.urgency === 2)
                     IconImage {
                         anchors.fill: parent
@@ -93,16 +101,18 @@ Item {
                     elide: Text.ElideRight
                 }
 
-                Item { Layout.fillWidth: true }
+                Item {
+                    Layout.fillWidth: true
+                }
 
                 // Time — 24h %H:%M like AGS utils/time.ts
                 Text {
                     id: timeLabel
-                    text: root.notifTime > 0
-                        ? new Date(root.notifTime * 1000).toLocaleTimeString([], {
-                            hour: "2-digit", minute: "2-digit", hour12: false
-                        })
-                        : ""
+                    text: root.notifTime > 0 ? new Date(root.notifTime * 1000).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false
+                    }) : ""
                     font.pixelSize: Theme.fontSize - 1
                     color: Theme.fgDim
                     visible: text !== ""
@@ -113,7 +123,8 @@ Item {
                 AppButton {
                     id: copyBtn
                     icon: "󰃅"
-                    width: 24; height: 24
+                    width: 24
+                    height: 24
                     pixelSize: 11
                     cornerRadius: 4
                     idleBg: Theme.moduleBg
@@ -127,7 +138,8 @@ Item {
                 AppButton {
                     id: expandBtn
                     icon: root.bodyExpanded ? "󰁾" : "󰁼"
-                    width: 24; height: 24
+                    width: 24
+                    height: 24
                     pixelSize: 11
                     cornerRadius: 4
                     idleBg: Theme.moduleBg
@@ -139,14 +151,18 @@ Item {
                 // Dismiss (AGS dismissNotification → n.dismiss())
                 AppButton {
                     icon: "󰀍"
-                    width: 24; height: 24
+                    width: 24
+                    height: 24
                     pixelSize: 11
                     cornerRadius: 4
                     idleBg: Theme.moduleBg
                     outlined: true
                     tooltipText: "Dismiss"
                     onClicked: {
-                        try { if (root.notification) root.notification.dismiss(); } catch (e) {}
+                        try {
+                            if (root.notification)
+                                root.notification.dismiss();
+                        } catch (e) {}
                     }
                 }
             }
@@ -200,7 +216,11 @@ Item {
                         idleFg: Theme.accent
                         outlined: true
                         outlineColor: Theme.accent
-                        onClicked: { try { modelData.invoke(); } catch (e) {} }
+                        onClicked: {
+                            try {
+                                modelData.invoke();
+                            } catch (e) {}
+                        }
                     }
                 }
             }
@@ -216,13 +236,22 @@ Item {
 
     function copyContent() {
         const n = root.notification;
-        if (!n) return;
+        if (!n)
+            return;
         if (n.image && String(n.image).startsWith("/")) {
             const p = Qt.createQmlObject("import Quickshell.Io; Process {}", root);
             p.command = ["bash", "-c", "wl-copy --type image/png < " + JSON.stringify(n.image)];
-            p.exited.connect((code) => {
-                if (code === 0) Notifications.notify({ summary: "Copied", body: n.image });
-                else Notifications.notify({ summary: "Error", body: "Copy failed" });
+            p.exited.connect(code => {
+                if (code === 0)
+                    Notifications.notify({
+                        summary: "Copied",
+                        body: n.image
+                    });
+                else
+                    Notifications.notify({
+                        summary: "Error",
+                        body: "Copy failed"
+                    });
                 p.destroy();
             });
             p.running = true;

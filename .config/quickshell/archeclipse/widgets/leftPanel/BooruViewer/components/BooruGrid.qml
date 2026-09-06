@@ -30,7 +30,7 @@ Flickable {
     contentHeight: masonryRow.height
     // Touch-fling glide (wheel inertia is handled below).
     flickDeceleration: 1500
-    maximumFlickVelocity: 3000
+    maximumFlickVelocity: 1000
 
     // Wheel momentum via the native flick engine: Flickable only builds
     // momentum from drag-release flicks (no wheel-momentum property

@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Hyprland
 import qs.theme
+import qs.widgets.shared
 import qs.services
 
 // GeneralTab — port of AGS General.tsx
@@ -35,15 +36,15 @@ Item {
         stdout: StdioCollector {
             onStreamFinished: root.currentVersion = text.trim()
         }
-        onExited: (code) => {
+        onExited: code => {
             if (code !== 0) {
-                root.currentVersion = "Unknown"
-                root.remoteVersion = "Unknown"
-                root.isCheckingVersion = false
-                return
+                root.currentVersion = "Unknown";
+                root.remoteVersion = "Unknown";
+                root.isCheckingVersion = false;
+                return;
             }
             // After local, check remote
-            fetchRemoteProc.running = true
+            fetchRemoteProc.running = true;
         }
     }
 
@@ -58,10 +59,10 @@ Item {
         stdout: StdioCollector {
             onStreamFinished: root.remoteVersion = text.trim()
         }
-        onExited: (code) => {
-            root.isCheckingVersion = false
+        onExited: code => {
+            root.isCheckingVersion = false;
             if (code !== 0) {
-                root.remoteVersion = "Unknown"
+                root.remoteVersion = "Unknown";
             }
         }
     }
@@ -70,19 +71,22 @@ Item {
     // bare `hyprctl dispatch exec` fails against the Lua registry) --
     function runUpdate() {
         try {
-            Hyprland.dispatch("hl.dsp.exec_cmd('kitty zsh -ic \"clear; archeclipse\"')")
-            root.isUpdating = false
-            root.updateStatus = "Update started"
+            Hyprland.dispatch("hl.dsp.exec_cmd('kitty zsh -ic \"clear; archeclipse\"')");
+            root.isUpdating = false;
+            root.updateStatus = "Update started";
         } catch (e) {
-            root.isUpdating = false
-            root.updateStatus = "Update failed"
-            Notifications.notify({ summary: "Launch Error", body: "Could not open kitty with archeclipse." })
+            root.isUpdating = false;
+            root.updateStatus = "Update failed";
+            Notifications.notify({
+                summary: "Launch Error",
+                body: "Could not open kitty with archeclipse."
+            });
         }
     }
     function doUpdate() {
-        root.isUpdating = true
-        root.updateStatus = ""
-        root.runUpdate()
+        root.isUpdating = true;
+        root.updateStatus = "";
+        root.runUpdate();
     }
 
     // --- Process: GitHub stars ---
@@ -92,24 +96,25 @@ Item {
         running: false
         stdout: StdioCollector {
             onStreamFinished: {
-                const count = parseInt(text.trim())
-                if (!isNaN(count)) root.starsCount = count
+                const count = parseInt(text.trim());
+                if (!isNaN(count))
+                    root.starsCount = count;
             }
         }
     }
 
     // --- Init ---
     Component.onCompleted: {
-        root.isCheckingVersion = true
-        localHashProc.running = true
-        starsProc.running = true
+        root.isCheckingVersion = true;
+        localHashProc.running = true;
+        starsProc.running = true;
     }
 
     function checkVersions() {
-        root.isCheckingVersion = true
-        root.currentVersion = ""
-        root.remoteVersion = ""
-        localHashProc.running = true
+        root.isCheckingVersion = true;
+        root.currentVersion = "";
+        root.remoteVersion = "";
+        localHashProc.running = true;
     }
 
     // --- UI ---
@@ -117,7 +122,9 @@ Item {
         anchors.fill: parent
         contentHeight: contentColumn.height + 20
         clip: true
-        ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
+        ScrollBar.vertical: ScrollBar {
+            policy: ScrollBar.AsNeeded
+        }
 
         Column {
             id: contentColumn
@@ -135,11 +142,10 @@ Item {
                 clip: true
                 border.width: 2
                 border.color: Theme.accent
-                Image {
+                AppImage {
                     anchors.fill: parent
                     source: root.avatarPath
                     fillMode: Image.PreserveAspectCrop
-                    asynchronous: true
                 }
             }
 
@@ -166,14 +172,28 @@ Item {
                 spacing: 12
                 Repeater {
                     model: [
-                        { icon: "\u{F09B}", url: "https://github.com/AymanLyesri/ArchEclipse", tip: "GitHub Repository" },
-                        { icon: "\u{F188}", url: "https://github.com/AymanLyesri/ArchEclipse/issues", tip: "Issues Tracker" },
-                        { icon: "\u{F392}", url: "https://discord.gg/fMGt4vH6s5", tip: "Discord Community" }
+                        {
+                            icon: "\u{F09B}",
+                            url: "https://github.com/AymanLyesri/ArchEclipse",
+                            tip: "GitHub Repository"
+                        },
+                        {
+                            icon: "\u{F188}",
+                            url: "https://github.com/AymanLyesri/ArchEclipse/issues",
+                            tip: "Issues Tracker"
+                        },
+                        {
+                            icon: "\u{F392}",
+                            url: "https://discord.gg/fMGt4vH6s5",
+                            tip: "Discord Community"
+                        }
                     ]
                     delegate: Rectangle {
-                        width: 40; height: 40; radius: 8
+                        width: 40
+                        height: 40
+                        radius: 8
                         color: linkMa.containsMouse ? Theme.accentBg : Theme.moduleBg
-                        border.width: 1; border.color: linkMa.containsMouse ? Theme.accent : Theme.border
+                        border.color: linkMa.containsMouse ? Theme.accent : Theme.border
                         Text {
                             anchors.centerIn: parent
                             text: modelData.icon
@@ -187,14 +207,21 @@ Item {
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
                             onClicked: Quickshell.execDetached(["xdg-open", modelData.url])
-                            ToolTip { visible: linkMa.containsMouse; text: modelData.tip }
+                            ToolTip {
+                                visible: linkMa.containsMouse
+                                text: modelData.tip
+                            }
                         }
                     }
                 }
             }
 
             // Separator
-            Rectangle { width: parent.width; height: 1; color: Theme.border }
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+            }
 
             // Version section
             Column {
@@ -225,16 +252,35 @@ Item {
                         Row {
                             anchors.horizontalCenter: parent.horizontalCenter
                             spacing: 10
-                            Text { text: root.currentVersion; font.pixelSize: Theme.fontSize; color: Theme.fgDim }
-                            Text { text: "\u{F061}"; font.pixelSize: Theme.fontSize; color: Theme.accent }
-                            Text { text: root.remoteVersion; font.pixelSize: Theme.fontSize; color: Theme.accent; font.bold: true }
+                            Text {
+                                text: root.currentVersion
+                                font.pixelSize: Theme.fontSize
+                                color: Theme.fgDim
+                            }
+                            Text {
+                                text: "\u{F061}"
+                                font.pixelSize: Theme.fontSize
+                                color: Theme.accent
+                            }
+                            Text {
+                                text: root.remoteVersion
+                                font.pixelSize: Theme.fontSize
+                                color: Theme.accent
+                                font.bold: true
+                            }
                         }
 
                         Rectangle {
-                            width: updateMa.containsMouse ? 130 : 120; height: 32; radius: 6
+                            width: updateMa.containsMouse ? 130 : 120
+                            height: 32
+                            radius: 6
                             anchors.horizontalCenter: parent.horizontalCenter
                             color: updateMa.containsMouse ? Theme.accentBg : Theme.accent
-                            Behavior on width { NumberAnimation { duration: 150 } }
+                            Behavior on width {
+                                NumberAnimation {
+                                    duration: 150
+                                }
+                            }
                             Text {
                                 anchors.centerIn: parent
                                 text: root.isUpdating ? "\u{F2F0} Updating..." : "\u{F019} Update"
@@ -275,12 +321,18 @@ Item {
                         }
 
                         Rectangle {
-                            width: recheckMa.containsMouse ? 120 : 110; height: 28; radius: 6
+                            width: recheckMa.containsMouse ? 120 : 110
+                            height: 28
+                            radius: 6
                             anchors.horizontalCenter: parent.horizontalCenter
                             color: "transparent"
-                            border.width: 1; border.color: Theme.border
+                            border.color: Theme.border
                             visible: !root.isUpdating
-                            Behavior on width { NumberAnimation { duration: 150 } }
+                            Behavior on width {
+                                NumberAnimation {
+                                    duration: 150
+                                }
+                            }
                             Text {
                                 anchors.centerIn: parent
                                 text: "\u{F2F1} Check Update"

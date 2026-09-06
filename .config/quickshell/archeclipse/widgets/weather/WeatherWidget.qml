@@ -16,23 +16,31 @@ Item {
     property bool moreDetails: false
     property bool compact: false
 
-    function fmt(v, unit) { return v != null && v !== "" ? `${Math.round(v)}${unit}` : "N/A"; }
-    function fmtRaw(v, unit) { return v != null && v !== "" ? `${v}${unit}` : "N/A"; }
+    function fmt(v, unit) {
+        return v != null && v !== "" ? `${Math.round(v)}${unit}` : "N/A";
+    }
+    function fmtRaw(v, unit) {
+        return v != null && v !== "" ? `${v}${unit}` : "N/A";
+    }
 
     // Format open-meteo ISO "YYYY-MM-DDTHH:MM" -> HH:MM
     function formatTime(iso) {
-        if (!iso) return "N/A";
+        if (!iso)
+            return "N/A";
         const s = String(iso).replace("T", " ").replace(/-/g, "/");
         const d = new Date(s);
-        if (isNaN(d.getTime())) return "N/A";
+        if (isNaN(d.getTime()))
+            return "N/A";
         return d.toLocaleTimeString(Qt.locale(), "HH:mm");
     }
     // Format open-meteo ISO -> "Weekday D Mon"
     function formatDate(iso) {
-        if (!iso) return "N/A";
+        if (!iso)
+            return "N/A";
         const s = String(iso).replace("T", " ").replace(/-/g, "/");
         const d = new Date(s);
-        if (isNaN(d.getTime())) return "N/A";
+        if (isNaN(d.getTime()))
+            return "N/A";
         return d.toLocaleDateString(Qt.locale(), "ddd d MMM");
     }
 
@@ -134,32 +142,117 @@ Item {
                             Row {
                                 spacing: 5
                                 anchors.horizontalCenter: parent.horizontalCenter
-                                Column { spacing: 2; Text{text:"\u{E00E}";font.family:Theme.fontFamily;color:"white";anchors.horizontalCenter:parent.horizontalCenter} Text { text: root.formatTime(root.day.sunrise?.[0]); color:"white"; font.pixelSize: Theme.fontSize - 2; anchors.horizontalCenter: parent.horizontalCenter } }
-                                Text { text: "\u{F0E0}"; color: "#DDD"; font.pixelSize: Theme.fontSize; font.family: Theme.fontFamily }
-                                Column { spacing: 2; Text{text:"\u{E00F}";font.family:Theme.fontFamily;color:"white";anchors.horizontalCenter:parent.horizontalCenter} Text { text: root.formatTime(root.day.sunset?.[0]); color:"white"; font.pixelSize: Theme.fontSize - 2; anchors.horizontalCenter: parent.horizontalCenter } }
+                                Column {
+                                    spacing: 2
+                                    Text {
+                                        text: "\u{E00E}"
+                                        font.family: Theme.fontFamily
+                                        color: "white"
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                    }
+                                    Text {
+                                        text: root.formatTime(root.day.sunrise?.[0])
+                                        color: "white"
+                                        font.pixelSize: Theme.fontSize - 2
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                    }
+                                }
+                                Text {
+                                    text: "\u{F0E0}"
+                                    color: "#DDD"
+                                    font.pixelSize: Theme.fontSize
+                                    font.family: Theme.fontFamily
+                                }
+                                Column {
+                                    spacing: 2
+                                    Text {
+                                        text: "\u{E00F}"
+                                        font.family: Theme.fontFamily
+                                        color: "white"
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                    }
+                                    Text {
+                                        text: root.formatTime(root.day.sunset?.[0])
+                                        color: "white"
+                                        font.pixelSize: Theme.fontSize - 2
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                    }
+                                }
                             }
 
                             Row {
                                 spacing: 5
                                 anchors.horizontalCenter: parent.horizontalCenter
-                                Rectangle { width: 90; height: 34; radius: 6; color: "#22FFFFFF"
-                                    Column { anchors.centerIn: parent; spacing: 1
-                                        Text { text: "\u{E04A}"; font.family: Theme.fontFamily; color:"white"; font.pixelSize: Theme.fontSize - 3; anchors.horizontalCenter: parent.horizontalCenter }
-                                        Text { text: root.fmt(root.cur.relative_humidity_2m, "%"); color:"white"; font.pixelSize: Theme.fontSize - 3; anchors.horizontalCenter: parent.horizontalCenter }
+                                Rectangle {
+                                    width: 90
+                                    height: 34
+                                    radius: 6
+                                    color: "#22FFFFFF"
+                                    Column {
+                                        anchors.centerIn: parent
+                                        spacing: 1
+                                        Text {
+                                            text: "\u{E04A}"
+                                            font.family: Theme.fontFamily
+                                            color: "white"
+                                            font.pixelSize: Theme.fontSize - 3
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                        }
+                                        Text {
+                                            text: root.fmt(root.cur.relative_humidity_2m, "%")
+                                            color: "white"
+                                            font.pixelSize: Theme.fontSize - 3
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                        }
                                     }
                                 }
-                                Rectangle { width: 90; height: 34; radius: 6; color: "#22FFFFFF"
-                                    Column { anchors.centerIn: parent; spacing: 1
-                                        Text { text: "\u{E04B}"; font.family: Theme.fontFamily; color:"white"; font.pixelSize: Theme.fontSize - 3; anchors.horizontalCenter: parent.horizontalCenter }
-                                        Text { text: root.fmt(root.cur.precipitation, " mm"); color:"white"; font.pixelSize: Theme.fontSize - 3; anchors.horizontalCenter: parent.horizontalCenter }
+                                Rectangle {
+                                    width: 90
+                                    height: 34
+                                    radius: 6
+                                    color: "#22FFFFFF"
+                                    Column {
+                                        anchors.centerIn: parent
+                                        spacing: 1
+                                        Text {
+                                            text: "\u{E04B}"
+                                            font.family: Theme.fontFamily
+                                            color: "white"
+                                            font.pixelSize: Theme.fontSize - 3
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                        }
+                                        Text {
+                                            text: root.fmt(root.cur.precipitation, " mm")
+                                            color: "white"
+                                            font.pixelSize: Theme.fontSize - 3
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                        }
                                     }
                                 }
                             }
 
-                            Rectangle { width: 190; height: 34; radius: 6; color: "#22FFFFFF"; anchors.horizontalCenter: parent.horizontalCenter
-                                Column { anchors.centerIn: parent; spacing: 1
-                                    Text { text: "\u{E04C}"; font.family: Theme.fontFamily; color:"white"; font.pixelSize: Theme.fontSize - 3; anchors.horizontalCenter: parent.horizontalCenter }
-                                    Text { text: `${root.fmtRaw(root.cur.wind_speed_10m, "")} ${root.windUnit} ${Weather.windDirection(root.cur.wind_direction_10m)}`; color:"white"; font.pixelSize: Theme.fontSize - 3; anchors.horizontalCenter: parent.horizontalCenter }
+                            Rectangle {
+                                width: 190
+                                height: 34
+                                radius: 6
+                                color: "#22FFFFFF"
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                Column {
+                                    anchors.centerIn: parent
+                                    spacing: 1
+                                    Text {
+                                        text: "\u{E04C}"
+                                        font.family: Theme.fontFamily
+                                        color: "white"
+                                        font.pixelSize: Theme.fontSize - 3
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                    }
+                                    Text {
+                                        text: `${root.fmtRaw(root.cur.wind_speed_10m, "")} ${root.windUnit} ${Weather.windDirection(root.cur.wind_direction_10m)}`
+                                        color: "white"
+                                        font.pixelSize: Theme.fontSize - 3
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                    }
                                 }
                             }
                         }
@@ -181,13 +274,15 @@ Item {
                             height: 30
                             color: "white"
                             background: Rectangle {
-                                color: "#33000000"; radius: 6
-                                border.color: "#55FFFFFF"; border.width: 1
+                                color: "#33000000"
+                                radius: 6
+                                border.color: "#55FFFFFF"
                             }
                             placeholderTextColor: "#CCFFFFFF"
                         }
                         AppButton {
-                            width: 32; height: 30
+                            width: 32
+                            height: 30
                             icon: "\u{F00C}"
                             pixelSize: 14
                             cornerRadius: 6
@@ -200,7 +295,8 @@ Item {
                             onClicked: root.applyCity()
                         }
                         AppButton {
-                            width: 32; height: 30
+                            width: 32
+                            height: 30
                             icon: "\u{F1A2}"
                             pixelSize: 14
                             cornerRadius: 6
@@ -222,17 +318,34 @@ Item {
                 width: parent.width
                 spacing: 12
 
-                Label { text: "Today's Forecast"; font.pixelSize: Theme.fontSize; font.bold: true; color: Theme.fg }
+                Label {
+                    text: "Today's Forecast"
+                    font.pixelSize: Theme.fontSize
+                    font.bold: true
+                    color: Theme.fg
+                }
 
                 Row {
                     spacing: 8
                     width: parent.width
                     Repeater {
                         model: [
-                            { label: "Max", value: root.fmtRaw(root.day.temperature_2m_max?.[0], root.tempUnit) },
-                            { label: "Min", value: root.fmtRaw(root.day.temperature_2m_min?.[0], root.tempUnit) },
-                            { label: "Rain", value: `${root.day.precipitation_sum?.[0] ?? 0} mm` },
-                            { label: "Wind", value: `${root.day.wind_speed_10m_max?.[0] ?? "N/A"} ${root.windUnit}` }
+                            {
+                                label: "Max",
+                                value: root.fmtRaw(root.day.temperature_2m_max?.[0], root.tempUnit)
+                            },
+                            {
+                                label: "Min",
+                                value: root.fmtRaw(root.day.temperature_2m_min?.[0], root.tempUnit)
+                            },
+                            {
+                                label: "Rain",
+                                value: `${root.day.precipitation_sum?.[0] ?? 0} mm`
+                            },
+                            {
+                                label: "Wind",
+                                value: `${root.day.wind_speed_10m_max?.[0] ?? "N/A"} ${root.windUnit}`
+                            }
                         ]
                         delegate: Rectangle {
                             width: parent.width / 4 - 6
@@ -243,8 +356,21 @@ Item {
                             Column {
                                 anchors.centerIn: parent
                                 spacing: 2
-                                Text { text: modelData.label; color: Theme.fgDim; font.pixelSize: Theme.fontSize - 3; anchors.horizontalCenter: parent.horizontalCenter }
-                                Text { text: modelData.value; color: Theme.fg; font.pixelSize: Theme.fontSize - 2; font.bold: true; anchors.horizontalCenter: parent.horizontalCenter; wrapMode: Text.WordWrap; horizontalAlignment: Text.AlignHCenter }
+                                Text {
+                                    text: modelData.label
+                                    color: Theme.fgDim
+                                    font.pixelSize: Theme.fontSize - 3
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                }
+                                Text {
+                                    text: modelData.value
+                                    color: Theme.fg
+                                    font.pixelSize: Theme.fontSize - 2
+                                    font.bold: true
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    wrapMode: Text.WordWrap
+                                    horizontalAlignment: Text.AlignHCenter
+                                }
                             }
                         }
                     }
@@ -257,7 +383,12 @@ Item {
                 width: parent.width
                 spacing: 12
 
-                Label { text: "Hourly Forecast"; font.pixelSize: Theme.fontSize; font.bold: true; color: Theme.fg }
+                Label {
+                    text: "Hourly Forecast"
+                    font.pixelSize: Theme.fontSize
+                    font.bold: true
+                    color: Theme.fg
+                }
 
                 Row {
                     spacing: 8
@@ -273,9 +404,26 @@ Item {
                             Column {
                                 anchors.centerIn: parent
                                 spacing: 4
-                                Text { text: Weather.icon(modelData.code); font.family: Theme.fontFamily; color: Theme.accent; font.pixelSize: Theme.fontSize + 4; anchors.horizontalCenter: parent.horizontalCenter }
-                                Text { text: `${Math.round(modelData.temp)}°  ${modelData.time}`; color: Theme.fg; font.pixelSize: Theme.fontSize - 2; anchors.horizontalCenter: parent.horizontalCenter }
-                                Text { visible: modelData.precip > 0; text: `${modelData.precip}mm`; color: Theme.accent; font.pixelSize: Theme.fontSize - 3; anchors.horizontalCenter: parent.horizontalCenter }
+                                Text {
+                                    text: Weather.icon(modelData.code)
+                                    font.family: Theme.fontFamily
+                                    color: Theme.accent
+                                    font.pixelSize: Theme.fontSize + 4
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                }
+                                Text {
+                                    text: `${Math.round(modelData.temp)}°  ${modelData.time}`
+                                    color: Theme.fg
+                                    font.pixelSize: Theme.fontSize - 2
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                }
+                                Text {
+                                    visible: modelData.precip > 0
+                                    text: `${modelData.precip}mm`
+                                    color: Theme.accent
+                                    font.pixelSize: Theme.fontSize - 3
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                }
                             }
                         }
                     }
@@ -287,28 +435,35 @@ Item {
     // Build hourly forecast items: starting from current hour, every 3h, 4 items (AGS logic)
     function hourlyItems() {
         const h = root.hour;
-        if (!h || !h.time || h.time.length === 0) return [];
+        if (!h || !h.time || h.time.length === 0)
+            return [];
         const curTime = root.cur.time;
         let currentHourISO;
         if (curTime) {
             currentHourISO = String(curTime).slice(0, 13) + ":00";
         } else {
             const now = new Date();
-            currentHourISO = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}T${String(now.getHours()).padStart(2,"0")}:00`;
+            currentHourISO = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}T${String(now.getHours()).padStart(2, "0")}:00`;
         }
         let startIndex = h.time.findIndex(t => t >= currentHourISO);
         let base = startIndex === -1 ? 0 : startIndex;
         const items = [];
         for (let i = 0; i < 4; i++) {
             const idx = base + i * 3;
-            if (idx >= h.time.length) break;
+            if (idx >= h.time.length)
+                break;
             const timeStr = h.time[idx];
             const d = new Date(String(timeStr).replace("T", " ").replace(/-/g, "/"));
             const timeLabel = !isNaN(d.getTime()) ? d.toLocaleTimeString(Qt.locale(), "HH:mm") : "N/A";
             const temp = h.temperature_2m?.[idx];
             const code = h.weather_code?.[idx];
             const precip = h.precipitation?.[idx] ?? 0;
-            items.push({ time: timeLabel, temp: temp, code: code, precip: precip });
+            items.push({
+                time: timeLabel,
+                temp: temp,
+                code: code,
+                precip: precip
+            });
         }
         return items;
     }
@@ -318,7 +473,10 @@ Item {
 
     function applyCity() {
         const text = cityEntry.text;
-        if (text && text.trim() === "") { root.clearCity(); return; }
+        if (text && text.trim() === "") {
+            root.clearCity();
+            return;
+        }
         Weather.setCity(text);
         root.savedCity = cityEntry.text;
         root._entryDirty = false;

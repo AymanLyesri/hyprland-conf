@@ -26,14 +26,14 @@ Rectangle {
     property bool profilesLoaded: false
 
     function refreshProfiles() {
-        profilesProc.startedOnce = true
-        activeProc.running = true
+        profilesProc.startedOnce = true;
+        activeProc.running = true;
     }
 
     function setProfile(profile) {
-        setProc.command = ["powerprofilesctl", "set", profile]
-        setProc.running = true
-        batteryPop.close()
+        setProc.command = ["powerprofilesctl", "set", profile];
+        setProc.running = true;
+        batteryPop.close();
     }
 
     // parse "powerprofilesctl list" output: "* balanced:" (active) / "  performance:"
@@ -44,23 +44,29 @@ Rectangle {
         running: false
         stdout: StdioCollector {
             onStreamFinished: {
-                const raw = profilesProc.stdout.text.split("\n")
-                const profs = []
+                const raw = profilesProc.stdout.text.split("\n");
+                const profs = [];
                 for (const line of raw) {
-                    const m = line.match(/^\*?\s*(.+):\s*$/)
-                    if (m) profs.push(m[1].trim())
+                    const m = line.match(/^\*?\s*(.+):\s*$/);
+                    if (m)
+                        profs.push(m[1].trim());
                 }
-                root.profiles = profs
-                root.profilesLoaded = true
+                root.profiles = profs;
+                root.profilesLoaded = true;
             }
         }
-        onExited: { if (!profilesProc.startedOnce) profilesProc.running = false }
+        onExited: {
+            if (!profilesProc.startedOnce)
+                profilesProc.running = false;
+        }
     }
     Process {
         id: activeProc
         command: ["bash", "-c", "powerprofilesctl get 2>/dev/null || true"]
         running: false
-        stdout: StdioCollector { onStreamFinished: root.activeProfile = activeProc.stdout.text.trim() }
+        stdout: StdioCollector {
+            onStreamFinished: root.activeProfile = activeProc.stdout.text.trim()
+        }
     }
     Process {
         id: setProc
@@ -86,7 +92,11 @@ Rectangle {
         width: 160
         padding: 6
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-        background: Rectangle { color: Theme.moduleBg; radius: 8; border.color: Theme.border }
+        background: Rectangle {
+            color: Theme.moduleBg
+            radius: 8
+            border.color: Theme.border
+        }
 
         Column {
             spacing: 4
@@ -126,8 +136,9 @@ Rectangle {
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
         onClicked: {
-            if (!root.profilesLoaded) root.refreshProfiles()
-            batteryPop.open()
+            if (!root.profilesLoaded)
+                root.refreshProfiles();
+            batteryPop.open();
         }
     }
 
@@ -140,7 +151,8 @@ Rectangle {
             text: {
                 const p = root.pct;
                 const charging = UPower.displayDevice?.state === UPowerDeviceState.Charging;
-                if (charging) return "\u{F00E2}";
+                if (charging)
+                    return "\u{F00E2}";
                 return p > 0.9 ? "\u{F007E}" : p > 0.7 ? "\u{F07E}" : p > 0.5 ? "\u{F07D}" : p > 0.3 ? "\u{F07C}" : p > 0.15 ? "\u{F07B}" : "\u{F07A}";
             }
             color: root.pct < 0.15 ? "#a94545" : Theme.foreground

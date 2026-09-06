@@ -28,7 +28,11 @@ Item {
                 font.pixelSize: 12
                 font.bold: true
             }
-            Item { Layout.fillWidth: true; width: 1; height: 1 }
+            Item {
+                Layout.fillWidth: true
+                width: 1
+                height: 1
+            }
             AppButton {
                 text: "X"
                 onClicked: viewer.requestClose()
@@ -44,13 +48,12 @@ Item {
             color: Theme.bg
             clip: true
 
-            Image {
+            AppImage {
                 anchors.fill: parent
-                anchors.margins: 4
+
                 source: viewer.dialogImage ? viewer.dialogSource(viewer.dialogImage) : ""
-                fillMode: Image.PreserveAspectFit
-                sourceSize.width: parent.width
-                asynchronous: true
+
+                sourceWidth: parent.width
                 visible: viewer.dialogImage ? !viewer.isVideo(viewer.dialogImage) : false
             }
             // video downloaded → playable via QtMultimedia (AGS Video.tsx)
@@ -61,7 +64,7 @@ Item {
                 autoplay: true
                 loop: true
                 fill: true
-                visible: viewer.dialogImage ? viewer.isVideo(viewer.dialogImage) && viewer.isDownloaded(viewer.dialogImage) && (viewer.dialogImage.extension||"").toLowerCase() !== "zip" : false
+                visible: viewer.dialogImage ? viewer.isVideo(viewer.dialogImage) && viewer.isDownloaded(viewer.dialogImage) && (viewer.dialogImage.extension || "").toLowerCase() !== "zip" : false
             }
             // video not downloaded → placeholder
             Rectangle {
@@ -71,8 +74,18 @@ Item {
                 Column {
                     anchors.centerIn: parent
                     spacing: 6
-                    Text { anchors.horizontalCenter: parent.horizontalCenter; text: "\u{f03d}"; font.pixelSize: 40; color: Theme.fgDim }
-                    Text { anchors.horizontalCenter: parent.horizontalCenter; text: viewer.dialogImage && (viewer.dialogImage.extension||"").toLowerCase()==="zip" ? "Cannot be played." : "Video — download to play"; color: Theme.fgDim; font.pixelSize: 11 }
+                    Text {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        text: "\u{f03d}"
+                        font.pixelSize: 40
+                        color: Theme.fgDim
+                    }
+                    Text {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        text: viewer.dialogImage && (viewer.dialogImage.extension || "").toLowerCase() === "zip" ? "Cannot be played." : "Video — download to play"
+                        color: Theme.fgDim
+                        font.pixelSize: 11
+                    }
                 }
             }
             // download progress overlay (fetch + original download)
@@ -93,8 +106,16 @@ Item {
         Row {
             width: parent.width
             spacing: 6
-            Text { text: viewer.dialogImage ? `${viewer.dialogImage.width}x${viewer.dialogImage.height}` : ""; color: Theme.fgDim; font.pixelSize: 11 }
-            Text { text: viewer.dialogImage && viewer.isDownloaded(viewer.dialogImage) ? "  \u{f019} Downloaded" : ""; color: "lightgreen"; font.pixelSize: 11 }
+            Text {
+                text: viewer.dialogImage ? `${viewer.dialogImage.width}x${viewer.dialogImage.height}` : ""
+                color: Theme.fgDim
+                font.pixelSize: 11
+            }
+            Text {
+                text: viewer.dialogImage && viewer.isDownloaded(viewer.dialogImage) ? "  \u{f019} Downloaded" : ""
+                color: "lightgreen"
+                font.pixelSize: 11
+            }
         }
 
         // tags flow (AGS maxTags=10; height follows content, capped)

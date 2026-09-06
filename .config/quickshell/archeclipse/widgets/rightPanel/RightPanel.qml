@@ -20,25 +20,36 @@ PanelWindow {
     id: root
     required property ShellScreen screen
     readonly property string monitorName: {
-        const hmon = Hyprland.monitorFor(screen)
-        return hmon ? hmon.name : screen.name
+        const hmon = Hyprland.monitorFor(screen);
+        return hmon ? hmon.name : screen.name;
     }
 
     // Window geometry / layer
-    anchors { right: true; top: true; bottom: true }
+    anchors {
+        right: true
+        top: true
+        bottom: true
+    }
+    // Overlap the centered bar's top reservation so the panel spans the
+    // full height (bar pill is centered, so no visual clash at the edge).
+    // Only when exclusive: overlays already get the full
+    // monitor height, and the margin would push them off the top.
+    margins {
+        top: Settings.rightPanelExclusivity ? -32 : 0
+    }
     implicitWidth: Settings.rightPanelWidth
     color: "transparent"
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
-    WlrLayershell.exclusiveZone: Settings.rightPanelLock ? width : -1
+    WlrLayershell.exclusiveZone: Settings.rightPanelExclusivity ? width : -1
     WlrLayershell.layer: WlrLayer.Top
 
     // Register with Registry for IPC togglePanel
     Component.onCompleted: {
-        Registry.register(`right-panel-${root.monitorName}`, root)
-        visible = false
+        Registry.register(`right-panel-${root.monitorName}`, root);
+        visible = false;
     }
     Component.onDestruction: {
-        Registry.unregister(`right-panel-${root.monitorName}`)
+        Registry.unregister(`right-panel-${root.monitorName}`);
     }
 
     // Idle hide timer (when not locked) - AGS uses 0ms delay
@@ -46,7 +57,8 @@ PanelWindow {
         id: hideTimer
         interval: 0
         onTriggered: {
-            if (!Settings.rightPanelLock) root.visible = false
+            if (!Settings.rightPanelLock)
+                root.visible = false;
         }
     }
 
@@ -55,17 +67,22 @@ PanelWindow {
         id: panelHover
         enabled: true
         onHoveredChanged: {
-            if (hovered) hideTimer.stop()
-            else if (!Settings.rightPanelLock) hideTimer.restart()
+            if (hovered)
+                hideTimer.stop();
+            else if (!Settings.rightPanelLock)
+                hideTimer.restart();
         }
     }
 
-    // Main panel content
+    // Main panel content (mirrors LeftPanel: 5px outer margins)
     Rectangle {
         anchors.fill: parent
+        anchors.rightMargin: 5
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
         color: Theme.moduleBg
         radius: Theme.radius
-        border.width: 1
+
         border.color: Theme.border
 
         Row {
@@ -82,7 +99,7 @@ PanelWindow {
                 height: parent.height
                 color: Theme.bg
                 radius: Theme.radius
-                border.width: 1
+
                 border.color: Theme.border
                 clip: true
                 visible: true
@@ -109,7 +126,9 @@ PanelWindow {
                             Drag.active: cellBtn.dragActive
                             Drag.hotSpot: Qt.point(width / 2, height / 2)
                             Drag.source: selectorItem
-                            Drag.mimeData: { "text/plain": String(index) }
+                            Drag.mimeData: {
+                                "text/plain": String(index)
+                            }
 
                             AppButton {
                                 id: cellBtn
@@ -125,35 +144,35 @@ PanelWindow {
                                 dragMaximum: (Settings.rightPanelWidgets.length - 1 - selectorItem.index) * 48
                                 onPressed: cellBtn.dragging = true
                                 onReleased: {
-                                    cellBtn.dragging = false
-                                    selectorItem.x = 0
-                                    selectorItem.y = 0
+                                    cellBtn.dragging = false;
+                                    selectorItem.x = 0;
+                                    selectorItem.y = 0;
                                 }
                                 onClicked: {
-                                    const widgets = Settings.rightPanelWidgets.slice()
-                                    const w = widgets[index]
-                                    const newWidgets = widgets.map(item =>
-                                        item.name === w.name ? Object.assign({}, item, { enabled: !item.enabled }) : item
-                                    )
-                                    Settings.rightPanelWidgets = newWidgets
-                                    Settings.updateSetting("rightPanel.widgets", newWidgets)
+                                    const widgets = Settings.rightPanelWidgets.slice();
+                                    const w = widgets[index];
+                                    const newWidgets = widgets.map(item => item.name === w.name ? Object.assign({}, item, {
+                                            enabled: !item.enabled
+                                        }) : item);
+                                    Settings.rightPanelWidgets = newWidgets;
+                                    Settings.updateSetting("rightPanel.widgets", newWidgets);
                                 }
 
                                 DropArea {
                                     id: dropArea
                                     anchors.fill: parent
                                     onEntered: {
-                                        const list = Settings.rightPanelWidgets.slice()
-                                        const from = Number(drag.source.index)
-                                        const to = selectorItem.index
-                                        if (from === to || !list[from]) return
-                                        const [item] = list.splice(from, 1)
-                                        list.splice(to, 0, item)
-                                        Settings.rightPanelWidgets = list
-                                        Settings.updateSetting("rightPanel.widgets", list)
+                                        const list = Settings.rightPanelWidgets.slice();
+                                        const from = Number(drag.source.index);
+                                        const to = selectorItem.index;
+                                        if (from === to || !list[from])
+                                            return;
+                                        const [item] = list.splice(from, 1);
+                                        list.splice(to, 0, item);
+                                        Settings.rightPanelWidgets = list;
+                                        Settings.updateSetting("rightPanel.widgets", list);
                                     }
                                 }
-
                             }
                         }
                     }
@@ -162,79 +181,79 @@ PanelWindow {
                 // ----- Window Actions (AGS WindowActions, valign END) -----
                 // Shared plain-Button styling with LeftPanel's action cluster.
                 Column {
-                        anchors.bottom: parent.bottom
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.margins: 8
-                        width: parent.width
-                        spacing: 4
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.margins: 8
+                    width: parent.width
+                    spacing: 4
 
-                        // Expand (+50 to max 1500)
-                        AppButton {
-                            width: parent.width
-                            icon: "\u{F067}"
-                            pixelSize: 14
-                            cornerRadius: 6
-                            hoverBg: Theme.moduleBg
-                            hoverFg: Theme.accent
-                            tooltipText: "Expand panel"
-                            onClicked: {
-                                const w = Settings.rightPanelWidth
-                                Settings.rightPanelWidth = w < 1500 ? w + 50 : 1500
-                            }
-                        }
-                        // Shrink (-50 to min 250)
-                        AppButton {
-                            width: parent.width
-                            icon: "\u{F068}"
-                            pixelSize: 14
-                            cornerRadius: 6
-                            hoverBg: Theme.moduleBg
-                            hoverFg: Theme.accent
-                            tooltipText: "Shrink panel"
-                            onClicked: {
-                                const w = Settings.rightPanelWidth
-                                Settings.rightPanelWidth = w > 250 ? w - 50 : 250
-                            }
-                        }
-                        // Exclusivity (AGS: active = non-exclusive, inverted)
-                        AppButton {
-                            width: parent.width
-                            icon: "\u{F2E0}"
-                            pixelSize: 14
-                            cornerRadius: 6
-                            toggle: true
-                            checked: !Settings.rightPanelExclusivity
-                            hoverBg: Theme.moduleBg
-                            tooltipText: Settings.rightPanelExclusivity ? "Exclusive zone: on" : "Exclusive zone: off"
-                            // checked is the inverse of the setting: writing it
-                            // back as-is toggles exclusivity.
-                            onClicked: Settings.rightPanelExclusivity = checked
-                        }
-                        // Lock
-                        AppButton {
-                            width: parent.width
-                            icon: Settings.rightPanelLock ? "\u{F023}" : "\u{F2DC}"
-                            pixelSize: 14
-                            cornerRadius: 6
-                            toggle: true
-                            checked: Settings.rightPanelLock
-                            hoverBg: Theme.moduleBg
-                            tooltipText: Settings.rightPanelLock ? "Unlock panel" : "Lock panel"
-                            onClicked: Settings.rightPanelLock = !checked
-                        }
-                        // Close
-                        AppButton {
-                            width: parent.width
-                            icon: "\u{F00D}"
-                            pixelSize: 14
-                            cornerRadius: 6
-                            hoverBg: Theme.moduleBg
-                            hoverFg: Theme.danger
-                            tooltipText: "Close panel"
-                            onClicked: root.visible = false
+                    // Expand (+50 to max 1500)
+                    AppButton {
+                        width: parent.width
+                        icon: "\u{F067}"
+                        pixelSize: 14
+                        cornerRadius: 6
+                        hoverBg: Theme.moduleBg
+                        hoverFg: Theme.accent
+                        tooltipText: "Expand panel"
+                        onClicked: {
+                            const w = Settings.rightPanelWidth;
+                            Settings.rightPanelWidth = w < 1500 ? w + 50 : 1500;
                         }
                     }
+                    // Shrink (-50 to min 250)
+                    AppButton {
+                        width: parent.width
+                        icon: "\u{F068}"
+                        pixelSize: 14
+                        cornerRadius: 6
+                        hoverBg: Theme.moduleBg
+                        hoverFg: Theme.accent
+                        tooltipText: "Shrink panel"
+                        onClicked: {
+                            const w = Settings.rightPanelWidth;
+                            Settings.rightPanelWidth = w > 250 ? w - 50 : 250;
+                        }
+                    }
+                    // Exclusivity (AGS: active = non-exclusive, inverted)
+                    AppButton {
+                        width: parent.width
+                        icon: "\u{F2D2}"
+                        pixelSize: 14
+                        cornerRadius: 6
+                        toggle: true
+                        checked: !Settings.rightPanelExclusivity
+                        hoverBg: Theme.moduleBg
+                        tooltipText: Settings.rightPanelExclusivity ? "Exclusive zone: on" : "Exclusive zone: off"
+                        // checked is the inverse of the setting: writing it
+                        // back as-is toggles exclusivity.
+                        onClicked: Settings.rightPanelExclusivity = checked
+                    }
+                    // Lock
+                    AppButton {
+                        width: parent.width
+                        icon: Settings.rightPanelLock ? "\u{F023}" : "\u{F2FC}"
+                        pixelSize: 14
+                        cornerRadius: 6
+                        toggle: true
+                        checked: Settings.rightPanelLock
+                        hoverBg: Theme.moduleBg
+                        tooltipText: Settings.rightPanelLock ? "Unlock panel" : "Lock panel"
+                        onClicked: Settings.rightPanelLock = !checked
+                    }
+                    // Close
+                    AppButton {
+                        width: parent.width
+                        icon: "\u{F00D}"
+                        pixelSize: 14
+                        cornerRadius: 6
+                        hoverBg: Theme.moduleBg
+                        hoverFg: Theme.danger
+                        tooltipText: "Close panel"
+                        onClicked: root.visible = false
+                    }
+                }
             }
 
             // ----- Main content area — all enabled widgets -----
@@ -259,14 +278,14 @@ PanelWindow {
                         id: enabledWidgetRepeater
                         model: {
                             // Filter to only enabled widgets, preserving order
-                            const widgets = Settings.rightPanelWidgets
-                            const result = []
+                            const widgets = Settings.rightPanelWidgets;
+                            const result = [];
                             for (let i = 0; i < widgets.length; i++) {
                                 if (widgets[i].enabled) {
-                                    result.push(widgets[i])
+                                    result.push(widgets[i]);
                                 }
                             }
-                            return result
+                            return result;
                         }
 
                         delegate: Item {
@@ -277,14 +296,22 @@ PanelWindow {
                             // Heights must stay in sync with each widget's content.
                             height: {
                                 switch (modelData.name) {
-                                case "Waifu":               return 360
-                                case "Media":                return 240
-                                case "NotificationHistory":  return 440
-                                case "ScriptTimer":          return 320
-                                case "Crypto":               return 440
-                                case "Calendar":             return 330
-                                case "SystemResources":      return 300
-                                default: return 300
+                                case "Waifu":
+                                    return 360;
+                                case "Media":
+                                    return 240;
+                                case "NotificationHistory":
+                                    return 440;
+                                case "ScriptTimer":
+                                    return 320;
+                                case "Crypto":
+                                    return 440;
+                                case "Calendar":
+                                    return 330;
+                                case "SystemResources":
+                                    return 300;
+                                default:
+                                    return 300;
                                 }
                             }
                             // AGS: .right-panel .main-content > * box-shadow 0 5 10 rgba(0,0,0,0.2)
@@ -296,11 +323,16 @@ PanelWindow {
                                 anchors.margins: 5
                                 color: Theme.moduleBg
                                 radius: Theme.radius
-                                border.width: 1
+
                                 border.color: Theme.border
                                 // AGS opacity-in on freshly added widget (.new-widget class)
                                 opacity: 0
-                                Behavior on opacity { NumberAnimation { duration: 600; easing.type: Easing.OutCubic } }
+                                Behavior on opacity {
+                                    NumberAnimation {
+                                        duration: 600
+                                        easing.type: Easing.OutCubic
+                                    }
+                                }
                                 Component.onCompleted: opacity = 1
 
                                 RectangularShadow {
@@ -320,14 +352,22 @@ PanelWindow {
                                 height: parent.height
                                 sourceComponent: {
                                     switch (modelData.name) {
-                                    case "Waifu":                return waifuWidget
-                                    case "Media":                return mediaWidget
-                                    case "NotificationHistory":  return notificationHistoryWidget
-                                    case "ScriptTimer":          return scriptTimerWidget
-                                    case "Crypto":               return cryptoWidget
-                                    case "Calendar":             return calendarWidget
-                                    case "SystemResources":      return systemResourcesWidget
-                                    default: return undefinedComponent
+                                    case "Waifu":
+                                        return waifuWidget;
+                                    case "Media":
+                                        return mediaWidget;
+                                    case "NotificationHistory":
+                                        return notificationHistoryWidget;
+                                    case "ScriptTimer":
+                                        return scriptTimerWidget;
+                                    case "Crypto":
+                                        return cryptoWidget;
+                                    case "Calendar":
+                                        return calendarWidget;
+                                    case "SystemResources":
+                                        return systemResourcesWidget;
+                                    default:
+                                        return undefinedComponent;
                                     }
                                 }
                             }
@@ -338,14 +378,54 @@ PanelWindow {
         }
 
         // Widget component definitions
-        Component { id: undefinedComponent; Text { text: "Unknown widget" } }
-        Component { id: calendarWidget;          CalendarWidget { Layout.fillWidth: true } }
-        Component { id: cryptoWidget;            CryptoWidget { Layout.fillWidth: true } }
-        Component { id: mediaWidget;             MediaWidget { Layout.fillWidth: true } }
-        Component { id: notificationHistoryWidget; NotificationHistoryWidget { Layout.fillWidth: true } }
-        Component { id: scriptTimerWidget;       ScriptTimerWidget { Layout.fillWidth: true } }
-        Component { id: systemResourcesWidget;   SystemResourcesWidget { Layout.fillWidth: true } }
-        Component { id: waifuWidget;              WaifuWidget { Layout.fillWidth: true } }
+        Component {
+            id: undefinedComponent
+            Text {
+                text: "Unknown widget"
+            }
+        }
+        Component {
+            id: calendarWidget
+            CalendarWidget {
+                Layout.fillWidth: true
+            }
+        }
+        Component {
+            id: cryptoWidget
+            CryptoWidget {
+                Layout.fillWidth: true
+            }
+        }
+        Component {
+            id: mediaWidget
+            MediaWidget {
+                Layout.fillWidth: true
+            }
+        }
+        Component {
+            id: notificationHistoryWidget
+            NotificationHistoryWidget {
+                Layout.fillWidth: true
+            }
+        }
+        Component {
+            id: scriptTimerWidget
+            ScriptTimerWidget {
+                Layout.fillWidth: true
+            }
+        }
+        Component {
+            id: systemResourcesWidget
+            SystemResourcesWidget {
+                Layout.fillWidth: true
+            }
+        }
+        Component {
+            id: waifuWidget
+            WaifuWidget {
+                Layout.fillWidth: true
+            }
+        }
     }
 
     // Escape key closes panel
@@ -354,8 +434,8 @@ PanelWindow {
         focus: true
         Keys.onEscapePressed: {
             if (root.visible) {
-                root.visible = false
-                event.accepted = true
+                root.visible = false;
+                event.accepted = true;
             }
         }
     }

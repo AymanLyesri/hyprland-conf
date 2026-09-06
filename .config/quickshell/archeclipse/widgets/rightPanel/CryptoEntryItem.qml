@@ -26,7 +26,7 @@ Item {
             height: 80
             color: Theme.moduleBg
             radius: Theme.radius
-            border.width: 1
+
             border.color: Theme.border
 
             CryptoItem {
@@ -45,7 +45,8 @@ Item {
 
             AppButton {
                 icon: "\u{F091}"
-                width: 28; height: 24
+                width: 28
+                height: 24
                 pixelSize: 11
                 cornerRadius: 4
                 idleBg: Theme.moduleBg
@@ -53,15 +54,19 @@ Item {
                 outlined: true
                 tooltipText: "Pin to bar"
                 onClicked: {
-                    Settings.cryptoFavorite = { symbol: root.entry.symbol, timeframe: root.entry.timeframe }
-                    Settings.updateSetting("crypto.favorite", Settings.cryptoFavorite)
-                    Quickshell.execDetached(["notify-send", "Crypto Display", (root.entry.symbol || "").toUpperCase() + " pinned to top bar"])
+                    Settings.cryptoFavorite = {
+                        symbol: root.entry.symbol,
+                        timeframe: root.entry.timeframe
+                    };
+                    Settings.updateSetting("crypto.favorite", Settings.cryptoFavorite);
+                    Quickshell.execDetached(["notify-send", "Crypto Display", (root.entry.symbol || "").toUpperCase() + " pinned to top bar"]);
                 }
             }
 
             AppButton {
                 icon: "\u{F044}"
-                width: 28; height: 24
+                width: 28
+                height: 24
                 pixelSize: 11
                 cornerRadius: 4
                 idleBg: Theme.moduleBg
@@ -72,7 +77,8 @@ Item {
 
             AppButton {
                 icon: "\u{F00D}"
-                width: 28; height: 24
+                width: 28
+                height: 24
                 pixelSize: 11
                 cornerRadius: 4
                 idleBg: Theme.dangerBg

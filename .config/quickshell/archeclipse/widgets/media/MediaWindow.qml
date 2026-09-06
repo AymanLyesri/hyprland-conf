@@ -20,7 +20,11 @@ PanelWindow {
     // no exclusive zone, on-demand keyboard focus).
     // Top, full-width layer surface; content pill centered horizontally
     // (layer-shell has no horizontalCenter anchor, so center the inner rect).
-    anchors { top: true; left: true; right: true }
+    anchors {
+        top: true
+        left: true
+        right: true
+    }
     exclusiveZone: -1
     implicitHeight: 240
     color: "transparent"
@@ -40,7 +44,7 @@ PanelWindow {
         anchors.margins: 12
         color: Theme.background
         radius: 12
-        border.width: 1
+
         border.color: Theme.border
 
         MediaWidget {

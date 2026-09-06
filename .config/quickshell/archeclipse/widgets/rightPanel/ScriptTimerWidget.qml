@@ -15,11 +15,26 @@ Item {
     property bool showAddForm: false
     property var editingTask: null
     property var predefinedCommands: [
-        { label: "🔔 Notification", command: "notify-send 'Timer Alert' 'Scheduled task executed'" },
-        { label: "🔒 Lock Screen", command: "hyprlock" },
-        { label: "💤 Suspend", command: "systemctl suspend" },
-        { label: "🔄 Reboot", command: "reboot" },
-        { label: "⚡ Shutdown", command: "shutdown -h now" }
+        {
+            label: "🔔 Notification",
+            command: "notify-send 'Timer Alert' 'Scheduled task executed'"
+        },
+        {
+            label: "🔒 Lock Screen",
+            command: "hyprlock"
+        },
+        {
+            label: "💤 Suspend",
+            command: "systemctl suspend"
+        },
+        {
+            label: "🔄 Reboot",
+            command: "reboot"
+        },
+        {
+            label: "⚡ Shutdown",
+            command: "shutdown -h now"
+        }
     ]
 
     Component.onCompleted: {
@@ -69,7 +84,9 @@ Item {
         if (nextRun <= now) {
             nextRun.setDate(nextRun.getDate() + 1);
         }
-        return Object.assign({}, task, { nextRun: nextRun.getTime() });
+        return Object.assign({}, task, {
+            nextRun: nextRun.getTime()
+        });
     }
 
     function checkTasks() {
@@ -86,7 +103,7 @@ Item {
         // only remove/reschedule a task after the command actually succeeded.
         const process = Qt.createQmlObject('import Quickshell.Io; Process { }', root);
         process.command = ["bash", "-c", task.command];
-        const success = (exitCode) => {
+        const success = exitCode => {
             if (exitCode !== 0) {
                 console.error("[ScriptTimer] Task failed:", task.name, "exit", exitCode);
                 Quickshell.execDetached(["notify-send", "Script Timer Error", `Failed to execute "${task.name}"`]);
@@ -110,7 +127,7 @@ Item {
     }
 
     function addTask(task) {
-        const newTask = Object.assign({}, task, { 
+        const newTask = Object.assign({}, task, {
             id: task.id || Date.now().toString(),
             active: true
         });
@@ -131,7 +148,9 @@ Item {
     }
 
     function toggleTask(id) {
-        scriptTasks = scriptTasks.map(t => t.id === id ? Object.assign({}, t, { active: !t.active }) : t);
+        scriptTasks = scriptTasks.map(t => t.id === id ? Object.assign({}, t, {
+                active: !t.active
+            }) : t);
         saveTasks();
     }
 
@@ -144,15 +163,26 @@ Item {
     }
 
     function formatNextRun(nextRun) {
-        if (!nextRun) return "Not scheduled";
+        if (!nextRun)
+            return "Not scheduled";
         const date = new Date(nextRun);
         const now = new Date();
         const isToday = date.toDateString() === now.toDateString();
 
         if (isToday) {
-            return "Today, " + date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
+            return "Today, " + date.toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false
+            });
         }
-        return date.toLocaleString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false, month: "short", day: "numeric" });
+        return date.toLocaleString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+            month: "short",
+            day: "numeric"
+        });
     }
 
     Column {
@@ -170,7 +200,7 @@ Item {
                 Layout.fillWidth: true
             }
             AppButton {
-                text: showAddForm ? "✕" : "+"
+                text: showAddForm ? "\u{f00d}" : "+"
                 pixelSize: Theme.fontSize
                 cornerRadius: 4
                 idleBg: showAddForm ? Theme.dangerBg : Theme.accentBg
@@ -221,7 +251,7 @@ Item {
         Rectangle {
             color: Theme.moduleBg
             radius: Theme.radius
-            border.width: 1
+
             border.color: Theme.border
             Layout.fillWidth: true
             Layout.minimumHeight: 300
@@ -312,13 +342,21 @@ Item {
                             id: dailyCheck
                             text: "Daily"
                             checked: editingTask ? editingTask.type : true
-                            onToggled: { if (checked) { weeklyCheck.checked = false } }
+                            onToggled: {
+                                if (checked) {
+                                    weeklyCheck.checked = false;
+                                }
+                            }
                         }
                         CheckBox {
                             id: weeklyCheck
                             text: "One-time"
                             checked: editingTask ? !editingTask.type : false
-                            onToggled: { if (checked) { dailyCheck.checked = false } }
+                            onToggled: {
+                                if (checked) {
+                                    dailyCheck.checked = false;
+                                }
+                            }
                         }
                     }
                 }
@@ -365,7 +403,7 @@ Item {
                         }
                     }
                     AppButton {
-                        text: "✕ Cancel"
+                        text: "\u{f00d} Cancel"
                         pixelSize: Theme.fontSize
                         cornerRadius: 4
                         idleBg: Theme.dangerBg

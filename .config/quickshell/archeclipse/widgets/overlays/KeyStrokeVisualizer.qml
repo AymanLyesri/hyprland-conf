@@ -22,15 +22,18 @@ PanelWindow {
 
     // AGS gates the visualizer on not being in a fullscreen client.
     readonly property bool fullscreenActive: {
-        var fs = false
-        const tops = Quickshell.Hyprland ? Quickshell.Hyprland.toplevels : null
+        var fs = false;
+        const tops = Quickshell.Hyprland ? Quickshell.Hyprland.toplevels : null;
         if (tops) {
-            const vals = tops.values || []
+            const vals = tops.values || [];
             for (let i = 0; i < vals.length; i++) {
-                if (vals[i].fullscreen) { fs = true; break }
+                if (vals[i].fullscreen) {
+                    fs = true;
+                    break;
+                }
             }
         }
-        return fs
+        return fs;
     }
 
     // Anchor mapping — mirrors AGS anchor array parsing
@@ -50,33 +53,34 @@ PanelWindow {
     property var hideTimer: null
 
     function addKeystroke(key) {
-        const id = "ks-" + Date.now()
-        var list = root.keystrokeList.slice()
-        list.push({ id: id, key: key })
+        const id = "ks-" + Date.now();
+        var list = root.keystrokeList.slice();
+        list.push({
+            id: id,
+            key: key
+        });
         if (list.length > root.maxKeystrokes) {
-            list = list.slice(list.length - root.maxKeystrokes)
+            list = list.slice(list.length - root.maxKeystrokes);
         }
-        root.keystrokeList = list
-        resetHideTimer()
+        root.keystrokeList = list;
+        resetHideTimer();
     }
 
     function clearKeystrokes() {
-        root.keystrokeList = []
+        root.keystrokeList = [];
         if (root.hideTimer) {
-            root.hideTimer.stop()
-            root.hideTimer.destroy()
-            root.hideTimer = null
+            root.hideTimer.stop();
+            root.hideTimer.destroy();
+            root.hideTimer = null;
         }
     }
 
     function resetHideTimer() {
         if (root.hideTimer) {
-            root.hideTimer.stop()
-            root.hideTimer.destroy()
+            root.hideTimer.stop();
+            root.hideTimer.destroy();
         }
-        root.hideTimer = Qt.createQmlObject(
-            'import QtQuick; Timer { interval: ' + root.hideDelay + '; running: true; repeat: false; onTriggered: root.clearKeystrokes() }',
-            root)
+        root.hideTimer = Qt.createQmlObject('import QtQuick; Timer { interval: ' + root.hideDelay + '; running: true; repeat: false; onTriggered: root.clearKeystrokes() }', root);
     }
 
     // Check if binary exists, then start reading
@@ -85,11 +89,11 @@ PanelWindow {
         command: ["bash", "-c", "test -x /tmp/ags-" + Quickshell.env("USER") + "/keystroke-loop-ags && echo ready || echo missing"]
         running: true
         stdout: StdioCollector {
-            onStreamFinished: function() {
+            onStreamFinished: function () {
                 if (text.trim() === "ready") {
-                    keyReader.running = true
+                    keyReader.running = true;
                 } else {
-                    console.warn("[KeyStrokeVisualizer] Binary not found at /tmp/ags-" + Qt.getenv("USER") + "/keystroke-loop-ags — overlay disabled")
+                    console.warn("[KeyStrokeVisualizer] Binary not found at /tmp/ags-" + Qt.getenv("USER") + "/keystroke-loop-ags — overlay disabled");
                 }
             }
         }
@@ -102,9 +106,10 @@ PanelWindow {
         running: false
         stdout: SplitParser {
             splitMarker: "\n"
-            onRead: function(data) {
-                const key = data.trim()
-                if (key) root.addKeystroke(key)
+            onRead: function (data) {
+                const key = data.trim();
+                if (key)
+                    root.addKeystroke(key);
             }
         }
     }
@@ -122,7 +127,7 @@ PanelWindow {
                 height: 24
                 color: Theme.moduleBg
                 radius: 4
-                border.width: 1
+
                 border.color: Theme.border
 
                 Text {
@@ -137,7 +142,11 @@ PanelWindow {
                 // Slide-in animation
                 opacity: 0
                 Component.onCompleted: opacity = 1
-                Behavior on opacity { NumberAnimation { duration: 200 } }
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 200
+                    }
+                }
             }
         }
     }

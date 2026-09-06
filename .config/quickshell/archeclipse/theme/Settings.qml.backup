@@ -54,7 +54,7 @@ Singleton {
         { name: "ScriptTimer",         icon: "\u{f017}", enabled: false },
         { name: "Crypto",              icon: "\u{f15a}", enabled: false },
         { name: "Calendar",            icon: "\u{f073}", enabled: true },
-        { name: "SystemResources",     icon: "\u{f0e9}", enabled: true },
+        { name: "SystemResources",     icon: "\u{f080}", enabled: true },
     ]
     property bool autoWorkspaceSwitching: true
 
@@ -376,20 +376,6 @@ Singleton {
         interval: 300
         onTriggered: root.reload()
     }
-    // Fallback: FileView never emits loaded for a missing file, which left
-    // ready=false forever and gated every persist() (no settings.json was
-    // ever created). If onLoaded hasn't fired in 2s, adopt disk state and
-    // open the gate — persist() then creates the file with current values.
-    property Timer _readyTimer: Timer {
-        interval: 2000
-        repeat: false
-        onTriggered: {
-            if (root.ready) return;
-            root.reload();
-            root.ready = true;
-            root.persist();
-        }
-    }
     // Gate: FileView loads async, so any persist() before the first load
     // would write in-memory defaults over the user's saved file (seen:
     // booru.limit 20 clobbered back to 100 on restart). Nothing persists
@@ -550,7 +536,6 @@ Singleton {
 
     Component.onCompleted: {
         root.reload()
-        root._readyTimer.start()
     }
 
     // Auto-persist: debounce writes so the settings file isn't thrashed
@@ -572,12 +557,6 @@ Singleton {
         function onBarOrientationChanged() { root.schedulePersist() }
         function onWorkspaceNumbersChanged() { root.schedulePersist() }
         function onBarLayoutOrderChanged() { root.schedulePersist() }
-        function onBarLayoutChanged() { root.schedulePersist() }
-        function onLeftPanelExclusivityChanged() { root.schedulePersist() }
-        function onRightPanelExclusivityChanged() { root.schedulePersist() }
-        function onRightPanelWidgetsChanged() { root.schedulePersist() }
-        function onCryptoFavoriteChanged() { root.schedulePersist() }
-        function onApiKeysChanged() { root.schedulePersist() }
         function onDateFormatChanged() { root.schedulePersist() }
         function onUiOpacityChanged() { root.schedulePersist() }
         function onUiScaleChanged() { root.schedulePersist() }

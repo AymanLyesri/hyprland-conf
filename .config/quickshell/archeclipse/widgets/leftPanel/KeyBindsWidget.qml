@@ -26,12 +26,12 @@ Item {
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
-                    const parsed = JSON.parse(text)
-                    root.keybinds = parsed
+                    const parsed = JSON.parse(text);
+                    root.keybinds = parsed;
                 } catch (e) {
-                    console.warn("[KeyBindsWidget] Failed to parse get-keybinds.sh JSON:", text.slice(0, 200))
+                    console.warn("[KeyBindsWidget] Failed to parse get-keybinds.sh JSON:", text.slice(0, 200));
                 }
-                root.loading = false
+                root.loading = false;
             }
         }
     }
@@ -126,7 +126,7 @@ Item {
                                                     height: 22
                                                     radius: 4
                                                     color: Theme.moduleBg
-                                                    border.width: 1
+
                                                     border.color: Theme.border
                                                     Label {
                                                         id: kChip

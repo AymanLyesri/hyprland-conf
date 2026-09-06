@@ -54,7 +54,12 @@ Rectangle {
             Column {
                 id: helpCol
                 visible: Launcher.results.length === 0
-                anchors { top: parent.top; left: parent.left; right: parent.right; margins: 10 }
+                anchors {
+                    top: parent.top
+                    left: parent.left
+                    right: parent.right
+                    margins: 10
+                }
                 spacing: 6
                 Text {
                     width: parent.width
@@ -66,15 +71,46 @@ Rectangle {
                 }
                 Repeater {
                     model: [
-                        { cmd: "cb ...", desc: "clipboard history (text/html/image)", keys: ["SUPER","SHIFT","v"] },
-                        { cmd: "note ...", desc: "add/list/edit/remove notes", keys: ["SUPER","SHIFT","n"] },
-                        { cmd: "apps ...", desc: "list all installed applications", keys: ["SUPER","A"] },
-                        { cmd: "emoji ...", desc: "search emojis", keys: ["SUPER","."] },
-                        { cmd: "... ...", desc: "open with argument" },
-                        { cmd: "translate .. > ..", desc: "translate into (en,fr,es,de,pt,ru,ar…)" },
-                        { cmd: "... .com OR https://...", desc: "open link" },
-                        { cmd: "..*/+-..", desc: "arithmetics" },
-                        { cmd: "100c to f / 10kg in lb", desc: "unit conversion (temp/weight/length/volume/speed/digital)" },
+                        {
+                            cmd: "cb ...",
+                            desc: "clipboard history (text/html/image)",
+                            keys: ["SUPER", "SHIFT", "v"]
+                        },
+                        {
+                            cmd: "note ...",
+                            desc: "add/list/edit/remove notes",
+                            keys: ["SUPER", "SHIFT", "n"]
+                        },
+                        {
+                            cmd: "apps ...",
+                            desc: "list all installed applications",
+                            keys: ["SUPER", "A"]
+                        },
+                        {
+                            cmd: "emoji ...",
+                            desc: "search emojis",
+                            keys: ["SUPER", "."]
+                        },
+                        {
+                            cmd: "... ...",
+                            desc: "open with argument"
+                        },
+                        {
+                            cmd: "translate .. > ..",
+                            desc: "translate into (en,fr,es,de,pt,ru,ar…)"
+                        },
+                        {
+                            cmd: "... .com OR https://...",
+                            desc: "open link"
+                        },
+                        {
+                            cmd: "..*/+-..",
+                            desc: "arithmetics"
+                        },
+                        {
+                            cmd: "100c to f / 10kg in lb",
+                            desc: "unit conversion (temp/weight/length/volume/speed/digital)"
+                        },
                     ]
                     delegate: Row {
                         width: parent ? parent.width : 0
@@ -101,11 +137,12 @@ Rectangle {
                             Repeater {
                                 model: modelData.keys || []
                                 delegate: Rectangle {
-                                    width: 18; height: 16
+                                    width: 18
+                                    height: 16
                                     radius: 3
                                     color: Theme.accentBg
                                     border.color: Theme.accent
-                                    border.width: 1
+
                                     Text {
                                         anchors.centerIn: parent
                                         text: modelData
@@ -141,11 +178,13 @@ Rectangle {
                     Row {
                         visible: modelData.isHeader
                         anchors.verticalCenter: parent.verticalCenter
-                        anchors.left: parent.left; anchors.right: parent.right
+                        anchors.left: parent.left
+                        anchors.right: parent.right
                         anchors.leftMargin: 12
                         spacing: 5
                         Rectangle {
-                            width: 4; height: 16
+                            width: 4
+                            height: 16
                             radius: 2
                             color: Theme.accent
                             anchors.verticalCenter: parent.verticalCenter
@@ -164,8 +203,10 @@ Rectangle {
                     Row {
                         visible: !modelData.isHeader
                         anchors.verticalCenter: parent.verticalCenter
-                        anchors.left: parent.left; anchors.right: parent.right
-                        anchors.leftMargin: 10; anchors.rightMargin: modelData.actions && modelData.actions.length > 0 ? 92 : 10
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.leftMargin: 10
+                        anchors.rightMargin: modelData.actions && modelData.actions.length > 0 ? 92 : 10
                         spacing: 10
                         Text {
                             width: 24
@@ -238,7 +279,8 @@ Rectangle {
                         cursorShape: Qt.PointingHandCursor
                         hoverEnabled: true
                         onEntered: {
-                            if (!modelData.isHeader) Launcher.selectedIndex = index
+                            if (!modelData.isHeader)
+                                Launcher.selectedIndex = index;
                         }
                         onClicked: {
                             if (!modelData.isHeader && modelData.launch) {
@@ -286,7 +328,9 @@ Rectangle {
                             color: mouse.hovered ? Theme.buttonHoverBg : "transparent"
                             Row {
                                 anchors.verticalCenter: parent.verticalCenter
-                                anchors.left: parent.left; anchors.right: parent.right; anchors.margins: 8
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                anchors.margins: 8
                                 spacing: 8
                                 Text {
                                     width: 22
@@ -362,7 +406,9 @@ Rectangle {
                             color: rmouse.hovered ? Theme.buttonHoverBg : "transparent"
                             Row {
                                 anchors.verticalCenter: parent.verticalCenter
-                                anchors.left: parent.left; anchors.right: parent.right; anchors.margins: 8
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                anchors.margins: 8
                                 spacing: 8
                                 Text {
                                     width: 22

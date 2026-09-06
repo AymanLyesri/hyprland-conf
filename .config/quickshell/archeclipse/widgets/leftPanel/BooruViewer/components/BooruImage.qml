@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import qs.services
 import qs.theme
+import qs.widgets.shared
 
 // One masonry grid card (extracted from BooruViewerWidget imgCardComp).
 // viewer: entry root (gridSource, tag predicates, dialog open).
@@ -23,12 +24,10 @@ Rectangle {
     // Preview image (or placeholder). AGS renders the
     // downloaded local preview; prefer the local file once
     // cached instead of re-downloading the remote URL.
-    Image {
+    AppImage {
         anchors.fill: parent
         fillMode: Image.PreserveAspectCrop
         source: viewer.gridSource(image)
-        asynchronous: true
-        cache: true
         visible: !card.isVideo
     }
 

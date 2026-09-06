@@ -48,7 +48,9 @@ Item {
     }
 
     function addEntry(entry) {
-        const newEntry = Object.assign({}, entry, { id: entry.id || Date.now().toString() });
+        const newEntry = Object.assign({}, entry, {
+            id: entry.id || Date.now().toString()
+        });
         cryptoEntries = [...cryptoEntries, newEntry];
         saveEntries();
     }
@@ -95,7 +97,7 @@ Item {
                 Layout.fillWidth: true
             }
             AppButton {
-                text: showAddForm ? "✕" : "+"
+                text: showAddForm ? "\u{f00d}" : "+"
                 pixelSize: Theme.fontSize
                 cornerRadius: 4
                 idleBg: showAddForm ? Theme.dangerBg : Theme.accentBg
@@ -145,7 +147,7 @@ Item {
         Rectangle {
             color: Theme.moduleBg
             radius: Theme.radius
-            border.width: 1
+
             border.color: Theme.border
             Layout.fillWidth: true
             Layout.minimumHeight: 300
@@ -263,7 +265,7 @@ Item {
                         }
                     }
                     AppButton {
-                        text: "✕ Cancel"
+                        text: "\u{f00d} Cancel"
                         pixelSize: Theme.fontSize
                         cornerRadius: 4
                         idleBg: Theme.dangerBg

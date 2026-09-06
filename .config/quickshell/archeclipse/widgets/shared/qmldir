@@ -2,3 +2,4 @@ module qs.widgets.shared
 
 AppButton 1.0 AppButton.qml
 AppSlider 1.0 AppSlider.qml
+AppImage 1.0 AppImage.qml

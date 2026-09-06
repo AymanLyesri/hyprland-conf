@@ -16,19 +16,19 @@ Item {
     property var allWorkspaces: []
 
     function updateWorkspaces() {
-        const workspaces = workspaceModel.values
-        const occupied = workspaces.filter((ws) => ws.windows > 0)
-        const empty = workspaces.filter((ws) => ws.windows === 0)
+        const workspaces = workspaceModel.values;
+        const occupied = workspaces.filter(ws => ws.windows > 0);
+        const empty = workspaces.filter(ws => ws.windows === 0);
 
-        occupied.sort((a, b) => a.id - b.id)
-        empty.sort((a, b) => a.id - b.id)
+        occupied.sort((a, b) => a.id - b.id);
+        empty.sort((a, b) => a.id - b.id);
 
-        root.allWorkspaces = [...occupied, ...empty]
+        root.allWorkspaces = [...occupied, ...empty];
     }
 
     Component.onCompleted: {
-        updateWorkspaces()
-        workspaceModel.onChanged = updateWorkspaces
+        updateWorkspaces();
+        workspaceModel.onChanged = updateWorkspaces;
     }
 
     Row {
@@ -57,8 +57,6 @@ Item {
                     anchors.margins: 3
                     radius: 5
                     color: isFocused ? Theme.accent : (hasWindows ? Theme.color8 : "transparent")
-                    border.color: hasWindows && !isFocused ? Theme.color4 : "transparent"
-                    border.width: hasWindows && !isFocused ? 1 : 0
 
                     Text {
                         anchors.centerIn: parent
@@ -82,7 +80,7 @@ Item {
     }
 
     function measureWidth() {
-        const [, natural] = row.measure(Qt.Horizontal, -1)
-        return natural
+        const [, natural] = row.measure(Qt.Horizontal, -1);
+        return natural;
     }
 }

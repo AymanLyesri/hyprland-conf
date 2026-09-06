@@ -28,7 +28,11 @@ Row {
         x: root.width / 2 - resPopup.implicitWidth / 2
         padding: 6
         closePolicy: Popup.NoAutoClose
-        background: Rectangle { color: Theme.moduleBg; radius: 8; border.color: Theme.border }
+        background: Rectangle {
+            color: Theme.moduleBg
+            radius: 8
+            border.color: Theme.border
+        }
 
         SystemResourcesWidget {
             width: 300
@@ -38,16 +42,21 @@ Row {
         // Stay open while hovering popover (AGS popoverMotion)
         HoverHandler {
             onHoveredChanged: {
-                if (hovered) root._hideTimer.stop()
-                else root._hideTimer.start()
+                if (hovered)
+                    root._hideTimer.stop();
+                else
+                    root._hideTimer.start();
             }
         }
     }
 
     HoverHandler {
         onHoveredChanged: {
-            if (hovered) { root._hideTimer.stop(); resPopup.open() }
-            else root._hideTimer.start()
+            if (hovered) {
+                root._hideTimer.stop();
+                resPopup.open();
+            } else
+                root._hideTimer.start();
         }
     }
 
@@ -59,9 +68,24 @@ Row {
 
     Repeater {
         model: [
-            { icon: "", val: root.res?.cpuLoad ?? null, tip: "CPU", tooltip: root.res?.cpuLoad !== undefined ? `CPU Usage ${root.res.cpuLoad}%` : "" },
-            { icon: "", val: (root.res?.ramUsedGB && root.res?.ramTotalGB) ? root.res.ramUsedGB / root.res.ramTotalGB : null, tip: "RAM", tooltip: (root.res?.ramUsedGB && root.res?.ramTotalGB) ? `RAM Usage ${Math.round(root.res.ramUsedGB / root.res.ramTotalGB * 100)}%` : "" },
-            { icon: "󱤟", val: root.maxGpu || null, tip: "GPU", tooltip: (root.res?.gpus?.length ?? 0) > 0 ? (root.res.gpus.map(g => `${g.driver}: ${g.load ?? "N/A"}%`).join(" | ")) : "" }
+            {
+                icon: "",
+                val: root.res?.cpuLoad ?? null,
+                tip: "CPU",
+                tooltip: root.res?.cpuLoad !== undefined ? `CPU Usage ${root.res.cpuLoad}%` : ""
+            },
+            {
+                icon: "",
+                val: (root.res?.ramUsedGB && root.res?.ramTotalGB) ? root.res.ramUsedGB / root.res.ramTotalGB : null,
+                tip: "RAM",
+                tooltip: (root.res?.ramUsedGB && root.res?.ramTotalGB) ? `RAM Usage ${Math.round(root.res.ramUsedGB / root.res.ramTotalGB * 100)}%` : ""
+            },
+            {
+                icon: "󱤟",
+                val: root.maxGpu || null,
+                tip: "GPU",
+                tooltip: (root.res?.gpus?.length ?? 0) > 0 ? (root.res.gpus.map(g => `${g.driver}: ${g.load ?? "N/A"}%`).join(" | ")) : ""
+            }
         ]
 
         Item {
@@ -70,7 +94,8 @@ Row {
             readonly property real frac: modelData.val === null ? 0 : Math.min(1, modelData.val)
             visible: modelData.val !== null && modelData.val !== undefined
 
-            width: 18; height: 18
+            width: 18
+            height: 18
             anchors.verticalCenter: parent.verticalCenter
 
             Canvas {
@@ -82,7 +107,9 @@ Row {
                     const cx = width / 2, cy = height / 2, r = width / 2 - 1.5;
                     ctx.lineWidth = 2;
                     ctx.strokeStyle = Qt.rgba(1, 1, 1, 0.15);
-                    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                    ctx.stroke();
                     if (ringItem.frac > 0) {
                         ctx.strokeStyle = Theme.foregroundSecondary;
                         ctx.beginPath();
