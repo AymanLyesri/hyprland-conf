@@ -39,7 +39,7 @@ Item {
         // width>=400 -> HORIZONTAL. AGS uses globalSettings(({ rightPanel }) =>
         // rightPanel.width).
         Loader {
-            anchors.fill: parent
+            width: parent.width
             sourceComponent: Settings.rightPanelWidth < 400 ? colLayout : rowLayout
         }
     }

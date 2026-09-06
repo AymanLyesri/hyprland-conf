@@ -3,9 +3,10 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Mirrors the subset of ArchEclipse settings.json (cache/settings/settings.json)
-// that the bar and panels consume. Values are read once at startup — the AGS settings UI
-// remains the editor; this shell follows the same file so both stay in sync.
+// Mirrors the subset of the quickshell settings.json
+// (~/.cache/quickshell/settings/settings.json) that the bar and panels
+// consume. Values are read once at startup; the settings UI remains the
+// editor and this shell follows the same file throughout.
 Singleton {
     id: root
 
@@ -67,7 +68,8 @@ Singleton {
         page: 1,
         columns: 3,
         bookmarks: [],
-        pins: []
+        pins: [],
+        selectedTab: "Danbooru"
     })
     // Initialized with shipped defaults (not {}) so early fetchers (Booru
     // onCompleted) have credentials even before the settings file load
@@ -178,9 +180,45 @@ Singleton {
         // AGS dotted paths that map to flat QS properties (Singleton cannot
         // gain new properties at runtime, so root["rightPanel"] = {} throws).
         const aliases = {
+            "bar.lock": "barLock",
+            "bar.smartHide": "barSmartHide",
+            "bar.expanded": "barExpanded",
+            "bar.fullWidth": "barFullWidth",
+            "bar.revealPressure": "revealPressure",
+            "bar.orientation": "barOrientation",
+            "bar.workspaceNumbers": "workspaceNumbers",
+            "bar.blur": "barBlur",
+            "bar.blurSize": "barBlurSize",
+            "bar.blurPasses": "barBlurPasses",
+            "ui.opacity": "uiOpacity",
+            "ui.scale": "uiScale",
+            "ui.fontSize": "uiFontSize",
+            "leftPanel.hotZoneSize": "leftPanelHotZoneSize",
+            "rightPanel.hotZoneSize": "rightPanelHotZoneSize",
+            "leftPanel.hotZone": "leftPanelHotZone",
+            "rightPanel.hotZone": "rightPanelHotZone",
+            "leftPanel.lock": "leftPanelLock",
+            "rightPanel.lock": "rightPanelLock",
+            "leftPanel.exclusivity": "leftPanelExclusivity",
+            "rightPanel.exclusivity": "rightPanelExclusivity",
+            "leftPanel.width": "leftPanelWidth",
+            "leftPanel.widget": "leftPanelWidget",
+            "wallpaperSwitcher.category": "wallpaperCategory",
+            "rightPanel.width": "rightPanelWidth",
             "rightPanel.widgets": "rightPanelWidgets",
             "crypto.favorite": "cryptoFavorite",
-            "notifications.dnd": "notifDnd"
+            "notifications.dnd": "notifDnd",
+            "autoWorkspaceSwitching": "autoWorkspaceSwitching",
+            "dynamicThemeColors": "dynamicThemeColors",
+            "dynamicThemeVariants": "dynamicThemeVariants",
+            "alwaysOnWidget.visibility": "alwaysOnWidgetVisibility",
+            "keyStrokeVisualizer.visibility": "keyStrokeVisualizerVisibility",
+            "keyStrokeVisualizer.anchor": "keyStrokeVisualizerAnchor",
+            "fileManager": "fileManager",
+            "profilePicturePath": "profilePicturePath",
+            "chatBot.api": "chatBotApi",
+            "chatBot.imageGeneration": "chatBotImageGeneration",
+            "waifuWidget.current": "waifu"
         };
         if (aliases[path] !== undefined) {
             root[aliases[path]] = value;
@@ -208,40 +246,57 @@ Singleton {
         persist();
     }
 
-    // Persist current settings back to the JSON file
+    // Persist current settings back to the JSON file.
+    // Shape is nested (bar.lock, leftPanel.width, ...) exactly like AGS
+    // setGlobalSetting/writeJSONFile produce — reload() reads the same
+    // shape, and AGS deepMergeAuto keeps unknown/missing keys safe.
+    // Leaf settings AGS models as {name,value,...} are written as {value};
+    // plain-value settings (locks, widths, dnd, fileManager) stay plain.
     function persist() {
+        if (!root.ready) return;
         try {
             const s = {
-                "bar.lock": { value: root.barLock },
-                "bar.smartHide": { value: root.barSmartHide },
-                "bar.expanded": { value: root.barExpanded },
-                "bar.fullWidth": { value: root.barFullWidth },
-                "bar.revealPressure": { value: root.revealPressure },
-                "bar.orientation": { value: root.barOrientation },
-                "bar.workspaceNumbers": { value: root.workspaceNumbers },
-                "dateFormat": root.dateFormat,
-                "crypto.favorite": root.cryptoFavorite,
-                "ui.opacity": { value: root.uiOpacity },
-                "ui.scale": { value: root.uiScale },
-                "ui.fontSize": { value: root.uiFontSize },
-                "leftPanel.hotZoneSize": { value: root.leftPanelHotZoneSize },
-                "rightPanel.hotZoneSize": { value: root.rightPanelHotZoneSize },
-                "leftPanel.hotZone": { value: root.leftPanelHotZone },
-                "rightPanel.hotZone": { value: root.rightPanelHotZone },
-                "notifications.dnd": root.notifDnd,
-                "leftPanel.lock": root.leftPanelLock,
-                "rightPanel.lock": root.rightPanelLock,
-                "leftPanel.exclusivity": root.leftPanelExclusivity,
-                "rightPanel.exclusivity": root.rightPanelExclusivity,
-                "leftPanel.width": { value: root.leftPanelWidth },
-                "leftPanel.widget": { name: root.leftPanelWidget },
-                "wallpaperSwitcher": { category: root.wallpaperCategory },
-                "rightPanel.width": { value: root.rightPanelWidth },
-                "rightPanel.widgets": root.rightPanelWidgets,
-                "autoWorkspaceSwitching": { value: root.autoWorkspaceSwitching },
-                "bar.layout": (root.barLayoutOrder || ["workspaces", "information", "utilities"]).map(n => (
-                    { name: n, enabled: (root.barLayout || {})[n] ?? true }
-                )),
+                bar: {
+                    lock: { value: root.barLock },
+                    smartHide: { value: root.barSmartHide },
+                    expanded: { value: root.barExpanded },
+                    fullWidth: { value: root.barFullWidth },
+                    revealPressure: { value: root.revealPressure },
+                    orientation: { value: root.barOrientation },
+                    workspaceNumbers: { value: root.workspaceNumbers },
+                    layout: (root.barLayoutOrder || ["workspaces", "information", "utilities"]).map(n => (
+                        { name: n, enabled: (root.barLayout || {})[n] ?? true }
+                    )),
+                    blur: { value: root.barBlur },
+                    blurSize: { value: root.barBlurSize },
+                    blurPasses: { value: root.barBlurPasses }
+                },
+                dateFormat: root.dateFormat,
+                crypto: { favorite: root.cryptoFavorite },
+                ui: {
+                    opacity: { value: root.uiOpacity },
+                    scale: { value: root.uiScale },
+                    fontSize: { value: root.uiFontSize }
+                },
+                leftPanel: {
+                    hotZoneSize: { value: root.leftPanelHotZoneSize },
+                    hotZone: { value: root.leftPanelHotZone },
+                    lock: root.leftPanelLock,
+                    exclusivity: root.leftPanelExclusivity,
+                    width: root.leftPanelWidth,
+                    widget: { name: root.leftPanelWidget }
+                },
+                rightPanel: {
+                    hotZoneSize: { value: root.rightPanelHotZoneSize },
+                    hotZone: { value: root.rightPanelHotZone },
+                    lock: root.rightPanelLock,
+                    exclusivity: root.rightPanelExclusivity,
+                    width: root.rightPanelWidth,
+                    widgets: root.rightPanelWidgets
+                },
+                notifications: { dnd: root.notifDnd },
+                wallpaperSwitcher: { category: root.wallpaperCategory },
+                autoWorkspaceSwitching: { value: root.autoWorkspaceSwitching },
                 // AGS leaf shape {name,value,min,max,type} — shared file must
                 // stay readable by AGS createHyprlandSettings (plain numbers
                 // would be mistaken for nested groups and render nothing).
@@ -268,15 +323,12 @@ Singleton {
                         }
                     }
                 },
-                "dynamicThemeColors": root.dynamicThemeColors,
-                "dynamicThemeVariants": root.dynamicThemeVariants,
-                "alwaysOnWidget": { "visibility": { value: root.alwaysOnWidgetVisibility } },
-                "keyStrokeVisualizer": { "visibility": { value: root.keyStrokeVisualizerVisibility }, "anchor": root.keyStrokeVisualizerAnchor },
-                "fileManager": root.fileManager,
-                "bar.blur": { value: root.barBlur },
-                "bar.blurSize": { value: root.barBlurSize },
-                "bar.blurPasses": { value: root.barBlurPasses },
-                "profilePicturePath": root.profilePicturePath,
+                dynamicThemeColors: { value: root.dynamicThemeColors },
+                dynamicThemeVariants: { value: root.dynamicThemeVariants },
+                alwaysOnWidget: { "visibility": { value: root.alwaysOnWidgetVisibility } },
+                keyStrokeVisualizer: { "visibility": { value: root.keyStrokeVisualizerVisibility }, "anchor": { value: root.keyStrokeVisualizerAnchor } },
+                fileManager: root.fileManager,
+                profilePicturePath: root.profilePicturePath,
                 "waifuWidget": {
                     current: root.waifu
                 },
@@ -291,23 +343,44 @@ Singleton {
                     page: root.booru.page,
                     columns: root.booru.columns,
                     bookmarks: root.booru.bookmarks,
-                    pins: root.booru.pins
+                    pins: root.booru.pins,
+                    selectedTab: root.booru.selectedTab ?? root.booru.api?.name ?? "Danbooru"
                 },
                 "apiKeys": root.apiKeys
             };
-            _file.setText(JSON.stringify(s, null, 2));
+            _lastText = JSON.stringify(s, null, 2);
+            _file.setText(_lastText);
         } catch (e) {
             console.warn("[Settings] Failed to persist:", e);
         }
     }
 
-    // FileView for settings
+    // FileView for settings. NOTE: bare reload() here would resolve to
+    // FileView.reload() (re-read method), NOT the settings parser below —
+    // always qualify with root. (This shadowing was why settings silently
+    // stopped applying after a restart.)
     property FileView _file: FileView {
-        path: `${Quickshell.env("HOME")}/.config/ags/cache/settings/settings.json`
+        path: `${Quickshell.env("HOME")}/.cache/quickshell/settings/settings.json`
         watchChanges: true
-        onFileChanged: reload()
-        onLoaded: reload()
+        // Delayed: FileView saves are async, so an immediate re-read can
+        // catch pre-write bytes and persist the stale state back over the
+        // fresh one (seen: limit 30 reverted to 40 in-file). 300ms lets our
+        // own write land; _lastText then makes it a no-op.
+        onFileChanged: _reloadTimer.restart()
+        onLoaded: { root.reload(); root.ready = true; }
     }
+    // Last text we wrote (or successfully adopted): reload() skips it so
+    // our own watcher echo can't churn assignments back over newer state.
+    property string _lastText: ""
+    property Timer _reloadTimer: Timer {
+        interval: 300
+        onTriggered: root.reload()
+    }
+    // Gate: FileView loads async, so any persist() before the first load
+    // would write in-memory defaults over the user's saved file (seen:
+    // booru.limit 20 clobbered back to 100 on restart). Nothing persists
+    // until the on-disk values have been adopted.
+    property bool ready: false
 
     // AGS readLocalSettings (settings-sync.ts): fresh on-disk settings for
     // upload sync — never an empty stub (uploading {} would wipe remote).
@@ -323,7 +396,9 @@ Singleton {
         try {
             const text = _file.text()
             if (text !== "" && text.trim().startsWith("{")) {
+                if (text === root._lastText) return;
                 const s = JSON.parse(text)
+                root._lastText = text;
                 root.barLock = s.bar?.lock?.value ?? true
                 root.barSmartHide = s.bar?.smartHide?.value ?? false
                 root.barExpanded = s.bar?.expanded?.value ?? false
@@ -364,23 +439,33 @@ Singleton {
                 root.rightPanelLock = !!s.rightPanel?.lock
                 root.leftPanelExclusivity = s.leftPanel?.exclusivity ?? true
                 root.rightPanelExclusivity = s.rightPanel?.exclusivity ?? true
-                root.leftPanelWidth = s.leftPanel?.width?.value ?? 400
-                // AGS stores the selector object {name, icon}; QS writes {name}
-                const _lpw = s["leftPanel.widget"]
+                root.leftPanelWidth = (typeof s.leftPanel?.width === "object" && s.leftPanel?.width !== null ? s.leftPanel.width.value : s.leftPanel?.width) ?? 400
+                // AGS stores the selector object {name, icon}; QS writes {name};
+                // legacy QS files used the flat "leftPanel.widget" key.
+                const _lpw = s["leftPanel.widget"] ?? s.leftPanel?.widget
                 root.leftPanelWidget = (typeof _lpw === "string" ? _lpw : _lpw?.name) ?? "UserProfile"
                 root.wallpaperCategory = s.wallpaperSwitcher?.category ?? "defaults/sfw"
-                root.rightPanelWidth = s.rightPanel?.width?.value ?? 250
+                root.rightPanelWidth = (typeof s.rightPanel?.width === "object" && s.rightPanel?.width !== null ? s.rightPanel.width.value : s.rightPanel?.width) ?? 250
                 root.rightPanelWidgets = s.rightPanel?.widgets ?? root.rightPanelWidgets
                 root.autoWorkspaceSwitching = s.autoWorkspaceSwitching?.value ?? true
 
+                // AGS ensureRatingTagFirst parity: rating tag leads, defaulting
+                // to -rating:explicit. Done here (not viewer boot) so the
+                // file's tags are normalized the moment they are adopted —
+                // viewer boot may run before or after this either way.
+                let _tags = (s.booru?.tags ?? ["-rating:explicit"]).slice();
+                const _rt = _tags.find(t => t.match(/[-]rating:explicit|rating:explicit/));
+                _tags = _tags.filter(t => !t.match(/[-]rating:explicit|rating:explicit/));
+                _tags.unshift(_rt ?? "-rating:explicit");
                 root.booru = {
                     api: s.booru?.api ?? { name: "Danbooru", value: "danbooru", url: "https://danbooru.donmai.us/", idSearchUrl: "https://danbooru.donmai.us/posts/" },
-                    tags: s.booru?.tags ?? ["-rating:explicit"],
+                    tags: _tags,
                     limit: s.booru?.limit ?? 100,
                     page: s.booru?.page ?? 1,
                     columns: s.booru?.columns ?? 3,
                     bookmarks: s.booru?.bookmarks ?? [],
-                    pins: s.booru?.pins ?? []
+                    pins: s.booru?.pins ?? [],
+                    selectedTab: s.booru?.selectedTab ?? s.booru?.api?.name ?? "Danbooru"
                 }
                 root.apiKeys = root.mergeApiKeys(s.apiKeys)
 
@@ -398,15 +483,18 @@ Singleton {
                 root.barBlurPasses = s.bar?.blurPasses?.value ?? 3
                 root.barBlurSize = s.bar?.blurSize?.value ?? 4
 
-                root.dynamicThemeColors = s.dynamicThemeColors ?? true
-                root.dynamicThemeVariants = s.dynamicThemeVariants ?? true
+                const _dtc = s.dynamicThemeColors;
+                root.dynamicThemeColors = (typeof _dtc === "object" && _dtc !== null ? _dtc.value : _dtc) ?? true
+                const _dtv = s.dynamicThemeVariants;
+                root.dynamicThemeVariants = (typeof _dtv === "object" && _dtv !== null ? _dtv.value : _dtv) ?? true
 
                 // Always-on widget visibility
                 root.alwaysOnWidgetVisibility = s.alwaysOnWidget?.visibility?.value ?? true
 
-                // KeyStrokeVisualizer
+                // KeyStrokeVisualizer (anchor: legacy plain array or {value} leaf)
                 root.keyStrokeVisualizerVisibility = s.keyStrokeVisualizer?.visibility?.value ?? false
-                root.keyStrokeVisualizerAnchor = s.keyStrokeVisualizer?.anchor ?? ["bottom", "left"]
+                const _ka = s.keyStrokeVisualizer?.anchor
+                root.keyStrokeVisualizerAnchor = (Array.isArray(_ka) ? _ka : _ka?.value) ?? ["bottom", "left"]
 
                 // File manager
                 root.fileManager = s.fileManager ?? ""
@@ -447,7 +535,7 @@ Singleton {
     }
 
     Component.onCompleted: {
-        reload()
+        root.reload()
     }
 
     // Auto-persist: debounce writes so the settings file isn't thrashed
@@ -456,7 +544,7 @@ Singleton {
         interval: 250
         onTriggered: persist()
     }
-    function schedulePersist() { _persistTimer.start() }
+    function schedulePersist() { if (root.ready) _persistTimer.start() }
 
     // Watch key settings properties for changes and auto-persist
     Connections {

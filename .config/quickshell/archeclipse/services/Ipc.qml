@@ -241,6 +241,12 @@ Item {
                 case "lastFetchCmd": return item.lastFetchCmd || "?";
                 case "lastFetchError": return item.lastFetchError || "?";
                 case "fetchedTags": return (item.fetchedTags || []).slice(0, 5).join(",");
+                case "tags": return (item.currentTags || []).join(",");
+                case "dialogSrc": {
+                    if (!item.dialogImage) return "no-dialog";
+                    const srcFn = (typeof item.dialogSource === "function") ? item.dialogSource(item.dialogImage) : "?";
+                    return `id=${item.dialogImage.id} src=${srcFn}`;
+                }
                 case "seedBookmarks": {
                     Settings.booru.bookmarks = [1,2,3,4,5].map(i => ({
                         id: String(i),
@@ -285,10 +291,33 @@ Item {
                     return "no fetchImages";
                 }
                 default:
+                    if (query.startsWith("dialog:")) {
+                        // "dialog:<id>" -> open the dialog for that image
+                        // (exercises fetchOriginal + dialogSource live).
+                        const id = String(query.substring(7));
+                        const found = (item.images || []).find(x => x && String(x.id) === id);
+                        if (!found) return "no-image:" + id;
+                        item.dialogImage = found;
+                        const src = (typeof item.dialogSource === "function") ? item.dialogSource(found) : "?";
+                        return `dialog=${id} src=${src}`;
+                    }
                     if (query.startsWith("setPage:")) {
                         // "setPage:5" -> substring(8) = "5"
                         item.page = Math.max(1, Number(query.substring(8)) || 1);
                         return "page=" + item.page;
+                    }
+                    if (query.startsWith("setTags:")) {
+                        // "setTags:a,b" replicates the chip add/remove path:
+                        // widget tags + Settings + persist + refetch.
+                        const newTags = query.substring(8).split(",").map(s => s.trim()).filter(s => s !== "");
+                        item.currentTags = newTags;
+                        Settings.booru.tags = newTags;
+                        Settings.updateSetting("booru.tags", newTags);
+                        if (typeof item.fetchImages === "function") {
+                            item.fetchImages();
+                            return "tags=" + newTags.join(",") + " refetching";
+                        }
+                        return "tags=" + newTags.join(",") + " (no fetchImages)";
                     }
                     if (query.startsWith("setLimit:")) {
                         // "setLimit:2" -> substring(9) = "2"

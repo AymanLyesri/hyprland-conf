@@ -18,17 +18,22 @@ Item {
     // set to an image object to open the dialog
     // --- helpers ---
     // --- UI ---
+    // File already written by the script — no persist needed.
 
     id: root
 
     property int widgetWidth: parent.width
     property string className: ""
     readonly property string booruPath: `${Quickshell.env("HOME")}/.cache/quickshell/booru`
-    readonly property string booruScript: `${Quickshell.env("HOME")}/.config/ags/scripts/booru.py`
+    readonly property string booruScript: `${Quickshell.env("HOME")}/.config/quickshell/archeclipse/scripts/booru.py`
     // --- state (per-instance, not singleton) ---
     property var images: []
     // fetched image objects
     property bool _firstImages: true
+    // Monotonic fetch sequence: rapid tag add/removes fire overlapping
+    // fetches and a stale (older tag set) response must not overwrite the
+    // grid after a newer one landed.
+    property int _fetchSeq: 0
     // AGS createImagesContent masonry: distribute to the shortest column by
     // aspect ratio (NOT row-by-row Flow). NOTE: must live on root — a
     // property declared among ColumnLayout children belongs to the layout.
@@ -55,7 +60,7 @@ Item {
     }
     property string progressStatus: "idle" // "loading" | "error" | "success" | "idle"
     property string selectedTab: Settings.booru.api ? Settings.booru.api.name : "Danbooru"
-    property int page: 1
+    property int page: Settings.booru.page ?? 1
     property string pageDirection: "next"
     property var fetchedTags: []
     property string cacheSize: "0mb"
@@ -75,31 +80,6 @@ Item {
     // animation finishes before content unmounts + panel snaps back.
     property bool _detailVisible: false
     property real detailW: 0
-    Behavior on detailW { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
-    on_DetailVisibleChanged: {
-        root.detailW = root._detailVisible ? 210 : 0;
-    }
-    function requestClose() {
-        if (root.dialogImage === null && !root._detailVisible)
-            return ;
-        root._detailVisible = false;
-        _closeTimer.restart();
-    }
-    Timer {
-        id: _closeTimer
-        interval: 190
-        repeat: false
-        onTriggered: {
-            root.dialogImage = null;
-        }
-    }
-    onDialogImageChanged: {
-        if (root.dialogImage !== null) {
-            _closeTimer.stop();
-            root._gridWidth = grid.width;
-            root._detailVisible = true;
-        }
-    }
     // Downloaded set: populated by downloadImage()'s completion poller (avoids
     // needing a synchronous filesystem-exists primitive in QML).
     property var downloadedIds: ({
@@ -136,6 +116,24 @@ Item {
     // (AGS renders the downloaded local preview via getPreviewPath()).
     property var previewIds: ({
     })
+    // Local full-original ids verified present on disk (dialog cache).
+    // Remote danbooru URLs 403 inside Qt, so the dialog can only show
+    // originals downloaded with Referer headers by fetchOriginal().
+    property var fullIds: ({
+    })
+    // Initial fetch on load (AGS fetchImages branches to bookmarks/pins/API
+    // from the restored tab — saved Bookmarks/Pins must not fetch the API).
+    // Deferred until Settings.ready: booting on defaults would fetch with
+    // limit 100 / the wrong tab and persist the defaults over the file.
+    property bool _booted: false
+
+    function requestClose() {
+        if (root.dialogImage === null && !root._detailVisible)
+            return ;
+
+        root._detailVisible = false;
+        _closeTimer.restart();
+    }
 
     // --------- helpers for image dialog (mirror BooruImage.class) ---------
     function getIconPath(img, which) {
@@ -181,6 +179,58 @@ Item {
         return BooruUtils.imageFileUrl(root.booruPath, root.downloadedIds, img);
     }
 
+    // Dialog source: downloaded full file, else cached original, else ""
+    // while fetchOriginal() downloads it (dialog shows a spinner).
+    function dialogSource(img) {
+        return BooruUtils.dialogSource(root.booruPath, root.downloadedIds, root.fullIds, img);
+    }
+
+    // Download the full original into <api>/originals/ with the same
+    // Referer+UA headers as downloadPreviews (Qt gets 403 without them).
+    // Skips videos (dialog shows a download placeholder) and anything
+    // already downloaded or cached.
+    function fetchOriginal(img) {
+        if (!img || !img.url || root.isVideo(img))
+            return ;
+
+        if (root.isDownloaded(img) || root.fullIds[String(img.id)])
+            return ;
+
+        const dir = `${root.booruPath}/${img.api.value}/originals`;
+        const filePath = `${dir}/${img.id}.${img.extension}`;
+        const checkProc = Qt.createQmlObject('import Quickshell.Io; Process { stdout: StdioCollector {} }', root);
+        checkProc.command = ["bash", "-c", "test -s " + JSON.stringify(filePath) + " && echo yes || echo no"];
+        checkProc.stdout.onStreamFinished.connect(function() {
+            if (checkProc.stdout.text.trim() === "yes") {
+                const ids = Object.assign({
+                }, root.fullIds);
+                ids[String(img.id)] = true;
+                root.fullIds = ids;
+            } else {
+                const dl = Qt.createQmlObject('import Quickshell.Io; Process {}', root);
+                dl.command = ["bash", "-c", `mkdir -p \"${dir}\" && curl -sSf -H \"User-Agent: QuickshellBooru/1.0 (ArchLinux; Hyprland)\" -H \"Referer: ${img.api.url}\" -o \"${filePath}\" \"${img.url}\"`];
+                dl.exited.connect(function() {
+                    const verify = Qt.createQmlObject('import Quickshell.Io; Process { stdout: StdioCollector {} }', root);
+                    verify.command = ["bash", "-c", "test -s " + JSON.stringify(filePath) + " && echo yes || echo no"];
+                    verify.stdout.onStreamFinished.connect(function() {
+                        if (verify.stdout.text.trim() === "yes") {
+                            const ids2 = Object.assign({
+                            }, root.fullIds);
+                            ids2[String(img.id)] = true;
+                            root.fullIds = ids2;
+                        }
+                        verify.destroy();
+                    });
+                    verify.running = true;
+                    dl.destroy();
+                });
+                dl.running = true;
+            }
+            checkProc.destroy();
+        });
+        checkProc.running = true;
+    }
+
     function openInBrowser(img) {
         const base = img.api.idSearchUrl || "https://danbooru.donmai.us/posts/";
         Quickshell.execDetached(["xdg-open", base + img.id]);
@@ -209,8 +259,6 @@ Item {
     }
 
     function onBookmarkToggled(exitOk, stdoutText) {
-        // File already written by the script — no persist needed.
-
         if (!exitOk) {
             Notifications.notify({
                 "summary": "Error updating bookmark",
@@ -349,12 +397,13 @@ Item {
 
     function cleanCache() {
         const apiValue = Settings.booru.api ? Settings.booru.api.value : "danbooru";
-        Quickshell.execDetached(["bash", "-c", `rm -rf '${root.booruPath}/${apiValue}/previews/*' '${root.booruPath}/${apiValue}/images/*'`]);
+        Quickshell.execDetached(["bash", "-c", `rm -rf '${root.booruPath}/${apiValue}/previews/*' '${root.booruPath}/${apiValue}/images/*' '${root.booruPath}/${apiValue}/originals/*'`]);
         root.calculateCacheSize();
     }
 
     function fetchImages() {
         root.progressStatus = "loading";
+        root._fetchSeq = root._fetchSeq + 1;
         const apiValue = Settings.booru.api ? Settings.booru.api.value : "danbooru";
         const apiObj = root.booruApis.find((a) => {
             return a.value === apiValue;
@@ -383,10 +432,17 @@ Item {
         proc.stdout = Qt.createQmlObject('import Quickshell.Io; StdioCollector {}', root);
         proc.stderr = Qt.createQmlObject('import Quickshell.Io; StdioCollector {}', root);
         proc.running = true;
+        const mySeq = root._fetchSeq;
         // NOTE: read streams on process exit, NOT on stdout.onStreamFinished:
         // stderr may not have flushed when stdout closes, which hid the
         // script's real error envelope (empty stderr reads).
         proc.exited.connect(function(exitCode, exitStatus) {
+            // Drop stale responses: a newer fetch (newer tag set) supersedes
+            // this one, so its results must not touch the grid.
+            if (mySeq !== root._fetchSeq) {
+                proc.destroy();
+                return ;
+            }
             const text = proc.stdout.text;
             // booru.py emit_error() writes to STDERR with empty stdout, so a
             // credential rejection would otherwise surface as a generic error.
@@ -634,6 +690,35 @@ Item {
 
     }
 
+    function boot() {
+        if (root._booted)
+            return ;
+
+        if (!Settings.ready)
+            return ;
+
+        root._booted = true;
+        _bootTimer.stop();
+        ensureRatingTagFirst();
+        const savedTab = Settings.booru.selectedTab || Settings.booru.api.name;
+        root.selectedTab = savedTab;
+        root.calculateCacheSize();
+        if (!root.loadLocalTab())
+            root.fetchImages();
+
+    }
+
+    on_DetailVisibleChanged: {
+        root.detailW = root._detailVisible ? 210 : 0;
+    }
+    onDialogImageChanged: {
+        if (root.dialogImage !== null) {
+            _closeTimer.stop();
+            root._gridWidth = grid.width;
+            root._detailVisible = true;
+            root.fetchOriginal(root.dialogImage);
+        }
+    }
     // AGS Images subscribe: slide new page in from the travel direction,
     // scroll to top; first render appears without transition.
     onImagesChanged: {
@@ -644,16 +729,29 @@ Item {
         }
         grid.slideFrom(root.pageDirection === "next" ? 60 : -60);
     }
-    // Initial fetch on load (AGS fetchImages branches to bookmarks/pins/API
-    // from the restored tab — saved Bookmarks/Pins must not fetch the API)
     Component.onCompleted: {
-        ensureRatingTagFirst();
-        const savedTab = Settings.booru.selectedTab || Settings.booru.api.name;
-        root.selectedTab = savedTab;
-        root.calculateCacheSize();
-        if (!root.loadLocalTab())
-            root.fetchImages();
+        if (Settings.ready)
+            root.boot();
+        else
+            _bootTimer.start();
+    }
 
+    Timer {
+        id: _closeTimer
+
+        interval: 190
+        repeat: false
+        onTriggered: {
+            root.dialogImage = null;
+        }
+    }
+
+    Timer {
+        id: _bootTimer
+
+        interval: 200
+        repeat: true
+        onTriggered: root.boot()
     }
 
     // ColumnLayout (NOT Column): the ScrollView needs Layout.fillHeight to
@@ -667,11 +765,6 @@ Item {
         anchors.fill: parent
         spacing: 10
 
-        // Tabs
-        Booru.BooruToolbar {
-            viewer: root
-        }
-
         // Image masonry grid (Flickable: ScrollView hides contentY, and AGS
         // scrolls to top after every page transition) + right detail revealer
         RowLayout {
@@ -679,17 +772,25 @@ Item {
             Layout.fillHeight: true
             spacing: 6
             clip: true
+
             Booru.BooruGrid {
                 id: grid
 
                 viewer: root
             }
+
             Booru.BooruDialog {
                 viewer: root
                 Layout.preferredWidth: root.detailW
                 Layout.fillHeight: true
                 visible: root.dialogImage !== null
             }
+
+        }
+
+        // Tabs
+        Booru.BooruToolbar {
+            viewer: root
         }
 
         // Backend bookmark toggle (booru.py toggle-bookmark --payload-json).
@@ -764,6 +865,14 @@ Item {
             }
             event.accepted = true;
         }
+    }
+
+    Behavior on detailW {
+        NumberAnimation {
+            duration: 180
+            easing.type: Easing.OutCubic
+        }
+
     }
 
     _limitDebounce: Timer {

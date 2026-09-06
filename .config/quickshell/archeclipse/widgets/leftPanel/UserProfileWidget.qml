@@ -10,7 +10,7 @@ import qs.services
 // User Profile widget - full port of UserProfile.tsx + Supabase.class.tsx
 // Auth via magic link -> local Python callback server writes session.json ->
 // profile fetched from Supabase REST. Settings sync upload/download to
-// ~/.config/ags/cache/settings/settings.json (shared with AGS shell).
+// ~/.cache/quickshell/settings/settings.json (quickshell-local).
 // minimal mode (for UserPanel overlay): shows only avatar + username
 Item {
     id: root
@@ -23,8 +23,8 @@ Item {
     readonly property string supabaseKey: "sb_publishable_PLXFIwBsb79Gfu3YkW5B-w_rHozkZ1y"
     readonly property string homeDir: Quickshell.env("HOME")
     readonly property string authSessionPath: homeDir + "/.config/ags/cache/auth/session.json"
-    readonly property string settingsPath: homeDir + "/.config/ags/cache/settings/settings.json"
-    readonly property string settingsMetaPath: homeDir + "/.config/ags/cache/settings/settings-sync.json"
+    readonly property string settingsPath: homeDir + "/.cache/quickshell/settings/settings.json"
+    readonly property string settingsMetaPath: homeDir + "/.cache/quickshell/settings/settings-sync.json"
     readonly property string avatarPath: homeDir + "/.face.icon"
     // Cache-busting avatar source: same path strings don't refetch after
     // cp/curl rewrites ~/.face.icon, so toggle through "" to force reload.
@@ -662,8 +662,8 @@ Item {
                 }
             }
 
-            // About tab
-            GeneralTab { anchors.fill: parent }
+            // About tab (StackLayout auto-sizes children: no anchors here)
+            GeneralTab { }
         }
     }
 

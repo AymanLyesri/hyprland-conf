@@ -30,7 +30,7 @@ def emit_error(error: "ErrorResponse") -> None:
     print(json.dumps(error.to_dict()), file=sys.stderr)
 
 
-SETTINGS_PATH = Path.home() / ".config" / "ags" / "cache" / "settings" / "settings.json"
+SETTINGS_PATH = Path.home() / ".cache" / "quickshell" / "settings" / "settings.json"
 SUPPORTED_APIS = {"danbooru", "gelbooru", "safebooru"}
 
 

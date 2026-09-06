@@ -38,7 +38,13 @@ import qs.services
                     value: viewer.limit
                     Layout.fillWidth: true
                     onValueChanged: {
-                        viewer.limit = Math.round(limitSlider.value)
+                        // Guard: creating the slider (or a settings reload)
+                        // sets value from viewer.limit — writing it back
+                        // unconditionally would break the Settings binding
+                        // (seen: limit stuck at 100 after restart).
+                        const v = Math.round(limitSlider.value)
+                        if (v === viewer.limit) return
+                        viewer.limit = v
                         Settings.booru.limit = viewer.limit
                         Settings.updateSetting("booru.limit", viewer.limit)
                         // AGS LimitDisplay setValue triggers fetchImages (debounced 300ms)
@@ -58,7 +64,10 @@ import qs.services
                     value: viewer.columns
                     Layout.fillWidth: true
                     onValueChanged: {
-                        viewer.columns = Math.round(columnsSlider.value)
+                        // Same binding guard as the limit slider above.
+                        const v = Math.round(columnsSlider.value)
+                        if (v === viewer.columns) return
+                        viewer.columns = v
                         Settings.booru.columns = viewer.columns
                         Settings.updateSetting("booru.columns", viewer.columns)
                         // AGS ColumnDisplay setValue triggers fetchImages (debounced 300ms)
@@ -96,25 +105,32 @@ import qs.services
                             MouseArea {
                                 anchors.fill: parent
                                 onClicked: {
+                                    // Hoist: assigning currentTags rebuilds this
+                                    // Repeater and destroys the delegate
+                                    // mid-click, after which bare `viewer`
+                                    // lookups throw (ReferenceError) and the
+                                    // refetch below never runs.
+                                    const v = viewer;
                                     if (isRating) {
                                         // AGS: toggle -rating:explicit <-> rating:explicit, move to front, refetch
                                         const newRating = modelData.startsWith("-")
                                             ? "rating:explicit" : "-rating:explicit"
-                                        let newTags = viewer.currentTags.filter(t => !t.match(/[-]rating:explicit|rating:explicit/))
+                                        let newTags = v.currentTags.filter(t => !t.match(/[-]rating:explicit|rating:explicit/))
                                         newTags.unshift(newRating)
-                                        viewer.currentTags = newTags
+                                        v.currentTags = newTags
                                         Settings.booru.tags = newTags
                                         Settings.updateSetting("booru.tags", newTags)
                                     } else {
                                         // AGS: remove tag, refetch
-                                        const newTags = viewer.currentTags.filter(t => t !== modelData)
-                                        viewer.currentTags = newTags
+                                        const newTags = v.currentTags.filter(t => t !== modelData)
+                                        console.info("[Booru] chip remove:", modelData, "->", JSON.stringify(newTags))
+                                        v.currentTags = newTags
                                         Settings.booru.tags = newTags
                                         Settings.updateSetting("booru.tags", newTags)
                                     }
                                     // AGS refetches except in Bookmarks/Pins tabs
-                                    if (viewer.selectedTab !== "Bookmarks" && viewer.selectedTab !== "Pins") {
-                                        viewer.fetchImages()
+                                    if (v.selectedTab !== "Bookmarks" && v.selectedTab !== "Pins") {
+                                        v.fetchImages()
                                     }
                                 }
                             }
@@ -145,6 +161,10 @@ import qs.services
                                 Settings.booru.tags = newTags
                                 Settings.updateSetting("booru.tags", newTags)
                                 tagEntry.text = ""
+                                // AGS Entry addTags always refetches
+                                if (viewer.selectedTab !== "Bookmarks" && viewer.selectedTab !== "Pins") {
+                                    viewer.fetchImages()
+                                }
                             }
                         }
                     }
@@ -168,11 +188,20 @@ import qs.services
                             height: 20
                             pixelSize: Theme.fontSize - 3
                             onClicked: {
-                                const newTags = [...new Set([...viewer.currentTags, modelData])]
-                                viewer.currentTags = newTags
+                                // Hoist (same delegate-destruction hazard as
+                                // the tag chips above).
+                                const v = viewer;
+                                if (v.currentTags.includes(modelData)) {
+                                    return
+                                }
+                                const newTags = [...v.currentTags, modelData]
+                                v.currentTags = newTags
                                 Settings.booru.tags = newTags
                                 Settings.updateSetting("booru.tags", newTags)
-                                viewer.fetchedTags = []
+                                // AGS fetched-tag click refetches (except local tabs)
+                                if (v.selectedTab !== "Bookmarks" && v.selectedTab !== "Pins") {
+                                    v.fetchImages()
+                                }
                             }
                         }
                     }

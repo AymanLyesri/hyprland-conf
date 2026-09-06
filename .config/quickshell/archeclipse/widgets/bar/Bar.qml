@@ -32,7 +32,7 @@ PanelWindow {
     aboveWindows: true
 
     readonly property int barHeight: 32
-    implicitHeight: barHeight + (Settings.barOrientation ? 6 : 0)
+    implicitHeight: barHeight
 
     readonly property bool fullWidth: Settings.barFullWidth
 
@@ -180,7 +180,6 @@ PanelWindow {
             bottomRightRadius: Theme.radius
             bottomLeftRadius: Theme.radius
             color: Theme.moduleBg
-            border.width: 0
 
             // Hover detection lives on the pill itself (stable container).
             // AGS parity: the motion controller is on the bar pill — hot-zone

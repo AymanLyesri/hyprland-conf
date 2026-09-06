@@ -86,7 +86,7 @@ Item {
                                     CheckBox {
                                         id: layoutCheck
                                         anchors.verticalCenter: parent.verticalCenter
-                                        checked: model.enabled
+                                        checked: modelData.enabled
                                         onToggled: {
                                             const m = root.barLayoutModelList.slice()
                                             m[index] = Object.assign({}, m[index], { enabled: checked })
@@ -95,7 +95,7 @@ Item {
                                         }
                                     }
                                     Label {
-                                        text: model.label + "  \u2630"
+                                        text: modelData.label + "  \u2630"
                                         color: Theme.fg
                                         font.pixelSize: Theme.fontSize
                                         verticalAlignment: Text.AlignVCenter
@@ -342,17 +342,17 @@ Item {
                                     anchors.fill: parent
                                     anchors.margins: 6
                                     spacing: 6
-                                    Label { text: model.label; color: Theme.fg; Layout.preferredWidth: 140 }
+                                    Label { text: modelData.label; color: Theme.fg; Layout.preferredWidth: 140 }
                                     TextField {
                                         id: keyField
-                                        text: root.getNested(Settings.apiKeys, model.path)
-                                        placeholderText: "Enter " + model.label
+                                        text: root.getNested(Settings.apiKeys, modelData.path)
+                                        placeholderText: "Enter " + modelData.label
                                         echoMode: parent.parent.reveal ? TextField.Normal : TextField.Password
                                         Layout.fillWidth: true
                                         onAccepted: {
-                                            root.setNestedValue("apiKeys", model.path, keyField.text, true)
+                                            root.setNestedValue("apiKeys", modelData.path, keyField.text, true)
                                             // AGS notifies masked value on save (secret)
-                                            Notifications.notify({ summary: model.label, body: "Changed to ••••••••" })
+                                            Notifications.notify({ summary: modelData.label, body: "Changed to ••••••••" })
                                         }
                                         background: Rectangle { color: "transparent" }
                                     }
@@ -412,7 +412,7 @@ Item {
                                 id: hypRounding
                                 from: 0; to: 50; value: root.hyprGet("decoration.rounding")
                                 Layout.fillWidth: true
-                                onValueChanged: { const v = Math.round(value); root.hyprSet("decoration.rounding", v) }
+                                onValueChanged: { const v = Math.round(value); ; if (v === root.hyprGet("decoration.rounding")) return; root.hyprSet("decoration.rounding", v) }
                             }
                             Label { text: root.hyprGet("decoration.rounding"); Layout.preferredWidth: 30; color: Theme.fgDim }
                         }
@@ -429,7 +429,7 @@ Item {
                             Slider {
                                 from: 0; to: 10; value: root.hyprGet("decoration.blur.size")
                                 Layout.fillWidth: true
-                                onValueChanged: { const v = Math.round(value); root.hyprSet("decoration.blur.size", v); root.applyHyprlandSettingLive("decoration.blur.size", v) }
+                                onValueChanged: { const v = Math.round(value); ; if (v === root.hyprGet("decoration.blur.size")) return; root.hyprSet("decoration.blur.size", v); root.applyHyprlandSettingLive("decoration.blur.size", v) }
                             }
                             Label { text: root.hyprGet("decoration.blur.size"); Layout.preferredWidth: 30; color: Theme.fgDim }
                         }
@@ -440,7 +440,7 @@ Item {
                             Slider {
                                 from: 0; to: 10; value: root.hyprGet("decoration.blur.passes")
                                 Layout.fillWidth: true
-                                onValueChanged: { const v = Math.round(value); root.hyprSet("decoration.blur.passes", v); root.applyHyprlandSettingLive("decoration.blur.passes", v) }
+                                onValueChanged: { const v = Math.round(value); ; if (v === root.hyprGet("decoration.blur.passes")) return; root.hyprSet("decoration.blur.passes", v); root.applyHyprlandSettingLive("decoration.blur.passes", v) }
                             }
                             Label { text: root.hyprGet("decoration.blur.passes"); Layout.preferredWidth: 30; color: Theme.fgDim }
                         }
@@ -463,7 +463,7 @@ Item {
                             Slider {
                                 from: 0; to: 20; value: root.hyprGet("decoration.shadow.range")
                                 Layout.fillWidth: true
-                                onValueChanged: { const v = Math.round(value); root.hyprSet("decoration.shadow.range", v); root.applyHyprlandSettingLive("decoration.shadow.range", v) }
+                                onValueChanged: { const v = Math.round(value); ; if (v === root.hyprGet("decoration.shadow.range")) return; root.hyprSet("decoration.shadow.range", v); root.applyHyprlandSettingLive("decoration.shadow.range", v) }
                             }
                             Label { text: root.hyprGet("decoration.shadow.range"); Layout.preferredWidth: 30; color: Theme.fgDim }
                         }
@@ -474,7 +474,7 @@ Item {
                             Slider {
                                 from: 0; to: 20; value: root.hyprGet("decoration.shadow.render_power")
                                 Layout.fillWidth: true
-                                onValueChanged: { const v = Math.round(value); root.hyprSet("decoration.shadow.render_power", v); root.applyHyprlandSettingLive("decoration.shadow.render_power", v) }
+                                onValueChanged: { const v = Math.round(value); ; if (v === root.hyprGet("decoration.shadow.render_power")) return; root.hyprSet("decoration.shadow.render_power", v); root.applyHyprlandSettingLive("decoration.shadow.render_power", v) }
                             }
                             Label { text: root.hyprGet("decoration.shadow.render_power"); Layout.preferredWidth: 30; color: Theme.fgDim }
                         }
@@ -485,7 +485,7 @@ Item {
                             Slider {
                                 from: 0; to: 10; value: root.hyprGet("general.border_size")
                                 Layout.fillWidth: true
-                                onValueChanged: { const v = Math.round(value); root.hyprSet("general.border_size", v); root.applyHyprlandSettingLive("general.border_size", v) }
+                                onValueChanged: { const v = Math.round(value); ; if (v === root.hyprGet("general.border_size")) return; root.hyprSet("general.border_size", v); root.applyHyprlandSettingLive("general.border_size", v) }
                             }
                             Label { text: root.hyprGet("general.border_size"); Layout.preferredWidth: 30; color: Theme.fgDim }
                         }
@@ -496,7 +496,7 @@ Item {
                             Slider {
                                 from: 0; to: 20; value: root.hyprGet("general.gaps_in")
                                 Layout.fillWidth: true
-                                onValueChanged: { const v = Math.round(value); root.hyprSet("general.gaps_in", v); root.applyHyprlandSettingLive("general.gaps_in", v) }
+                                onValueChanged: { const v = Math.round(value); ; if (v === root.hyprGet("general.gaps_in")) return; root.hyprSet("general.gaps_in", v); root.applyHyprlandSettingLive("general.gaps_in", v) }
                             }
                             Label { text: root.hyprGet("general.gaps_in"); Layout.preferredWidth: 30; color: Theme.fgDim }
                         }
@@ -507,7 +507,7 @@ Item {
                             Slider {
                                 from: 0; to: 40; value: root.hyprGet("general.gaps_out")
                                 Layout.fillWidth: true
-                                onValueChanged: { const v = Math.round(value); root.hyprSet("general.gaps_out", v); root.applyHyprlandSettingLive("general.gaps_out", v) }
+                                onValueChanged: { const v = Math.round(value); ; if (v === root.hyprGet("general.gaps_out")) return; root.hyprSet("general.gaps_out", v); root.applyHyprlandSettingLive("general.gaps_out", v) }
                             }
                             Label { text: root.hyprGet("general.gaps_out"); Layout.preferredWidth: 30; color: Theme.fgDim }
                         }
@@ -518,7 +518,7 @@ Item {
                             Slider {
                                 from: 0; to: 1; stepSize: 0.01; value: root.hyprGet("decoration.active_opacity")
                                 Layout.fillWidth: true
-                                onValueChanged: { const v = parseFloat(value.toFixed(2)); root.hyprSet("decoration.active_opacity", v); root.applyHyprlandSettingLive("decoration.active_opacity", v) }
+                                onValueChanged: { const v = parseFloat(value.toFixed(2)); ; if (v === root.hyprGet("decoration.active_opacity")) return; root.hyprSet("decoration.active_opacity", v); root.applyHyprlandSettingLive("decoration.active_opacity", v) }
                             }
                             Label { text: Number(root.hyprGet("decoration.active_opacity")).toFixed(2); Layout.preferredWidth: 30; color: Theme.fgDim }
                         }
@@ -529,7 +529,7 @@ Item {
                             Slider {
                                 from: 0; to: 1; stepSize: 0.01; value: root.hyprGet("decoration.inactive_opacity")
                                 Layout.fillWidth: true
-                                onValueChanged: { const v = parseFloat(value.toFixed(2)); root.hyprSet("decoration.inactive_opacity", v); root.applyHyprlandSettingLive("decoration.inactive_opacity", v) }
+                                onValueChanged: { const v = parseFloat(value.toFixed(2)); ; if (v === root.hyprGet("decoration.inactive_opacity")) return; root.hyprSet("decoration.inactive_opacity", v); root.applyHyprlandSettingLive("decoration.inactive_opacity", v) }
                             }
                             Label { text: Number(root.hyprGet("decoration.inactive_opacity")).toFixed(2); Layout.preferredWidth: 30; color: Theme.fgDim }
                         }

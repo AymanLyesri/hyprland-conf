@@ -7,8 +7,8 @@ import Quickshell.Io
 QtObject {
     id: root
 
-    readonly property string settingsPath: `${Quickshell.env("HOME")}/.config/ags/cache/settings/settings.json`
-    readonly property string settingsDir: `${Quickshell.env("HOME")}/.config/ags/cache/settings`
+    readonly property string settingsPath: `${Quickshell.env("HOME")}/.cache/quickshell/settings/settings.json`
+    readonly property string settingsDir: `${Quickshell.env("HOME")}/.cache/quickshell/settings`
 
     function ensureSettingsDir() {
         Dir.makePath(settingsDir);

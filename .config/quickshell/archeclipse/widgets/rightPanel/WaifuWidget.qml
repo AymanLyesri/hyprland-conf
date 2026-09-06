@@ -16,8 +16,8 @@ Item {
     property int widgetWidth: parent.width
     property string className: ""
 
-    readonly property string booruPath: `${Quickshell.env("HOME")}/.config/ags/cache/booru`
-    readonly property string booruScript: `${Quickshell.env("HOME")}/.config/ags/scripts/booru.py`
+    readonly property string booruPath: `${Quickshell.env("HOME")}/.cache/quickshell/booru`
+    readonly property string booruScript: `${Quickshell.env("HOME")}/.config/quickshell/archeclipse/scripts/booru.py`
 
     // Current waifu data from Settings — mirrors globalSettings.waifuWidget.current
     readonly property var waifuDataObj: Settings.waifu || null

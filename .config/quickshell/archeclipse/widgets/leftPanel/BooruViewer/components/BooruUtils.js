@@ -25,7 +25,19 @@ function imageFileUrl(booruPath, downloadedIds, img) {
     if (!img) return ""
     if (isDownloadedIn(downloadedIds, img))
         return "file://" + getIconPath(booruPath, img, "images")
-    return img.preview ? img.preview : "file://" + getIconPath(booruPath, img, "previews")
+    return img.url ? img.url : (img.preview ? img.preview : "file://" + getIconPath(booruPath, img, "previews"))
+}
+
+function dialogSource(booruPath, downloadedIds, fullIds, img) {
+    if (!img) return ""
+    if (isDownloadedIn(downloadedIds, img))
+        return "file://" + getIconPath(booruPath, img, "images")
+    // Dialog shows the full original from the local originals cache.
+    // Remote danbooru URLs 403 inside Qt (browser UA, no Referer), so
+    // there is no remote fallback — fetchOriginal() downloads it first.
+    if (img && fullIds[String(img.id)])
+        return "file://" + getIconPath(booruPath, img, "originals")
+    return ""
 }
 
 function gridSource(booruPath, downloadedIds, previewIds, img) {

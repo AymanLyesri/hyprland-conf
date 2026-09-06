@@ -107,7 +107,7 @@ Item {
     property Component resetProcComp: Component {
         Process {
             id: _resetProc
-            command: ["bash", "-c", "rm -rf $HOME/.config/ags/cache/settings/settings.json"]
+            command: ["bash", "-c", "rm -rf $HOME/.cache/quickshell/settings/settings.json"]
             stdout: StdioCollector {
                 onStreamFinished: {
                     Hyprland.dispatch("exec bash -c \"$HOME/.config/hypr/scripts/bar.sh\"");

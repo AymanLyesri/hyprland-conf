@@ -47,7 +47,7 @@ Item {
             Image {
                 anchors.fill: parent
                 anchors.margins: 4
-                source: viewer.dialogImage ? viewer.imageFileUrl(viewer.dialogImage) : ""
+                source: viewer.dialogImage ? viewer.dialogSource(viewer.dialogImage) : ""
                 fillMode: Image.PreserveAspectFit
                 sourceSize.width: parent.width
                 asynchronous: true
@@ -75,10 +75,10 @@ Item {
                     Text { anchors.horizontalCenter: parent.horizontalCenter; text: viewer.dialogImage && (viewer.dialogImage.extension||"").toLowerCase()==="zip" ? "Cannot be played." : "Video — download to play"; color: Theme.fgDim; font.pixelSize: 11 }
                 }
             }
-            // download progress overlay
+            // download progress overlay (fetch + original download)
             BusyIndicator {
                 anchors.centerIn: parent
-                running: viewer.progressStatus === "loading"
+                running: viewer.progressStatus === "loading" || (viewer.dialogImage && !viewer.isVideo(viewer.dialogImage) && viewer.dialogSource(viewer.dialogImage) === "")
                 visible: running
             }
             // zoom-to-full on click
