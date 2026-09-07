@@ -133,7 +133,7 @@ Item {
                                                     height: 22
                                                     radius: 4
                                                     color: Theme.moduleBg
-                                                    border.color: Theme.border
+
                                                     Label {
                                                         id: kChip
                                                         anchors.centerIn: parent

@@ -347,8 +347,6 @@ Item {
                         color: Theme.moduleBg
                         radius: 8
 
-                        border.color: Theme.border
-
                         // AGS: the whole row is the script button — click runs it.
                         // Reset shows a Yes/No confirmation instead (AGS Reset AGS Settings).
                         MouseArea {
@@ -433,7 +431,6 @@ Item {
                                                 radius: 4
                                                 color: Theme.moduleBg
 
-                                                border.color: Theme.border
                                                 Label {
                                                     id: kChip
                                                     anchors.centerIn: parent

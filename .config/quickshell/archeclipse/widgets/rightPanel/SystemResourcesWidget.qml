@@ -16,16 +16,19 @@ Item {
         anchors.fill: parent
         spacing: 8
 
-        Row {
+        // Header (RowLayout: the title takes leftover width and the
+        // timestamp keeps its implicit size — a plain Row with a dead
+        // Layout.fillWidth spacer overflowed).
+        RowLayout {
+            width: parent.width
             spacing: 8
             Label {
                 text: "System Resources"
                 font.pixelSize: Theme.fontSize + 4
                 font.bold: true
                 color: Theme.fg
-            }
-            Item { 
-                Layout.fillWidth: true 
+                Layout.fillWidth: true
+                elide: Text.ElideRight
             }
             Label {
                 id: updatedLabel
@@ -45,7 +48,10 @@ Item {
     }
     Component {
         id: rowLayout
-        Row {
+        // RowLayout: CPU/RAM/GPU columns share the width (their
+        // Layout.fillWidth was dead in a plain Row and the columns
+        // ran past the parent).
+        RowLayout {
             spacing: 8
             anchors.fill: parent
 

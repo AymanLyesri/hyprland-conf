@@ -68,6 +68,7 @@ Item {
         spacing: 10
 
         Row {
+            width: parent.width
             spacing: 8
             Label {
                 text: "Media"
@@ -175,10 +176,12 @@ Item {
                         }
                     }
 
-                    // Title / artist with slide transition (AGS textStack)
+                    // Title / artist with slide transition (AGS textStack).
+                    // Explicit width (cover + icon + spacing): the dead
+                    // Layout.fillWidth left this at 0 and no text showed.
                     Item {
                         id: trackBlock
-                        Layout.fillWidth: true
+                        width: parent.width - 64 - 22 - 20
                         height: 64
                         clip: true
 
@@ -237,11 +240,16 @@ Item {
                 }
 
                 // Position/length + controls
-                Row {
+                // RowLayout with compressible buttons + spacers: the 5-piece
+                // controls row (pos, prev, play, next, len) cannot fit the
+                // narrow panel at natural widths, so buttons/spacers shrink
+                // to their minimums instead of painting past the parent.
+                RowLayout {
                     width: parent.width
-                    spacing: 6
+                    spacing: 3
 
                     Label {
+                        Layout.alignment: Qt.AlignVCenter
                         text: root.fmt(root.scrubbing ? root.scrubPos : (root.player?.position ?? 0))
                         color: Theme.fgDim
                         font.pixelSize: Theme.fontSize - 2
@@ -250,6 +258,7 @@ Item {
 
                     Item {
                         Layout.fillWidth: true
+                        Layout.minimumWidth: 0
                     }
 
                     // prev
@@ -257,6 +266,8 @@ Item {
                         enabled: root.player?.canGoPrevious ?? false
                         icon: "\u{f04a}"
                         pixelSize: 14
+                        Layout.preferredWidth: 30
+                        Layout.minimumWidth: 22
                         onClicked: root.player?.previous()
                     }
                     // play/pause
@@ -265,7 +276,8 @@ Item {
                         icon: root.playing ? "\u{f04c}" : "\u{f04e}"
                         pixelSize: 14
                         cornerRadius: 16
-                        implicitWidth: 30
+                        Layout.preferredWidth: 30
+                        Layout.minimumWidth: 22
                         implicitHeight: 30
                         idleBg: Theme.accentBg
                         idleFg: Theme.accent
@@ -281,14 +293,18 @@ Item {
                         enabled: root.player?.canGoNext ?? false
                         icon: "\u{f04c}"
                         pixelSize: 14
+                        Layout.preferredWidth: 30
+                        Layout.minimumWidth: 22
                         onClicked: root.player?.next()
                     }
 
                     Item {
                         Layout.fillWidth: true
+                        Layout.minimumWidth: 0
                     }
 
                     Label {
+                        Layout.alignment: Qt.AlignVCenter
                         text: root.fmt(root.player?.length ?? 0)
                         color: Theme.fgDim
                         font.pixelSize: Theme.fontSize - 2

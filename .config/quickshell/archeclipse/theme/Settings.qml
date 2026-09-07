@@ -46,15 +46,16 @@ Singleton {
     // Wallpaper switcher category (AGS wallpaperSwitcher.category, persisted)
     property string wallpaperCategory: "defaults/sfw"
 
-    // Right panel widgets — mirrors AGS rightPanel.widgets (datalist with enabled flag)
+    // Right panel widgets — mirrors AGS rightPanel.widgets (datalist with enabled flag).
+    // Icons copied from AGS constants/widget.constants.ts rightPanelWidgetSelectors.
     property var rightPanelWidgets: [
-        { name: "Waifu",               icon: "\u{f004}", enabled: true },
-        { name: "Media",               icon: "\u{f01d}", enabled: true },
-        { name: "NotificationHistory", icon: "\u{f0f3}", enabled: true },
-        { name: "ScriptTimer",         icon: "\u{f017}", enabled: false },
-        { name: "Crypto",              icon: "\u{f15a}", enabled: false },
-        { name: "Calendar",            icon: "\u{f073}", enabled: true },
-        { name: "SystemResources",     icon: "\u{f0e9}", enabled: true },
+        { name: "Waifu",               icon: "", enabled: true },
+        { name: "Media",               icon: "", enabled: true },
+        { name: "NotificationHistory", icon: "", enabled: true },
+        { name: "ScriptTimer",         icon: "󰀠", enabled: false },
+        { name: "Crypto",              icon: "", enabled: false },
+        { name: "Calendar",            icon: "󰃰", enabled: true },
+        { name: "SystemResources",     icon: "󰍛", enabled: true },
     ]
     property bool autoWorkspaceSwitching: true
 

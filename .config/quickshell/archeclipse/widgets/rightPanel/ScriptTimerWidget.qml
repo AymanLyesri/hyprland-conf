@@ -189,8 +189,10 @@ Item {
         anchors.fill: parent
         spacing: 8
 
-        // Header
-        Row {
+        // Header (RowLayout: the title takes leftover width — a plain
+        // Row with a dead Layout.fillWidth spacer overflowed).
+        RowLayout {
+            width: parent.width
             spacing: 8
             Label {
                 text: "Script Timer"
@@ -252,7 +254,6 @@ Item {
             color: Theme.moduleBg
             radius: Theme.radius
 
-            border.color: Theme.border
             Layout.fillWidth: true
             Layout.minimumHeight: 300
             Layout.preferredHeight: 350
@@ -266,6 +267,7 @@ Item {
                 // Name
                 Column {
                     spacing: 4
+                    width: parent.width
                     Label {
                         text: "Task Name"
                         font.pixelSize: Theme.fontSize
@@ -275,12 +277,14 @@ Item {
                         id: nameField
                         placeholderText: "Enter task name"
                         text: editingTask ? editingTask.name : ""
+                        width: parent.width
                     }
                 }
 
                 // Time
                 Column {
                     spacing: 4
+                    width: parent.width
                     Label {
                         text: "Time (HH:MM 24-hour)"
                         font.pixelSize: Theme.fontSize
@@ -291,12 +295,14 @@ Item {
                         placeholderText: "12:00"
                         text: editingTask ? editingTask.time : "12:00"
                         inputMask: "99:99"
+                        width: parent.width
                     }
                 }
 
                 // Command
                 Column {
                     spacing: 4
+                    width: parent.width
                     Label {
                         text: "Command"
                         font.pixelSize: Theme.fontSize
@@ -307,16 +313,19 @@ Item {
                         placeholderText: "Enter command or select preset"
                         text: editingTask ? editingTask.command : ""
                         Layout.fillWidth: true
+                        width: parent.width
                     }
                     // Suggestions
                     Column {
                         id: suggestions
                         visible: commandField.text.length > 0
                         spacing: 2
+                        width: parent.width
                         Repeater {
                             model: root.predefinedCommands.filter(cmd => cmd.label.toLowerCase().includes(commandField.text.toLowerCase()))
                             delegate: AppButton {
                                 text: modelData.label
+                                width: parent.width
                                 pixelSize: Theme.fontSize
                                 cornerRadius: 4
                                 idleBg: Theme.bg
@@ -331,15 +340,18 @@ Item {
                 // Task Type
                 Column {
                     spacing: 8
+                    width: parent.width
                     Label {
                         text: "Task Type"
                         font.pixelSize: Theme.fontSize
                         color: Theme.fg
                     }
-                    Row {
+                    RowLayout {
+                        width: parent.width
                         spacing: 8
                         AppCheckBox {
                             id: dailyCheck
+                            Layout.fillWidth: true
                             text: "Daily"
                             checked: editingTask ? editingTask.type : true
                             onToggled: {
@@ -350,6 +362,7 @@ Item {
                         }
                         AppCheckBox {
                             id: weeklyCheck
+                            Layout.fillWidth: true
                             text: "One-time"
                             checked: editingTask ? !editingTask.type : false
                             onToggled: {
@@ -362,9 +375,9 @@ Item {
                 }
 
                 // Actions
-                Row {
+                RowLayout {
+                    width: parent.width
                     spacing: 8
-                    Layout.fillWidth: true
                     AppButton {
                         text: editingTask ? "✓ Update" : "+ Add Task"
                         pixelSize: Theme.fontSize

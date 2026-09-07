@@ -86,8 +86,10 @@ Item {
         anchors.fill: parent
         spacing: 8
 
-        // Header
-        Row {
+        // Header (RowLayout: the title takes leftover width — a plain
+        // Row with a dead Layout.fillWidth spacer overflowed).
+        RowLayout {
+            width: parent.width
             spacing: 8
             Label {
                 text: "Crypto Tracker"
@@ -148,7 +150,6 @@ Item {
             color: Theme.moduleBg
             radius: Theme.radius
 
-            border.color: Theme.border
             Layout.fillWidth: true
             Layout.minimumHeight: 300
             Layout.preferredHeight: 350
@@ -162,6 +163,7 @@ Item {
                 // Symbol
                 Column {
                     spacing: 4
+                    width: parent.width
                     Label {
                         text: "Crypto Symbol"
                         font.pixelSize: Theme.fontSize
@@ -171,6 +173,7 @@ Item {
                         id: symbolField
                         placeholderText: "e.g. btc, eth, sol"
                         text: editingEntry ? editingEntry.symbol : ""
+                        width: parent.width
                         onTextChanged: {
                             // Auto lowercase
                         }
@@ -180,18 +183,21 @@ Item {
                 // Timeframe (AGS uses a row of toggle buttons, not a dropdown)
                 Column {
                     spacing: 4
+                    width: parent.width
                     Label {
                         text: "Timeframe"
                         font.pixelSize: Theme.fontSize
                         color: Theme.fg
                     }
-                    Row {
+                    RowLayout {
+                        width: parent.width
                         spacing: 4
                         Repeater {
                             model: root.timeframes
                             delegate: AppButton {
                                 toggle: true
                                 text: modelData
+                                Layout.fillWidth: true
                                 pixelSize: Theme.fontSize - 1
                                 cornerRadius: 4
                                 implicitHeight: 26
@@ -205,12 +211,14 @@ Item {
                 // Display Options
                 Column {
                     spacing: 8
+                    width: parent.width
                     Label {
                         text: "Display Options"
                         font.pixelSize: Theme.fontSize
                         color: Theme.fg
                     }
-                    Row {
+                    RowLayout {
+                        width: parent.width
                         spacing: 16
                         AppCheckBox {
                             id: showPriceCheck
@@ -228,9 +236,9 @@ Item {
                 }
 
                 // Actions
-                Row {
+                RowLayout {
+                    width: parent.width
                     spacing: 8
-                    Layout.fillWidth: true
                     AppButton {
                         text: editingEntry ? "✓ Update" : "+ Add Crypto"
                         pixelSize: Theme.fontSize

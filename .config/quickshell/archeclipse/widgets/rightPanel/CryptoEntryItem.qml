@@ -15,8 +15,14 @@ Item {
     signal editClicked(var entry)
     property bool isHovered: false
 
+    // Height follows content (entry card + hover actions when shown).
+    height: entryRect.height + entryCol.spacing + (hoverRow.visible ? hoverRow.height : 0)
+
     Column {
-        anchors.fill: parent
+        id: entryCol
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
         spacing: 6
 
         // Crypto price/graph display
@@ -26,8 +32,6 @@ Item {
             height: 80
             color: Theme.moduleBg
             radius: Theme.radius
-
-            border.color: Theme.border
 
             CryptoItem {
                 anchors.fill: parent
@@ -39,7 +43,9 @@ Item {
 
         // Hover actions row
         Row {
+            id: hoverRow
             spacing: 4
+            height: 24
             visible: root.isHovered
             anchors.right: parent.right
 
@@ -89,12 +95,12 @@ Item {
                 onClicked: root.deleteClicked(root.entry.id)
             }
         }
+    }
 
-        MouseArea {
-            anchors.fill: parent
-            hoverEnabled: true
-            onEntered: root.isHovered = true
-            onExited: root.isHovered = false
-        }
+    MouseArea {
+        anchors.fill: parent
+        hoverEnabled: true
+        onEntered: root.isHovered = true
+        onExited: root.isHovered = false
     }
 }

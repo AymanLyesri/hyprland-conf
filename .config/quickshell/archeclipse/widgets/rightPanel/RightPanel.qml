@@ -24,6 +24,11 @@ PanelWindow {
         return hmon ? hmon.name : screen.name;
     }
 
+    // True while a widget selector is being drag-reordered (AGS
+    // Window.isDragging: drag-begin/drag-end around the Gtk.DragSource).
+    // The auto-hide timer skips hiding while this is set.
+    property bool isDragging: false
+
     // Window geometry / layer
     anchors {
         right: true
@@ -40,7 +45,7 @@ PanelWindow {
     implicitWidth: Settings.rightPanelWidth
     color: "transparent"
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
-    WlrLayershell.exclusiveZone: Settings.rightPanelExclusivity ? width : -1
+    WlrLayershell.exclusiveZone: Settings.rightPanelExclusivity ? Settings.rightPanelWidth : -1
     WlrLayershell.layer: WlrLayer.Top
 
     // Register with Registry for IPC togglePanel
@@ -52,12 +57,14 @@ PanelWindow {
         Registry.unregister(`right-panel-${root.monitorName}`);
     }
 
-    // Idle hide timer (when not locked) - AGS uses 0ms delay
+    // Idle hide timer (when not locked) - AGS uses 0ms delay.
+    // Guarded on isDragging: AGS skips the leave-hide while a widget
+    // selector is being drag-reordered (Window.isDragging).
     Timer {
         id: hideTimer
         interval: 0
         onTriggered: {
-            if (!Settings.rightPanelLock)
+            if (!Settings.rightPanelLock && !root.isDragging)
                 root.visible = false;
         }
     }
@@ -69,7 +76,7 @@ PanelWindow {
         onHoveredChanged: {
             if (hovered)
                 hideTimer.stop();
-            else if (!Settings.rightPanelLock)
+            else if (!Settings.rightPanelLock && !root.isDragging)
                 hideTimer.restart();
         }
     }
@@ -82,8 +89,6 @@ PanelWindow {
         anchors.bottomMargin: 5
         color: Theme.moduleBg
         radius: Theme.radius
-
-        border.color: Theme.border
 
         Row {
             anchors.fill: parent
@@ -100,7 +105,6 @@ PanelWindow {
                 color: Theme.bg
                 radius: Theme.radius
 
-                border.color: Theme.border
                 clip: true
                 visible: true
 
@@ -136,15 +140,20 @@ PanelWindow {
                                 icon: modelData.icon
                                 toggle: true
                                 checked: modelData.enabled
-                                tooltipText: modelData.name
+                                // AGS tooltipMarkup: "<b>Hold To Drag</b>\n${name}"
+                                tooltipText: "Hold To Drag\n" + modelData.name
                                 draggable: true
                                 dragTarget: selectorItem
                                 dragAxis: Drag.YAxis
                                 dragMinimum: -selectorItem.index * 48
                                 dragMaximum: (Settings.rightPanelWidgets.length - 1 - selectorItem.index) * 48
-                                onPressed: cellBtn.dragging = true
+                                onPressed: {
+                                    cellBtn.dragging = true;
+                                    root.isDragging = true;
+                                }
                                 onReleased: {
                                     cellBtn.dragging = false;
+                                    root.isDragging = false;
                                     selectorItem.x = 0;
                                     selectorItem.y = 0;
                                 }
@@ -272,8 +281,8 @@ PanelWindow {
                     // with content size, which feeds back through delegates and
                     // wedges the scene in a silent polish loop (0-width freeze).
                     width: contentScroll.availableWidth
-                    spacing: 8
-                    padding: 8
+                    spacing: 5
+                    padding: 5
 
                     Repeater {
                         id: enabledWidgetRepeater
@@ -297,17 +306,22 @@ PanelWindow {
                             // Heights must stay in sync with each widget's content.
                             height: {
                                 switch (modelData.name) {
-                                case "Waifu": {
-                                    const wd = Settings.waifu;
-                                    if (!wd || !(wd.id > 0))
-                                        return 200;
-                                    const w = width - 20;
-                                    const a = (wd.width > 0 && wd.height > 0) ? wd.width / wd.height : 1.0;
-                                    const h = Math.min(Math.max(w / a, 120), 520);
-                                    return h + 36 + 8 + 10;
-                                }
+                                case "Waifu":
+                                    {
+                                        const wd = Settings.waifu;
+                                        if (!wd || !wd.id)
+                                            return 200;
+                                        // Same base as WaifuWidget.mediaHeight
+                                        // (Loader is inset 8px per side in the card).
+                                        const w = width - 16 - 20;
+                                        const a = (wd.width > 0 && wd.height > 0) ? wd.width / wd.height : 1.0;
+                                        const h = Math.min(Math.max(w / a, 120), 520);
+                                        // media + 4 action sections (4x28 + 3x8)
+                                        // + gap + Loader inset.
+                                        return h + 136 + 8 + 16;
+                                    }
                                 case "Media":
-                                    return 240;
+                                    return 220;
                                 case "NotificationHistory":
                                     return 440;
                                 case "ScriptTimer":
@@ -332,7 +346,6 @@ PanelWindow {
                                 color: Theme.moduleBg
                                 radius: Theme.radius
 
-                                border.color: Theme.border
                                 // AGS opacity-in on freshly added widget (.new-widget class)
                                 opacity: 0
                                 Behavior on opacity {
@@ -356,8 +369,12 @@ PanelWindow {
 
                             Loader {
                                 id: widgetLoader
-                                width: parent.width
-                                height: parent.height
+                                // Inset into the card: cardBg carries a 5px
+                                // margin and this adds 3px inner padding, so
+                                // widget content never paints over the card
+                                // border (full-bleed width/height overflowed).
+                                anchors.fill: parent
+                                anchors.margins: 8
                                 sourceComponent: {
                                     switch (modelData.name) {
                                     case "Waifu":
@@ -436,7 +453,8 @@ PanelWindow {
         }
     }
 
-    // Escape key closes panel
+    // Escape key closes panel (regrab focus when shown so it works even
+    // after interacting with a TextField inside a widget)
     Item {
         id: keyHandler
         focus: true
@@ -446,5 +464,9 @@ PanelWindow {
                 event.accepted = true;
             }
         }
+    }
+    onVisibleChanged: {
+        if (visible)
+            keyHandler.forceActiveFocus();
     }
 }

@@ -339,7 +339,6 @@ Item {
             background: Rectangle {
                 color: Theme.bg
                 radius: 6
-                border.color: Theme.border
             }
         }
 
@@ -382,7 +381,6 @@ Item {
                             color: Theme.moduleBg
                             radius: 8
                             clip: true
-                            border.color: Theme.border
 
                             MouseArea {
                                 anchors.fill: parent
@@ -471,7 +469,6 @@ Item {
                             implicitHeight: 36
                             color: Theme.bg
                             radius: 6
-                            border.color: Theme.border
 
                             AppButton {
                                 anchors.fill: parent
@@ -582,7 +579,6 @@ Item {
                 background: Rectangle {
                     color: Theme.bg
                     radius: 6
-                    border.color: Theme.border
                 }
             }
             RowLayout {
@@ -649,7 +645,6 @@ Item {
                 color: Theme.bg
                 radius: 4
 
-                border.color: Theme.border
                 Label {
                     anchors.fill: parent
                     anchors.margins: 8

@@ -26,6 +26,10 @@ Item {
     // 24h %H:%M from GLib DateTime).
     readonly property double notifTime: entry && entry.time ? entry.time : 0
 
+    // Height follows content (the inner Column is top-anchored, never
+    // fill-anchored, so there is no height feedback loop).
+    height: innerCol.height + 16
+
     // ---- icon chain (AGS getNotificationIcon): appIcon path → appIcon theme
     // name → image path → image theme name → desktopEntry → urgency fallback
     readonly property string iconFile: {
@@ -56,18 +60,24 @@ Item {
         color: Theme.moduleBg
         radius: Theme.radius
 
-        border.color: Theme.border
         clip: true
 
         Column {
-            anchors.fill: parent
+            id: innerCol
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.topMargin: 8
+            anchors.leftMargin: 8
+            anchors.rightMargin: 8
             spacing: 4
-            anchors.margins: 8
 
             // Top bar: app name, icon, time, copy, expand, dismiss
-            Row {
-                spacing: 6
+            // (RowLayout: the app name takes leftover width and elides —
+            // a plain Row with a dead Layout.fillWidth spacer overflowed).
+            RowLayout {
                 width: parent.width
+                spacing: 6
 
                 Item {
                     id: appIconWrap
@@ -97,12 +107,8 @@ Item {
                     font.pixelSize: Theme.fontSize
                     font.bold: true
                     color: Theme.accent
-                    width: appIconWrap.visible ? parent.width - 20 - 8 : parent.width
-                    elide: Text.ElideRight
-                }
-
-                Item {
                     Layout.fillWidth: true
+                    elide: Text.ElideRight
                 }
 
                 // Time — 24h %H:%M like AGS utils/time.ts
@@ -200,15 +206,18 @@ Item {
 
             // Notification action buttons (AGS getActions: ALL actions kept,
             // invoke WITHOUT dismiss, label = last ":" segment).
-            Row {
-                spacing: 6
+            // RowLayout with fill buttons: many/long actions share the
+            // width instead of running past the parent.
+            RowLayout {
                 width: parent.width
+                spacing: 6
                 visible: (root.notification && Notifications.liveActions(root.notification).length) > 0
                 Repeater {
                     model: root.notification ? Notifications.liveActions(root.notification) : []
                     delegate: AppButton {
                         required property var modelData
                         text: Notifications.actionLabel(modelData)
+                        Layout.fillWidth: true
                         height: 24
                         pixelSize: Theme.fontSize - 2
                         cornerRadius: 4

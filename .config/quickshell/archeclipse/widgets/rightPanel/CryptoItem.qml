@@ -117,8 +117,9 @@ Item {
         anchors.fill: parent
         spacing: 4
 
-        // Entry header: symbol, price, change
-        Row {
+        // Entry header: symbol, price, change (RowLayout: the price takes
+        // leftover width and elides — the fixed width math overflowed).
+        RowLayout {
             id: headerRow
             spacing: 8
             width: parent.width
@@ -136,12 +137,9 @@ Item {
                 font.pixelSize: Theme.fontSize
                 color: Theme.fg
                 visible: root.loadingState !== "loading"
-                // Guarded: 0-wide item before Loader stretch must not go negative
-                width: Math.max(0, parent.width - 120)
+                Layout.fillWidth: true
                 elide: Text.ElideRight
             }
-
-            Item { Layout.fillWidth: true }
 
             // Change — AGS Crypto.tsx has this COMMENTED OUT (lines 176-179).
             // We hide it to match AGS visual behavior exactly.

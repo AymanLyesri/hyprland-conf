@@ -31,8 +31,11 @@ Item {
     readonly property int wd_width: root.wd ? (root.wd.width || 0) : 0
     readonly property int wd_height: root.wd ? (root.wd.height || 0) : 0
 
-    readonly property bool hasWaifu: root.wd_id > 0
+    // AGS WaifuDisplay shows the widget for any truthy id (custom uploads
+    // use id -1) — only a missing/empty id means "no image selected".
+    readonly property bool hasWaifu: !!(root.wd && root.wd.id)
     readonly property string imagePath: root.hasWaifu ? `${root.booruPath}/${root.wd_apiValue}/images/${root.wd_id}.${root.wd_extension || "jpg"}` : ""
+    readonly property string previewPath: root.hasWaifu ? `${root.booruPath}/${root.wd_apiValue}/previews/${root.wd_id}.${root.wd_extension || "jpg"}` : ""
     readonly property bool isVideo: ["mp4", "webm", "mkv", "gif", "zip"].includes(root.wd_extension.toLowerCase())
 
     // Dynamic height from aspect ratio: metadata first, loaded image intrinsic as fallback
@@ -53,9 +56,125 @@ Item {
         return Math.min(Math.max(h, 120), 520);
     }
 
-    // Loading state for fetch-by-ID
+    // Loading state for fetch-by-ID and ensure-download below.
     property string loadingState: "idle"   // "loading" | "error" | "success" | "idle"
     property int selectedApiIndex: 0
+
+    // AGS BooruImage.ensureFilesExist("both"): a viewer-set waifu whose full
+    // image / preview was never downloaded renders blank, so fetch what's
+    // missing (Referer headers: Qt gets 403 without them, same as the
+    // viewer's downloadPreviews/fetchOriginal). Files already on disk skip
+    // the download and just re-point the sources.
+    function ensureWaifuFiles() {
+        refreshSources();
+        if (!root.hasWaifu)
+            return;
+        const wd = root.wd;
+        const api = (wd.api && wd.api.value) || "danbooru";
+        const referer = (wd.api && wd.api.url) || "";
+        const ext = wd.extension || "jpg";
+        const jobs = [];
+        if (wd.url && /^https?:\/\//.test(wd.url))
+            jobs.push({
+                path: `${root.booruPath}/${api}/images/${wd.id}.${ext}`,
+                url: wd.url
+            });
+        if (wd.preview && /^https?:\/\//.test(wd.preview))
+            jobs.push({
+                path: `${root.booruPath}/${api}/previews/${wd.id}.${ext}`,
+                url: wd.preview
+            });
+        if (jobs.length === 0)
+            return;
+        root.loadingState = "loading";
+        let pending = jobs.length;
+        let ok = false;
+        function finish(success) {
+            if (success)
+                ok = true;
+            if (--pending === 0) {
+                root.loadingState = ok ? "success" : "error";
+                refreshSources();
+            }
+        }
+        for (let i = 0; i < jobs.length; i++) {
+            const job = jobs[i];
+            const check = Qt.createQmlObject('import Quickshell.Io; Process { stdout: StdioCollector {} }', root);
+            check.command = ["bash", "-c", "test -s " + JSON.stringify(job.path) + " && echo yes || echo no"];
+            check.stdout.onStreamFinished.connect(function () {
+                if (check.stdout.text.trim() === "yes") {
+                    finish(true);
+                } else {
+                    const dl = Qt.createQmlObject('import Quickshell.Io; Process {}', root);
+                    dl.command = ["bash", "-c", `mkdir -p ${JSON.stringify(job.path.substring(0, job.path.lastIndexOf("/")))} && curl -sSfL -H "User-Agent: QuickshellBooru/1.0 (ArchLinux; Hyprland)"` + (referer !== "" ? ` -H "Referer: ${referer}"` : "") + ` -o ${JSON.stringify(job.path)} ${JSON.stringify(job.url)}`];
+                    dl.exited.connect(function (code) {
+                        finish(code === 0);
+                        dl.destroy();
+                    });
+                    dl.running = true;
+                }
+                check.destroy();
+            });
+            check.running = true;
+        }
+    }
+
+    // Local cache paths for a waifu object. Computed from root.wd directly:
+    // sibling derived bindings (imagePath/previewPath) are still settling
+    // while onWdChanged/onImagePathChanged handlers run, so reading them
+    // here yields stale intermediate values.
+    function waifuPaths() {
+        const wd = root.wd;
+        if (!(wd && wd.id))
+            return {
+                img: "",
+                prev: ""
+            };
+        const api = (wd.api && wd.api.value) || "danbooru";
+        const ext = wd.extension || "jpg";
+        return {
+            img: `${root.booruPath}/${api}/images/${wd.id}.${ext}`,
+            prev: `${root.booruPath}/${api}/previews/${wd.id}.${ext}`
+        };
+    }
+
+    // (Re)point the media sources at the current waifu. Bounces through ""
+    // so a file that landed after a failed load retries instead of staying
+    // blank — QML media never reloads on its own.
+    function refreshSources() {
+        const p = root.waifuPaths();
+        imageDisplay.fallbackSource = p.prev;
+        if (imageDisplay.source !== p.img) {
+            imageDisplay.source = p.img;
+        } else if (p.img !== "") {
+            imageDisplay.source = "";
+            imageDisplay.source = p.img;
+        }
+        if (mediaVideo.source !== p.img) {
+            mediaVideo.source = p.img;
+        } else if (p.img !== "") {
+            mediaVideo.source = "";
+            mediaVideo.source = p.img;
+        }
+    }
+
+    onWdChanged: {
+        // Skip the construction-time evaluation: the media items below
+        // don't exist yet (Component.onCompleted runs the first ensure).
+        if (!root._ready)
+            return;
+        root.loadingState = "idle";
+        root.ensureWaifuFiles();
+    }
+
+    // Refresh off the path notification too: bindings into the media items
+    // below don't reliably propagate these updates on their own.
+    onImagePathChanged: refreshSources()
+    property bool _ready: false
+    Component.onCompleted: {
+        root._ready = true;
+        root.ensureWaifuFiles();
+    }
 
     readonly property var booruApis: [
         {
@@ -156,8 +275,10 @@ Item {
             AppButton {
                 text: "Open Booru Viewer"
                 onClicked: {
-                    // Switch left panel to BooruViewer
-                    Ipc.handler("bar").call("toggleLeftPanel", Registry.monitorName);
+                    // AGS Waifu.tsx: show left-panel + set leftPanel.widget
+                    // to BooruViewer. Registry.selectLeftTab does both
+                    // (never toggles it off when already visible).
+                    Registry.selectLeftTab("BooruViewer");
                 }
             }
         }
@@ -175,13 +296,17 @@ Item {
         AppImage {
             id: imageDisplay
             anchors.fill: parent
+            // Source owned by refreshSources() (re-points after the
+            // ensure-download lands). Preview fallback while missing.
             source: root.imagePath
+            fallbackSource: root.previewPath
             sourceWidth: parent.width
             visible: !root.isVideo
         }
 
         // Video fallback — playable via QtMultimedia (AGS Video.tsx Gtk.Video)
         MediaVideo {
+            id: mediaVideo
             anchors.fill: parent
             anchors.margins: 4
             source: root.imagePath
@@ -239,122 +364,124 @@ Item {
         }
     }
 
-    // ---- actions ----
-    Row {
-        id: actionsRow
-        spacing: 8
+    // ---- actions (AGS BooruImage.renderAsWaifuWidget: a vertical .actions
+    // stack of hexpand sections — never one long horizontal row, which
+    // overflows the narrow panel). RowLayout fillWidth == AGS hexpand.
+    Column {
+        id: actionsCol
         anchors.bottom: parent.bottom
         width: parent.width
-        height: 36
+        spacing: 8
         visible: root.hasWaifu
 
-        // Bookmark toggle
-        AppButton {
-            property bool bookmarked: (Settings.booru.bookmarks || []).some(b => b.id === root.wd_id && b.api?.value === root.wd_apiValue)
-            text: root.bookmarked ? "\u{f004}" : "\u{f0160}"
-            width: 36
-            height: 24
-            tooltipText: "Bookmark"
-            onClicked: {
-                const bookmarks = Settings.booru.bookmarks || [];
-                const idx = bookmarks.findIndex(b => b.id === root.wd_id && b.api?.value === root.wd_apiValue);
-                if (idx >= 0) {
-                    const next = bookmarks.slice();
-                    next.splice(idx, 1);
-                    Settings.booru.bookmarks = next;
-                } else {
-                    Settings.booru.bookmarks = [...bookmarks, root.wd];
+        // Section 1: bookmark + pin
+        RowLayout {
+            width: parent.width
+            height: 28
+            spacing: 8
+            // Bookmark toggle
+            AppButton {
+                property bool bookmarked: (Settings.booru.bookmarks || []).some(b => b.id === root.wd_id && b.api?.value === root.wd_apiValue)
+                text: root.bookmarked ? "\u{f004}" : "\u{f0160}"
+                Layout.fillWidth: true
+                Layout.preferredHeight: 28
+                tooltipText: "Bookmark"
+                onClicked: {
+                    const bookmarks = Settings.booru.bookmarks || [];
+                    const idx = bookmarks.findIndex(b => b.id === root.wd_id && b.api?.value === root.wd_apiValue);
+                    if (idx >= 0) {
+                        const next = bookmarks.slice();
+                        next.splice(idx, 1);
+                        Settings.booru.bookmarks = next;
+                    } else {
+                        Settings.booru.bookmarks = [...bookmarks, root.wd];
+                    }
+                    Settings.persist();
                 }
-                Settings.persist();
             }
-        }
 
-        // Pin to terminal
-        AppButton {
-            property bool pinned: (Settings.booru.pins || []).some(p => p.id === root.wd_id && p.api?.value === root.wd_apiValue)
-            text: pinned ? "\u{f44c}" : "\u{f98b}"
-            width: 36
-            height: 24
-            tooltipText: root.isVideo ? "Cannot pin videos" : "Pin to terminal"
-            enabled: !root.isVideo
-            onClicked: {
-                const pins = Settings.booru.pins || [];
-                const existing = pins.findIndex(p => p.id === root.wd_id && p.api?.value === root.wd_apiValue);
-                if (existing >= 0) {
-                    const next = pins.slice();
-                    next.splice(existing, 1);
-                    Settings.booru.pins = next;
-                } else {
-                    Settings.booru.pins = [...pins, root.wd];
+            // Pin to terminal
+            AppButton {
+                property bool pinned: (Settings.booru.pins || []).some(p => p.id === root.wd_id && p.api?.value === root.wd_apiValue)
+                text: pinned ? "\u{f44c}" : "\u{f98b}"
+                Layout.fillWidth: true
+                Layout.preferredHeight: 28
+                tooltipText: root.isVideo ? "Cannot pin videos" : "Pin to terminal"
+                enabled: !root.isVideo
+                onClicked: {
+                    const pins = Settings.booru.pins || [];
+                    const existing = pins.findIndex(p => p.id === root.wd_id && p.api?.value === root.wd_apiValue);
+                    if (existing >= 0) {
+                        const next = pins.slice();
+                        next.splice(existing, 1);
+                        Settings.booru.pins = next;
+                    } else {
+                        Settings.booru.pins = [...pins, root.wd];
+                    }
+                    Settings.persist();
                 }
-                Settings.persist();
             }
         }
 
-        // Open in viewer
-        AppButton {
-            text: "\u{f07c}"
-            width: 36
-            height: 24
-            tooltipText: "Open in viewer"
-            onClicked: Quickshell.execDetached(["xdg-open", root.imagePath])
-        }
+        // Section 2: open in viewer + browser + copy
+        RowLayout {
+            width: parent.width
+            height: 28
+            spacing: 8
 
-        // Open in browser
-        AppButton {
-            text: "\u{f08e}"
-            width: 36
-            height: 24
-            tooltipText: "Open in browser"
-            onClicked: {
-                const api = root.booruApis[root.selectedApiIndex];
-                Quickshell.execDetached(["xdg-open", api.idSearchUrl + root.wd_id]);
+            // Open in viewer
+            AppButton {
+                text: "\u{f07c}"
+                Layout.fillWidth: true
+                Layout.preferredHeight: 28
+                tooltipText: "Open in viewer"
+                onClicked: Quickshell.execDetached(["xdg-open", root.imagePath])
+            }
+
+            // Open in browser
+            AppButton {
+                text: "\u{f08e}"
+                Layout.fillWidth: true
+                Layout.preferredHeight: 28
+                tooltipText: "Open in browser"
+                onClicked: {
+                    const api = root.booruApis[root.selectedApiIndex];
+                    Quickshell.execDetached(["xdg-open", api.idSearchUrl + root.wd_id]);
+                }
+            }
+
+            // Copy to clipboard
+            AppButton {
+                text: "\u{f0c5}"
+                Layout.fillWidth: true
+                Layout.preferredHeight: 28
+                tooltipText: "Copy to clipboard"
+                enabled: !root.isVideo
+                onClicked: Quickshell.execDetached(["bash", "-c", `wl-copy --type image/png < '${root.imagePath}'`])
             }
         }
 
-        // Copy to clipboard
-        AppButton {
-            text: "\u{f0c5}"
-            width: 36
-            height: 24
-            tooltipText: "Copy to clipboard"
-            enabled: !root.isVideo
-            onClicked: Quickshell.execDetached(["bash", "-c", `wl-copy --type image/png < '${root.imagePath}'`])
-        }
+        // Section 3: search by ID + entry + upload
+        RowLayout {
+            width: parent.width
+            height: 28
+            spacing: 8
+            // Search by ID
+            AppButton {
+                text: "\u{f002}"
+                Layout.preferredWidth: 36
+                Layout.preferredHeight: 28
+                tooltipText: "Search by post ID"
+                onClicked: root.idSearchField.forceActiveFocus()
+            }
 
-        // Search by ID
-        AppButton {
-            text: "\u{f002}"
-            width: 36
-            height: 24
-            tooltipText: "Search by post ID"
-            onClicked: root.idSearchField.forceActiveFocus()
-        }
-
-        // Upload custom image (AGS upload button: zenity select → identify dims
-        // → copy to custom/images/-1.<ext> → set as current waifu)
-        AppButton {
-            text: "\u{f093}"
-            width: 36
-            height: 24
-            tooltipText: "Upload custom image"
-            onClicked: root.uploadCustomImage()
-        }
-
-        TextField {
+        AppTextField {
             id: idSearchField
-            width: 120
-            height: 24
+            Layout.fillWidth: true
+            Layout.preferredHeight: 28
             placeholderText: "Post ID..."
             text: root.wd && root.wd.input_history ? root.wd.input_history : ""
             font.family: Theme.fontFamily
-            font.pixelSize: Theme.fontSize
-            visible: root.hasWaifu
-            background: Rectangle {
-                color: Theme.bg
-                radius: 4
-                border.color: Theme.border
-            }
             onAccepted: {
                 root.loadingState = "loading";
                 const api = root.booruApis[root.selectedApiIndex];
@@ -392,19 +519,33 @@ Item {
             }
         }
 
-        // API tabs
-        Row {
-            spacing: 2
+            // Upload custom image (AGS upload button: zenity select → identify dims
+            // → copy to custom/images/-1.<ext> → set as current waifu)
+            AppButton {
+                text: "\u{f093}"
+                Layout.preferredWidth: 40
+                Layout.preferredHeight: 28
+                tooltipText: "Upload custom image"
+                onClicked: root.uploadCustomImage()
+            }
+        }
+
+
+        // Section 4: API tabs
+        RowLayout {
+            width: parent.width
+            height: 28
+            spacing: 8
             Repeater {
                 model: root.booruApis
                 delegate: AppButton {
                     text: modelData.name
-                    width: 80
-                    height: 24
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 28
                     toggle: true
                     checked: root.selectedApiIndex === index
                     onClicked: root.selectedApiIndex = index
-                    pixelSize: Theme.fontSize - 2
+                    pixelSize: Theme.fontSize - 4
                 }
             }
         }

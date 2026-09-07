@@ -153,7 +153,6 @@ Item {
                 AppImage {
                     anchors.fill: parent
                     source: root.avatarPath
-          
                 }
             }
 
@@ -337,7 +336,7 @@ Item {
                             radius: 6
                             x: (parent.width - width) / 2
                             color: "transparent"
-                            border.color: Theme.border
+
                             visible: !root.isUpdating
                             Behavior on width {
                                 NumberAnimation {

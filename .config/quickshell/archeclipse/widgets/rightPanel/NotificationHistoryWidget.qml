@@ -65,27 +65,28 @@ Item {
         anchors.fill: parent
         spacing: 8
 
-        // Header with filter
-        Row {
-            spacing: 8
+        // Header with filter, stacked vertically: a side-by-side title +
+        // filter row cannot fit the narrow panel without eliding the title.
+        Column {
+            width: parent.width
+            spacing: 6
             Label {
                 text: "Notification History"
                 font.pixelSize: Theme.fontSize + 4
                 font.bold: true
                 color: Theme.fg
-                Layout.fillWidth: true
+                width: parent.width
+                elide: Text.ElideRight
             }
             TextField {
                 id: filterField
                 placeholderText: "Filter..."
                 text: filterText
                 onTextChanged: root.filterText = text
-                Layout.preferredWidth: 150
+                width: parent.width
                 background: Rectangle {
                     color: Theme.bg
                     radius: 4
-
-                    border.color: Theme.border
                 }
             }
         }

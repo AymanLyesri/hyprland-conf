@@ -67,7 +67,6 @@ Item {
                             height: 34
                             radius: 4
                             color: Theme.buttonHoverBg
-                            border.color: Theme.border
 
                             property bool dragActive: false
 
@@ -575,7 +574,6 @@ Item {
                                 height: 34
                                 color: Theme.moduleBg
                                 radius: 4
-                                border.color: Theme.border
 
                                 property bool reveal: false
 

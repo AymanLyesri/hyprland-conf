@@ -90,8 +90,9 @@ Item {
         anchors.fill: parent
         spacing: 6
 
-        // Header: month nav + title
-        Row {
+        // Header: month nav + title (RowLayout: the title takes leftover
+        // width — a plain Row with fixed nav buttons overflowed).
+        RowLayout {
             width: parent.width
             spacing: 8
 
@@ -117,7 +118,7 @@ Item {
 
             Text {
                 Layout.fillWidth: true
-                anchors.verticalCenter: parent.verticalCenter
+                Layout.alignment: Qt.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 text: Qt.locale().monthName(root.viewDate.getMonth(), Locale.LongFormat) + " " + root.viewDate.getFullYear()
                 color: Theme.foreground

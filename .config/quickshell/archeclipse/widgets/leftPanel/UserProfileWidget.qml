@@ -22,10 +22,12 @@ Item {
     readonly property string supabaseUrl: "https://skekmjmsgcbfhbwgpzkp.supabase.co"
     readonly property string supabaseKey: "sb_publishable_PLXFIwBsb79Gfu3YkW5B-w_rHozkZ1y"
     readonly property string homeDir: Quickshell.env("HOME")
-    // auth-server-callback.py owns session.json under ~/.config/ags/cache/auth
-    // (SESSION_PATH hardcoded in the script) — read the same file it writes,
-    // or sign-in state silently forks between the shells.
-    readonly property string authSessionPath: homeDir + "/.config/ags/cache/auth/session.json"
+    // scripts/auth-server-callback.py owns session.json (SESSION_PATH in the
+    // script) — quickshell-native, no AGS paths. shell.qml ensures the auth
+    // cache dir exists at startup.
+    readonly property string authServerScript: homeDir + "/.config/quickshell/archeclipse/scripts/auth-server-callback.py"
+    readonly property string authSessionPath: homeDir + "/.cache/quickshell/auth/session.json"
+    readonly property string authLogPath: "/tmp/qs-auth-server.log"
     readonly property string settingsPath: homeDir + "/.cache/quickshell/settings/settings.json"
     readonly property string settingsMetaPath: homeDir + "/.cache/quickshell/settings/settings-sync.json"
     readonly property string avatarPath: homeDir + "/.face.icon"
@@ -102,6 +104,10 @@ Item {
 
     Component.onCompleted: {
         applySettingsSyncMeta();
+        // Start the callback server at startup so the magic-link redirect
+        // always has something listening — sendMagicLink() alone is not
+        // enough (the link may be opened much later / after a reboot).
+        ensureAuthServer();
         _netTimer.restart();
     }
 
@@ -154,6 +160,15 @@ Item {
         p.running = true;
     }
 
+    function lookupUserId() {
+        return root._cachedUid || _cachedSession?.user?.id || _cachedSession?.id || "";
+    }
+    // UID resolved from /auth/v1/user (AGS fetchCurrentUserProfile step 1).
+    // session.json from auth-server-callback.py only carries tokens — no id —
+    // so the profile query cannot reuse lookupUserId() synchronously.
+    property string _cachedUid: ""
+    property string _cachedEmail: ""
+
     function handleSessionJson(text) {
         root._lastSessionText = text || "";
         let session = null;
@@ -165,20 +180,59 @@ Item {
         root._cachedSession = session;
         if (!session?.access_token) {
             root.profile = null;
+            root._cachedUid = "";
+            root._cachedEmail = "";
             root.progressStatus = "idle";
             root.progressText = "Not signed in";
             root.isRefreshing = false;
             return;
         }
+        // Fast path: session.json already embeds the user (older saves) —
+        // skip straight to the profile query like AGS does after /user.
+        const embeddedId = session?.user?.id ?? session?.id ?? "";
+        if (embeddedId) {
+            root._cachedUid = embeddedId;
+            root._cachedEmail = session?.user?.email ?? session?.email ?? "";
+            root.fetchUserProfile(embeddedId);
+            return;
+        }
         root.progressStatus = "loading";
         root.progressText = "Loading profile...";
-        const p = fetchProfileComp.createObject(root);
-        p.command = ["bash", "-c", "curl -sS -H 'apikey: " + supabaseKey + "' -H 'Authorization: Bearer " + session.access_token + "' '" + supabaseUrl + "/auth/v1/user'; echo; echo '---SEP---'; curl -sS -H 'apikey: " + supabaseKey + "' -H 'Authorization: Bearer " + session.access_token + "' '" + supabaseUrl + "/rest/v1/user_profiles?select=id,username,avatar&id=eq." + (lookupUserId() ? encodeURIComponent(lookupUserId()) : "none") + "'"];
+        // Step 1 (AGS Supabase.fetchCurrentUserProfile): resolve the uid
+        // from /auth/v1/user first — the profile table needs id=eq.<uid>.
+        const p = fetchUserComp.createObject(root);
+        p.command = ["bash", "-c", "curl -sS -H 'apikey: " + supabaseKey + "' -H 'Authorization: Bearer " + session.access_token + "' '" + supabaseUrl + "/auth/v1/user'"];
         p.running = true;
     }
 
-    function lookupUserId() {
-        return _cachedSession?.user?.id ?? _cachedSession?.id ?? "";
+    function onUserFetched(text) {
+        let user = null;
+        try {
+            user = text ? JSON.parse(text) : null;
+        } catch (e) {
+            user = null;
+        }
+        if (!user?.id) {
+            root.profile = null;
+            root.progressStatus = "error";
+            root.progressText = "Signed in, but profile not found";
+            root.isRefreshing = false;
+            return;
+        }
+        root._cachedUid = user.id;
+        root._cachedEmail = user.email ?? "";
+        root.fetchUserProfile(user.id);
+    }
+
+    function fetchUserProfile(uid) {
+        root.progressStatus = "loading";
+        root.progressText = "Loading profile...";
+        const session = root._cachedSession;
+        if (!session?.access_token)
+            return;
+        const p = fetchProfileComp.createObject(root);
+        p.command = ["bash", "-c", "curl -sS -H 'apikey: " + supabaseKey + "' -H 'Authorization: Bearer " + session.access_token + "' '" + supabaseUrl + "/rest/v1/user_profiles?select=id,username,avatar,is_supporter&id=eq." + encodeURIComponent(uid) + "'"];
+        p.running = true;
     }
 
     // ===== MAGIC LINK =====
@@ -190,6 +244,9 @@ Item {
             });
             return;
         }
+        // Start the listener first so it is up by the time the user
+        // opens the email link (server must be listening for /callback).
+        ensureAuthServer();
         const p = magicLinkComp.createObject(root);
         p.command = ["bash", "-c", "curl -sS -X POST -H 'Content-Type: application/json' -H 'apikey: " + supabaseKey + "' -d '" + JSON.stringify({
                 email: email.trim(),
@@ -199,18 +256,19 @@ Item {
                 }
             }) + "' '" + supabaseUrl + "/auth/v1/otp'"];
         p.running = true;
-        ensureAuthServer();
     }
 
     function ensureAuthServer() {
+        // Single-shot restart: pkill any stale server (including the legacy
+        // AGS one, which held the same port) then detach a fresh quickshell
+        // one. The [a] bracket trick keeps pkill from matching this very
+        // bash process (its own cmdline contains the pattern) — without it
+        // pkill SIGTERMs the invoker and the server never starts.
+        // (The #fragment never reaches the server — the /callback JS must
+        // POST it to /save, which requires the server to be listening.)
         const p = authServerComp.createObject(root);
-        p.command = ["bash", "-c", "pkill -f 'python3 " + homeDir + "/.config/ags/scripts/auth-server-callback.py' || true"];
+        p.command = ["bash", "-c", "pkill -f '[a]uth-server-callback\\.py' || true; nohup python3 '" + root.authServerScript + "' >'" + root.authLogPath + "' 2>&1 &"];
         p.running = true;
-        p.onExited = function () {
-            const p2 = authServerComp.createObject(root);
-            p2.command = ["bash", "-c", "(python3 '" + homeDir + "/.config/ags/scripts/auth-server-callback.py' >/tmp/ags-auth-server.log 2>&1 &)"];
-            p2.running = true;
-        };
     }
 
     // ===== UPDATE PROFILE =====
@@ -225,7 +283,7 @@ Item {
         }
         root.progressStatus = "loading";
         root.progressText = "Updating profile...";
-        const uid = session.user?.id ?? session.id ?? "";
+        const uid = lookupUserId();
         const username = usernameField.text.trim() || homeDir.split("/").pop();
         const p = updateProfileComp.createObject(root);
         p.command = ["bash", "-c", "curl -sS -X PATCH -H 'Content-Type: application/json' -H 'apikey: " + supabaseKey + "' -H 'Authorization: Bearer " + session.access_token + "' -H 'Prefer: return=representation' -d '" + JSON.stringify({
@@ -238,6 +296,10 @@ Item {
     function logout() {
         logoutComp.createObject(root).running = true;
         root.profile = null;
+        root._cachedSession = null;
+        root._cachedUid = "";
+        root._cachedEmail = "";
+        root._lastSessionText = "";
         root.progressStatus = "idle";
         root.progressText = "Signed out";
         Notifications.notify({
@@ -277,7 +339,7 @@ Item {
         root.isSyncing = true;
         root.progressStatus = "loading";
         root.progressText = direction === "upload" ? "Uploading settings..." : "Downloading settings...";
-        const uid = session.user?.id ?? session.id ?? "";
+        const uid = lookupUserId();
 
         if (direction === "upload") {
             const settingsJson = readLocalSettings();
@@ -329,7 +391,7 @@ Item {
             return;
         }
         const session = root._cachedSession;
-        const uid = session?.user?.id ?? session?.id ?? "";
+        const uid = lookupUserId();
         // Not signed in: local-only copy (AGS setProfileAvatarFromPath path).
         if (!session?.access_token || !uid) {
             root.progressStatus = "loading";
@@ -560,7 +622,6 @@ Item {
                         implicitHeight: cardCol.implicitHeight + 20
                         color: Theme.bg
                         radius: 8
-                        border.color: Theme.border
 
                         Column {
                             id: cardCol
@@ -689,7 +750,6 @@ Item {
                         visible: !!root.profile
                         color: Theme.bg
                         radius: 8
-                        border.color: Theme.border
 
                         Column {
                             id: syncCol
@@ -756,7 +816,7 @@ Item {
                             implicitHeight: favCol.implicitHeight + 20
                             color: Theme.bg
                             radius: 8
-                            border.color: Theme.border
+
                             Column {
                                 id: favCol
                                 anchors.left: parent.left
@@ -798,7 +858,7 @@ Item {
                             implicitHeight: pinCol.implicitHeight + 20
                             color: Theme.bg
                             radius: 8
-                            border.color: Theme.border
+
                             Column {
                                 id: pinCol
                                 anchors.left: parent.left
@@ -836,7 +896,7 @@ Item {
                         visible: !root.profile
                         color: Theme.bg
                         radius: 8
-                        border.color: Theme.border
+
                         Column {
                             id: signCol
                             anchors.left: parent.left
@@ -912,39 +972,64 @@ Item {
         }
     }
     Component {
+        id: fetchUserComp
+        Process {
+            stdout: StdioCollector {
+                onStreamFinished: root.onUserFetched(text)
+            }
+            onExited: code => {
+                if (code !== 0 && !root.profile) {
+                    root.progressStatus = "error";
+                    root.progressText = "Profile fetch failed";
+                    root.isRefreshing = false;
+                }
+            }
+        }
+    }
+    Component {
         id: fetchProfileComp
         Process {
             stdout: StdioCollector {
                 onStreamFinished: {
-                    const parts = text.split("---SEP---");
-                    if (parts.length === 2) {
-                        try {
-                            const user = JSON.parse(parts[0].trim());
-                            const prof = JSON.parse(parts[1].trim());
-                            if (prof?.[0]) {
+                    try {
+                        const prof = JSON.parse(text.trim());
+                        if (prof?.[0]) {
+                            root.profile = {
+                                id: root._cachedUid,
+                                email: root._cachedEmail,
+                                username: prof[0].username,
+                                avatar: prof[0].avatar,
+                                is_supporter: prof[0].is_supporter ?? null
+                            };
+                            root.progressStatus = "idle";
+                            root.progressText = (prof[0].username ?? "No username") + " \u2022 " + (prof[0].is_supporter ? "Supporter" : "Member");
+                            // AGS syncAvatarToFaceIcon on every load:
+                            // silent download, notify only on failure.
+                            if (prof[0].avatar)
+                                root.syncAvatarSilent(prof[0].avatar);
+                        } else {
+                            // AGS falls back to a user-only profile when the
+                            // user_profiles row is missing — stay signed in.
+                            if (root._cachedUid) {
                                 root.profile = {
-                                    id: user?.id,
-                                    email: user?.email,
-                                    username: prof[0].username,
-                                    avatar: prof[0].avatar,
-                                    is_supporter: prof[0].is_supporter
+                                    id: root._cachedUid,
+                                    email: root._cachedEmail,
+                                    username: null,
+                                    avatar: null,
+                                    is_supporter: null
                                 };
                                 root.progressStatus = "idle";
-                                root.progressText = (prof[0].username ?? "No username") + " \u2022 " + (prof[0].is_supporter ? "Supporter" : "Member");
-                                // AGS syncAvatarToFaceIcon on every load:
-                                // silent download, notify only on failure.
-                                if (prof[0].avatar)
-                                    root.syncAvatarSilent(prof[0].avatar);
+                                root.progressText = "Signed in, but profile not found";
                             } else {
                                 root.profile = null;
                                 root.progressStatus = "error";
                                 root.progressText = "Profile not found";
                             }
-                        } catch (e) {
-                            root.profile = null;
-                            root.progressStatus = "error";
-                            root.progressText = "Failed to parse profile";
                         }
+                    } catch (e) {
+                        root.profile = null;
+                        root.progressStatus = "error";
+                        root.progressText = "Failed to parse profile";
                     }
                 }
             }

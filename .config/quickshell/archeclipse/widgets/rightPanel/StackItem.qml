@@ -14,12 +14,21 @@ Item {
 
     property bool isExpanded: !!(stack && stack.title && expandedStacks && expandedStacks[stack.title] === true)
 
+    // Height follows content (header + loaded stack body). The column is
+    // top-anchored, never fill-anchored: no height feedback loop.
+    height: stackCol.height
+
     Column {
-        anchors.fill: parent
+        id: stackCol
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
         spacing: 0
 
-        // Header
-        Row {
+        // Header (RowLayout: the title takes leftover width and elides —
+        // a plain Row let long summaries run past the parent).
+        RowLayout {
+            width: parent.width
             spacing: 5
             Label {
                 id: titleLabel
@@ -61,42 +70,32 @@ Item {
 
         // Content
         Loader {
+            width: parent.width
+            height: item ? item.height : 0
             sourceComponent: isExpanded ? expandedContent : collapsedContent
-            Layout.fillWidth: true
         }
     }
 
     Component {
         id: collapsedContent
-        Column {
-            spacing: 5
-            NotificationItem {
-                entry: stack.notifications[0]
-            }
+        NotificationItem {
+            // Loader parents the loaded item, so parent.width is valid here.
+            width: parent.width
+            entry: stack.notifications[0]
         }
     }
 
     Component {
         id: expandedContent
         Column {
+            width: parent.width
             spacing: 5
-            // Per-stack scrollable content (AGS notification-stack scrolledwindow
-            // with "expanded"/"collapsed" class) — caps expanded height so a huge
-            // stack scrolls within itself instead of blowing out the panel.
-            ScrollView {
-                width: parent.width
-                height: Math.min(220, stack.notifications.length * 68)
-                clip: true
-                Column {
+            height: childrenRect.height
+            Repeater {
+                model: stack.notifications
+                delegate: NotificationItem {
                     width: parent.width
-                    spacing: 5
-                    Repeater {
-                        model: stack.notifications
-                        delegate: NotificationItem {
-                            width: parent.width
-                            entry: modelData
-                        }
-                    }
+                    entry: modelData
                 }
             }
         }

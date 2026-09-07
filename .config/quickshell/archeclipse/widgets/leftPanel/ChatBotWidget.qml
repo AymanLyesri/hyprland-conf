@@ -521,8 +521,6 @@ Item {
                         color: modelData.role === "user" ? Theme.accentBg : Theme.moduleBg
                         radius: 8
 
-                        border.color: Theme.border
-
                         // Click to copy whole message (except code blocks)
                         MouseArea {
                             anchors.fill: parent
@@ -608,7 +606,7 @@ Item {
                                 width: parent.width
                                 height: 200
                                 source: modelData.image && modelData.image.length > 0 ? modelData.image : ""
-       
+
                                 clip: true
                                 visible: source !== ""
                             }
@@ -655,7 +653,6 @@ Item {
                     background: Rectangle {
                         color: Theme.bg
                         radius: 8
-                        border.color: Theme.border
                     }
                     Keys.onReturnPressed: {
                         if (event.modifiers & Qt.ShiftModifier)

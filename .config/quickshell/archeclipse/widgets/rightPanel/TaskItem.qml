@@ -14,6 +14,10 @@ Item {
 
     property bool isHovered: false
 
+    // Height follows content (inner Column is top-anchored, never
+    // fill-anchored: no height feedback loop).
+    height: innerCol.height + 24
+
     Rectangle {
         id: container
         anchors.fill: parent
@@ -24,14 +28,23 @@ Item {
         clip: true
 
         Column {
-            anchors.fill: parent
+            id: innerCol
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.topMargin: 12
+            anchors.leftMargin: 12
+            anchors.rightMargin: 12
             spacing: 6
-            anchors.margins: 12
 
-            // Header
-            Row {
+            // Header (RowLayout: the text column takes leftover width and
+            // elides — a plain Row with a dead Layout.fillWidth spacer and
+            // an unbounded text column overflowed).
+            RowLayout {
+                width: parent.width
                 spacing: 8
                 Column {
+                    Layout.fillWidth: true
                     spacing: 2
                     Label {
                         id: nameLabel
@@ -39,14 +52,19 @@ Item {
                         font.pixelSize: Theme.fontSize + 2
                         font.bold: true
                         color: task.active ? Theme.fg : Theme.fgDim
+                        width: parent.width
+                        elide: Text.ElideRight
                     }
                     Row {
                         spacing: 5
+                        width: parent.width
                         Label {
                             id: scheduleLabel
                             text: root.formatNextRun(task.nextRun)
                             font.pixelSize: Theme.fontSize - 1
                             color: Theme.fgDim
+                            width: parent.width - typeLabel.implicitWidth - 5
+                            elide: Text.ElideRight
                         }
                         Label {
                             id: typeLabel
@@ -55,10 +73,6 @@ Item {
                             color: Theme.fgDim
                         }
                     }
-                }
-
-                Item {
-                    Layout.fillWidth: true
                 }
 
                 // Hover actions
@@ -104,6 +118,7 @@ Item {
                 text: task.command.length > 40 ? task.command.substring(0, 40) + "..." : task.command
                 font.pixelSize: Theme.fontSize - 1
                 color: Theme.fgDim
+                width: parent.width
                 elide: Text.ElideRight
             }
         }

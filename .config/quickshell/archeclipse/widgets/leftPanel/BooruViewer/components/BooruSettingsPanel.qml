@@ -168,7 +168,6 @@ Rectangle {
                     background: Rectangle {
                         color: Theme.bg
                         radius: 4
-                        border.color: Theme.border
                     }
                     onTextChanged: {
                         // Debounced tag fetch

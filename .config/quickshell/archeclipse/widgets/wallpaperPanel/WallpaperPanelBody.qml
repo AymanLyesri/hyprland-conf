@@ -343,7 +343,7 @@ Item {
     Rectangle {
         id: wallpaperSwitcher
         anchors.fill: parent
-        color: Theme.moduleBg
+        color: "transparent"
         radius: Theme.radius
 
         ColumnLayout {
