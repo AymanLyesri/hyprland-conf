@@ -118,7 +118,7 @@ Item {
     }
 
     // --- UI ---
-    Flickable {
+    SmoothFlickable {
         anchors.fill: parent
         contentHeight: contentColumn.height + 20
         clip: true

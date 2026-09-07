@@ -6,34 +6,84 @@ import qs.widgets.shared
 import qs.services
 import qs.widgets.media
 
-// Detail revealer docked to the right of the grid (was a centered popup).
+// Floating detail card shown in a PopupWindow docked to the panel edge.
+// The popup sizes us (width/height); we report our natural height back so
+// the viewer can center/clamp on the anchor card. Entrance is slide/fade
+// on the inner wrapper only — never layout geometry.
 // viewer: entry root (dialogImage, download/bookmark/pin actions...).
 Item {
+    id: dialogRoot
     property var viewer
     clip: true
     visible: viewer.dialogImage !== null
+    // Hover handoff: the panel keeps itself open while the cursor is on
+    // this separate surface (LeftPanel.requestAutoHide via hostPanel).
+    HoverHandler {
+        id: dialogHover
+        onHoveredChanged: {
+            if (viewer && typeof viewer.popupHovered !== "undefined")
+                viewer.popupHovered = hovered;
+        }
+    }
+    // Natural content height (width is fixed by the viewer, so wrapping
+    // here is stable and never feeds back into the layout).
+    implicitHeight: contentCol.implicitHeight
+    onImplicitHeightChanged: {
+        if (viewer && implicitHeight > 0)
+            viewer.adoptDialogHeight(implicitHeight);
+    }
+
+    Item {
+        id: slider
+        anchors.fill: parent
+        // Glide in from the right edge + fade; layout-agnostic.
+        x: (1 - (viewer ? viewer.detailSlide : 1)) * -24
+        opacity: viewer ? viewer.detailSlide : 1
+
+        // Card surface: floats over grid content, so it carries its own
+        // backdrop with a subtle outline.
+        Rectangle {
+            anchors.fill: parent
+            color: Theme.bg
+            radius: 10
+            border.color: Theme.accentBg
+            border.width: 1
+        }
+
+    Flickable {
+        id: contentScroll
+        anchors.fill: parent
+        anchors.margins: 8
+        contentWidth: width
+        contentHeight: contentCol.implicitHeight
+        clip: true
+        boundsBehavior: Flickable.StopAtBounds
 
     Column {
+        id: contentCol
         width: parent.width
         spacing: 8
         visible: viewer.dialogImage !== null
 
-        // header: close
+        // header: title left, close right (plain Row has no layout
+        // attached props, so the spacer takes an explicit width)
         Row {
+            id: dialogHeader
             width: parent.width
             spacing: 6
             Text {
+                id: dialogTitle
                 text: viewer.dialogImage ? `#${viewer.dialogImage.id}` : ""
                 color: Theme.fg
                 font.pixelSize: 12
                 font.bold: true
             }
             Item {
-                Layout.fillWidth: true
-                width: 1
+                width: Math.max(1, dialogHeader.width - dialogTitle.width - closeBtn.width - dialogHeader.spacing * 2)
                 height: 1
             }
             AppButton {
+                id: closeBtn
                 text: "X"
                 onClicked: viewer.requestClose()
             }
@@ -185,6 +235,8 @@ Item {
             }
         }
     }
+    } // contentScroll
+    } // slider
 
     Keys.onEscapePressed: viewer.requestClose()
     focus: visible

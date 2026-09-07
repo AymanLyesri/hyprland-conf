@@ -1,10 +1,11 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import qs.widgets.shared
 
 // Masonry image grid (extracted verbatim from BooruViewerWidget).
 // viewer: entry root (masonryColumns, columns).
-Flickable {
+SmoothFlickable {
     id: gridScroll
 
     property var viewer
@@ -20,49 +21,26 @@ Flickable {
         slideAnim.start();
     }
 
-    // Frozen while the detail revealer is open (viewer._gridWidth captured
-    // on open): grid keeps its exact width, revealer absorbs all growth.
-    Layout.fillWidth: viewer ? viewer.dialogImage === null : true
-    Layout.preferredWidth: viewer && viewer.dialogImage !== null ? viewer._gridWidth : 0
+    // Always full width: the detail is a root-level overlay, so the grid
+    // never surrenders space or relayouts when it opens.
+    Layout.fillWidth: true
     Layout.fillHeight: true
     clip: true
     contentWidth: width
     contentHeight: masonryRow.height
-    // Touch-fling glide (wheel inertia is handled below).
-    flickDeceleration: 1500
+    // Booru pins the fling speed lower than the shared default.
     maximumFlickVelocity: 1000
 
-    // Wheel momentum via the native flick engine: Flickable only builds
-    // momentum from drag-release flicks (no wheel-momentum property
-    // exists), so feed wheel deltas into flick() and let its own
-    // deceleration, bounds and overshoot do the gliding.
-    WheelHandler {
-        property real vel: 0
-        property double lastT: 0
-
-        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
-        onWheel: (event) => {
-            // Time-based decay: smooth-scroll devices send tiny deltas at
-            // high frequency, which an event-count decay crushes to a crawl.
-            // Velocity accumulates across rapid events and dies within ~120ms
-            // once input stops, so stale speed never leaks into the next gesture.
-            const now = Date.now();
-            const dt = lastT > 0 ? now - lastT : 16;
-            lastT = now;
-            const d = event.pixelDelta.y !== 0 ? event.pixelDelta.y : event.angleDelta.y / 2;
-            vel = Math.max(-gridScroll.maximumFlickVelocity, Math.min(gridScroll.maximumFlickVelocity, vel * Math.exp(-dt / 180) - d * 60));
-            if (d === 0) {
-                // Trailing scroll-end event: flicking here dies with the
-                // gesture, so re-flick once dispatch finishes and coast.
-                const v = vel;
-                Qt.callLater(() => {
-                    return gridScroll.flick(0, v);
-                });
-            } else {
-                gridScroll.flick(0, vel);
-            }
-            event.accepted = true;
-        }
+    // Follow tick: the card glides inside the static popup surface, so
+    // scrolling here only retargets a local y binding (plus the cheap
+    // dismiss check) — no window reposition, no layout, no stutter.
+    onContentYChanged: {
+        if (viewer && viewer.dialogImage !== null)
+            viewer.refreshDialogTop(-1);
+    }
+    onHeightChanged: {
+        if (viewer && viewer.dialogImage !== null)
+            viewer.refreshDialogTop(-1);
     }
 
     // Masonry row: N shortest-column Columns (AGS algorithm above)

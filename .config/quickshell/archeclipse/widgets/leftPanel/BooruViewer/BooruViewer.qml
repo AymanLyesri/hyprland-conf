@@ -41,20 +41,22 @@ Item {
         const imgs = root.images || [];
         const n = Math.max(1, root.columns);
         const cols = [];
-        for (let i = 0; i < n; i++) cols.push({
-            "h": 0,
-            "items": []
-        })
+        for (let i = 0; i < n; i++)
+            cols.push({
+                "h": 0,
+                "items": []
+            });
         for (const im of imgs) {
             const ratio = (im.width && im.height) ? im.height / im.width : 1;
             let t = cols[0];
-            for (const c of cols) if (c.h < t.h) {
-                t = c;
-            }
+            for (const c of cols)
+                if (c.h < t.h) {
+                    t = c;
+                }
             t.items.push(im);
             t.h += ratio;
         }
-        return cols.map((c) => {
+        return cols.map(c => {
             return c.items;
         });
     }
@@ -70,69 +72,165 @@ Item {
     // Diagnostic: last fetch command with secrets redacted (IPC-readable)
     property string lastFetchCmd: ""
     property string lastFetchError: ""
-    // AGS renderAsImageDialog state — the currently open image dialog
+    // AGS renderAsImageDialog state — the currently open image dialog.
+    // The detail is a root-level overlay (bottom of this file): opening it
+    // resizes nothing, so no frozen grid widths or revealer flags exist.
     property var dialogImage: null
-    // Grid width frozen at the moment the revealer opens: while open the
-    // grid keeps this exact width (zero relayout/image rescaling) and only
-    // the revealer + outer panel resize. Pure capture — no Settings writes.
-    property real _gridWidth: 0
-    // Revealer visibility lags dialogImage on close so the slide-out
-    // animation finishes before content unmounts + panel snaps back.
-    property bool _detailVisible: false
-    property real detailW: 0
+    // Floating-dialog anchor: viewport Y of the clicked card's center at
+    // open time (+ contentY then + card height). Scroll deltas shift the
+    // card's live position; dialogTop re-clamps to follow it until the
+    // card leaves the viewport → auto-close. dialogH is the last measured
+    // dialog content height used for centering/clamping.
+    property real dialogAnchorCenterVy: 0
+    property real dialogAnchorContentY: 0
+    property real dialogAnchorH: 100
+    property real dialogTop: 0
+    property real dialogH: 560
+    // Hover handoff with the floating popup (separate window surface):
+    // the panel keeps itself open while this is true (see LeftPanel
+    // requestAutoHide) and re-arms its hide when it clears.
+    property bool popupHovered: false
+    // Back-reference injected by LeftPanel (booruView.hostPanel = panel).
+    property var hostPanel: null
+    // Overlay entrance driver (0 = parked, 1 = in). Slide/opacity only —
+    // the grid, toolbar, navigation and settings never relayout, so this
+    // cannot feed back into the layout the way a width animation did.
+    property real detailSlide: 0
     // Downloaded set: populated by downloadImage()'s completion poller (avoids
     // needing a synchronous filesystem-exists primitive in QML).
-    property var downloadedIds: ({
-    })
+    property var downloadedIds: ({})
     // forces dialog overlay to recompute toggle states after downloads
     property int dialogVersion: 0
     property bool bottomRevealed: false
     property bool keyEnabled: true
     property Timer _limitDebounce
-    readonly property var booruApis: [{
-        "name": "Danbooru",
-        "value": "danbooru",
-        "url": "https://danbooru.donmai.us/",
-        "idSearchUrl": "https://danbooru.donmai.us/posts/"
-    }, {
-        "name": "Gelbooru",
-        "value": "gelbooru",
-        "url": "https://gelbooru.com/",
-        "idSearchUrl": "https://gelbooru.com/index.php?page=post&s=view&id="
-    }, {
-        "name": "Safebooru",
-        "value": "safebooru",
-        "url": "https://safebooru.donmai.us/",
-        "idSearchUrl": "https://safebooru.donmai.us/posts/"
-    }]
+    readonly property var booruApis: [
+        {
+            "name": "Danbooru",
+            "value": "danbooru",
+            "url": "https://danbooru.donmai.us/",
+            "idSearchUrl": "https://danbooru.donmai.us/posts/"
+        },
+        {
+            "name": "Gelbooru",
+            "value": "gelbooru",
+            "url": "https://gelbooru.com/",
+            "idSearchUrl": "https://gelbooru.com/index.php?page=post&s=view&id="
+        },
+        {
+            "name": "Safebooru",
+            "value": "safebooru",
+            "url": "https://safebooru.donmai.us/",
+            "idSearchUrl": "https://safebooru.donmai.us/posts/"
+        }
+    ]
     // The currently selected API object (for preview path resolution in bookmark/pin tabs)
     readonly property var currentApiObj: {
         const v = Settings.booru.api ? Settings.booru.api.value : "danbooru";
-        return root.booruApis.find((a) => {
+        return root.booruApis.find(a => {
             return a.value === v;
         }) || root.booruApis[0];
     }
     // Local preview-file ids verified present on disk. Grid prefers these
     // (AGS renders the downloaded local preview via getPreviewPath()).
-    property var previewIds: ({
-    })
+    property var previewIds: ({})
     // Local full-original ids verified present on disk (dialog cache).
     // Remote danbooru URLs 403 inside Qt, so the dialog can only show
     // originals downloaded with Referer headers by fetchOriginal().
-    property var fullIds: ({
-    })
+    property var fullIds: ({})
     // Initial fetch on load (AGS fetchImages branches to bookmarks/pins/API
     // from the restored tab — saved Bookmarks/Pins must not fetch the API).
     // Deferred until Settings.ready: booting on defaults would fetch with
     // limit 100 / the wrong tab and persist the defaults over the file.
     property bool _booted: false
 
+    // Slide-out, then unmount: the overlay glides/fades away first and
+    // only then (_closeTimer) is the content dropped.
     function requestClose() {
-        if (root.dialogImage === null && !root._detailVisible)
-            return ;
+        if (root.dialogImage === null)
+            return;
 
-        root._detailVisible = false;
+        root.detailSlide = 0;
         _closeTimer.restart();
+    }
+
+    // Open the overlay at the clicked card: capture the card's viewport
+    // center (+ scroll offset + height), then set the image. Re-clicking
+    // the same image just re-anchors (no unmount churn).
+    function openDialog(img, card) {
+        if (!img)
+            return;
+        try {
+            const h = (card && card.height) || 100;
+            const p = card ? card.mapToItem(grid, 0, 0) : null;
+            root.dialogAnchorCenterVy = p ? p.y + h / 2 : grid.height / 2;
+            root.dialogAnchorContentY = grid.contentY;
+            root.dialogAnchorH = h;
+        } catch (e) {
+            root.dialogAnchorCenterVy = grid.height / 2;
+            root.dialogAnchorContentY = grid.contentY;
+            root.dialogAnchorH = 100;
+        }
+        if (root.dialogImage !== img) {
+            _closeTimer.stop();
+            root.dialogImage = img;
+            root.fetchOriginal(img);
+        }
+        root.detailSlide = 1;
+        root.refreshDialogTop(-1);
+    }
+
+    // Live viewport center of the anchor card (shifts with scrolling).
+    function anchorCardCenter() {
+        return root.dialogAnchorCenterVy + (root.dialogAnchorContentY - grid.contentY);
+    }
+
+    function adoptDialogHeight(dh) {
+        if (dh > 0)
+            root.dialogH = dh;
+    }
+
+    // Per-tick follow: recompute the card's target Y from the live scroll
+    // offset and dismiss once the anchor leaves the viewport. This writes
+    // only dialogTop — a local binding that moves content inside the
+    // static popup surface (vsync repaint). It never touches the anchor,
+    // so zero compositor round-trips happen here (that was the stutter).
+    function refreshDialogTop(dh) {
+        root.adoptDialogHeight(dh);
+        if (root.dialogImage === null)
+            return;
+        const c = root.anchorCardCenter();
+        if (c < -root.dialogAnchorH / 2 || c > grid.height + root.dialogAnchorH / 2) {
+            root.requestClose();
+            return;
+        }
+        const h = root.dialogH || 560;
+        const maxTop = Math.max(0, grid.height - h);
+        root.dialogTop = Math.max(0, Math.min(maxTop, c - h / 2));
+    }
+
+    // Leaving the popup for anywhere but the panel hides it (the panel's
+    // own leave path handles panel->desktop; this covers popup->desktop).
+    function hidePanel() {
+        const h = root.hostPanel;
+        if (h && typeof h.requestAutoHide === "function")
+            h.requestAutoHide();
+    }
+
+    onPopupHoveredChanged: {
+        if (!root.popupHovered)
+            root.hidePanel();
+    }
+
+    // Panel +/- resize with the popup open moves the edge the static
+    // anchor was computed from: re-push once the configure lands (a
+    // single round-trip on a rare user action — never per-frame).
+    onWidthChanged: {
+        try {
+            if (root.dialogImage !== null && detailPopup.visible && typeof detailPopup.anchor.updateAnchor === "function")
+                detailPopup.anchor.updateAnchor();
+        } catch (e) {
+        }
     }
 
     // --------- helpers for image dialog (mirror BooruImage.class) ---------
@@ -191,31 +289,29 @@ Item {
     // already downloaded or cached.
     function fetchOriginal(img) {
         if (!img || !img.url || root.isVideo(img))
-            return ;
+            return;
 
         if (root.isDownloaded(img) || root.fullIds[String(img.id)])
-            return ;
+            return;
 
         const dir = `${root.booruPath}/${img.api.value}/originals`;
         const filePath = `${dir}/${img.id}.${img.extension}`;
         const checkProc = Qt.createQmlObject('import Quickshell.Io; Process { stdout: StdioCollector {} }', root);
         checkProc.command = ["bash", "-c", "test -s " + JSON.stringify(filePath) + " && echo yes || echo no"];
-        checkProc.stdout.onStreamFinished.connect(function() {
+        checkProc.stdout.onStreamFinished.connect(function () {
             if (checkProc.stdout.text.trim() === "yes") {
-                const ids = Object.assign({
-                }, root.fullIds);
+                const ids = Object.assign({}, root.fullIds);
                 ids[String(img.id)] = true;
                 root.fullIds = ids;
             } else {
                 const dl = Qt.createQmlObject('import Quickshell.Io; Process {}', root);
                 dl.command = ["bash", "-c", `mkdir -p \"${dir}\" && curl -sSf -H \"User-Agent: QuickshellBooru/1.0 (ArchLinux; Hyprland)\" -H \"Referer: ${img.api.url}\" -o \"${filePath}\" \"${img.url}\"`];
-                dl.exited.connect(function() {
+                dl.exited.connect(function () {
                     const verify = Qt.createQmlObject('import Quickshell.Io; Process { stdout: StdioCollector {} }', root);
                     verify.command = ["bash", "-c", "test -s " + JSON.stringify(filePath) + " && echo yes || echo no"];
-                    verify.stdout.onStreamFinished.connect(function() {
+                    verify.stdout.onStreamFinished.connect(function () {
                         if (verify.stdout.text.trim() === "yes") {
-                            const ids2 = Object.assign({
-                            }, root.fullIds);
+                            const ids2 = Object.assign({}, root.fullIds);
                             ids2[String(img.id)] = true;
                             root.fullIds = ids2;
                         }
@@ -264,7 +360,7 @@ Item {
                 "summary": "Error updating bookmark",
                 "body": "Bookmark script failed."
             });
-            return ;
+            return;
         }
         try {
             const parsed = JSON.parse((stdoutText || "").trim());
@@ -281,7 +377,6 @@ Item {
             });
             if (root.selectedTab === "Bookmarks")
                 root.loadBookmarks();
-
         } catch (e) {
             Settings.reload();
             Notifications.notify({
@@ -293,7 +388,7 @@ Item {
 
     function togglePinned(img) {
         const arr = (Settings.booru.pins || []).slice();
-        const i = arr.findIndex((x) => {
+        const i = arr.findIndex(x => {
             return x && String(x.id) === String(img.id) && root.apiOf(x) === root.apiOf(img);
         });
         if (i >= 0)
@@ -314,9 +409,9 @@ Item {
         Quickshell.execDetached(["bash", "-c", `mkdir -p '${dir}' && curl -sL -o '${target}' '${img.url}'`]);
         // poll for a non-empty file to appear (network fetch may take time)
         const poll = Qt.createQmlObject('import QtQuick; import Quickshell.Io; Timer { interval: 1200; repeat: true; ' + 'property var check: null }', root);
-        poll.triggered.connect(function() {
+        poll.triggered.connect(function () {
             if (poll.check && poll.check.running)
-                return ;
+                return;
 
             // one check at a time
             poll.check = Qt.createQmlObject('import Quickshell.Io; Process { stdout: StdioCollector {} }', root);
@@ -324,7 +419,7 @@ Item {
             poll.check.command = ["bash", "-c", `[ -s ${targetJson} ] && echo yes`];
             const p = poll.check;
             p.running = true;
-            p.stdout.onStreamFinished.connect(function() {
+            p.stdout.onStreamFinished.connect(function () {
                 if (p.stdout.text.trim() === "yes") {
                     poll.stop();
                     poll.destroy();
@@ -371,10 +466,10 @@ Item {
     function ensureRatingTagFirst() {
         // Find existing rating tag, remove it, re-add at front (or default -rating:explicit)
         let tags = root.currentTags.slice();
-        const ratingTag = tags.find((t) => {
+        const ratingTag = tags.find(t => {
             return t.match(/[-]rating:explicit|rating:explicit/);
         });
-        tags = tags.filter((t) => {
+        tags = tags.filter(t => {
             return !t.match(/[-]rating:explicit|rating:explicit/);
         });
         tags.unshift(ratingTag ?? "-rating:explicit");
@@ -387,7 +482,7 @@ Item {
         const apiValue = Settings.booru.api ? Settings.booru.api.value : "danbooru";
         const proc = Qt.createQmlObject('import Quickshell.Io; Process { stdout: StdioCollector {} }', root);
         proc.command = ["bash", "-c", "du -sb " + JSON.stringify(root.booruPath + '/' + apiValue + '/previews') + " 2>/dev/null | cut -f1"];
-        proc.stdout.onStreamFinished.connect(function() {
+        proc.stdout.onStreamFinished.connect(function () {
             const bytes = parseInt(proc.stdout.text.trim()) || 0;
             root.cacheSize = Math.round(bytes / (1024 * 1024)) + "mb";
             proc.destroy();
@@ -405,7 +500,7 @@ Item {
         root.progressStatus = "loading";
         root._fetchSeq = root._fetchSeq + 1;
         const apiValue = Settings.booru.api ? Settings.booru.api.value : "danbooru";
-        const apiObj = root.booruApis.find((a) => {
+        const apiObj = root.booruApis.find(a => {
             return a.value === apiValue;
         }) || root.booruApis[0];
         const tagsStr = root.currentTags.join(",");
@@ -436,12 +531,12 @@ Item {
         // NOTE: read streams on process exit, NOT on stdout.onStreamFinished:
         // stderr may not have flushed when stdout closes, which hid the
         // script's real error envelope (empty stderr reads).
-        proc.exited.connect(function(exitCode, exitStatus) {
+        proc.exited.connect(function (exitCode, exitStatus) {
             // Drop stale responses: a newer fetch (newer tag set) supersedes
             // this one, so its results must not touch the grid.
             if (mySeq !== root._fetchSeq) {
                 proc.destroy();
-                return ;
+                return;
             }
             const text = proc.stdout.text;
             // booru.py emit_error() writes to STDERR with empty stdout, so a
@@ -454,15 +549,13 @@ Item {
                     const ej = JSON.parse(errText.trim());
                     if (ej && ej.message)
                         msg = String(ej.message);
-
-                } catch (e) {
-                }
+                } catch (e) {}
                 Notifications.notify({
                     "summary": "Booru error",
                     "body": msg
                 });
                 proc.destroy();
-                return ;
+                return;
             }
             // AGS parseBooruArrayResponse: surface the script's error envelope
             // message (e.g. missing API credentials) instead of a generic error
@@ -480,7 +573,7 @@ Item {
                     "body": msg
                 });
                 proc.destroy();
-                return ;
+                return;
             }
             if (!Array.isArray(parsed)) {
                 root.progressStatus = "error";
@@ -495,21 +588,21 @@ Item {
                     "body": detail
                 });
                 proc.destroy();
-                return ;
+                return;
             }
             try {
                 const data = parsed;
-                root.images = data.map((img) => {
+                root.images = data.map(img => {
                     return ({
-                        "id": img.id || 0,
-                        "width": img.width || 0,
-                        "height": img.height || 0,
-                        "api": apiObj,
-                        "tags": img.tags || [],
-                        "extension": img.extension,
-                        "url": img.url,
-                        "preview": img.preview
-                    });
+                            "id": img.id || 0,
+                            "width": img.width || 0,
+                            "height": img.height || 0,
+                            "api": apiObj,
+                            "tags": img.tags || [],
+                            "extension": img.extension,
+                            "url": img.url,
+                            "preview": img.preview
+                        });
                 });
                 root.calculateCacheSize();
                 root.progressStatus = "success";
@@ -540,12 +633,12 @@ Item {
 
     function downloadPreviews(imgList) {
         const pending = [];
-        imgList.forEach((img) => {
+        imgList.forEach(img => {
             const previewDir = `${root.booruPath}/${img.api.value}/previews`;
             const filePath = `${previewDir}/${img.id}.${img.extension}`;
             const previewUrl = img.preview;
             if (!previewUrl)
-                return ;
+                return;
 
             pending.push({
                 "id": String(img.id),
@@ -556,12 +649,11 @@ Item {
             // running=true before assigning stdout races and drops output.
             const checkProc = Qt.createQmlObject('import Quickshell.Io; Process { stdout: StdioCollector {} }', root);
             checkProc.command = ["bash", "-c", "test -f " + JSON.stringify(filePath) + " && echo yes || echo no"];
-            checkProc.stdout.onStreamFinished.connect(function() {
+            checkProc.stdout.onStreamFinished.connect(function () {
                 if (checkProc.stdout.text.trim() === "no") {
                     Quickshell.execDetached(["bash", "-c", `mkdir -p \"${previewDir}\" && ` + `curl -sSf -H \"User-Agent: QuickshellBooru/1.0 (ArchLinux; Hyprland)\" ` + `-H \"Referer: ${img.api.url}\" ` + `-H \"Accept: image/avif,image/webp,image/png,image/svg+xml,image/*;q=0.8\" ` + `-o \"${filePath}\" \"${previewUrl}\"`]);
                 } else {
-                    const ids = Object.assign({
-                    }, root.previewIds);
+                    const ids = Object.assign({}, root.previewIds);
                     ids[String(img.id)] = true;
                     root.previewIds = ids;
                 }
@@ -572,22 +664,20 @@ Item {
         // Single delayed verification pass: curls run detached, so re-check
         // the batch once and flip the grid to file:// URLs as files land.
         if (pending.length === 0)
-            return ;
+            return;
 
         const verify = Qt.createQmlObject('import QtQuick; Timer { repeat: false; interval: 6000 }', root);
-        verify.triggered.connect(function() {
-            const script = pending.map((p) => {
+        verify.triggered.connect(function () {
+            const script = pending.map(p => {
                 return "test -s " + JSON.stringify(p.path) + " && echo " + p.id;
             }).join(" || true; ");
             const vp = Qt.createQmlObject('import Quickshell.Io; Process { stdout: StdioCollector {} }', root);
             vp.command = ["bash", "-c", script + " || true"];
-            vp.stdout.onStreamFinished.connect(function() {
-                const ids = Object.assign({
-                }, root.previewIds);
-                vp.stdout.text.trim().split(/\s+/).forEach((id) => {
+            vp.stdout.onStreamFinished.connect(function () {
+                const ids = Object.assign({}, root.previewIds);
+                vp.stdout.text.trim().split(/\s+/).forEach(id => {
                     if (id)
                         ids[id] = true;
-
                 });
                 root.previewIds = ids;
                 vp.destroy();
@@ -611,7 +701,7 @@ Item {
         proc.stdout = Qt.createQmlObject('import Quickshell.Io; StdioCollector {}', root);
         proc.stderr = Qt.createQmlObject('import Quickshell.Io; StdioCollector {}', root);
         proc.running = true;
-        proc.stdout.onStreamFinished.connect(function() {
+        proc.stdout.onStreamFinished.connect(function () {
             const text = proc.stdout.text;
             try {
                 if (text && text.trim().startsWith("[")) {
@@ -647,7 +737,7 @@ Item {
 
     function loadBookmarks() {
         const bookmarks = Settings.booru.bookmarks || [];
-        root.images = root.pagedSlice(bookmarks).map((b) => {
+        root.images = root.pagedSlice(bookmarks).map(b => {
             return root.clonify(b);
         });
         root.downloadPreviews(root.images);
@@ -656,7 +746,7 @@ Item {
 
     function loadPins() {
         const pins = Settings.booru.pins || [];
-        root.images = root.pagedSlice(pins).map((p) => {
+        root.images = root.pagedSlice(pins).map(p => {
             return root.clonify(p);
         });
         root.downloadPreviews(root.images);
@@ -678,7 +768,7 @@ Item {
     function gotoPage(p) {
         // AGS page buttons always fetchImages() — same-page click refreshes.
         if (p < 1)
-            return ;
+            return;
 
         if (p !== root.page) {
             root.pageDirection = p > root.page ? "next" : "prev";
@@ -688,15 +778,14 @@ Item {
         }
         if (!root.loadLocalTab())
             root.fetchImages();
-
     }
 
     function boot() {
         if (root._booted)
-            return ;
+            return;
 
         if (!Settings.ready)
-            return ;
+            return;
 
         root._booted = true;
         _bootTimer.stop();
@@ -706,27 +795,33 @@ Item {
         root.calculateCacheSize();
         if (!root.loadLocalTab())
             root.fetchImages();
-
     }
 
-    on_DetailVisibleChanged: {
-        root.detailW = root._detailVisible ? 210 : 0;
-    }
     onDialogImageChanged: {
         if (root.dialogImage !== null) {
             _closeTimer.stop();
-            root._gridWidth = grid.width;
-            root._detailVisible = true;
+            root.detailSlide = 1;
             root.fetchOriginal(root.dialogImage);
+            // Direct sets (not via openDialog) have no anchor yet —
+            // center the dialog until a real anchor arrives.
+            if (root.dialogAnchorH <= 0) {
+                root.dialogAnchorCenterVy = grid.height / 2;
+                root.dialogAnchorContentY = grid.contentY;
+                root.dialogAnchorH = 100;
+            }
+            Qt.callLater(() => root.refreshDialogTop(-1));
         }
     }
     // AGS Images subscribe: slide new page in from the travel direction,
     // scroll to top; first render appears without transition.
+    // New results invalidate the anchor card → drop the dialog at once
+    // (the scroll reset below would auto-close it a frame later anyway).
     onImagesChanged: {
+        root.requestClose();
         grid.resetScroll();
         if (root._firstImages) {
             root._firstImages = false;
-            return ;
+            return;
         }
         grid.slideFrom(root.pageDirection === "next" ? 60 : -60);
     }
@@ -764,6 +859,7 @@ Item {
         interval: 190
         repeat: false
         onTriggered: {
+            // Slide-out finished: drop the content (hides the popup).
             root.dialogImage = null;
         }
     }
@@ -780,34 +876,20 @@ Item {
     // claim remaining space — in a plain Column fillHeight is ignored and
     // the grid collapses to zero height (images "not displayed").
     ColumnLayout {
-        // --- grid (Flickable + masonry Row live in the ColumnLayout below) ---
-        // Grid card extracted as a Component so the masonry column Repeaters can
-        // instantiate it (AGS image.renderAsImageDialog per grid item).
-
+        // Grid claims the full widget width at all times: the detail is a
+        // floating popup (below), so opening it never resizes or relayouts
+        // the grid, toolbar, navigation or settings panels.
         anchors.fill: parent
         spacing: 10
 
         // Image masonry grid (Flickable: ScrollView hides contentY, and AGS
-        // scrolls to top after every page transition) + right detail revealer
-        RowLayout {
+        // scrolls to top after every page transition)
+        Booru.BooruGrid {
+            id: grid
+
+            viewer: root
             Layout.fillWidth: true
             Layout.fillHeight: true
-            spacing: 6
-            clip: true
-
-            Booru.BooruGrid {
-                id: grid
-
-                viewer: root
-            }
-
-            Booru.BooruDialog {
-                viewer: root
-                Layout.preferredWidth: root.detailW
-                Layout.fillHeight: true
-                visible: root.dialogImage !== null
-            }
-
         }
 
         // Tabs
@@ -823,7 +905,7 @@ Item {
             Process {
                 property string out: ""
 
-                onExited: (code) => {
+                onExited: code => {
                     return root.onBookmarkToggled(code === 0, out);
                 }
 
@@ -832,9 +914,7 @@ Item {
                         out = text;
                     }
                 }
-
             }
-
         }
 
         // Bottom bar: navigation + revealable settings
@@ -846,7 +926,6 @@ Item {
             Booru.BooruNavigation {
                 viewer: root
             }
-
             Booru.BooruSettingsPanel {
                 viewer: root
             }
@@ -855,6 +934,58 @@ Item {
 
     }
 
+    // Floating detail popup: separate window surface docked to the panel's
+    // right edge, spanning the full viewer height. The surface itself is
+    // STATIC — positioned once at show time, never repositioned — and the
+    // card glides inside it (y binding + Behavior below). That is the
+    // whole smoothness audit: moving the window costs an xdg-popup
+    // configure round-trip per tick (the old stutter); moving content
+    // inside a static surface is a local vsync repaint. Overlaps the
+    // panel edge by 4px for an attached look (popups render above).
+    PopupWindow {
+        id: detailPopup
+        anchor.item: root
+        anchor.rect.x: Math.round(root.width - 4)
+        anchor.rect.y: 0
+        anchor.rect.width: 1
+        anchor.rect.height: 1
+        // Defaults (edges Top|Left, gravity Bottom|Right) already mean:
+        // top-left corner at the rect, expanding down-right. No overrides.
+        width: 232
+        height: Math.max(48, Math.round(root.height))
+        visible: root.dialogImage !== null
+        color: "transparent"
+        // Clickthrough everywhere except the card: the surface is
+        // viewer-tall, so without this the transparent strip would eat
+        // clicks meant for windows behind it. Region tracks the gliding
+        // card via plain bindings (piggybacked surface commits, no
+        // reposition handshake).
+        mask: Region {
+            x: popupDialog.x
+            y: popupDialog.y
+            width: popupDialog.width
+            height: popupDialog.height
+        }
+
+        Booru.BooruDialog {
+            id: popupDialog
+            viewer: root
+            width: parent.width
+            // Glide track: viewer coords == popup coords vertically (the
+            // anchor pins popup-top to viewer-top), kept real-valued for
+            // subpixel motion. The Behavior trails fast flicks into a
+            // glide; close decisions use the unanimated math, so timing
+            // never drifts.
+            y: grid.y + root.dialogTop
+            height: Math.min(implicitHeight, detailPopup.height)
+            Behavior on y {
+                NumberAnimation {
+                    duration: 110
+                    easing.type: Easing.OutCubic
+                }
+            }
+        }
+    }
     // --- keyboard navigation ---
     Item {
         anchors.fill: parent
@@ -881,12 +1012,12 @@ Item {
         }
     }
 
-    Behavior on detailW {
+    // Overlay entrance: slide/fade only, never layout widths.
+    Behavior on detailSlide {
         NumberAnimation {
             duration: 180
             easing.type: Easing.OutCubic
         }
-
     }
 
     _limitDebounce: Timer {
@@ -894,5 +1025,4 @@ Item {
         repeat: false
         onTriggered: root.fetchImages()
     }
-
 }

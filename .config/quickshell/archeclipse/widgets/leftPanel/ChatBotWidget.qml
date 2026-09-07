@@ -489,7 +489,7 @@ Item {
         }
 
         // [3] Messages
-        Flickable {
+        SmoothFlickable {
             id: flick
             width: parent.width
             height: parent.height - 200

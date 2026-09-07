@@ -8,7 +8,6 @@ import qs.widgets.launcher
 import qs.widgets.leftPanel
 import qs.widgets.media
 import qs.widgets.notifications
-import qs.widgets.overlays
 import qs.widgets.rightPanel
 import qs.widgets.userPanel
 
@@ -61,17 +60,9 @@ ShellRoot {
 
     }
 
-    // per-monitor wallpaper switcher (bottom overlay)
-    Variants {
-        model: Quickshell.screens
-
-        WallpaperSwitcher {
-            required property ShellScreen modelData
-
-            screen: modelData
-        }
-
-    }
+    // Wallpaper switcher lives in the main bar pill as WallpaperIsland
+    // (BarState "wallpaper", body in widgets/wallpaperPanel).
+    // SUPER+W routes to the island via Ipc.togglePanel.
 
     // per-monitor user panel (full-screen power grid overlay)
     Variants {

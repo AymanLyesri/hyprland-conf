@@ -347,7 +347,7 @@ Item {
             color: "transparent"
 
             // ===== MANGA TAB =====
-            Flickable {
+            SmoothFlickable {
                 anchors.fill: parent
                 visible: root.currentTab === "Manga"
                 clip: true
@@ -434,7 +434,7 @@ Item {
             }
 
             // ===== CHAPTERS TAB =====
-            Flickable {
+            SmoothFlickable {
                 anchors.fill: parent
                 visible: root.currentTab === "Chapters"
                 clip: true
@@ -488,7 +488,7 @@ Item {
                 visible: root.currentTab === "Pages"
                 spacing: 8
 
-                Flickable {
+                SmoothFlickable {
                     id: pagesFlickable
                     width: parent.width
                     height: parent.height - (root.bottomRevealed ? 120 : 44)

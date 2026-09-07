@@ -11,6 +11,10 @@ ClippingRectangle {
     property alias implicitImageWidth: img.implicitWidth
     property alias implicitImageHeight: img.implicitHeight
     property int sourceWidth: 0
+    // Optional fallback (e.g. original file when thumbnail is missing).
+    // If the main source fails to load, automatically retry once with this.
+    property string fallbackSource: ""
+    property bool __fallbackUsed: false
 
     radius: Theme.radius
     color: "transparent"
@@ -22,5 +26,12 @@ ClippingRectangle {
         cache: true
         fillMode: Image.PreserveAspectCrop
         sourceSize.width: root.sourceWidth
+        onSourceChanged: root.__fallbackUsed = false
+        onStatusChanged: {
+            if (status === Image.Error && !root.__fallbackUsed && root.fallbackSource !== "" && source != root.fallbackSource) {
+                root.__fallbackUsed = true;
+                source = root.fallbackSource;
+            }
+        }
     }
 }

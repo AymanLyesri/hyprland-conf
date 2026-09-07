@@ -13,6 +13,7 @@ Singleton {
 
     // Priority map (default base 0 < recording 40 < pulses 80 < search 100)
     // "compact"/"expanded" kept only for backward-compat with old persist files.
+    // wallpaper (95) beats control (90) so SUPER+W opens over the control island.
     property var priority: {
         "compact": 0,
         "expanded": 0,
@@ -23,6 +24,7 @@ Singleton {
         "network": 80,
         "player": 80,
         "control": 90,
+        "wallpaper": 95,
         "search": 100
     }
 

@@ -62,8 +62,9 @@ Rectangle {
                 Settings.waifu = image;
                 Settings.persist();
             } else {
-                // Left-click: open full AGS-style image dialog
-                viewer.dialogImage = image;
+                // Left-click: float the detail card at this card's Y
+                // (viewer captures the anchor + opens the island).
+                viewer.openDialog(image, card);
             }
         }
     }

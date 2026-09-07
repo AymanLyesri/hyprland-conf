@@ -554,7 +554,7 @@ Item {
             currentIndex: root.activeTab
 
             // Account tab (AGS scrolledwindow: scrolls on narrow panels)
-            Flickable {
+            SmoothFlickable {
                 id: acctFlick
                 width: parent.width
                 height: parent.height

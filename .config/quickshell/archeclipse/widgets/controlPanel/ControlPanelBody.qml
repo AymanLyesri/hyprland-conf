@@ -267,7 +267,10 @@ Item {
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
                         BarState.deactivate("control");
-                        Registry.toggle(`wallpaper-switcher-${body.effectiveMonitor}`);
+                        if (BarState.state === "wallpaper")
+                            BarState.deactivate("wallpaper");
+                        else
+                            BarState.activate("wallpaper", 0);
                     }
                 }
             }

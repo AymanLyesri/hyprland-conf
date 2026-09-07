@@ -39,6 +39,15 @@ Item {
             return "control open";
         }
 
+        function toggleWallpaper(): string {
+            if (BarState.state === "wallpaper") {
+                BarState.deactivate("wallpaper");
+                return "wallpaper closed";
+            }
+            BarState.activate("wallpaper", 0);
+            return "wallpaper open";
+        }
+
         // Diagnostic: force the network pulse state (mirrors a network change).
         function pulseNetwork(): string {
             BarState.activate("network", 3000);
@@ -206,6 +215,10 @@ Item {
         }
 
         function togglePanel(name: string, monitor: string): string {
+            // Canonical UI moved into the bar island — keep the hypr
+            // SUPER+W binding (`togglePanel wallpaper-switcher <mon>`) working.
+            if (name === "wallpaper-switcher")
+                return toggleWallpaper();
             const key = `${name}-${monitor}`;
             const w = Registry.get(key);
             if (w) { w.visible = !w.visible; return key + " toggled"; }
@@ -350,13 +363,16 @@ Item {
         // Wallpaper-switcher probe for parity QA. query is one of:
         //   "visible", "categories", "selected", "count", "current",
         //   "target", "workspace", "progress", or "setCategory:<name>".
-        // monitor selects the per-monitor window (default eDP-1).
+        // monitor selects the per-monitor island body (default eDP-1).
+        // Reads the bar island body (widgets/wallpaperPanel via WallpaperIsland).
         function wallpaperDiag(query: string, monitor: string): string {
             try {
                 const mon = (monitor && monitor !== "") ? monitor : "eDP-1";
-                const w = Registry.get(`wallpaper-switcher-${mon}`);
-                if (!w) return "no window: wallpaper-switcher-" + mon;
-                if (query === "visible") return "visible=" + w.visible;
+                const w = Registry.get(`wallpaper-island-${mon}`)
+                    ?? Registry.get("wallpaper-island");
+                if (!w) return "no island: wallpaper-island-" + mon + " (island=" + (BarState.state === "wallpaper") + ")";
+                if (query === "visible")
+                    return "island=" + (BarState.state === "wallpaper");
                 if (query === "categories") return "categories=" + (w.categories || []).join(",");
                 if (query === "selected") return "selected=" + w.selectedCategory;
                 if (query === "count") return "count=" + (w.selectedWallpapers || []).length;
@@ -369,8 +385,12 @@ Item {
                     w.selectedCategory = query.substring(12);
                     return "selected=" + w.selectedCategory;
                 }
-                if (query === "show") { w.visible = true; return "shown"; }
-                if (query === "hide") { w.visible = false; return "hidden"; }
+                if (query === "show") {
+                    BarState.activate("wallpaper", 0); return "shown (island)";
+                }
+                if (query === "hide") {
+                    BarState.deactivate("wallpaper"); return "hidden (island)";
+                }
                 return "unknown query";
             } catch (e) {
                 return "EX: " + e;

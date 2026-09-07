@@ -3,68 +3,45 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
-import Quickshell.Wayland
 import Quickshell.Io
 import qs.theme
 import qs.services
 import qs.widgets.shared
 
-// WallpaperSwitcher — pick a wallpaper per workspace, or set the sddm /
+// WallpaperPanelBody — pick a wallpaper per workspace, or set the sddm /
 // lockscreen background, browse a category, add a new wallpaper (with
 // automatic thumbnail generation), or delete one.
 //
-// Ground-up Quickshell port of AGS/Astal's WallpaperSwitcher.tsx. Rewritten
-// (not adapted) from the earlier QML draft — that draft hardcoded a home
-// directory, dropped target-type switching, the per-workspace strip,
-// right-click delete, "add wallpaper", and the loading/error indicator.
-// All of that is restored here; see the notes below the code.
-PanelWindow {
+// Lives in its own widgets/wallpaperPanel folder (same pattern as
+// widgets/controlPanel/ControlPanelBody) and is hosted by WallpaperIsland
+// in the main bar pill. Hosts size this Item (implicit 960x360) and call
+// refresh() when it becomes visible.
+Item {
     id: root
 
-    required property ShellScreen screen
-    readonly property string monitorName: Hyprland.monitorFor(screen)?.name ?? ""
+    // Island owner passes the bar's monitor; falls back to focused.
+    property string monitorName: ""
+    readonly property string effectiveMonitor: root.monitorName || Registry.monitorName
 
-    // Bottom-anchored overlay panel, not a full-screen dimmer — matches the
-    // original AGS window (LEFT|BOTTOM|RIGHT anchor, OVERLAY layer, IGNORE
-    // exclusivity, ON_DEMAND keyboard focus).
-    anchors {
-        left: true
-        right: true
-        bottom: true
-    }
-    exclusiveZone: -1
-    implicitHeight: 340
-    color: "transparent"
-    visible: false
-
-    WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
-
-    // Namespace matches AGS ("wallpaper-switcher") so the hypr
-    // layerrule + SUPER+W togglePanel binding keep working.
-    // Registry key stays per-monitor for IPC lookup.
-    Component.onCompleted: {
-        Registry.register(`wallpaper-switcher-${monitorName}`, root);
-        fetchWallpapers();
-        fetchCurrentWallpapers();
-        const ws = Hyprland.focusedWorkspace;
-        if (ws)
-            root.selectedWorkspaceId = ws.id;
-    }
-
-    Item {
-        anchors.fill: parent
-        focus: root.visible
-        Keys.onEscapePressed: root.visible = false
-    }
+    implicitWidth: 960
+    implicitHeight: 360
 
     readonly property string home: Quickshell.env("HOME")
     readonly property string wallpaperScript: home + "/.config/ags/scripts/get-wallpapers.sh"
     readonly property string setScript: home + "/.config/hypr/wallpaper-daemon/set-wallpaper.sh"
     readonly property string reloadScript: home + "/.config/hypr/wallpaper-daemon/reload.sh"
 
+    // Must match thumbnail_folder in get-wallpapers.sh
+    // ($HOME/.config/ags/cache/thumbnails). That script is the sole
+    // thumbnail generator; pointing elsewhere yields blank tiles.
+    readonly property string thumbnailBase: home + "/.config/ags/cache/thumbnails"
+
     function toThumbnailPath(file) {
-        return file.replace(home + "/.config/wallpapers/", home + "/.cache/quickshell/thumbnails/").replace(/\.[^/.]+$/, ".jpg");
+        return file.replace(home + "/.config/wallpapers/", thumbnailBase + "/").replace(/\.[^/.]+$/, ".jpg");
+    }
+
+    function isVideoFile(file) {
+        return /\.(mp4|webm|mkv|mov)$/i.test(file);
     }
 
     // ---------------------------------------------------------------- state
@@ -99,7 +76,16 @@ PanelWindow {
 
     property var currentWallpapers: []           // path per workspace index, this monitor
 
-    onVisibleChanged: if (visible) {
+    Component.onCompleted: {
+        fetchWallpapers();
+        fetchCurrentWallpapers();
+        const ws = Hyprland.focusedWorkspace;
+        if (ws)
+            root.selectedWorkspaceId = ws.id;
+    }
+
+    // Hosts call this when the body becomes visible.
+    function refresh() {
         fetchWallpapers();
         fetchCurrentWallpapers();
     }
@@ -145,7 +131,7 @@ PanelWindow {
 
     Process {
         id: fetchCurrentProc
-        command: ["bash", root.wallpaperScript, "--current", root.monitorName]
+        command: ["bash", root.wallpaperScript, "--current", root.effectiveMonitor]
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
@@ -190,7 +176,7 @@ PanelWindow {
             return ["bash", "-c", `mkdir -p ${JSON.stringify(root.home + "/.config/wallpapers/lockscreen")} && ` + `cp ${JSON.stringify(path)} ${JSON.stringify(root.home + "/.config/wallpapers/lockscreen/wallpaper")}`];
         default:
             // workspace
-            return [root.setScript, String(root.selectedWorkspaceId), root.monitorName, path];
+            return [root.setScript, String(root.selectedWorkspaceId), root.effectiveMonitor, path];
         }
     }
 
@@ -312,9 +298,9 @@ PanelWindow {
         const targetDir = root.home + "/.config/wallpapers/custom";
         const basename = sourcePath.split("/").pop();
         const targetPath = targetDir + "/" + basename;
-        const thumbDir = root.home + "/.cache/quickshell/thumbnails/custom";
+        const thumbDir = root.thumbnailBase + "/custom";
         const thumbPath = thumbDir + "/" + basename.replace(/\.[^/.]+$/, ".jpg");
-        const isVideo = /\.(mp4|webm)$/i.test(sourcePath);
+        const isVideo = root.isVideoFile(sourcePath);
         const thumbCmd = isVideo ? `ffmpeg -i ${JSON.stringify(targetPath)} -vframes 1 -vf "scale=500:-1" -y ${JSON.stringify(thumbPath)}` : `magick ${JSON.stringify(targetPath)} -resize "500x500^" -gravity center -extent 500x500 ${JSON.stringify(thumbPath)}`;
 
         importProc.command = ["bash", "-c", `mkdir -p ${JSON.stringify(targetDir)} ${JSON.stringify(thumbDir)} && ` + `cp -- ${JSON.stringify(sourcePath)} ${JSON.stringify(targetPath)} && ` + thumbCmd];
@@ -377,8 +363,8 @@ PanelWindow {
                         required property int index
                         readonly property bool isFocused: Hyprland.focusedWorkspace?.id === index + 1
 
-                        width: 140
-                        height: 90
+                        width: 100
+                        height: 66
                         radius: 6
                         color: modelData === "" ? "black" : "transparent"
                         border.width: isFocused ? 1 : 0
@@ -389,6 +375,9 @@ PanelWindow {
                             anchors.fill: parent
                             anchors.margins: 2
                             source: wsTile.modelData === "" ? "" : "file://" + root.toThumbnailPath(wsTile.modelData)
+                            // Still images can render directly if the thumbnail is missing;
+                            // videos cannot, so keep the thumbnail source for those.
+                            fallbackSource: (wsTile.modelData !== "" && !root.isVideoFile(wsTile.modelData)) ? "file://" + wsTile.modelData : ""
                         }
                         Text {
                             visible: wsTile.modelData === ""
@@ -491,18 +480,21 @@ PanelWindow {
             }
 
             // all wallpapers in the selected category — horizontal strip
-            ScrollView {
+            SmoothFlickable {
                 id: wallScroll
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                ScrollBar.vertical.policy: ScrollBar.AlwaysOff
-                ScrollBar.horizontal.policy: ScrollBar.AsNeeded
-                clip: true
+                flickableDirection: Flickable.HorizontalFlick
+                contentWidth: wallRow.width
+                contentHeight: height
+                ScrollBar.horizontal: ScrollBar {
+                    policy: ScrollBar.AsNeeded
+                }
 
                 Row {
+                    id: wallRow
                     spacing: 6
-                    width: wallScroll.width
-                    height: Math.max(0, wallScroll.height)
+                    height: wallScroll.height
                     Repeater {
                         model: root.selectedWallpapers
                         delegate: Rectangle {
@@ -519,6 +511,7 @@ PanelWindow {
                                 anchors.fill: parent
                                 anchors.margins: 3
                                 source: "file://" + root.toThumbnailPath(tile.modelData)
+                                fallbackSource: !root.isVideoFile(tile.modelData) ? "file://" + tile.modelData : ""
                             }
 
                             ToolTip.visible: tileMa.containsMouse

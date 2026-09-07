@@ -34,15 +34,17 @@ PanelWindow {
     margins {
         top: Settings.leftPanelExclusivity ? -32 : 0
     }
-    // +216 while the BooruViewer detail revealer is open (binding:
-    // auto-reverts on close/tab-switch, never persists, can't stack).
-    // Instant snap: the smooth motion is the internal detailW slide, NOT a
-    // panel-window resize (layer-shell renegotiates per frame = stutter).
-    readonly property bool detailOpen: !!(activeWidget && activeWidget._detailVisible === true)
-    implicitWidth: Settings.leftPanelWidth + (detailOpen ? 216 : 0)
+    // The booru detail is a floating PopupWindow to the right of this
+    // panel: this window never resizes for it, so the width is always
+    // exactly the setting — no island expansion, no renegotiation.
+    implicitWidth: Settings.leftPanelWidth
     color: "transparent"
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
-    WlrLayershell.exclusiveZone: Settings.leftPanelExclusivity ? width : -1
+    // Fixed reservation matching the base width: the floating booru
+    // popup draws OVER windows without pushing them (Bar parity:
+    // exclusiveZone stays barHeight while the pill grows). Reserving the
+    // popup area too would shove tiled windows on every open/close.
+    WlrLayershell.exclusiveZone: Settings.leftPanelExclusivity ? Settings.leftPanelWidth : -1
     WlrLayershell.layer: WlrLayer.Top
 
     // Selected widget — initialized from persisted Settings (AGS restores
@@ -73,20 +75,34 @@ PanelWindow {
     // Register with Registry for IPC togglePanel
     Component.onCompleted: {
         Registry.register(`left-panel-${root.monitorName}`, root);
+        // Back-reference so the booru viewer can route its popup-unhover
+        // hide requests here (the popup is a separate window surface).
+        booruView.hostPanel = root;
         visible = false;
     }
     Component.onDestruction: {
         Registry.unregister(`left-panel-${root.monitorName}`);
     }
 
-    // Idle hide timer (AGS: 0ms = next tick; matches Astal's "timeout 0")
+    // Idle hide timer (AGS: 0ms = next tick; matches Astal's "timeout 0").
+    // While the booru popup is open the delay stretches to 150ms to
+    // bridge the hover gap between this window and the separate popup
+    // surface (leave here, enter there). The trigger re-checks, so a
+    // fast flick across both still hides.
     Timer {
         id: hideTimer
-        interval: 0
+        interval: (activeWidget && activeWidget.dialogImage) ? 150 : 0
         onTriggered: {
-            if (!Settings.leftPanelLock)
+            if (!Settings.leftPanelLock && !panelHover.hovered && !(activeWidget && activeWidget.popupHovered))
                 root.visible = false;
         }
+    }
+
+    // Shared hide entry: the panel's own leave path and the booru
+    // viewer's popup-unhover path (via hostPanel) both funnel here.
+    function requestAutoHide() {
+        if (!Settings.leftPanelLock && !panelHover.hovered && !root.popupOpen && !(activeWidget && activeWidget.popupHovered))
+            hideTimer.restart();
     }
 
     // Popup-open guard: any child of root that owns a visible Popup/PopupWindow
@@ -113,8 +129,8 @@ PanelWindow {
         onHoveredChanged: {
             if (hovered)
                 hideTimer.stop();
-            else if (!Settings.leftPanelLock && !root.popupOpen)
-                hideTimer.restart();
+            else
+                root.requestAutoHide();
         }
     }
 
@@ -340,7 +356,9 @@ PanelWindow {
                     }
                 }
                 UserProfileWidget {}
-                BooruViewer {}
+                BooruViewer {
+                    id: booruView
+                }
                 ChatBotWidget {}
                 MangaViewerWidget {}
                 SettingsWidget {}
