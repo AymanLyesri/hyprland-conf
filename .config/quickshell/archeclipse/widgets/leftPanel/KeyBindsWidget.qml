@@ -40,7 +40,7 @@ Item {
     property var categories: Object.keys(root.keybinds).sort()
 
     // ---- UI: vertical category list exactly like AGS (no filter row) ----
-    Column {
+    ColumnLayout {
         anchors.fill: parent
         spacing: 10
 
@@ -49,25 +49,27 @@ Item {
             font.pixelSize: Theme.fontSize + 4
             font.bold: true
             color: Theme.fg
-            width: parent.width
+            Layout.fillWidth: true
         }
 
-        // Loading indicator
+        // Loading indicator (centered manually: parent is a layout,
+        // which ignores anchors on children)
         BusyIndicator {
             running: root.loading
-            anchors.horizontalCenter: parent.horizontalCenter
+            Layout.alignment: Qt.AlignHCenter
             visible: root.loading
         }
 
         ScrollView {
-            width: parent.width
-            // Guarded: a negative height sends Flickable into a silent polish loop
-            height: Math.max(0, parent.height - y)
+            id: keyScroll
+            Layout.fillWidth: true
+            Layout.fillHeight: true
             clip: true
             visible: !root.loading
+            ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
             Column {
-                width: parent.width
+                width: keyScroll.availableWidth
                 spacing: 10
 
                 Repeater {
@@ -97,7 +99,10 @@ Item {
                                 width: parent.width
                                 color: "transparent"
                                 height: 28
-                                Row {
+                                // NOTE: RowLayout — the description stretches,
+                                // chips keep implicit size (verticalCenter
+                                // anchors are ignored inside positioners).
+                                RowLayout {
                                     anchors.fill: parent
                                     spacing: 10
                                     Label {
@@ -106,27 +111,28 @@ Item {
                                         color: Theme.fg
                                         elide: Text.ElideRight
                                         maximumLineCount: 1
-                                        width: parent.width - keysRow.width - 10
-                                        anchors.verticalCenter: parent.verticalCenter
+                                        Layout.fillWidth: true
                                     }
 
                                     // key chips joined by "+" (AGS KeyBind)
                                     Row {
                                         id: keysRow
                                         spacing: 3
-                                        anchors.verticalCenter: parent.verticalCenter
+                                        Layout.alignment: Qt.AlignVCenter
                                         Repeater {
                                             model: bindKeys
                                             delegate: Row {
                                                 required property string modelData
                                                 required property int index
                                                 spacing: 3
+                                                // Fixed height so "+" centers
+                                                // deterministically.
+                                                height: 22
                                                 Rectangle {
                                                     width: kChip.implicitWidth + 10
                                                     height: 22
                                                     radius: 4
                                                     color: Theme.moduleBg
-
                                                     border.color: Theme.border
                                                     Label {
                                                         id: kChip
@@ -140,7 +146,7 @@ Item {
                                                 }
                                                 Label {
                                                     text: "+"
-                                                    anchors.verticalCenter: parent.verticalCenter
+                                                    y: (parent.height - height) / 2
                                                     visible: index < (bindKeys.length - 1)
                                                     color: Theme.fgDim
                                                     font.pixelSize: Theme.fontSize

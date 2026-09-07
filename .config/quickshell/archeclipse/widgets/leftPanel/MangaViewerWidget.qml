@@ -51,11 +51,11 @@ Item {
         root.progressStatus = "loading";
         const p = _runScript.createObject(root);
         p.command = ["python3", scriptPath, "--provider", provider, "--popular", "--limit", "10"];
-        p.running = true;
         p.onJson = function (data) {
             root.mangaList = data;
             root.progressStatus = "success";
         };
+        p.running = true;
     }
 
     function searchManga(query) {
@@ -66,30 +66,29 @@ Item {
         }
         const p = _runScript.createObject(root);
         p.command = ["python3", scriptPath, "--provider", provider, "--search", query.trim(), "--limit", "10"];
-        p.running = true;
         p.onJson = function (data) {
             root.mangaList = data;
             root.progressStatus = "success";
         };
+        p.running = true;
     }
 
     function fetchChapters(mangaId) {
         root.progressStatus = "loading";
         const p = _runScript.createObject(root);
         p.command = ["python3", scriptPath, "--provider", provider, "--chapters", "--manga-id", mangaId];
-        p.running = true;
         p.onJson = function (data) {
             root.chapters = sortChapters(data);
             root.currentTab = "Chapters";
             root.progressStatus = "success";
         };
+        p.running = true;
     }
 
     function fetchPages(chapterId) {
         root.progressStatus = "loading";
         const p = _runScript.createObject(root);
         p.command = ["python3", scriptPath, "--provider", provider, "--pages", "--chapter-id", chapterId];
-        p.running = true;
         p.onJson = function (data) {
             root.pages = data;
             root.pageCache = ({});
@@ -99,6 +98,7 @@ Item {
             if (data && data.length > 0)
                 loadPageAt(0);
         };
+        p.running = true;
     }
 
     function loadPageAt(index) {
@@ -109,7 +109,6 @@ Item {
         const page = root.pages[index];
         const p = _runScript.createObject(root);
         p.command = ["python3", scriptPath, "--provider", provider, "--page", page.url];
-        p.running = true;
         p.onJson = function (data) {
             if (data?.path) {
                 const cache = root.pageCache;
@@ -117,6 +116,7 @@ Item {
                 root.pageCache = cache;
             }
         };
+        p.running = true;
     }
 
     function navigatePage(dir) {
@@ -292,14 +292,15 @@ Item {
         }
     }
 
-    // ===== UI =====
-    Column {
+    // ===== UI (ColumnLayout: children size via Layout.*, no fragile
+    // parent.height - N math; the content rect takes leftover space) =====
+    ColumnLayout {
         anchors.fill: parent
         spacing: 8
 
         // Header + tabs
-        Row {
-            width: parent.width
+        RowLayout {
+            Layout.fillWidth: true
             spacing: 4
             Label {
                 text: "Manga Viewer"
@@ -317,6 +318,8 @@ Item {
                         checked: root.currentTab === modelData
                         enabled: modelData === "Manga" ? true : modelData === "Chapters" ? (root.selectedManga !== null) && (root.selectedManga !== undefined) : (root.selectedChapter !== null) && (root.selectedChapter !== undefined)
                         implicitHeight: 28
+                        // Tab label (was missing: invisible zero-width tabs)
+                        text: modelData
                         onClicked: {
                             if (enabled)
                                 root.currentTab = modelData;
@@ -329,7 +332,7 @@ Item {
         // Search bar (Manga tab)
         TextField {
             id: searchField
-            width: parent.width
+            Layout.fillWidth: true
             visible: root.currentTab === "Manga"
             placeholderText: "Search manga..."
             onAccepted: root.searchManga(text)
@@ -340,24 +343,25 @@ Item {
             }
         }
 
-        // Content area
+        // Content area (fills leftover space)
         Rectangle {
-            width: parent.width
-            height: parent.height - 100
+            Layout.fillWidth: true
+            Layout.fillHeight: true
             color: "transparent"
 
             // ===== MANGA TAB =====
             SmoothFlickable {
+                id: mangaFlick
                 anchors.fill: parent
                 visible: root.currentTab === "Manga"
                 clip: true
+                contentWidth: mangaFlick.width
                 contentHeight: mangaCol.implicitHeight
                 ScrollBar.vertical: ScrollBar {}
 
                 Column {
                     id: mangaCol
-                    anchors.left: parent.left
-                    anchors.right: parent.right
+                    width: mangaFlick.width
                     spacing: 10
 
                     // Progress
@@ -372,10 +376,12 @@ Item {
                         model: root.mangaList
                         delegate: Rectangle {
                             width: mangaCol.width
-                            implicitHeight: 210
+                            // Grows with content (cover + 3 labels), not a
+                            // fixed 210px that tall covers would overflow.
+                            implicitHeight: mangaCardCol.implicitHeight + 20
                             color: Theme.moduleBg
                             radius: 8
-
+                            clip: true
                             border.color: Theme.border
 
                             MouseArea {
@@ -388,6 +394,7 @@ Item {
                             }
 
                             Column {
+                                id: mangaCardCol
                                 anchors.fill: parent
                                 spacing: 6
                                 anchors.margins: 10
@@ -435,16 +442,17 @@ Item {
 
             // ===== CHAPTERS TAB =====
             SmoothFlickable {
+                id: chapFlick
                 anchors.fill: parent
                 visible: root.currentTab === "Chapters"
                 clip: true
+                contentWidth: chapFlick.width
                 contentHeight: chapCol.implicitHeight
                 ScrollBar.vertical: ScrollBar {}
 
                 Column {
                     id: chapCol
-                    anchors.left: parent.left
-                    anchors.right: parent.right
+                    width: chapFlick.width
                     spacing: 6
 
                     Label {
@@ -463,9 +471,7 @@ Item {
                             implicitHeight: 36
                             color: Theme.bg
                             radius: 6
-
                             border.color: Theme.border
-                            anchors.leftMargin: modelData.isAttachment ? 25 : 0
 
                             AppButton {
                                 anchors.fill: parent
@@ -481,25 +487,25 @@ Item {
                 }
             }
 
-            // ===== PAGES TAB =====
-            Column {
-                width: parent.width
-                height: parent.height
+            // ===== PAGES TAB (ColumnLayout: reader takes leftover space) =====
+            ColumnLayout {
+                anchors.fill: parent
                 visible: root.currentTab === "Pages"
                 spacing: 8
 
                 SmoothFlickable {
                     id: pagesFlickable
-                    width: parent.width
-                    height: parent.height - (root.bottomRevealed ? 120 : 44)
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
                     clip: true
+                    contentWidth: pagesFlickable.width
                     contentHeight: Math.max(pageImg.height, height)
                     ScrollBar.vertical: ScrollBar {}
                     Component.onCompleted: root.mainFlickable = pagesFlickable
 
                     AppImage {
                         id: pageImg
-                        width: parent.width
+                        width: pagesFlickable.width
                         source: root.pageCache[root.currentPageIndex]?.path ?? ""
                         fillMode: Image.PreserveAspectFit
                         clip: true
@@ -515,8 +521,8 @@ Item {
                     }
                 }
 
-                Row {
-                    width: parent.width
+                RowLayout {
+                    Layout.fillWidth: true
                     spacing: 10
                     AppButton {
                         Layout.fillWidth: true
@@ -533,7 +539,8 @@ Item {
                 }
 
                 Label {
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignHCenter
                     text: root.pages.length > 0 ? "Page " + (root.currentPageIndex + 1) + " / " + root.pages.length : "No pages"
                     font.pixelSize: Theme.fontSize - 1
                     color: Theme.fgDim
@@ -544,8 +551,8 @@ Item {
         // ===== Bottom action bar (AGS Actions/PageNavigation/ChapterNavigation/UrlBar/Sections/Tabs) =====
 
         // Reveal button
-        Row {
-            width: parent.width
+        RowLayout {
+            Layout.fillWidth: true
             spacing: 10
             AppButton {
                 Layout.fillWidth: true
@@ -556,7 +563,7 @@ Item {
 
         // Revealable search actions (AGS Actions revealer)
         Column {
-            width: parent.width
+            Layout.fillWidth: true
             spacing: 8
             visible: root.bottomRevealed
             Behavior on opacity {
@@ -578,9 +585,9 @@ Item {
                     border.color: Theme.border
                 }
             }
-            Row {
-                spacing: 8
+            RowLayout {
                 width: parent.width
+                spacing: 8
                 AppButton {
                     Layout.fillWidth: true
                     text: "\u{F0580} Search"
@@ -595,8 +602,8 @@ Item {
         }
 
         // Chapter navigation (AGS ChapterNavigation) — always visible
-        Row {
-            width: parent.width
+        RowLayout {
+            Layout.fillWidth: true
             spacing: 10
             AppButton {
                 Layout.fillWidth: true
@@ -612,7 +619,7 @@ Item {
             }
         }
         Label {
-            width: parent.width
+            Layout.fillWidth: true
             // AGS shows "No chapter selected" (grayed) when nothing is chosen
             opacity: (root.selectedChapter !== null && root.selectedChapter !== undefined) ? 1 : 0.4
             text: {
@@ -633,8 +640,8 @@ Item {
         }
 
         // URL bar (AGS UrlBar) — visible complexity low, always rendered
-        Row {
-            width: parent.width
+        RowLayout {
+            Layout.fillWidth: true
             spacing: 6
             Rectangle {
                 Layout.fillWidth: true
@@ -664,8 +671,8 @@ Item {
         }
 
         // Provider tabs (AGS Tabs)
-        Row {
-            width: parent.width
+        RowLayout {
+            Layout.fillWidth: true
             spacing: 4
             Repeater {
                 model: root.providers
@@ -681,27 +688,33 @@ Item {
         }
 
         // Keyboard navigation (AGS key controller: Left/Right page, Up/Down reveal)
-        Item {
-            anchors.fill: parent
-            focus: true
-            Keys.onLeftPressed: {
-                if (root.currentTab === "Pages")
-                    root.navigatePage("prev");
+        // NOTE: Item lives OUTSIDE the ColumnLayout above (positioners ignore
+        // anchors, which would collapse it to 0x0) — anchored to root instead.
+    }
+    Item {
+        anchors.fill: parent
+        focus: true
+        Keys.onLeftPressed: {
+            if (root.currentTab === "Pages") {
+                root.navigatePage("prev");
                 event.accepted = true;
             }
-            Keys.onRightPressed: {
-                if (root.currentTab === "Pages")
-                    root.navigatePage("next");
+        }
+        Keys.onRightPressed: {
+            if (root.currentTab === "Pages") {
+                root.navigatePage("next");
                 event.accepted = true;
             }
-            Keys.onUpPressed: {
-                if (!root.bottomRevealed)
-                    root.bottomRevealed = true;
+        }
+        Keys.onUpPressed: {
+            if (!root.bottomRevealed) {
+                root.bottomRevealed = true;
                 event.accepted = true;
             }
-            Keys.onDownPressed: {
-                if (root.bottomRevealed)
-                    root.bottomRevealed = false;
+        }
+        Keys.onDownPressed: {
+            if (root.bottomRevealed) {
+                root.bottomRevealed = false;
                 event.accepted = true;
             }
         }

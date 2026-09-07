@@ -12,7 +12,11 @@ import qs.services
 // ArchEclipse avatar, version checking, update, links, GitHub stars
 Item {
     id: root
-    property string widgetWidth: parent?.width ?? 350
+    // NOTE: real-number width (was string: relied on JS coercion), and an
+    // implicitHeight so embeds inside plain Columns (Donations) can size
+    // off content instead of collapsing to 0.
+    property real widgetWidth: parent ? parent.width : 350
+    implicitHeight: contentColumn.implicitHeight + 30
 
     readonly property string homeDir: Quickshell.env("HOME")
     readonly property string repoDir: homeDir
@@ -119,7 +123,9 @@ Item {
 
     // --- UI ---
     SmoothFlickable {
+        id: generalFlick
         anchors.fill: parent
+        contentWidth: generalFlick.width
         contentHeight: contentColumn.height + 20
         clip: true
         ScrollBar.vertical: ScrollBar {
@@ -128,14 +134,16 @@ Item {
 
         Column {
             id: contentColumn
-            width: parent.width - 20
-            anchors.horizontalCenter: parent.horizontalCenter
+            width: generalFlick.width - 20
+            x: 10
             spacing: 16
             topPadding: 10
 
-            // Avatar (circular clip via rounded container, like UserProfile)
+            // Avatar (circular clip via rounded container, like UserProfile).
+            // NOTE: manual x-centering — parent is a Column positioner,
+            // which ignores anchors on children.
             Rectangle {
-                anchors.horizontalCenter: parent.horizontalCenter
+                x: (parent.width - width) / 2
                 width: root.widgetWidth / 2
                 height: root.widgetWidth / 2
                 radius: width / 2
@@ -145,13 +153,13 @@ Item {
                 AppImage {
                     anchors.fill: parent
                     source: root.avatarPath
-         
+          
                 }
             }
 
             // Title + Stars
             Row {
-                anchors.horizontalCenter: parent.horizontalCenter
+                x: (parent.width - width) / 2
                 spacing: 8
                 Text {
                     text: "ArchEclipse"
@@ -168,7 +176,7 @@ Item {
 
             // Link buttons
             Row {
-                anchors.horizontalCenter: parent.horizontalCenter
+                x: (parent.width - width) / 2
                 spacing: 12
                 Repeater {
                     model: [
@@ -231,10 +239,11 @@ Item {
                 // Loading state
                 Text {
                     visible: root.isCheckingVersion
+                    width: parent.width
+                    horizontalAlignment: Text.AlignHCenter
                     text: "\u{F2F0} Checking for updates..."
                     font.pixelSize: Theme.fontSize
                     color: Theme.fgDim
-                    anchors.horizontalCenter: parent.horizontalCenter
                 }
 
                 // Results (when not checking)
@@ -246,11 +255,11 @@ Item {
                     // Outdated → show versions + update button
                     Column {
                         visible: root.isOutdated
+                        width: parent.width
                         spacing: 8
-                        anchors.horizontalCenter: parent.horizontalCenter
 
                         Row {
-                            anchors.horizontalCenter: parent.horizontalCenter
+                            x: (parent.width - width) / 2
                             spacing: 10
                             Text {
                                 text: root.currentVersion
@@ -274,7 +283,7 @@ Item {
                             width: updateMa.containsMouse ? 130 : 120
                             height: 32
                             radius: 6
-                            anchors.horizontalCenter: parent.horizontalCenter
+                            x: (parent.width - width) / 2
                             color: updateMa.containsMouse ? Theme.accentBg : Theme.accent
                             Behavior on width {
                                 NumberAnimation {
@@ -300,31 +309,33 @@ Item {
 
                         Text {
                             visible: root.updateStatus !== ""
+                            width: parent.width
+                            horizontalAlignment: Text.AlignHCenter
                             text: root.updateStatus
                             font.pixelSize: Theme.fontSize - 2
                             color: Theme.fgDim
-                            anchors.horizontalCenter: parent.horizontalCenter
                         }
                     }
 
                     // Up to date
                     Column {
                         visible: !root.isOutdated
+                        width: parent.width
                         spacing: 8
-                        anchors.horizontalCenter: parent.horizontalCenter
 
                         Text {
+                            width: parent.width
+                            horizontalAlignment: Text.AlignHCenter
                             text: "\u{F00C} Up to date" + (root.updateStatus ? " - " + root.updateStatus : "")
                             font.pixelSize: Theme.fontSize
                             color: "#4CAF50"
-                            anchors.horizontalCenter: parent.horizontalCenter
                         }
 
                         Rectangle {
                             width: recheckMa.containsMouse ? 120 : 110
                             height: 28
                             radius: 6
-                            anchors.horizontalCenter: parent.horizontalCenter
+                            x: (parent.width - width) / 2
                             color: "transparent"
                             border.color: Theme.border
                             visible: !root.isUpdating

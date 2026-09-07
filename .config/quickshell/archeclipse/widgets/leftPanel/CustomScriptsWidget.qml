@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
@@ -312,7 +313,7 @@ Item {
         proc.running = true;
     }
 
-    Column {
+    ColumnLayout {
         anchors.fill: parent
         spacing: 10
 
@@ -321,19 +322,19 @@ Item {
             font.pixelSize: Theme.fontSize + 4
             font.bold: true
             color: Theme.fg
-            width: parent.width
+            Layout.fillWidth: true
         }
 
         ScrollView {
-            width: parent.width
-            // Guarded: a negative height sends Flickable into a silent polish loop
-            height: Math.max(0, parent.height - y)
+            id: scriptScroll
+            Layout.fillWidth: true
+            Layout.fillHeight: true
             clip: true
             ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
             Column {
                 spacing: 8
-                width: parent.width
+                width: scriptScroll.availableWidth
 
                 Repeater {
                     model: root.scriptDefs
@@ -371,7 +372,10 @@ Item {
                             anchors.margins: 10
                             spacing: 8
 
-                            Row {
+                            // NOTE: RowLayout (not Row) — verticalCenter anchors
+                            // are ignored inside positioners, so alignment
+                            // goes through Layout.alignment instead.
+                            RowLayout {
                                 id: rowContent
                                 spacing: 12
                                 width: parent.width
@@ -381,12 +385,12 @@ Item {
                                     width: 28
                                     font.pixelSize: Theme.fontSize + 4
                                     color: Theme.accent
-                                    anchors.verticalCenter: parent.verticalCenter
+                                    Layout.alignment: Qt.AlignVCenter
                                 }
 
                                 Column {
-                                    width: parent.width - 40 - keyChips.width - installBtn.width - runBtn.width - 48
-                                    anchors.verticalCenter: parent.verticalCenter
+                                    Layout.fillWidth: true
+                                    Layout.alignment: Qt.AlignVCenter
                                     spacing: 2
                                     Label {
                                         text: root.displayName(modelData)
@@ -412,13 +416,17 @@ Item {
                                     id: keyChips
                                     visible: keys.length > 0
                                     spacing: 3
-                                    anchors.verticalCenter: parent.verticalCenter
+                                    Layout.alignment: Qt.AlignVCenter
                                     Repeater {
                                         model: keys
                                         delegate: Row {
                                             required property string modelData
                                             required property int index
                                             spacing: 3
+                                            // Fixed height so the "+" label can
+                                            // center deterministically (anchors
+                                            // are ignored inside positioners).
+                                            height: 22
                                             Rectangle {
                                                 width: kChip.implicitWidth + 10
                                                 height: 22
@@ -438,7 +446,7 @@ Item {
                                             }
                                             Label {
                                                 text: "+"
-                                                anchors.verticalCenter: parent.verticalCenter
+                                                y: (parent.height - height) / 2
                                                 visible: index < (keys.length - 1)
                                                 color: Theme.fgDim
                                                 font.pixelSize: Theme.fontSize
@@ -451,9 +459,9 @@ Item {
                                 AppButton {
                                     id: installBtn
                                     visible: modelData.app !== undefined && !root.appInstalled(modelData)
-                                    width: visible ? 32 : 0
-                                    text: ""
-                                    anchors.verticalCenter: parent.verticalCenter
+                                    Layout.preferredWidth: 32
+                                    Layout.alignment: Qt.AlignVCenter
+                                    text: "\u{F019}" // download glyph (raw U+F019, kept as escape)
                                     tooltipText: "Install " + (modelData.package || modelData.app)
                                     onClicked: root.installApp(modelData)
                                 }
@@ -461,8 +469,8 @@ Item {
                                 // Run button
                                 AppButton {
                                     id: runBtn
-                                    width: 32
-                                    anchors.verticalCenter: parent.verticalCenter
+                                    Layout.preferredWidth: 32
+                                    Layout.alignment: Qt.AlignVCenter
                                     enabled: root.appInstalled(modelData)
                                     tooltipText: modelData.description
                                     onClicked: {
@@ -475,7 +483,7 @@ Item {
                             }
 
                             // Reset confirmation (AGS Yes/No buttons)
-                            Row {
+                            RowLayout {
                                 visible: modelData.kind === "reset-settings" && confirming
                                 spacing: 10
                                 width: parent.width
@@ -483,11 +491,11 @@ Item {
                                     text: "Reset all settings?"
                                     color: Theme.fg
                                     font.pixelSize: Theme.fontSize
-                                    anchors.verticalCenter: parent.verticalCenter
+                                    Layout.alignment: Qt.AlignVCenter
                                 }
                                 AppButton {
                                     text: "Yes"
-                                    anchors.verticalCenter: parent.verticalCenter
+                                    Layout.alignment: Qt.AlignVCenter
                                     onClicked: {
                                         confirming = false;
                                         root.doReset();
@@ -495,7 +503,7 @@ Item {
                                 }
                                 AppButton {
                                     text: "No"
-                                    anchors.verticalCenter: parent.verticalCenter
+                                    Layout.alignment: Qt.AlignVCenter
                                     onClicked: confirming = false
                                 }
                             }

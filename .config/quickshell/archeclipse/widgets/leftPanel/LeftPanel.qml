@@ -148,7 +148,9 @@ PanelWindow {
         Rectangle {
             id: sidebar
             width: 48
-            height: parent.height
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
             color: Theme.bg
             radius: Theme.radius
             clip: true
@@ -230,12 +232,12 @@ PanelWindow {
             }
 
             // ── WindowActions — bottom cluster (AGS valign END, like RightPanel) ──
+            // NOTE: no explicit width — anchors.left+right already size it.
             Column {
                 anchors.bottom: parent.bottom
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.margins: 8
-                width: parent.width
                 spacing: 4
                 Item {
                     width: 1

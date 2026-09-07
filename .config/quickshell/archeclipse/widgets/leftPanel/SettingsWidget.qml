@@ -17,11 +17,12 @@ Item {
     property int widgetWidth: parent.width
     property string className: ""
 
-    Column {
+    ColumnLayout {
         anchors.fill: parent
         spacing: 10
 
-        Row {
+        RowLayout {
+            Layout.fillWidth: true
             spacing: 8
             Label {
                 text: "Settings"
@@ -33,16 +34,19 @@ Item {
         }
 
         ScrollView {
+            id: settingsScroll
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
+            ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
             Column {
                 spacing: 16
-                width: parent.width
+                width: settingsScroll.availableWidth
 
                 // ============ BAR LAYOUT (drag-reorder) ============
                 Column {
+                    width: parent.width
                     spacing: 8
                     Label {
                         text: "Bar Layout (Drag to Reorder)"
@@ -57,7 +61,9 @@ Item {
 
                         Rectangle {
                             id: rowWrap
-                            width: barLayoutRepeater.width
+                            // NOTE: Repeater has no width — size off the
+                            // section Column instead.
+                            width: parent.width
                             height: 34
                             radius: 4
                             color: Theme.buttonHoverBg
@@ -95,7 +101,10 @@ Item {
                                     spacing: 8
                                     AppCheckBox {
                                         id: layoutCheck
-                                        anchors.verticalCenter: parent.verticalCenter
+                                        // NOTE: no verticalCenter anchor — the
+                                        // parent is a Row positioner, which
+                                        // ignores anchors on children.
+                                        y: (parent.height - height) / 2
                                         checked: modelData.enabled
                                         onToggled: {
                                             const m = root.barLayoutModelList.slice();
@@ -157,6 +166,7 @@ Item {
 
                 // ============ BAR SETTINGS ============
                 Column {
+                    width: parent.width
                     spacing: 8
                     Label {
                         text: "Bar"
@@ -166,8 +176,10 @@ Item {
                     }
 
                     Column {
+                        width: parent.width
                         spacing: 4
-                        Row {
+                        RowLayout {
+                            width: parent.width
                             spacing: 8
                             Label {
                                 text: "Orientation"
@@ -192,6 +204,11 @@ Item {
                             onToggled: Settings.barSmartHide = checked
                         }
                         AppCheckBox {
+                            text: "Always Expanded"
+                            checked: Settings.barDefault
+                            onToggled: Settings.barDefault = checked
+                        }
+                        AppCheckBox {
                             text: "Full Width"
                             checked: Settings.barFullWidth
                             onToggled: Settings.barFullWidth = checked
@@ -201,7 +218,8 @@ Item {
                             checked: Settings.workspaceNumbers
                             onToggled: Settings.workspaceNumbers = checked
                         }
-                        Row {
+                        RowLayout {
+                            width: parent.width
                             spacing: 8
                             Label {
                                 text: "Reveal Pressure"
@@ -209,8 +227,8 @@ Item {
                                 color: Theme.fg
                             }
                             AppSlider {
-                                from: 1
-                                to: 500
+                                from: 0
+                                to: 1000
                                 value: Settings.revealPressure
                                 Layout.fillWidth: true
                                 onValueChanged: Settings.revealPressure = value
@@ -221,6 +239,7 @@ Item {
 
                 // ============ PANEL SETTINGS ============
                 Column {
+                    width: parent.width
                     spacing: 8
                     Label {
                         text: "Panels"
@@ -230,8 +249,10 @@ Item {
                     }
 
                     Column {
+                        width: parent.width
                         spacing: 4
-                        Row {
+                        RowLayout {
+                            width: parent.width
                             spacing: 8
                             Label {
                                 text: "Left Panel Width"
@@ -244,7 +265,8 @@ Item {
                                 onValueChanged: Settings.leftPanelWidth = value
                             }
                         }
-                        Row {
+                        RowLayout {
+                            width: parent.width
                             spacing: 8
                             Label {
                                 text: "Right Panel Width"
@@ -267,7 +289,8 @@ Item {
                             checked: Settings.rightPanelHotZone
                             onToggled: Settings.rightPanelHotZone = checked
                         }
-                        Row {
+                        RowLayout {
+                            width: parent.width
                             spacing: 8
                             Label {
                                 text: "Left Hot Zone Size"
@@ -276,12 +299,13 @@ Item {
                             }
                             AppSpinBox {
                                 from: 1
-                                to: 100
+                                to: 50
                                 value: Settings.leftPanelHotZoneSize
                                 onValueChanged: Settings.leftPanelHotZoneSize = value
                             }
                         }
-                        Row {
+                        RowLayout {
+                            width: parent.width
                             spacing: 8
                             Label {
                                 text: "Right Hot Zone Size"
@@ -290,7 +314,7 @@ Item {
                             }
                             AppSpinBox {
                                 from: 1
-                                to: 100
+                                to: 50
                                 value: Settings.rightPanelHotZoneSize
                                 onValueChanged: Settings.rightPanelHotZoneSize = value
                             }
@@ -304,6 +328,7 @@ Item {
 
                 // ============ THEME SETTINGS ============
                 Column {
+                    width: parent.width
                     spacing: 8
                     Label {
                         text: "Theme"
@@ -313,6 +338,7 @@ Item {
                     }
 
                     Column {
+                        width: parent.width
                         spacing: 4
                         AppCheckBox {
                             text: "Dynamic Theme Colors"
@@ -335,7 +361,8 @@ Item {
                             checked: Settings.barBlur
                             onToggled: Settings.barBlur = checked
                         }
-                        Row {
+                        RowLayout {
+                            width: parent.width
                             spacing: 8
                             Label {
                                 text: "Blur Size"
@@ -349,7 +376,8 @@ Item {
                                 onValueChanged: Settings.barBlurSize = value
                             }
                         }
-                        Row {
+                        RowLayout {
+                            width: parent.width
                             spacing: 8
                             Label {
                                 text: "Blur Passes"
@@ -368,6 +396,7 @@ Item {
 
                 // ============ INTERFACE ============
                 Column {
+                    width: parent.width
                     spacing: 8
                     Label {
                         text: "Interface"
@@ -377,8 +406,10 @@ Item {
                     }
 
                     Column {
+                        width: parent.width
                         spacing: 4
-                        Row {
+                        RowLayout {
+                            width: parent.width
                             spacing: 8
                             Label {
                                 text: "Opacity"
@@ -394,7 +425,8 @@ Item {
                                 onValueChanged: Settings.uiOpacity = value
                             }
                         }
-                        Row {
+                        RowLayout {
+                            width: parent.width
                             spacing: 8
                             Label {
                                 text: "Scale"
@@ -402,14 +434,15 @@ Item {
                                 color: Theme.fg
                             }
                             AppSpinBox {
-                                from: 8
-                                to: 20
+                                from: 10
+                                to: 30
                                 value: Settings.uiScale
                                 Layout.fillWidth: true
                                 onValueChanged: Settings.uiScale = value
                             }
                         }
-                        Row {
+                        RowLayout {
+                            width: parent.width
                             spacing: 8
                             Label {
                                 text: "Font Size"
@@ -418,7 +451,7 @@ Item {
                             }
                             AppSpinBox {
                                 from: 10
-                                to: 20
+                                to: 30
                                 value: Settings.uiFontSize
                                 Layout.fillWidth: true
                                 onValueChanged: Settings.uiFontSize = value
@@ -429,6 +462,7 @@ Item {
 
                 // ============ ALWAYS-ON WIDGET ============
                 Column {
+                    width: parent.width
                     spacing: 8
                     Label {
                         text: "Always-On Widget"
@@ -445,6 +479,7 @@ Item {
 
                 // ============ KEYSTROKE VISUALIZER ============
                 Column {
+                    width: parent.width
                     spacing: 8
                     Label {
                         text: "KeyStroke Visualizer"
@@ -461,7 +496,8 @@ Item {
                                 root.addUserToInputGroup();
                         }
                     }
-                    Row {
+                    RowLayout {
+                        width: parent.width
                         spacing: 8
                         Label {
                             text: "Anchor"
@@ -485,6 +521,7 @@ Item {
 
                 // ============ API KEYS ============
                 Column {
+                    width: parent.width
                     spacing: 8
                     Label {
                         text: "API Keys"
@@ -493,6 +530,7 @@ Item {
                         color: Theme.accent
                     }
                     Column {
+                        width: parent.width
                         spacing: 4
                         Repeater {
                             id: apiKeyRepeater
@@ -531,7 +569,9 @@ Item {
                                 }
                             ]
                             delegate: Rectangle {
-                                width: apiKeyRepeater.width
+                                // NOTE: Repeater has no width — size off the
+                                // section Column instead.
+                                width: parent.width
                                 height: 34
                                 color: Theme.moduleBg
                                 radius: 4
@@ -539,7 +579,7 @@ Item {
 
                                 property bool reveal: false
 
-                                Row {
+                                RowLayout {
                                     anchors.fill: parent
                                     anchors.margins: 6
                                     spacing: 6
@@ -568,15 +608,15 @@ Item {
                                     }
                                     AppButton {
                                         text: parent.parent.reveal ? "hide" : "show"
-                                        width: 44
-                                        height: 24
+                                        Layout.preferredWidth: 44
+                                        Layout.preferredHeight: 24
                                         visible: keyField.text !== ""
                                         onClicked: parent.parent.reveal = !parent.parent.reveal
                                     }
                                     AppButton {
                                         text: "copy"
-                                        width: 44
-                                        height: 24
+                                        Layout.preferredWidth: 44
+                                        Layout.preferredHeight: 24
                                         onClicked: root.copyText(keyField.text)
                                     }
                                 }
@@ -587,6 +627,7 @@ Item {
 
                 // ============ FILE MANAGER ============
                 Column {
+                    width: parent.width
                     spacing: 8
                     Label {
                         text: "File Manager"
@@ -595,6 +636,7 @@ Item {
                         color: Theme.accent
                     }
                     Column {
+                        width: parent.width
                         spacing: 4
                         Repeater {
                             id: fmRepeater
@@ -619,6 +661,7 @@ Item {
 
                 // ============ HYPRLAND ============
                 Column {
+                    width: parent.width
                     spacing: 8
                     Label {
                         text: "Hyprland"
@@ -627,10 +670,12 @@ Item {
                         color: Theme.accent
                     }
                     Column {
+                        width: parent.width
                         spacing: 6
 
                         // Decoration: Rounding
-                        Row {
+                        RowLayout {
+                            width: parent.width
                             spacing: 8
                             Label {
                                 text: "Decoration: Rounding"
@@ -648,6 +693,7 @@ Item {
                                     if (v === root.hyprGet("decoration.rounding"))
                                         return;
                                     root.hyprSet("decoration.rounding", v);
+                                    root.applyHyprlandSettingLive("decoration.rounding", v);
                                 }
                             }
                             Label {
@@ -666,7 +712,8 @@ Item {
                             }
                         }
                         // Decoration: Blur Size
-                        Row {
+                        RowLayout {
+                            width: parent.width
                             spacing: 8
                             Label {
                                 text: "Decoration: Blur Size"
@@ -693,7 +740,8 @@ Item {
                             }
                         }
                         // Decoration: Blur Passes
-                        Row {
+                        RowLayout {
+                            width: parent.width
                             spacing: 8
                             Label {
                                 text: "Decoration: Blur Passes"
@@ -738,7 +786,8 @@ Item {
                             }
                         }
                         // Decoration: Shadow Range
-                        Row {
+                        RowLayout {
+                            width: parent.width
                             spacing: 8
                             Label {
                                 text: "Decoration: Shadow Range"
@@ -765,7 +814,8 @@ Item {
                             }
                         }
                         // Decoration: Shadow Render Power
-                        Row {
+                        RowLayout {
+                            width: parent.width
                             spacing: 8
                             Label {
                                 text: "Shadow Render Power"
@@ -792,7 +842,8 @@ Item {
                             }
                         }
                         // General: Border Size
-                        Row {
+                        RowLayout {
+                            width: parent.width
                             spacing: 8
                             Label {
                                 text: "General: Border Size"
@@ -819,7 +870,8 @@ Item {
                             }
                         }
                         // General: Gaps In
-                        Row {
+                        RowLayout {
+                            width: parent.width
                             spacing: 8
                             Label {
                                 text: "General: Gaps In"
@@ -846,7 +898,8 @@ Item {
                             }
                         }
                         // General: Gaps Out
-                        Row {
+                        RowLayout {
+                            width: parent.width
                             spacing: 8
                             Label {
                                 text: "General: Gaps Out"
@@ -873,7 +926,8 @@ Item {
                             }
                         }
                         // Decoration: Active Opacity (float)
-                        Row {
+                        RowLayout {
+                            width: parent.width
                             spacing: 8
                             Label {
                                 text: "Decoration: Active Opacity"
@@ -901,7 +955,8 @@ Item {
                             }
                         }
                         // Decoration: Inactive Opacity (float)
-                        Row {
+                        RowLayout {
+                            width: parent.width
                             spacing: 8
                             Label {
                                 text: "Decoration: Inactive Opacity"
@@ -930,7 +985,8 @@ Item {
                         }
 
                         // Apply / Reset
-                        Row {
+                        RowLayout {
+                            width: parent.width
                             spacing: 8
                             AppButton {
                                 text: "Apply Hyprland Settings"
@@ -1304,14 +1360,14 @@ Item {
         Settings.dynamicThemeVariants = true;
         Settings.barBlur = true;
         Settings.barBlurSize = 4;
-        Settings.barBlurPasses = 3;
+        Settings.barBlurPasses = 4;
         Settings.uiOpacity = 0.618;
         Settings.uiScale = 10;
         Settings.uiFontSize = 12;
         Settings.alwaysOnWidgetVisibility = true;
         Settings.keyStrokeVisualizerVisibility = false;
         Settings.keyStrokeVisualizerAnchor = ["bottom", "left"];
-        Settings.fileManager = "";
+        Settings.fileManager = "nautilus";
         // Hyprland defaults (AGS settings.constants.ts hyprland schema)
         root.hyprSet("general.border_size", 0);
         root.hyprSet("general.gaps_in", 7);

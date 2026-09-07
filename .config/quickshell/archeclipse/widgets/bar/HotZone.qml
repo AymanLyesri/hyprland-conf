@@ -41,7 +41,11 @@ Rectangle {
             if (root.panelLock || !root.enabledHotZone) return
             root.showPanel()
         }
-        onClicked: root.showPanel()
+        onClicked: {
+            if (root.panelLock || !root.enabledHotZone)
+                return;
+            root.showPanel();
+        }
     }
 
     function showPanel() {

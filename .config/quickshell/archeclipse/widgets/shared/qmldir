@@ -6,4 +6,5 @@ AppImage 1.0 AppImage.qml
 AppCheckBox 1.0 AppCheckBox.qml
 AppSpinBox 1.0 AppSpinBox.qml
 AppComboBox 1.0 AppComboBox.qml
+AppTextField 1.0 AppTextField.qml
 SmoothFlickable 1.0 SmoothFlickable.qml

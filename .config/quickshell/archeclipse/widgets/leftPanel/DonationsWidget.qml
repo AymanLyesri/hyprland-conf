@@ -26,30 +26,36 @@ Item {
 
     // Scrolled window wrapper (AGS <scrolledwindow hexpand vexpand>)
     ScrollView {
+        id: donateScroll
         anchors.fill: parent
         clip: true
         ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
         Column {
-            width: parent.width
+            width: donateScroll.availableWidth
             spacing: 16
             topPadding: 4
 
-            // General info section (avatar, version, links, stars) — AGS embeds General()
+            // General info section (avatar, version, links, stars) — AGS embeds General().
+            // NOTE: explicit height — GeneralTab's root is a bare Item with
+            // no auto-size, which would collapse to 0 inside this Column.
             GeneralTab {
+                id: generalEmbed
                 width: parent.width
+                height: generalEmbed.implicitHeight
                 widgetWidth: parent.width
             }
 
             // Separator
             Rectangle { width: parent.width; height: 1; color: Theme.border }
 
-            // Header
+            // Header (full width so labels can wrap + center)
             Column {
-                anchors.horizontalCenter: parent.horizontalCenter
+                width: parent.width
                 spacing: 5
 
                 Label {
+                    width: parent.width
                     text: "Support the Project"
                     font.pixelSize: Theme.fontSize + 4
                     font.bold: true
@@ -59,6 +65,7 @@ Item {
                 }
 
                 Label {
+                    width: parent.width
                     text: "Your donations help keep this project alive"
                     font.pixelSize: Theme.fontSize
                     color: Theme.fgDim
@@ -87,14 +94,14 @@ Item {
                 delegate: Row {
                     width: parent.width
                     spacing: 10
-                    Row {
-                        spacing: 5
-                        width: parent.width / 2 - 5
-                        Repeater {
-                            model: modelData
-                            delegate: Column {
-                                spacing: 5
-                                width: parent.width
+                    // NOTE: no intermediate half-width Row — each card is
+                    // half the pair row directly (the old nesting gave every
+                    // card the full half-row width and left half the grid empty).
+                    Repeater {
+                        model: modelData
+                        delegate: Column {
+                            width: (parent.width - 10) / 2
+                            spacing: 5
 
                                 // Main action button (AGS brand gradients:
                                 // kofi #72a5f2→#ff6433, paypal #00457c→#0070ba,
@@ -127,16 +134,16 @@ Item {
                                 }
                             }
                         }
-                    }
                 }
             }
         }
 
-        // Footer
+        // Footer (full width so the label can center)
         Column {
-            anchors.horizontalCenter: parent.horizontalCenter
+            width: parent.width
             spacing: 8
             Label {
+                width: parent.width
                 text: "Thank you for your support! \u{1F496}"
                 font.pixelSize: Theme.fontSize + 1
                 font.bold: true

@@ -29,7 +29,10 @@ Item {
     property int _sendTime: 0
     property bool _shouldScroll: true
     property var sessionFirsts: ({})
-    property string cacheDir: Quickshell.env("HOME") + "/.cache/quickshell/chatbot"
+    // chatbot.py owns its files under ~/.config/ags/cache/chatbot
+    // (CACHE_DIR hardcoded in the script) — read the same dir it writes,
+    // or sessions/history silently fork between the shells.
+    property string cacheDir: Quickshell.env("HOME") + "/.config/ags/cache/chatbot"
     property string pythonScript: Quickshell.env("HOME") + "/.config/ags/scripts/chatbot.py"
 
     // Provider list (from api.constants.ts)
@@ -425,13 +428,16 @@ Item {
         }
     }
 
-    Column {
+    // NOTE: ColumnLayout (not Column) — children size via Layout.*
+    // attached props; plain width/height bindings on managed children
+    // would fight the layout, so they are derived, not hardcoded.
+    ColumnLayout {
         anchors.fill: parent
         spacing: 6
 
         // [1] Info: provider name + description (always visible, AGS Info component)
         Column {
-            width: parent.width
+            Layout.fillWidth: true
             spacing: 2
             Label {
                 text: "[" + root.currentProviderName() + "]"
@@ -452,7 +458,7 @@ Item {
 
         // [2] Setup guide (only when API key missing)
         Column {
-            width: parent.width
+            Layout.fillWidth: true
             spacing: 4
             visible: root.apiKey() === ""
             Rectangle {
@@ -475,11 +481,13 @@ Item {
                         onClicked: Quickshell.execDetached(["xdg-open", "https://openrouter.ai/"])
                     }
                     AppButton {
+                        text: "2. Generate a FREE API key  \u{f08e}"
                         width: parent.width
                         implicitHeight: 28
                         onClicked: Quickshell.execDetached(["xdg-open", "https://openrouter.ai/settings/keys"])
                     }
                     AppButton {
+                        text: "3. Copy & Paste it in the settings"
                         width: parent.width
                         implicitHeight: 28
                         onClicked: root.goToSettings()
@@ -488,20 +496,20 @@ Item {
             }
         }
 
-        // [3] Messages
+        // [3] Messages (fills leftover space; no hardcoded height math)
         SmoothFlickable {
             id: flick
-            width: parent.width
-            height: parent.height - 200
+            Layout.fillWidth: true
+            Layout.fillHeight: true
             clip: true
+            contentWidth: flick.width
             contentHeight: msgColumn.implicitHeight
             flickableDirection: Flickable.VerticalFlick
             ScrollBar.vertical: ScrollBar {}
 
             Column {
                 id: msgColumn
-                anchors.left: parent.left
-                anchors.right: parent.right
+                width: flick.width
                 spacing: 8
 
                 Repeater {
@@ -628,11 +636,11 @@ Item {
 
         // [4] BottomBar: input + clear + image toggle + session tabs + API tabs
         Column {
-            width: parent.width
+            Layout.fillWidth: true
             spacing: 6
 
-            // Input row
-            Row {
+            // Input row (RowLayout: input stretches, buttons keep size)
+            RowLayout {
                 width: parent.width
                 spacing: 6
                 // AGS uses Gtk.TextView (multiline, WORD_CHAR wrap): Enter
@@ -640,7 +648,7 @@ Item {
                 TextArea {
                     id: inputField
                     placeholderText: "Ask anything... (Enter send, Shift+Enter newline)"
-                    width: parent.width - 88
+                    Layout.fillWidth: true
                     implicitHeight: 40
                     wrapMode: TextArea.Wrap
                     inputMethodHints: Qt.ImhPreferLowercase
@@ -689,18 +697,18 @@ Item {
                     onClicked: {
                         root.imageGeneration = !checked;
                         Settings.chatBotImageGeneration = !checked;
-                        checked = !checked;
                     }
                     tooltipText: "Image generation" + (root.currentImageGenSupport() ? "" : " (not supported by this model)")
                 }
             }
 
             // Session tabs + create button
-            Row {
+            // Session tabs + create button (RowLayout: tabs stretch)
+            RowLayout {
                 width: parent.width
                 spacing: 4
                 Flow {
-                    width: parent.width - 40
+                    Layout.fillWidth: true
                     spacing: 4
                     Repeater {
                         model: root.sessions
@@ -708,6 +716,8 @@ Item {
                             toggle: true
                             checked: modelData.id === root.activeSessionId
                             implicitHeight: 26
+                            // AGS session tab label is the session name
+                            text: modelData.name
                             onClicked: {
                                 root.activeSessionId = modelData.id;
                                 root.loadMessages();
@@ -729,24 +739,27 @@ Item {
                     }
                 }
                 AppButton {
-                    width: 32
-                    implicitHeight: 26
+                    Layout.preferredWidth: 32
+                    Layout.preferredHeight: 26
                     text: "\u{F067}"
                     tooltipText: "Create new session"
                     onClicked: root.createSession()
                 }
             }
 
-            // API provider tabs (AgList)
-            Row {
+            // API provider tabs (AgList, stretched like AGS hexpand)
+            RowLayout {
                 width: parent.width
                 spacing: 4
                 Repeater {
                     model: root.providers
                     delegate: AppButton {
+                        Layout.fillWidth: true
                         toggle: true
                         checked: modelData.value === root.currentApiModel
                         implicitHeight: 30
+                        // AGS ApiList labels each provider button with its icon
+                        text: modelData.icon
                         onClicked: {
                             root.currentApiModel = modelData.value;
                             Settings.chatBotApi = modelData.value;
@@ -760,7 +773,7 @@ Item {
 
         // [5] Progress indicator
         Rectangle {
-            width: parent.width
+            Layout.fillWidth: true
             height: root.progressStatus === "loading" || root.progressStatus === "error" ? 22 : 0
             color: root.progressStatus === "error" ? Theme.dangerBg : Theme.accentBg
             radius: 6
