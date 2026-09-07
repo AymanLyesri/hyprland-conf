@@ -13,7 +13,7 @@ Singleton {
     // --- simple booleans / ints / strings ---
     property bool barLock: true
     property bool barSmartHide: false
-    property bool barExpanded: false
+    property bool barDefault: true
     property bool barFullWidth: false
     property real revealPressure: 250
     property bool barOrientation: true        // true = top
@@ -182,7 +182,8 @@ Singleton {
         const aliases = {
             "bar.lock": "barLock",
             "bar.smartHide": "barSmartHide",
-            "bar.expanded": "barExpanded",
+            "bar.expanded": "barDefault",
+            "bar.default": "barDefault",
             "bar.fullWidth": "barFullWidth",
             "bar.revealPressure": "revealPressure",
             "bar.orientation": "barOrientation",
@@ -259,7 +260,8 @@ Singleton {
                 bar: {
                     lock: { value: root.barLock },
                     smartHide: { value: root.barSmartHide },
-                    expanded: { value: root.barExpanded },
+                    default: { value: root.barDefault },
+                    expanded: { value: root.barDefault },
                     fullWidth: { value: root.barFullWidth },
                     revealPressure: { value: root.revealPressure },
                     orientation: { value: root.barOrientation },
@@ -415,7 +417,7 @@ Singleton {
                 root._lastText = text;
                 root.barLock = s.bar?.lock?.value ?? true
                 root.barSmartHide = s.bar?.smartHide?.value ?? false
-                root.barExpanded = s.bar?.expanded?.value ?? false
+                root.barDefault = s.bar?.default?.value ?? s.bar?.expanded?.value ?? true
                 root.barFullWidth = s.bar?.fullWidth?.value ?? false
                 root.revealPressure = s.bar?.revealPressure?.value ?? 250
                 root.barOrientation = s.bar?.orientation?.value ?? true
@@ -566,7 +568,7 @@ Singleton {
         target: root
         function onBarLockChanged() { root.schedulePersist() }
         function onBarSmartHideChanged() { root.schedulePersist() }
-        function onBarExpandedChanged() { root.schedulePersist() }
+        function onBarDefaultChanged() { root.schedulePersist() }
         function onBarFullWidthChanged() { root.schedulePersist() }
         function onRevealPressureChanged() { root.schedulePersist() }
         function onBarOrientationChanged() { root.schedulePersist() }

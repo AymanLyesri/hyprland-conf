@@ -73,7 +73,7 @@ Item {
                         }
                     }
 
-                    CheckBox {
+                    AppCheckBox {
                         id: activeCheck
                         checked: task.active
                         onToggled: root.toggleClicked(task.id)

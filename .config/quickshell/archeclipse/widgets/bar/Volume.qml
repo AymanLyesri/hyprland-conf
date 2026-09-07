@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Services.Pipewire
 import qs.theme
 import qs.widgets.shared
+import qs.services
 
 // Port of sub-components/Volume.tsx — icon + %, click opens pavucontrol,
 // hover reveals slider. Also used as the transient "volume" pulse page.
@@ -22,10 +23,13 @@ Rectangle {
 
     // default sink via Pipewire service
     readonly property PwNode sink: Pipewire.defaultAudioSink
-    PwObjectTracker { objects: [sink] }
+    PwObjectTracker {
+        objects: [sink]
+    }
 
     readonly property real vol: {
-        if (!sink?.audio) return 0;
+        if (!sink?.audio)
+            return 0;
         const v = sink.audio.volume;
         return isNaN(v) || v < 0 ? 0 : (v > 1 ? 1 : v);
     }
@@ -42,13 +46,19 @@ Rectangle {
     property bool keepOpen: false
     property bool _firstVol: true
     onVolChanged: {
-        if (root._firstVol) { root._firstVol = false; return; }
+        if (root._firstVol) {
+            root._firstVol = false;
+            return;
+        }
         if (!root.pulse) {
-            root.sliderRevealed = true
-            hideTimer.restart()
+            root.sliderRevealed = true;
+            hideTimer.restart();
         }
     }
-    function hideSlider() { if (!root.keepOpen) root.sliderRevealed = false }
+    function hideSlider() {
+        if (!root.keepOpen)
+            root.sliderRevealed = false;
+    }
     Timer {
         id: hideTimer
         interval: 2000
@@ -62,7 +72,7 @@ Rectangle {
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
-            text: root.vol <= 0 ? "\u{F055F}" : "\u{F058E}"
+            text: VolumeWatcher.volumeIcon
             color: Theme.foreground
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontSize + 1
@@ -79,17 +89,26 @@ Rectangle {
             visible: root.pulse || root.sliderRevealed || hover.hovered
             width: visible ? 100 : 0
             anchors.verticalCenter: parent.verticalCenter
-            from: 0; to: 1; stepSize: 0.01
+            from: 0
+            to: 1
+            stepSize: 0.01
             value: root.vol
-            onMoved: if (root.sink?.audio) root.sink.audio.volume = slider.value
+            onMoved: if (root.sink?.audio)
+                root.sink.audio.volume = slider.value
         }
     }
 
     HoverHandler {
         id: hover
         onHoveredChanged: {
-            if (hover.hovered) { root.keepOpen = true; root.sliderRevealed = true; hideTimer.stop() }
-            else { root.keepOpen = false; hideTimer.restart() }
+            if (hover.hovered) {
+                root.keepOpen = true;
+                root.sliderRevealed = true;
+                hideTimer.stop();
+            } else {
+                root.keepOpen = false;
+                hideTimer.restart();
+            }
         }
     }
     MouseArea {

@@ -453,7 +453,7 @@ PanelWindow {
                     }
                 }
 
-                ComboBox {
+                AppComboBox {
                     model: root.categories
                     currentIndex: root.categories.indexOf(root.selectedCategory)
                     onActivated: root.selectedCategory = root.categories[currentIndex]

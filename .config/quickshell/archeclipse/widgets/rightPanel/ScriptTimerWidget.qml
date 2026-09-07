@@ -338,7 +338,7 @@ Item {
                     }
                     Row {
                         spacing: 8
-                        CheckBox {
+                        AppCheckBox {
                             id: dailyCheck
                             text: "Daily"
                             checked: editingTask ? editingTask.type : true
@@ -348,7 +348,7 @@ Item {
                                 }
                             }
                         }
-                        CheckBox {
+                        AppCheckBox {
                             id: weeklyCheck
                             text: "One-time"
                             checked: editingTask ? !editingTask.type : false

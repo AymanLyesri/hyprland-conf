@@ -212,13 +212,13 @@ Item {
                     }
                     Row {
                         spacing: 16
-                        CheckBox {
+                        AppCheckBox {
                             id: showPriceCheck
                             text: "Show Price"
                             checked: editingEntry ? editingEntry.showPrice : true
                             Layout.fillWidth: true
                         }
-                        CheckBox {
+                        AppCheckBox {
                             id: showGraphCheck
                             text: "Show Graph"
                             checked: editingEntry ? editingEntry.showGraph : true

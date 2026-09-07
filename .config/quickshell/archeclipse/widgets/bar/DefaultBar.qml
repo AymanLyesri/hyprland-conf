@@ -3,7 +3,7 @@ import qs.theme
 import qs.services
 import qs.widgets.bar
 
-// Port of barStates/ExpandedBar.tsx — centerbox: workspaces | information | utilities,
+// Port of barStates/DefaultBar.tsx — centerbox: workspaces | information | utilities,
 // each section toggleable via settings bar.layout[].enabled.
 Row {
     id: root
@@ -13,7 +13,7 @@ Row {
         visible: Settings.barLayout.workspaces ?? false
         width: visible ? childrenRect.width : 0
         height: 24
-        Workspaces { compact: false; height: 24 }
+        Workspaces { height: 24 }
     }
     Information {
         visible: Settings.barLayout.information ?? false

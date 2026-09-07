@@ -3,3 +3,6 @@ module qs.widgets.shared
 AppButton 1.0 AppButton.qml
 AppSlider 1.0 AppSlider.qml
 AppImage 1.0 AppImage.qml
+AppCheckBox 1.0 AppCheckBox.qml
+AppSpinBox 1.0 AppSpinBox.qml
+AppComboBox 1.0 AppComboBox.qml

@@ -93,7 +93,7 @@ Item {
                                     anchors.fill: parent
                                     anchors.margins: 6
                                     spacing: 8
-                                    CheckBox {
+                                    AppCheckBox {
                                         id: layoutCheck
                                         anchors.verticalCenter: parent.verticalCenter
                                         checked: modelData.enabled
@@ -174,34 +174,29 @@ Item {
                                 Layout.preferredWidth: 100
                                 color: Theme.fg
                             }
-                            ComboBox {
+                            AppComboBox {
                                 model: ["Top", "Bottom"]
                                 currentIndex: Settings.barOrientation ? 0 : 1
                                 onActivated: Settings.barOrientation = (index === 0)
                                 Layout.fillWidth: true
                             }
                         }
-                        CheckBox {
+                        AppCheckBox {
                             text: "Lock Bar"
                             checked: Settings.barLock
                             onToggled: Settings.barLock = checked
                         }
-                        CheckBox {
+                        AppCheckBox {
                             text: "Smart Hide"
                             checked: Settings.barSmartHide
                             onToggled: Settings.barSmartHide = checked
                         }
-                        CheckBox {
-                            text: "Always Expanded"
-                            checked: Settings.barExpanded
-                            onToggled: Settings.barExpanded = checked
-                        }
-                        CheckBox {
+                        AppCheckBox {
                             text: "Full Width"
                             checked: Settings.barFullWidth
                             onToggled: Settings.barFullWidth = checked
                         }
-                        CheckBox {
+                        AppCheckBox {
                             text: "Workspace Numbers"
                             checked: Settings.workspaceNumbers
                             onToggled: Settings.workspaceNumbers = checked
@@ -213,7 +208,7 @@ Item {
                                 Layout.preferredWidth: 100
                                 color: Theme.fg
                             }
-                            Slider {
+                            AppSlider {
                                 from: 1
                                 to: 500
                                 value: Settings.revealPressure
@@ -242,7 +237,7 @@ Item {
                                 text: "Left Panel Width"
                                 color: Theme.fg
                             }
-                            SpinBox {
+                            AppSpinBox {
                                 from: 200
                                 to: 800
                                 value: Settings.leftPanelWidth
@@ -255,19 +250,19 @@ Item {
                                 text: "Right Panel Width"
                                 color: Theme.fg
                             }
-                            SpinBox {
+                            AppSpinBox {
                                 from: 200
                                 to: 800
                                 value: Settings.rightPanelWidth
                                 onValueChanged: Settings.rightPanelWidth = value
                             }
                         }
-                        CheckBox {
+                        AppCheckBox {
                             text: "Left Panel Hot Zone"
                             checked: Settings.leftPanelHotZone
                             onToggled: Settings.leftPanelHotZone = checked
                         }
-                        CheckBox {
+                        AppCheckBox {
                             text: "Right Panel Hot Zone"
                             checked: Settings.rightPanelHotZone
                             onToggled: Settings.rightPanelHotZone = checked
@@ -279,7 +274,7 @@ Item {
                                 Layout.preferredWidth: 100
                                 color: Theme.fg
                             }
-                            SpinBox {
+                            AppSpinBox {
                                 from: 1
                                 to: 100
                                 value: Settings.leftPanelHotZoneSize
@@ -293,7 +288,7 @@ Item {
                                 Layout.preferredWidth: 100
                                 color: Theme.fg
                             }
-                            SpinBox {
+                            AppSpinBox {
                                 from: 1
                                 to: 100
                                 value: Settings.rightPanelHotZoneSize
@@ -319,7 +314,7 @@ Item {
 
                     Column {
                         spacing: 4
-                        CheckBox {
+                        AppCheckBox {
                             text: "Dynamic Theme Colors"
                             checked: Settings.dynamicThemeColors
                             onToggled: {
@@ -327,7 +322,7 @@ Item {
                                 root.setThemeFlagInConf("autocolor", checked);
                             }
                         }
-                        CheckBox {
+                        AppCheckBox {
                             text: "Dynamic Theme Variants"
                             checked: Settings.dynamicThemeVariants
                             onToggled: {
@@ -335,7 +330,7 @@ Item {
                                 root.setThemeFlagInConf("autovariant", checked);
                             }
                         }
-                        CheckBox {
+                        AppCheckBox {
                             text: "Blur"
                             checked: Settings.barBlur
                             onToggled: Settings.barBlur = checked
@@ -347,7 +342,7 @@ Item {
                                 Layout.preferredWidth: 100
                                 color: Theme.fg
                             }
-                            SpinBox {
+                            AppSpinBox {
                                 from: 1
                                 to: 20
                                 value: Settings.barBlurSize
@@ -361,7 +356,7 @@ Item {
                                 Layout.preferredWidth: 100
                                 color: Theme.fg
                             }
-                            SpinBox {
+                            AppSpinBox {
                                 from: 1
                                 to: 10
                                 value: Settings.barBlurPasses
@@ -390,7 +385,7 @@ Item {
                                 Layout.preferredWidth: 100
                                 color: Theme.fg
                             }
-                            Slider {
+                            AppSlider {
                                 from: 0
                                 to: 1
                                 value: Settings.uiOpacity
@@ -406,7 +401,7 @@ Item {
                                 Layout.preferredWidth: 100
                                 color: Theme.fg
                             }
-                            SpinBox {
+                            AppSpinBox {
                                 from: 8
                                 to: 20
                                 value: Settings.uiScale
@@ -421,7 +416,7 @@ Item {
                                 Layout.preferredWidth: 100
                                 color: Theme.fg
                             }
-                            SpinBox {
+                            AppSpinBox {
                                 from: 10
                                 to: 20
                                 value: Settings.uiFontSize
@@ -441,7 +436,7 @@ Item {
                         font.bold: true
                         color: Theme.accent
                     }
-                    CheckBox {
+                    AppCheckBox {
                         text: "Visible"
                         checked: Settings.alwaysOnWidgetVisibility
                         onToggled: Settings.alwaysOnWidgetVisibility = checked
@@ -457,7 +452,7 @@ Item {
                         font.bold: true
                         color: Theme.accent
                     }
-                    CheckBox {
+                    AppCheckBox {
                         text: "Visible"
                         checked: Settings.keyStrokeVisualizerVisibility
                         onToggled: {
@@ -473,7 +468,7 @@ Item {
                             Layout.preferredWidth: 100
                             color: Theme.fg
                         }
-                        ComboBox {
+                        AppComboBox {
                             model: ["Bottom Left", "Bottom", "Bottom Right"]
                             currentIndex: (Settings.keyStrokeVisualizerAnchor.length === 2 && Settings.keyStrokeVisualizerAnchor[1] === "left") ? 0 : (Settings.keyStrokeVisualizerAnchor.length === 1) ? 1 : 2
                             onActivated: {
@@ -604,7 +599,7 @@ Item {
                         Repeater {
                             id: fmRepeater
                             model: root.fileManagerOptions.length ? root.fileManagerOptions : root.allFileManagers
-                            delegate: CheckBox {
+                            delegate: AppCheckBox {
                                 text: modelData.name
                                 checked: Settings.fileManager === modelData.id
                                 onToggled: {
@@ -642,7 +637,7 @@ Item {
                                 Layout.preferredWidth: 170
                                 color: Theme.fg
                             }
-                            Slider {
+                            AppSlider {
                                 id: hypRounding
                                 from: 0
                                 to: 50
@@ -662,7 +657,7 @@ Item {
                             }
                         }
                         // Decoration: Blur Enabled
-                        CheckBox {
+                        AppCheckBox {
                             text: "Decoration: Blur Enabled"
                             checked: root.hyprGet("decoration.blur.enabled")
                             onToggled: {
@@ -678,7 +673,7 @@ Item {
                                 Layout.preferredWidth: 170
                                 color: Theme.fg
                             }
-                            Slider {
+                            AppSlider {
                                 from: 0
                                 to: 10
                                 value: root.hyprGet("decoration.blur.size")
@@ -705,7 +700,7 @@ Item {
                                 Layout.preferredWidth: 170
                                 color: Theme.fg
                             }
-                            Slider {
+                            AppSlider {
                                 from: 0
                                 to: 10
                                 value: root.hyprGet("decoration.blur.passes")
@@ -725,7 +720,7 @@ Item {
                             }
                         }
                         // Decoration: Blur Xray
-                        CheckBox {
+                        AppCheckBox {
                             text: "Decoration: Blur Xray"
                             checked: root.hyprGet("decoration.blur.xray")
                             onToggled: {
@@ -734,7 +729,7 @@ Item {
                             }
                         }
                         // Decoration: Shadow Enabled
-                        CheckBox {
+                        AppCheckBox {
                             text: "Decoration: Shadow Enabled"
                             checked: root.hyprGet("decoration.shadow.enabled")
                             onToggled: {
@@ -750,7 +745,7 @@ Item {
                                 Layout.preferredWidth: 170
                                 color: Theme.fg
                             }
-                            Slider {
+                            AppSlider {
                                 from: 0
                                 to: 20
                                 value: root.hyprGet("decoration.shadow.range")
@@ -777,7 +772,7 @@ Item {
                                 Layout.preferredWidth: 170
                                 color: Theme.fg
                             }
-                            Slider {
+                            AppSlider {
                                 from: 0
                                 to: 20
                                 value: root.hyprGet("decoration.shadow.render_power")
@@ -804,7 +799,7 @@ Item {
                                 Layout.preferredWidth: 170
                                 color: Theme.fg
                             }
-                            Slider {
+                            AppSlider {
                                 from: 0
                                 to: 10
                                 value: root.hyprGet("general.border_size")
@@ -831,7 +826,7 @@ Item {
                                 Layout.preferredWidth: 170
                                 color: Theme.fg
                             }
-                            Slider {
+                            AppSlider {
                                 from: 0
                                 to: 20
                                 value: root.hyprGet("general.gaps_in")
@@ -858,7 +853,7 @@ Item {
                                 Layout.preferredWidth: 170
                                 color: Theme.fg
                             }
-                            Slider {
+                            AppSlider {
                                 from: 0
                                 to: 40
                                 value: root.hyprGet("general.gaps_out")
@@ -885,7 +880,7 @@ Item {
                                 Layout.preferredWidth: 170
                                 color: Theme.fg
                             }
-                            Slider {
+                            AppSlider {
                                 from: 0
                                 to: 1
                                 stepSize: 0.01
@@ -913,7 +908,7 @@ Item {
                                 Layout.preferredWidth: 170
                                 color: Theme.fg
                             }
-                            Slider {
+                            AppSlider {
                                 from: 0
                                 to: 1
                                 stepSize: 0.01
@@ -1288,7 +1283,7 @@ Item {
     function resetToDefaults() {
         Settings.barLock = true;
         Settings.barSmartHide = false;
-        Settings.barExpanded = false;
+        Settings.barDefault = true;
         Settings.barFullWidth = false;
         Settings.revealPressure = 250;
         Settings.barOrientation = true;

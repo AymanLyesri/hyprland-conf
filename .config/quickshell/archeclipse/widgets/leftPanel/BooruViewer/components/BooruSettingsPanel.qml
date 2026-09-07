@@ -41,7 +41,7 @@ Rectangle {
                 color: Theme.fg
                 font.pixelSize: Theme.fontSize - 2
             }
-            Slider {
+            AppSlider {
                 id: limitSlider
                 from: 0
                 to: 100
@@ -74,7 +74,7 @@ Rectangle {
                 color: Theme.fg
                 font.pixelSize: Theme.fontSize - 2
             }
-            Slider {
+            AppSlider {
                 id: columnsSlider
                 from: 1
                 to: 5

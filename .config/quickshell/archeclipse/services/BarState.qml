@@ -11,11 +11,13 @@ import qs.services
 Singleton {
     id: root
 
-    // Priority map (compact base 0 < recording 40 < expanded 60 < pulses 80 < search 100)
+    // Priority map (default base 0 < recording 40 < pulses 80 < search 100)
+    // "compact"/"expanded" kept only for backward-compat with old persist files.
     property var priority: {
         "compact": 0,
+        "expanded": 0,
+        "default": 0,
         "recording": 40,
-        "expanded": 60,
         "volume": 80,
         "brightness": 80,
         "network": 80,
@@ -40,8 +42,8 @@ Singleton {
     // Current bar height used for the band check (matches AGS currentBarHeight)
     property int barHeight: 34
 
-    // Current resolved state
-    property string state: "compact"
+    // Current resolved state (default is the permanent base, no compact)
+    property string state: "default"
 
     // Open in-bar popovers (tray overflow/menu popups). Guards the
     // hover-leave collapse (AGS Window.popupIsOpen()).
@@ -59,8 +61,10 @@ Singleton {
     property var settings: qs.theme.Settings
 
     // Lock setting (from settings)
+    // `expanded` kept for compat (always true — default is the base state).
     property bool lock: true
-    property bool expanded: false
+    property bool expanded: true
+    property bool isDefault: true
     property bool orientation: true
     property bool smartHide: false
     property bool fullWidth: false
@@ -92,16 +96,14 @@ Singleton {
     Component.onCompleted: {
         root.settings = Settings
         root.lock = Settings.barLock ?? true
-        root.expanded = Settings.barExpanded ?? false
+        root.expanded = Settings.barDefault ?? true
+        root.isDefault = Settings.barDefault ?? true
         root.orientation = Settings.barOrientation ?? true
         root.smartHide = Settings.barSmartHide ?? false
         root.fullWidth = Settings.barFullWidth ?? false
 
         root.activeStates = {
-            compact: { priority: root.priority.compact }
-        }
-        if (root.expanded) {
-            root.activate("expanded", 0)
+            "default": { priority: root.priority.default }
         }
 
         // Setup volume watcher (pipewire sink)
@@ -365,14 +367,16 @@ Singleton {
         })
     }
 
-    // Resolve highest priority active state
+    // Resolve highest priority active state (default is the base fallback)
     function resolveState(): string {
-        var best = "compact"
+        var best = "default"
         var bestPriority = -Infinity
         for (var name in root.activeStates) {
+            // Legacy base names resolve to the default state
+            var canonical = (name === "expanded" || name === "compact") ? "default" : name
             var entry = root.activeStates[name]
             if (entry.priority > bestPriority) {
-                best = name
+                best = canonical
                 bestPriority = entry.priority
             }
         }
@@ -380,10 +384,13 @@ Singleton {
     }
 
     // Activate a state (with optional holdMs for auto-deactivate).
-    // AGS parity: omit holdMs (or pass 0) for persistent states that stay
-    // active until explicitly deactivated (search toggle, recording,
-    // expanded-on-hover). Only holdMs > 0 arms an auto-deactivate timer.
+    // Omit holdMs (or pass 0) for persistent states that stay active until
+    // explicitly deactivated (search toggle, recording). Only holdMs > 0
+    // arms an auto-deactivate timer. "default" is the permanent base.
+    // "expanded"/"compact" are accepted as legacy aliases for "default".
     function activate(name, holdMs) {
+        if (name === "expanded" || name === "compact")
+            name = "default"
         var priority = root.priority[name]
         if (priority === undefined) return
 
@@ -412,12 +419,21 @@ Singleton {
         root.debounceResolve()
     }
 
-    // Deactivate a state
+    // Deactivate a state (default is the permanent base and can't be removed)
     function deactivate(name) {
-        if (name === "compact") return // base is permanent
-
-        // Don't deactivate expanded if lock is on
-        if (name === "expanded" && root.expanded) return
+        if (name === "default") return
+        if (name === "expanded" || name === "compact") {
+            // Migrate legacy base names to default
+            var mig = Object.assign({}, root.activeStates || {})
+            delete mig[name]
+            delete mig["expanded"]
+            delete mig["compact"]
+            if (Object.keys(mig).length === 0)
+                mig["default"] = { priority: root.priority.default }
+            root.activeStates = mig
+            root.debounceResolve()
+            return
+        }
 
         const timers = root.holdTimers || {}
         if (timers[name]) {

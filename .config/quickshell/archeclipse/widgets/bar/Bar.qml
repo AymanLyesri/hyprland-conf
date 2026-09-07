@@ -82,12 +82,12 @@ PanelWindow {
     // only if the pointer is still off AND no popup is open) ---
     property bool hovered: pillHover.hovered
     Component.onCompleted: {
-        if (Settings.barExpanded)
-            BarState.activate("expanded");
+        if (Settings.barDefault)
+            BarState.activate("default");
     }
     onHoveredChanged: {
         if (hovered) {
-            BarState.activate("expanded");
+            BarState.activate("default");
             hideTimer.stop();
         } else {
             hideTimer.restart();
@@ -97,10 +97,10 @@ PanelWindow {
         id: hideTimer
         interval: 250
         onTriggered: {
-            // AGS leave handler: collapse expanded (guarded by hover+popup),
+            // AGS leave handler: collapse default (guarded by hover+popup),
             // then conceal the bar when unlocked and search isn't pinning it.
-            if (!root.hovered && BarState.popupCount <= 0 && !Settings.barExpanded)
-                BarState.deactivate("expanded");
+            if (!root.hovered && BarState.popupCount <= 0 && !Settings.barDefault)
+                BarState.deactivate("default");
             if (BarState.state !== "search" && BarState.state !== "control" && !Settings.barLock && !root.hovered && BarState.popupCount <= 0)
                 BarState.concealBar(root.monitorName);
         }
@@ -203,7 +203,23 @@ PanelWindow {
             // Grows with content: 32 for normal states, tall when the
             // search island (input + launcher) is shown.
             height: Math.max(root.barHeight, stack.height + 10)
-            width: Math.max(stack.width + 10, 100)
+            // Bound to targetWidth + frame-synced Behavior: the scene-graph
+            // render thread drives the spring on vsync instead of a 16ms
+            // QML Timer ticking JS physics on the GUI thread (jitter from
+            // timer drift + fixed-dt integration + a full re-polish/
+            // re-anchor of the centered stack on every write = choppy).
+            // NOTE: QML SpringAnimation units are NOT the AGS constants
+            // (QML damping range is 0..1); values match the repo's proven
+            // island springs (Control/SearchIsland 3.5/0.32), stiffened and
+            // damped a touch for the wide pill. Same feel: quick settle,
+            // slight overshoot.
+            width: targetWidth
+            property bool widthAnimReady: false
+            Component.onCompleted: widthAnimReady = true
+            Behavior on width {
+                enabled: pill.widthAnimReady
+                SpringAnimation { spring: 5; damping: 0.5; mass: 1.0; epsilon: 0.5 }
+            }
             bottomRightRadius: Theme.radius
             bottomLeftRadius: Theme.radius
             color: Theme.moduleBg
@@ -215,41 +231,10 @@ PanelWindow {
                 id: pillHover
             }
 
-            // Spring-physics width animation (matches AGS Bar.tsx:
-            // stiffness=250, damping=20, mass=1, 16ms tick, settle < 0.5px).
-            // widthOverride pins the spring target during grow-first sequencing.
+            // Spring target (AGS Bar.tsx grow-first/shrink-first sequencing).
+            // widthOverride pins the target during grow-first sequencing.
             property real widthOverride: -1
             property real targetWidth: widthOverride >= 0 ? widthOverride : Math.max(stack.width + 10, 100)
-            property real springVelocity: 0
-            property real springStiffness: 250
-            property real springDamping: 20
-            property real springMass: 1
-            property bool springActive: false
-
-            onTargetWidthChanged: springActive = true
-
-            Timer {
-                id: springTimer
-                running: pill.springActive
-                interval: 16
-                repeat: true
-                onTriggered: {
-                    // AGS: displacement = current - target;
-                    // springForce = -stiffness * displacement (attracting).
-                    var displacement = pill.width - pill.targetWidth;
-                    var springForce = -pill.springStiffness * displacement;
-                    var dampingForce = -pill.springDamping * pill.springVelocity;
-                    var acceleration = (springForce + dampingForce) / pill.springMass;
-                    pill.springVelocity += acceleration * 0.016;
-                    var next = pill.width + pill.springVelocity * 0.016;
-                    pill.width = next;
-                    if (Math.abs(next - pill.targetWidth) < 0.5 && Math.abs(pill.springVelocity) < 0.5) {
-                        pill.width = pill.targetWidth;
-                        pill.springVelocity = 0;
-                        pill.springActive = false;
-                    }
-                }
-            }
 
             // ---- state stack with crossfade ----
             // AGS parity (Bar.tsx barState.subscribe): when GROWING, animate
@@ -259,7 +244,22 @@ PanelWindow {
             Item {
                 id: stack
                 anchors.centerIn: parent
-                width: currentPageLoader.item ? currentPageLoader.item.width : 0
+                // Hold the last measured width across the 1-frame Loader
+                // swap gap (item == null): without this the target dips to
+                // the 100px floor mid-transition and the spring visibly
+                // stutters (wide -> 100 -> island instead of wide -> island).
+                // implicitWidth fallback covers Row-based pages (DefaultBar)
+                // whose width stays 0 while content lays out past its bounds.
+                property real lastWidth: 0
+                width: {
+                    var it = currentPageLoader.item;
+                    if (!it)
+                        return lastWidth;
+                    var w = Math.max(it.width || 0, it.implicitWidth || 0);
+                    return w > 0 ? w : lastWidth;
+                }
+                onWidthChanged: if (width > 0)
+                    lastWidth = width
                 height: childrenRect.height
 
                 // The state actually shown (lags BarState.state by 100ms on grow)
@@ -280,9 +280,9 @@ PanelWindow {
                         var cached = stack.widthCache[s];
                         if (cached !== undefined && cached > pill.width) {
                             // Growing: expand first, swap content after 100ms
+                            // (Behavior on pill.width carries the motion).
                             stack.pending = s;
                             pill.widthOverride = cached + 10;
-                            pill.springActive = true;
                             swapTimer.restart();
                         } else {
                             // Shrinking or unknown: swap now, width follows
@@ -330,8 +330,8 @@ PanelWindow {
                     id: currentPageLoader
                     sourceComponent: {
                         switch (stack.current) {
-                        case "expanded":
-                            return expandedPage;
+                        case "default":
+                            return defaultPage;
                         case "volume":
                             return controlPage;
                         case "brightness":
@@ -354,21 +354,18 @@ PanelWindow {
                     onLoaded: {
                         if (item && item["monitorName"] !== undefined)
                             item.monitorName = root.monitorName;
-                        if (item && item.width > 0) {
+                        var mw = item ? Math.max(item.width || 0, item.implicitWidth || 0) : 0;
+                        if (mw > 0) {
                             var c = Object.assign({}, stack.widthCache);
-                            c[stack.current] = item.width;
+                            c[stack.current] = mw;
                             stack.widthCache = c;
                         }
                     }
                 }
 
                 Component {
-                    id: compactPage
-                    CompactBar {}
-                }
-                Component {
-                    id: expandedPage
-                    ExpandedBar {}
+                    id: defaultPage
+                    DefaultBar {}
                 }
                 Component {
                     id: recordingPage

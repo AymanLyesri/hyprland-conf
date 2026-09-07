@@ -6,16 +6,13 @@ import qs.theme
 import qs.services
 import qs.widgets.bar
 
-// Port of Workspaces.tsx (full, grouped) and WorkspacesCompact.
-//
-// Full mode: workspaces 1..max(existing,10); occupied ones are grouped into a
-// pill ("workspace-group active"), empties stand alone. Focused = highlighted,
-// inactive = 0.4 opacity. Click dispatches focus. Special-workspace toggle on
-// the left.
+// Workspaces (full, grouped): workspaces 1..max(existing,10); occupied ones
+// are grouped into a pill ("workspace-group active"), empties stand alone.
+// Focused = highlighted, inactive = 0.4 opacity. Click dispatches focus.
+// Special-workspace toggle on the left.
 Row {
     id: root
 
-    property bool compact: false
     spacing: Theme.spacing
 
     // snapshot of workspace state: [{id, exists, icon}]
@@ -37,15 +34,13 @@ Row {
         const maxId = Math.max(10, ...map.keys());
         const out = [];
         for (let i = 1; i <= maxId; i++) {
-            if (compact && !map.has(i))
-                continue;   // compact shows only existing 1..10
             out.push(map.get(i) ?? {
                 id: i,
                 exists: false,
                 icon: WorkspaceIcons.emptyIcon
             });
         }
-        return out.slice(0, compact ? 10 : maxId);
+        return out.slice(0, maxId);
     }
 
     readonly property bool specialActive: {
@@ -55,7 +50,6 @@ Row {
 
     // ---- special workspace button ----
     Rectangle {
-        visible: !root.compact
         radius: Theme.radius
         color: root.specialActive ? Theme.buttonCheckedBg : "transparent"
         width: specialLabel.implicitWidth + 12
@@ -98,11 +92,10 @@ Row {
                 readonly property bool focused: (Hyprland.focusedWorkspace?.id ?? 1) === wid
 
                 radius: Theme.radius
-                color: focused ? (root.compact ? Theme.background : Theme.buttonCheckedBg) : "transparent"
+                color: focused ? Theme.buttonCheckedBg : "transparent"
                 opacity: !exists ? 0.4 : 1.0
-                implicitWidth: label.implicitWidth + (focused ? 24 : 8)
-                implicitHeight: root.height > 0 ? root.height - 6 : 22
-                anchors.verticalCenter: parent.verticalCenter
+                implicitWidth: label.implicitWidth + (focused ? 32 : 8)
+                implicitHeight: 24
 
                 Behavior on color {
                     ColorAnimation {
@@ -125,8 +118,8 @@ Row {
                     id: label
                     anchors.centerIn: parent
                     textFormat: Text.RichText
-                    text: Settings.workspaceNumbers && root.compact === false ? modelData.icon + WorkspaceIcons.numberBadge(btn.wid) : (Settings.workspaceNumbers ? modelData.icon + WorkspaceIcons.numberBadge(btn.wid) : modelData.icon)
-                    color: btn.focused && !root.compact ? Theme.buttonCheckedFg : Theme.foreground
+                    text: Settings.workspaceNumbers ? modelData.icon + WorkspaceIcons.numberBadge(btn.wid) : modelData.icon
+                    color: btn.focused ? Theme.buttonCheckedFg : Theme.foreground
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontSize
                 }
