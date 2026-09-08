@@ -6,79 +6,70 @@ import qs.services
 
 // API / Bookmarks / Pins tabs (extracted verbatim from BooruViewerWidget).
 // viewer: entry root (selectedTab, progressStatus, fetchImages...).
-Row {
+Item {
     property var viewer
     id: tabRow
     Layout.fillWidth: true
-    spacing: 4
-    width: parent.width
+    implicitWidth: seg.implicitWidth
+    implicitHeight: seg.implicitHeight
 
-    Repeater {
-        model: viewer.booruApis
-        delegate: AppButton {
-            id: apiTabBtn
-            text: modelData.name
-            width: (parent.width - 20) / 5  // 3 APIs + Bookmarks + Pins = 5 tabs
-            height: 28
-            toggle: true
-            checked: viewer.selectedTab === modelData.name
-            enabled: viewer.progressStatus !== "loading"
-            pixelSize: Theme.fontSize - 2
-            onClicked: {
-                Settings.booru.api = modelData
-                Settings.updateSetting("booru.api", modelData)
-                viewer.selectedTab = modelData.name
-                Settings.booru.selectedTab = modelData.name
-                Settings.updateSetting("booru.selectedTab", modelData.name)
-                viewer.page = 1
-                Settings.booru.page = 1
-                Settings.updateSetting("booru.page", 1)
-                viewer.fetchImages()
-            }
-        }
+    // Tab values mirror viewer.selectedTab: API names + Bookmarks + Pins.
+    readonly property var tabValues: tabRow.viewer ? tabRow.viewer.booruApis.map(a => a.name).concat(["Bookmarks", "Pins"]) : []
+
+    // Shared tab-switch plumbing (page reset); the per-tab load call differs.
+    function resetPage() {
+        viewer.page = 1;
+        Settings.booru.page = 1;
+        Settings.updateSetting("booru.page", 1);
     }
-
-    // Bookmark tab (AGS label F02E)
-    AppButton {
-        id: bookmarkBtn
-        text: "\u{F02E}"
-        width: (parent.width - 20) / 5
-        height: 28
-        toggle: true
-        checked: viewer.selectedTab === "Bookmarks"
-        enabled: viewer.progressStatus !== "loading"
-        pixelSize: Theme.fontSize - 2
-        onClicked: {
-            viewer.selectedTab = "Bookmarks"
-            Settings.booru.selectedTab = "Bookmarks"
-            Settings.updateSetting("booru.selectedTab", "Bookmarks")
-            viewer.page = 1
-            Settings.booru.page = 1
-            Settings.updateSetting("booru.page", 1)
+    function activateTab(v) {
+        if (v === "Bookmarks") {
+            viewer.selectedTab = "Bookmarks";
+            Settings.booru.selectedTab = "Bookmarks";
+            Settings.updateSetting("booru.selectedTab", "Bookmarks");
+            tabRow.resetPage();
             // Load bookmarks (AGS: paginate + download previews)
-            viewer.loadBookmarks()
+            viewer.loadBookmarks();
+        } else if (v === "Pins") {
+            viewer.selectedTab = "Pins";
+            Settings.booru.selectedTab = "Pins";
+            Settings.updateSetting("booru.selectedTab", "Pins");
+            tabRow.resetPage();
+            // Load pins (AGS: paginate + download previews)
+            viewer.loadPins();
+        } else {
+            const api = viewer.booruApis.find(a => a.name === v) || viewer.booruApis[0];
+            Settings.booru.api = api;
+            Settings.updateSetting("booru.api", api);
+            viewer.selectedTab = api.name;
+            Settings.booru.selectedTab = api.name;
+            Settings.updateSetting("booru.selectedTab", api.name);
+            tabRow.resetPage();
+            viewer.fetchImages();
         }
     }
 
-    // Pins tab (AGS label F435)
-    AppButton {
-        id: pinsBtn
-        text: "\u{F435}"
-        width: (parent.width - 20) / 5
-        height: 28
-        toggle: true
-        checked: viewer.selectedTab === "Pins"
-        enabled: viewer.progressStatus !== "loading"
+    AppSegmentedControl {
+        id: seg
+        anchors.centerIn: parent
+        enabled: tabRow.viewer && tabRow.viewer.progressStatus !== "loading"
         pixelSize: Theme.fontSize - 2
-        onClicked: {
-            viewer.selectedTab = "Pins"
-            Settings.booru.selectedTab = "Pins"
-            Settings.updateSetting("booru.selectedTab", "Pins")
-            viewer.page = 1
-            Settings.booru.page = 1
-            Settings.updateSetting("booru.page", 1)
-            // Load pins (AGS: paginate + download previews)
-            viewer.loadPins()
-        }
+        model: tabRow.viewer ? tabRow.viewer.booruApis.map(a => ({
+            value: a.name,
+            label: a.name
+        })).concat([
+            {
+                value: "Bookmarks",
+                label: "\u{F02E}",
+                tooltip: "Bookmarks"
+            },
+            {
+                value: "Pins",
+                label: "\u{F435}",
+                tooltip: "Pins"
+            }
+        ]) : []
+        currentIndex: tabRow.tabValues.indexOf(tabRow.viewer ? tabRow.viewer.selectedTab : "")
+        onActivated: (i, v) => tabRow.activateTab(v)
     }
 }

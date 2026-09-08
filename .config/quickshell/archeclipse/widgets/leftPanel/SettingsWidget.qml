@@ -17,6 +17,34 @@ Item {
     property int widgetWidth: parent.width
     property string className: ""
 
+    // Replayable staggered section reveal (CustomScripts/KeyBinds parity):
+    // StackLayout builds all tabs once at startup (hidden), so
+    // creation-time fades would fire unseen and the tab switch would only
+    // play the container-wide fade. Instead a counter steps 0→sectionCount
+    // each time this tab becomes visible and sections key their opacity
+    // off their index.
+    property int revealCount: 0
+    property int sectionCount: 9
+    Timer {
+        id: revealTimer
+        interval: 60
+        repeat: true
+        onTriggered: {
+            if (root.revealCount >= root.sectionCount)
+                revealTimer.stop();
+            else
+                root.revealCount++;
+        }
+    }
+    function playReveal() {
+        root.revealCount = 0;
+        revealTimer.restart();
+    }
+    onVisibleChanged: {
+        if (visible)
+            root.playReveal();
+    }
+
     ColumnLayout {
         anchors.fill: parent
         spacing: 10
@@ -49,493 +77,636 @@ Item {
                 spacing: 16
                 width: settingsScroll.width
 
-                // ============ BAR LAYOUT (drag-reorder) ============
-                Column {
+                // ============ BAR SETTINGS ============
+                // AGS parity note: AGS also exposes bar layout (drag-reorder),
+                // smart-hide and full-width. Those are intentionally not
+                // exposed here: the bar always shows all sections in a
+                // centered pill, and an unlocked bar always auto-hides until
+                // the screen edge is hovered. Lock Bar below is the only
+                // visibility switch.
+                Rectangle {
                     width: parent.width
-                    spacing: 8
-                    Label {
-                        text: "Bar Layout (Drag to Reorder)"
-                        font.pixelSize: Theme.fontSize + 2
-                        font.bold: true
-                        color: Theme.accent
-                    }
-
-                    Repeater {
-                        id: barLayoutRepeater
-                        model: root.barLayoutModelList
-
-                        Rectangle {
-                            id: rowWrap
-                            // NOTE: Repeater has no width — size off the
-                            // section Column instead.
-                            width: parent.width
-                            height: 34
-                            radius: 4
-                            color: Theme.surfaceHover
-
-                            property bool dragActive: false
-
-                            // Drag source (AGS Gtk.DragSource). dragType is
-                            // required — without it no drag events reach
-                            // DropAreas. DropArea is a SIBLING of the
-                            // MouseArea (stable while another row drags).
-                            Drag.active: dragMa.drag.active
-                            Drag.dragType: Drag.Automatic
-                            Drag.hotSpot.x: width / 2
-                            Drag.hotSpot.y: height / 2
-                            Drag.mimeData: {
-                                "text/plain": String(index)
-                            }
-                            Drag.onDragFinished: rowWrap.dragActive = false
-
-                            MouseArea {
-                                id: dragMa
-                                anchors.fill: parent
-                                drag.target: rowWrap
-                                drag.smoothed: false
-                                onPressed: rowWrap.dragActive = true
-                                onReleased: {
-                                    rowWrap.dragActive = false;
-                                    rowWrap.Drag.drop();
-                                }
-
-                                Row {
-                                    anchors.fill: parent
-                                    anchors.margins: 6
-                                    spacing: 8
-                                    AppCheckBox {
-                                        id: layoutCheck
-                                        // NOTE: no verticalCenter anchor — the
-                                        // parent is a Row positioner, which
-                                        // ignores anchors on children.
-                                        y: (parent.height - height) / 2
-                                        checked: modelData.enabled
-                                        onToggled: {
-                                            const m = root.barLayoutModelList.slice();
-                                            m[index] = Object.assign({}, m[index], {
-                                                enabled: checked
-                                            });
-                                            root.barLayoutModelList = m;
-                                            root.applyBarLayout(m);
-                                        }
-                                    }
-                                    Label {
-                                        text: modelData.label + "  \u2630"
-                                        color: Theme.fg
-                                        font.pixelSize: Theme.fontSize
-                                        verticalAlignment: Text.AlignVCenter
-                                    }
-                                }
-                            }
-
-                            // Drop target: reorder when another row is
-                            // dropped here (self-drops ignored).
-                            DropArea {
-                                id: dropArea
-                                anchors.fill: parent
-                                keys: ["text/plain"]
-                                onDropped: drop => {
-                                    const fromIdx = Number(drop.mimeData.getDataAsString ? drop.mimeData.getDataAsString("text/plain") : drop.getDataAsString("text/plain"));
-                                    if (fromIdx !== index)
-                                        root.reorderBarLayout(fromIdx, index);
-                                    drop.accept(Qt.MoveAction);
-                                }
-                            }
-
-                            // Fallback reorder buttons (drag is finicky on
-                            // touchpads; AGS parity is the drag path above).
-                            Row {
-                                anchors.right: parent.right
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.rightMargin: 4
-                                spacing: 2
-                                AppButton {
-                                    text: "\u{F106}"
-                                    width: 24
-                                    height: 24
-                                    enabled: index > 0
-                                    onClicked: root.reorderBarLayout(index, index - 1)
-                                }
-                                AppButton {
-                                    text: "\u{F107}"
-                                    width: 24
-                                    height: 24
-                                    enabled: index < root.barLayoutModelList.length - 1
-                                    onClicked: root.reorderBarLayout(index, index + 1)
-                                }
-                            }
+                    implicitHeight: barSec.implicitHeight + 20
+                    opacity: root.revealCount > 0 ? 1 : 0
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 250
+                            easing.type: Easing.OutCubic
                         }
                     }
-                }
-
-                // ============ BAR SETTINGS ============
-                Column {
-                    width: parent.width
-                    spacing: 8
-                    Label {
-                        text: "Bar"
-                        font.pixelSize: Theme.fontSize + 2
-                        font.bold: true
-                        color: Theme.accent
-                    }
+                    radius: Theme.radius
+                    color: Theme.surface
+                    border.color: Theme.border
+                    border.width: 1
 
                     Column {
-                        width: parent.width
-                        spacing: 4
-                        RowLayout {
+                        id: barSec
+                        anchors.fill: parent
+                        anchors.margins: 10
+                        spacing: 8
+                        Label {
+                            text: "Bar"
+                            font.pixelSize: Theme.fontSize + 2
+                            font.bold: true
+                            color: Theme.accent
+                        }
+
+                        Column {
                             width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "Orientation"
-                                Layout.preferredWidth: 100
-                                color: Theme.fg
+                            spacing: 4
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Orientation"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppComboBox {
+                                    model: ["Top", "Bottom"]
+                                    currentIndex: Settings.barOrientation ? 0 : 1
+                                    onActivated: Settings.barOrientation = (index === 0)
+                                    Layout.preferredWidth: 160
+                                }
                             }
-                            AppComboBox {
-                                model: ["Top", "Bottom"]
-                                currentIndex: Settings.barOrientation ? 0 : 1
-                                onActivated: Settings.barOrientation = (index === 0)
-                                Layout.fillWidth: true
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Lock Bar"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppCheckBox {
+                                    checked: Settings.barLock
+                                    onToggled: Settings.barLock = checked
+                                }
                             }
-                        }
-                        AppCheckBox {
-                            text: "Lock Bar"
-                            checked: Settings.barLock
-                            onToggled: Settings.barLock = checked
-                        }
-                        AppCheckBox {
-                            text: "Smart Hide"
-                            checked: Settings.barSmartHide
-                            onToggled: Settings.barSmartHide = checked
-                        }
-                        AppCheckBox {
-                            text: "Always Expanded"
-                            checked: Settings.barDefault
-                            onToggled: Settings.barDefault = checked
-                        }
-                        AppCheckBox {
-                            text: "Full Width"
-                            checked: Settings.barFullWidth
-                            onToggled: Settings.barFullWidth = checked
-                        }
-                        AppCheckBox {
-                            text: "Workspace Numbers"
-                            checked: Settings.workspaceNumbers
-                            onToggled: Settings.workspaceNumbers = checked
-                        }
-                        RowLayout {
-                            width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "Reveal Pressure"
-                                Layout.preferredWidth: 100
-                                color: Theme.fg
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Always Expanded"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppCheckBox {
+                                    checked: Settings.barDefault
+                                    onToggled: Settings.barDefault = checked
+                                }
                             }
-                            AppSlider {
-                                from: 0
-                                to: 1000
-                                value: Settings.revealPressure
-                                Layout.fillWidth: true
-                                onValueChanged: Settings.revealPressure = value
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Workspace Numbers"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppCheckBox {
+                                    checked: Settings.workspaceNumbers
+                                    onToggled: Settings.workspaceNumbers = checked
+                                }
+                            }
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Reveal Pressure"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppSlider {
+                                    from: 0
+                                    to: 1000
+                                    value: Settings.revealPressure
+                                    Layout.preferredWidth: 150
+                                    onValueChanged: {
+                                        if (value === Settings.revealPressure)
+                                            return;
+                                        Settings.revealPressure = value;
+                                    }
+                                }
+                                Label {
+                                    text: Math.round(Settings.revealPressure)
+                                    color: Theme.fgDim
+                                    Layout.preferredWidth: 34
+                                    horizontalAlignment: Text.AlignRight
+                                }
                             }
                         }
                     }
                 }
 
                 // ============ PANEL SETTINGS ============
-                Column {
+                Rectangle {
                     width: parent.width
-                    spacing: 8
-                    Label {
-                        text: "Panels"
-                        font.pixelSize: Theme.fontSize + 2
-                        font.bold: true
-                        color: Theme.accent
+                    implicitHeight: panelSec.implicitHeight + 20
+                    opacity: root.revealCount > 1 ? 1 : 0
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 250
+                            easing.type: Easing.OutCubic
+                        }
                     }
+                    radius: Theme.radius
+                    color: Theme.surface
+                    border.color: Theme.border
+                    border.width: 1
 
                     Column {
-                        width: parent.width
-                        spacing: 4
-                        RowLayout {
+                        id: panelSec
+                        anchors.fill: parent
+                        anchors.margins: 10
+                        spacing: 8
+                        Label {
+                            text: "Panels"
+                            font.pixelSize: Theme.fontSize + 2
+                            font.bold: true
+                            color: Theme.accent
+                        }
+
+                        Column {
                             width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "Left Panel Width"
-                                color: Theme.fg
+                            spacing: 4
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Left Panel Width"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppSpinBox {
+                                    from: 200
+                                    to: 800
+                                    value: Settings.leftPanelWidth
+                                    Layout.preferredWidth: 160
+                                    onValueChanged: {
+                                        if (value === Settings.leftPanelWidth)
+                                            return;
+                                        Settings.leftPanelWidth = value;
+                                    }
+                                }
                             }
-                            AppSpinBox {
-                                from: 200
-                                to: 800
-                                value: Settings.leftPanelWidth
-                                onValueChanged: Settings.leftPanelWidth = value
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Right Panel Width"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppSpinBox {
+                                    from: 200
+                                    to: 800
+                                    value: Settings.rightPanelWidth
+                                    Layout.preferredWidth: 160
+                                    onValueChanged: {
+                                        if (value === Settings.rightPanelWidth)
+                                            return;
+                                        Settings.rightPanelWidth = value;
+                                    }
+                                }
                             }
-                        }
-                        RowLayout {
-                            width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "Right Panel Width"
-                                color: Theme.fg
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Left Panel Hot Zone"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppCheckBox {
+                                    checked: Settings.leftPanelHotZone
+                                    onToggled: Settings.leftPanelHotZone = checked
+                                }
                             }
-                            AppSpinBox {
-                                from: 200
-                                to: 800
-                                value: Settings.rightPanelWidth
-                                onValueChanged: Settings.rightPanelWidth = value
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Right Panel Hot Zone"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppCheckBox {
+                                    checked: Settings.rightPanelHotZone
+                                    onToggled: Settings.rightPanelHotZone = checked
+                                }
                             }
-                        }
-                        AppCheckBox {
-                            text: "Left Panel Hot Zone"
-                            checked: Settings.leftPanelHotZone
-                            onToggled: Settings.leftPanelHotZone = checked
-                        }
-                        AppCheckBox {
-                            text: "Right Panel Hot Zone"
-                            checked: Settings.rightPanelHotZone
-                            onToggled: Settings.rightPanelHotZone = checked
-                        }
-                        RowLayout {
-                            width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "Left Hot Zone Size"
-                                Layout.preferredWidth: 100
-                                color: Theme.fg
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Left Hot Zone Size"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppSpinBox {
+                                    from: 1
+                                    to: 50
+                                    value: Settings.leftPanelHotZoneSize
+                                    Layout.preferredWidth: 160
+                                    onValueChanged: {
+                                        if (value === Settings.leftPanelHotZoneSize)
+                                            return;
+                                        Settings.leftPanelHotZoneSize = value;
+                                    }
+                                }
                             }
-                            AppSpinBox {
-                                from: 1
-                                to: 50
-                                value: Settings.leftPanelHotZoneSize
-                                onValueChanged: Settings.leftPanelHotZoneSize = value
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Right Hot Zone Size"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppSpinBox {
+                                    from: 1
+                                    to: 50
+                                    value: Settings.rightPanelHotZoneSize
+                                    Layout.preferredWidth: 160
+                                    onValueChanged: {
+                                        if (value === Settings.rightPanelHotZoneSize)
+                                            return;
+                                        Settings.rightPanelHotZoneSize = value;
+                                    }
+                                }
                             }
-                        }
-                        RowLayout {
-                            width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "Right Hot Zone Size"
-                                Layout.preferredWidth: 100
-                                color: Theme.fg
+                            AppButton {
+                                text: "Preview Hot Zones"
+                                onClicked: root.previewHotZones()
                             }
-                            AppSpinBox {
-                                from: 1
-                                to: 50
-                                value: Settings.rightPanelHotZoneSize
-                                onValueChanged: Settings.rightPanelHotZoneSize = value
-                            }
-                        }
-                        AppButton {
-                            text: "Preview Hot Zones"
-                            onClicked: root.previewHotZones()
                         }
                     }
                 }
 
                 // ============ THEME SETTINGS ============
-                Column {
+                Rectangle {
                     width: parent.width
-                    spacing: 8
-                    Label {
-                        text: "Theme"
-                        font.pixelSize: Theme.fontSize + 2
-                        font.bold: true
-                        color: Theme.accent
+                    implicitHeight: themeSec.implicitHeight + 20
+                    opacity: root.revealCount > 2 ? 1 : 0
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 250
+                            easing.type: Easing.OutCubic
+                        }
                     }
+                    radius: Theme.radius
+                    color: Theme.surface
+                    border.color: Theme.border
+                    border.width: 1
 
                     Column {
-                        width: parent.width
-                        spacing: 4
-                        AppCheckBox {
-                            text: "Dynamic Theme Colors"
-                            checked: Settings.dynamicThemeColors
-                            onToggled: {
-                                Settings.dynamicThemeColors = checked;
-                                root.setThemeFlagInConf("autocolor", checked);
-                            }
+                        id: themeSec
+                        anchors.fill: parent
+                        anchors.margins: 10
+                        spacing: 8
+                        Label {
+                            text: "Theme"
+                            font.pixelSize: Theme.fontSize + 2
+                            font.bold: true
+                            color: Theme.accent
                         }
-                        AppCheckBox {
-                            text: "Dynamic Theme Variants"
-                            checked: Settings.dynamicThemeVariants
-                            onToggled: {
-                                Settings.dynamicThemeVariants = checked;
-                                root.setThemeFlagInConf("autovariant", checked);
-                            }
-                        }
-                        AppCheckBox {
-                            text: "Blur"
-                            checked: Settings.barBlur
-                            onToggled: Settings.barBlur = checked
-                        }
-                        RowLayout {
+
+                        Column {
                             width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "Blur Size"
-                                Layout.preferredWidth: 100
-                                color: Theme.fg
+                            spacing: 4
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Dynamic Theme Colors"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppCheckBox {
+                                    checked: Settings.dynamicThemeColors
+                                    onToggled: {
+                                        Settings.dynamicThemeColors = checked;
+                                        root.setThemeFlagInConf("autocolor", checked);
+                                    }
+                                }
                             }
-                            AppSpinBox {
-                                from: 1
-                                to: 20
-                                value: Settings.barBlurSize
-                                onValueChanged: Settings.barBlurSize = value
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Dynamic Theme Variants"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppCheckBox {
+                                    checked: Settings.dynamicThemeVariants
+                                    onToggled: {
+                                        Settings.dynamicThemeVariants = checked;
+                                        root.setThemeFlagInConf("autovariant", checked);
+                                    }
+                                }
                             }
-                        }
-                        RowLayout {
-                            width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "Blur Passes"
-                                Layout.preferredWidth: 100
-                                color: Theme.fg
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Blur"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppCheckBox {
+                                    checked: Settings.barBlur
+                                    onToggled: Settings.barBlur = checked
+                                }
                             }
-                            AppSpinBox {
-                                from: 1
-                                to: 10
-                                value: Settings.barBlurPasses
-                                onValueChanged: Settings.barBlurPasses = value
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Blur Size"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppSpinBox {
+                                    from: 1
+                                    to: 20
+                                    value: Settings.barBlurSize
+                                    Layout.preferredWidth: 160
+                                    onValueChanged: {
+                                        if (value === Settings.barBlurSize)
+                                            return;
+                                        Settings.barBlurSize = value;
+                                    }
+                                }
+                            }
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Blur Passes"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppSpinBox {
+                                    from: 1
+                                    to: 10
+                                    value: Settings.barBlurPasses
+                                    Layout.preferredWidth: 160
+                                    onValueChanged: {
+                                        if (value === Settings.barBlurPasses)
+                                            return;
+                                        Settings.barBlurPasses = value;
+                                    }
+                                }
                             }
                         }
                     }
                 }
 
                 // ============ INTERFACE ============
-                Column {
+                Rectangle {
                     width: parent.width
-                    spacing: 8
-                    Label {
-                        text: "Interface"
-                        font.pixelSize: Theme.fontSize + 2
-                        font.bold: true
-                        color: Theme.accent
+                    implicitHeight: ifaceSec.implicitHeight + 20
+                    opacity: root.revealCount > 3 ? 1 : 0
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 250
+                            easing.type: Easing.OutCubic
+                        }
                     }
+                    radius: Theme.radius
+                    color: Theme.surface
+                    border.color: Theme.border
+                    border.width: 1
 
                     Column {
-                        width: parent.width
-                        spacing: 4
-                        RowLayout {
-                            width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "Opacity"
-                                Layout.preferredWidth: 100
-                                color: Theme.fg
-                            }
-                            AppSlider {
-                                from: 0
-                                to: 1
-                                value: Settings.uiOpacity
-                                stepSize: 0.01
-                                Layout.fillWidth: true
-                                onValueChanged: Settings.uiOpacity = value
-                            }
+                        id: ifaceSec
+                        anchors.fill: parent
+                        anchors.margins: 10
+                        spacing: 8
+                        Label {
+                            text: "Interface"
+                            font.pixelSize: Theme.fontSize + 2
+                            font.bold: true
+                            color: Theme.accent
                         }
-                        RowLayout {
+
+                        Column {
                             width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "Scale"
-                                Layout.preferredWidth: 100
-                                color: Theme.fg
+                            spacing: 4
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Opacity"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppSlider {
+                                    from: 0
+                                    to: 1
+                                    value: Settings.uiOpacity
+                                    stepSize: 0.01
+                                    Layout.preferredWidth: 150
+                                    onValueChanged: {
+                                        if (value === Settings.uiOpacity)
+                                            return;
+                                        Settings.uiOpacity = value;
+                                    }
+                                }
+                                Label {
+                                    text: Settings.uiOpacity.toFixed(2)
+                                    color: Theme.fgDim
+                                    Layout.preferredWidth: 34
+                                    horizontalAlignment: Text.AlignRight
+                                }
                             }
-                            AppSpinBox {
-                                from: 10
-                                to: 30
-                                value: Settings.uiScale
-                                Layout.fillWidth: true
-                                onValueChanged: Settings.uiScale = value
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Scale"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppSpinBox {
+                                    from: 10
+                                    to: 30
+                                    value: Settings.uiScale
+                                    Layout.preferredWidth: 160
+                                    onValueChanged: {
+                                        if (value === Settings.uiScale)
+                                            return;
+                                        Settings.uiScale = value;
+                                    }
+                                }
                             }
-                        }
-                        RowLayout {
-                            width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "Font Size"
-                                Layout.preferredWidth: 100
-                                color: Theme.fg
-                            }
-                            AppSpinBox {
-                                from: 10
-                                to: 30
-                                value: Settings.uiFontSize
-                                Layout.fillWidth: true
-                                onValueChanged: Settings.uiFontSize = value
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Font Size"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppSpinBox {
+                                    from: 10
+                                    to: 30
+                                    value: Settings.uiFontSize
+                                    Layout.preferredWidth: 160
+                                    onValueChanged: {
+                                        if (value === Settings.uiFontSize)
+                                            return;
+                                        Settings.uiFontSize = value;
+                                    }
+                                }
                             }
                         }
                     }
                 }
 
                 // ============ ALWAYS-ON WIDGET ============
-                Column {
+                Rectangle {
                     width: parent.width
-                    spacing: 8
-                    Label {
-                        text: "Always-On Widget"
-                        font.pixelSize: Theme.fontSize + 2
-                        font.bold: true
-                        color: Theme.accent
+                    implicitHeight: aowSec.implicitHeight + 20
+                    opacity: root.revealCount > 4 ? 1 : 0
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 250
+                            easing.type: Easing.OutCubic
+                        }
                     }
-                    AppCheckBox {
-                        text: "Visible"
-                        checked: Settings.alwaysOnWidgetVisibility
-                        onToggled: Settings.alwaysOnWidgetVisibility = checked
+                    radius: Theme.radius
+                    color: Theme.surface
+                    border.color: Theme.border
+                    border.width: 1
+
+                    Column {
+                        id: aowSec
+                        anchors.fill: parent
+                        anchors.margins: 10
+                        spacing: 8
+                        Label {
+                            text: "Always-On Widget"
+                            font.pixelSize: Theme.fontSize + 2
+                            font.bold: true
+                            color: Theme.accent
+                        }
+                        RowLayout {
+                            width: parent.width
+                            spacing: 8
+                            Label {
+                                text: "Visible"
+                                color: Theme.fg
+                                Layout.fillWidth: true
+                            }
+                            AppCheckBox {
+                                checked: Settings.alwaysOnWidgetVisibility
+                                onToggled: Settings.alwaysOnWidgetVisibility = checked
+                            }
+                        }
                     }
                 }
 
                 // ============ KEYSTROKE VISUALIZER ============
-                Column {
+                Rectangle {
                     width: parent.width
-                    spacing: 8
-                    Label {
-                        text: "KeyStroke Visualizer"
-                        font.pixelSize: Theme.fontSize + 2
-                        font.bold: true
-                        color: Theme.accent
-                    }
-                    AppCheckBox {
-                        text: "Visible"
-                        checked: Settings.keyStrokeVisualizerVisibility
-                        onToggled: {
-                            Settings.keyStrokeVisualizerVisibility = checked;
-                            if (checked)
-                                root.addUserToInputGroup();
+                    implicitHeight: ksvSec.implicitHeight + 20
+                    opacity: root.revealCount > 5 ? 1 : 0
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 250
+                            easing.type: Easing.OutCubic
                         }
                     }
-                    RowLayout {
-                        width: parent.width
+                    radius: Theme.radius
+                    color: Theme.surface
+                    border.color: Theme.border
+                    border.width: 1
+
+                    Column {
+                        id: ksvSec
+                        anchors.fill: parent
+                        anchors.margins: 10
                         spacing: 8
                         Label {
-                            text: "Anchor"
-                            Layout.preferredWidth: 100
-                            color: Theme.fg
+                            text: "KeyStroke Visualizer"
+                            font.pixelSize: Theme.fontSize + 2
+                            font.bold: true
+                            color: Theme.accent
                         }
-                        AppComboBox {
-                            model: ["Bottom Left", "Bottom", "Bottom Right"]
-                            currentIndex: (Settings.keyStrokeVisualizerAnchor.length === 2 && Settings.keyStrokeVisualizerAnchor[1] === "left") ? 0 : (Settings.keyStrokeVisualizerAnchor.length === 1) ? 1 : 2
-                            onActivated: {
-                                if (index === 0)
-                                    Settings.keyStrokeVisualizerAnchor = ["bottom", "left"];
-                                else if (index === 1)
-                                    Settings.keyStrokeVisualizerAnchor = ["bottom"];
-                                else
-                                    Settings.keyStrokeVisualizerAnchor = ["bottom", "right"];
+                        RowLayout {
+                            width: parent.width
+                            spacing: 8
+                            Label {
+                                text: "Visible"
+                                color: Theme.fg
+                                Layout.fillWidth: true
+                            }
+                            AppCheckBox {
+                                checked: Settings.keyStrokeVisualizerVisibility
+                                onToggled: {
+                                    Settings.keyStrokeVisualizerVisibility = checked;
+                                    if (checked)
+                                        root.addUserToInputGroup();
+                                }
+                            }
+                        }
+                        RowLayout {
+                            width: parent.width
+                            spacing: 8
+                            Label {
+                                text: "Anchor"
+                                color: Theme.fg
+                                Layout.fillWidth: true
+                            }
+                            AppComboBox {
+                                model: ["Bottom Left", "Bottom", "Bottom Right"]
+                                currentIndex: (Settings.keyStrokeVisualizerAnchor.length === 2 && Settings.keyStrokeVisualizerAnchor[1] === "left") ? 0 : (Settings.keyStrokeVisualizerAnchor.length === 1) ? 1 : 2
+                                Layout.preferredWidth: 160
+                                onActivated: {
+                                    if (index === 0)
+                                        Settings.keyStrokeVisualizerAnchor = ["bottom", "left"];
+                                    else if (index === 1)
+                                        Settings.keyStrokeVisualizerAnchor = ["bottom"];
+                                    else
+                                        Settings.keyStrokeVisualizerAnchor = ["bottom", "right"];
+                                }
                             }
                         }
                     }
                 }
 
                 // ============ API KEYS ============
-                Column {
+                Rectangle {
                     width: parent.width
-                    spacing: 8
-                    Label {
-                        text: "API Keys"
-                        font.pixelSize: Theme.fontSize + 2
-                        font.bold: true
-                        color: Theme.accent
+                    implicitHeight: apiSec.implicitHeight + 20
+                    opacity: root.revealCount > 6 ? 1 : 0
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 250
+                            easing.type: Easing.OutCubic
+                        }
                     }
+                    radius: Theme.radius
+                    color: Theme.surface
+                    border.color: Theme.border
+                    border.width: 1
+
                     Column {
-                        width: parent.width
-                        spacing: 4
+                        id: apiSec
+                        anchors.fill: parent
+                        anchors.margins: 10
+                        spacing: 8
+                        Label {
+                            text: "API Keys"
+                            font.pixelSize: Theme.fontSize + 2
+                            font.bold: true
+                            color: Theme.accent
+                        }
+                        Column {
+                            width: parent.width
+                            spacing: 4
                         Repeater {
                             id: apiKeyRepeater
                             model: [
@@ -577,7 +748,7 @@ Item {
                                 // section Column instead.
                                 width: parent.width
                                 height: 34
-                                color: Theme.surface
+                                color: Theme.bg
                                 radius: 4
 
                                 property bool reveal: false
@@ -589,7 +760,8 @@ Item {
                                     Label {
                                         text: modelData.label
                                         color: Theme.fg
-                                        Layout.preferredWidth: 140
+                                        Layout.fillWidth: true
+                                        elide: Text.ElideRight
                                     }
                                     AppTextField {
                                         id: keyField
@@ -597,7 +769,7 @@ Item {
                                         placeholderText: "Enter " + modelData.label
                                         echoMode: parent.parent.reveal ? TextField.Normal : TextField.Password
                                         fillColor: "transparent"
-                                        Layout.fillWidth: true
+                                        Layout.preferredWidth: 160
                                         onAccepted: {
                                             root.setNestedValue("apiKeys", modelData.path, keyField.text, true);
                                             // AGS notifies masked value on save (secret)
@@ -624,35 +796,63 @@ Item {
                             }
                         }
                     }
+                    }
                 }
 
                 // ============ FILE MANAGER ============
-                Column {
+                Rectangle {
                     width: parent.width
-                    spacing: 8
-                    Label {
-                        text: "File Manager"
-                        font.pixelSize: Theme.fontSize + 2
-                        font.bold: true
-                        color: Theme.accent
+                    implicitHeight: fmSec.implicitHeight + 20
+                    opacity: root.revealCount > 7 ? 1 : 0
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 250
+                            easing.type: Easing.OutCubic
+                        }
                     }
+                    radius: Theme.radius
+                    color: Theme.surface
+                    border.color: Theme.border
+                    border.width: 1
+
                     Column {
-                        width: parent.width
-                        spacing: 4
-                        Repeater {
-                            id: fmRepeater
-                            model: root.fileManagerOptions.length ? root.fileManagerOptions : root.allFileManagers
-                            delegate: AppCheckBox {
-                                text: modelData.name
-                                checked: Settings.fileManager === modelData.id
-                                onToggled: {
-                                    if (checked) {
-                                        Settings.fileManager = modelData.id;
-                                        // AGS notifies "Changed to <name>"
-                                        Notifications.notify({
-                                            summary: "File Manager",
-                                            body: "Changed to " + modelData.name
-                                        });
+                        id: fmSec
+                        anchors.fill: parent
+                        anchors.margins: 10
+                        spacing: 8
+                        Label {
+                            text: "File Manager"
+                            font.pixelSize: Theme.fontSize + 2
+                            font.bold: true
+                            color: Theme.accent
+                        }
+                        Column {
+                            width: parent.width
+                            spacing: 4
+                            Repeater {
+                                id: fmRepeater
+                                model: root.fileManagerOptions.length ? root.fileManagerOptions : root.allFileManagers
+                                delegate: RowLayout {
+                                    width: parent.width
+                                    spacing: 8
+                                    Label {
+                                        text: modelData.name
+                                        color: Theme.fg
+                                        Layout.fillWidth: true
+                                        elide: Text.ElideRight
+                                    }
+                                    AppCheckBox {
+                                        checked: Settings.fileManager === modelData.id
+                                        onToggled: {
+                                            if (checked) {
+                                                Settings.fileManager = modelData.id;
+                                                // AGS notifies "Changed to <name>"
+                                                Notifications.notify({
+                                                    summary: "File Manager",
+                                                    body: "Changed to " + modelData.name
+                                                });
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -661,18 +861,35 @@ Item {
                 }
 
                 // ============ HYPRLAND ============
-                Column {
+                Rectangle {
                     width: parent.width
-                    spacing: 8
-                    Label {
-                        text: "Hyprland"
-                        font.pixelSize: Theme.fontSize + 2
-                        font.bold: true
-                        color: Theme.accent
+                    implicitHeight: hyprSec.implicitHeight + 20
+                    opacity: root.revealCount > 8 ? 1 : 0
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 250
+                            easing.type: Easing.OutCubic
+                        }
                     }
+                    radius: Theme.radius
+                    color: Theme.surface
+                    border.color: Theme.border
+                    border.width: 1
+
                     Column {
-                        width: parent.width
-                        spacing: 6
+                        id: hyprSec
+                        anchors.fill: parent
+                        anchors.margins: 10
+                        spacing: 8
+                        Label {
+                            text: "Hyprland"
+                            font.pixelSize: Theme.fontSize + 2
+                            font.bold: true
+                            color: Theme.accent
+                        }
+                        Column {
+                            width: parent.width
+                            spacing: 6
 
                         // Decoration: Rounding
                         RowLayout {
@@ -704,12 +921,20 @@ Item {
                             }
                         }
                         // Decoration: Blur Enabled
-                        AppCheckBox {
-                            text: "Decoration: Blur Enabled"
-                            checked: root.hyprGet("decoration.blur.enabled")
-                            onToggled: {
-                                root.hyprSet("decoration.blur.enabled", checked);
-                                root.applyHyprlandSettingLive("decoration.blur.enabled", checked);
+                        RowLayout {
+                            width: parent.width
+                            spacing: 8
+                            Label {
+                                text: "Decoration: Blur Enabled"
+                                color: Theme.fg
+                                Layout.fillWidth: true
+                            }
+                            AppCheckBox {
+                                checked: root.hyprGet("decoration.blur.enabled")
+                                onToggled: {
+                                    root.hyprSet("decoration.blur.enabled", checked);
+                                    root.applyHyprlandSettingLive("decoration.blur.enabled", checked);
+                                }
                             }
                         }
                         // Decoration: Blur Size
@@ -769,21 +994,37 @@ Item {
                             }
                         }
                         // Decoration: Blur Xray
-                        AppCheckBox {
-                            text: "Decoration: Blur Xray"
-                            checked: root.hyprGet("decoration.blur.xray")
-                            onToggled: {
-                                root.hyprSet("decoration.blur.xray", checked);
-                                root.applyHyprlandSettingLive("decoration.blur.xray", checked);
+                        RowLayout {
+                            width: parent.width
+                            spacing: 8
+                            Label {
+                                text: "Decoration: Blur Xray"
+                                color: Theme.fg
+                                Layout.fillWidth: true
+                            }
+                            AppCheckBox {
+                                checked: root.hyprGet("decoration.blur.xray")
+                                onToggled: {
+                                    root.hyprSet("decoration.blur.xray", checked);
+                                    root.applyHyprlandSettingLive("decoration.blur.xray", checked);
+                                }
                             }
                         }
                         // Decoration: Shadow Enabled
-                        AppCheckBox {
-                            text: "Decoration: Shadow Enabled"
-                            checked: root.hyprGet("decoration.shadow.enabled")
-                            onToggled: {
-                                root.hyprSet("decoration.shadow.enabled", checked);
-                                root.applyHyprlandSettingLive("decoration.shadow.enabled", checked);
+                        RowLayout {
+                            width: parent.width
+                            spacing: 8
+                            Label {
+                                text: "Decoration: Shadow Enabled"
+                                color: Theme.fg
+                                Layout.fillWidth: true
+                            }
+                            AppCheckBox {
+                                checked: root.hyprGet("decoration.shadow.enabled")
+                                onToggled: {
+                                    root.hyprSet("decoration.shadow.enabled", checked);
+                                    root.applyHyprlandSettingLive("decoration.shadow.enabled", checked);
+                                }
                             }
                         }
                         // Decoration: Shadow Range
@@ -998,6 +1239,7 @@ Item {
                                 onClicked: root.resetToDefaults()
                             }
                         }
+                        }
                     }
                 }
             }
@@ -1066,29 +1308,10 @@ Item {
         });
     }
 
-    Component.onCompleted: root.detectFileManagers()
-    // Bar-layout model follows Settings order (drag-reorder sequence).
-    // Labels mirror AGS barWidgetSelectors names.
-    property var barLayoutModelList: (Settings.barLayoutOrder || ["workspaces", "information", "utilities"]).map(n => ({
-                name: n,
-                enabled: (Settings.barLayout || {})[n] ?? true,
-                label: n === "workspaces" ? "Workspaces" : n === "information" ? "Information" : "Utilities"
-            }))
-    Connections {
-        target: Settings
-        function onBarLayoutChanged() {
-            root.refreshBarLayoutModel();
-        }
-        function onBarLayoutOrderChanged() {
-            root.refreshBarLayoutModel();
-        }
-    }
-    function refreshBarLayoutModel() {
-        root.barLayoutModelList = (Settings.barLayoutOrder || ["workspaces", "information", "utilities"]).map(n => ({
-                    name: n,
-                    enabled: (Settings.barLayout || {})[n] ?? true,
-                    label: n === "workspaces" ? "Workspaces" : n === "information" ? "Information" : "Utilities"
-                }));
+    Component.onCompleted: {
+        root.detectFileManagers();
+        if (visible)
+            root.playReveal();
     }
 
     // Get a nested value from Settings.hyprland by dotted path (e.g. "decoration.rounding")
@@ -1213,28 +1436,6 @@ Item {
         Qt.callLater(function () {
             Quickshell.execDetached(["hyprctl", "notify", "3", "3000", "rgb(ff9800)", "Hot zones highlighted"]);
         });
-    }
-
-    function applyBarLayout(newLayout) {
-        // Name-based (not positional) so reorder + toggle compose; order
-        // persisted via barLayoutOrder for the shared bar.layout array.
-        const flags = Object.assign({}, Settings.barLayout || {});
-        for (const item of newLayout)
-            flags[item.name] = !!item.enabled;
-        Settings.barLayout = flags;
-        Settings.barLayoutOrder = newLayout.map(item => item.name);
-        Settings.schedulePersist();
-    }
-
-    // Port of AGS moveItem + drag-drop reorder of bar layout
-    function reorderBarLayout(from, to) {
-        if (from < 0 || to < 0 || from >= root.barLayoutModelList.length || to >= root.barLayoutModelList.length || from === to)
-            return;
-        const copy = root.barLayoutModelList.slice();
-        const [item] = copy.splice(from, 1);
-        copy.splice(to, 0, item);
-        root.barLayoutModelList = copy;
-        root.applyBarLayout(copy);
     }
 
     // Apply single Hyprland setting immediately (live), mirroring AGS

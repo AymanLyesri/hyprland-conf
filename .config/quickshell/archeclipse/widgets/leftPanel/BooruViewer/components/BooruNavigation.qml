@@ -33,27 +33,22 @@ Column {
     Row {
         id: pageBar
 
-        height: 28
         spacing: 4
         anchors.horizontalCenter: parent.horizontalCenter
 
-        // First-page button + ellipsis when page > 3 (AGS logic)
-        Repeater {
-            model: viewer.buildPageButtons()
-
-            delegate: AppButton {
-                readonly property var modelDataObj: modelData // {label, active}
-
-                text: modelData.label
-                width: modelData.active ? 40 : 28
-                height: 28
-                enabled: viewer.progressStatus !== "loading" && modelData.page > 0
-                pixelSize: Theme.fontSize - 2
-                onClicked: viewer.gotoPage(modelData.page)
-            }
-
+        // Windowed page buttons (AGS logic) as a sliding segment: the
+        // active page carries the highlight, "..." is a disabled cell.
+        AppSegmentedControl {
+            enabled: viewer.progressStatus !== "loading"
+            pixelSize: Theme.fontSize - 2
+            model: viewer.buildPageButtons().map(b => ({
+                value: b.page,
+                label: b.label,
+                enabled: b.page > 0
+            }))
+            currentIndex: viewer.buildPageButtons().findIndex(b => b.active)
+            onActivated: (i, v) => viewer.gotoPage(v)
         }
-
     }
 
     Row {

@@ -490,10 +490,23 @@ Item {
         Settings.schedulePersist();
     }
 
+    // Dialog tag hold ("Hold: search"): ADD the tag to the current search
+    // instead of replacing it (AGS addTags parity: current + new, deduped).
+    // No-op when the tag is already in the search.
     function openTags(tag) {
-        root.currentTags = [tag];
+        if (!tag)
+            return;
+        const cur = root.currentTags.slice();
+        if (!cur.includes(tag))
+            cur.push(tag);
+        root.currentTags = cur;
+        Settings.booru.tags = cur;
+        Settings.updateSetting("booru.tags", cur);
         root.page = 1;
-        root.fetchImages();
+        Settings.booru.page = 1;
+        Settings.updateSetting("booru.page", 1);
+        if (root.selectedTab !== "Bookmarks" && root.selectedTab !== "Pins")
+            root.fetchImages();
     }
 
     function copyTag(tag) {

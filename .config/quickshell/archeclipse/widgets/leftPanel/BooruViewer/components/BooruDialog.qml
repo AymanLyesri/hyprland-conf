@@ -369,7 +369,7 @@ Item {
                                         elide: Text.ElideRight
                                     }
                                     ToolTip.visible: tagDetailMa.containsMouse
-                                    ToolTip.text: "Click: copy • Hold: search"
+                                    ToolTip.text: "Click: copy • Hold: add to search"
                                     ToolTip.delay: 600
                                     MouseArea {
                                         id: tagDetailMa

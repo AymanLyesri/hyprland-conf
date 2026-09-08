@@ -285,7 +285,13 @@ Item {
         }
     }
 
-    // ---- media display ----
+    // Hover state keeps the overlay open while the search field holds focus
+    // (mouse may leave the image while typing an ID).
+    property bool searchFocused: false
+
+    // ---- media display with hover-reveal action overlay ----
+    // The image fills the widget; the actions live in a floating sheet
+    // anchored to the image bottom that slides upwards on hover.
     Item {
         id: mediaContainer
         anchors.top: parent.top
@@ -296,6 +302,14 @@ Item {
         anchors.rightMargin: 8
         height: root.mediaHeight
         visible: root.hasWaifu
+        clip: true
+
+        // Revealed while hovering the image/overlay, or while typing an ID.
+        readonly property bool overlayRevealed: hoverHandler.hovered || root.searchFocused
+
+        HoverHandler {
+            id: hoverHandler
+        }
 
         AppImage {
             id: imageDisplay
@@ -350,6 +364,7 @@ Item {
         // Progress indicator (AGS Progress bound to _loadingState)
         Rectangle {
             id: progressBadge
+            z: 3
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.margins: 6
@@ -366,21 +381,65 @@ Item {
                 font.pixelSize: 11
             }
         }
-    }
 
-    // ---- actions (AGS BooruImage.renderAsWaifuWidget: a vertical .actions
-    // stack of hexpand sections — never one long horizontal row, which
-    // overflows the narrow panel). RowLayout fillWidth == AGS hexpand.
-    Column {
-        id: actionsCol
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottomMargin: 8
-        anchors.leftMargin: 8
-        anchors.rightMargin: 8
-        spacing: 8
-        visible: root.hasWaifu
+        // Peek handle — affordance hint shown while the overlay is hidden.
+        Rectangle {
+            z: 1
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 8
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: 40
+            height: 5
+            radius: 3
+            color: Theme.fg
+            opacity: mediaContainer.overlayRevealed ? 0 : 0.65
+            visible: opacity > 0
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 180
+                }
+            }
+        }
+
+        // ---- action overlay sheet: slides upwards from the image bottom ----
+        Rectangle {
+            id: actionsOverlay
+            z: 2
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.leftMargin: 8
+            anchors.rightMargin: 8
+            // Hidden state parks the sheet below the image edge; the clip
+            // on mediaContainer keeps it out of sight during the slide.
+            anchors.bottomMargin: mediaContainer.overlayRevealed ? 8 : -(height + 16)
+            Behavior on anchors.bottomMargin {
+                NumberAnimation {
+                    duration: 280
+                    easing.type: Easing.OutCubic
+                }
+            }
+            height: actionsCol.height + 20
+            radius: Theme.radius
+            color: Theme.surfaceHover
+            border.color: Theme.border
+            border.width: 1
+            opacity: mediaContainer.overlayRevealed ? 1 : 0
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 200
+                }
+            }
+            // Ignore pointer input while hidden so image hovers/views pass through.
+            enabled: mediaContainer.overlayRevealed
+
+            Column {
+                id: actionsCol
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.margins: 8
+                spacing: 8
 
         // Section 1: bookmark + pin
         RowLayout {
@@ -480,7 +539,7 @@ Item {
                 Layout.preferredWidth: 36
                 Layout.preferredHeight: 28
                 tooltipText: "Search by post ID"
-                onClicked: root.idSearchField.forceActiveFocus()
+                onClicked: idSearchField.forceActiveFocus()
             }
 
         AppTextField {
@@ -490,6 +549,7 @@ Item {
             placeholderText: "Post ID..."
             text: root.wd && root.wd.input_history ? root.wd.input_history : ""
             font.family: Theme.fontFamily
+            onActiveFocusChanged: root.searchFocused = activeFocus
             onAccepted: {
                 root.loadingState = "loading";
                 const api = root.booruApis[root.selectedApiIndex];
@@ -557,5 +617,7 @@ Item {
                 }
             }
         }
-    }
+            } // actionsCol
+        } // actionsOverlay
+    } // mediaContainer
 }

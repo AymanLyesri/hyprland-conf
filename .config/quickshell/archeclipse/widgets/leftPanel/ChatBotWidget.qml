@@ -526,6 +526,16 @@ Item {
                         color: modelData.role === "user" ? Theme.surfaceActive : Theme.surface
                         radius: 8
 
+                        // Fade-in on arrival (NotificationPopups parity).
+                        opacity: 0
+                        Component.onCompleted: opacity = 1
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: 250
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+
                         // Click to copy whole message (except code blocks)
                         MouseArea {
                             anchors.fill: parent
@@ -754,21 +764,18 @@ Item {
             RowLayout {
                 width: parent.width
                 spacing: 4
-                Repeater {
-                    model: root.providers
-                    delegate: AppButton {
-                        Layout.fillWidth: true
-                        toggle: true
-                        checked: modelData.value === root.currentApiModel
-                        implicitHeight: 30
-                        // AGS ApiList labels each provider button with its icon
-                        text: modelData.icon
-                        onClicked: {
-                            root.currentApiModel = modelData.value;
-                            Settings.chatBotApi = modelData.value;
-                            root.loadSessions();
-                        }
-                        tooltipText: "<b>" + modelData.name + "</b>\n" + modelData.description
+                AppSegmentedControl {
+                    Layout.alignment: Qt.AlignHCenter
+                    model: root.providers.map(p => ({
+                        value: p.value,
+                        label: p.icon,
+                        tooltip: "<b>" + p.name + "</b>\n" + p.description
+                    }))
+                    currentIndex: root.providers.findIndex(p => p.value === root.currentApiModel)
+                    onActivated: (i, v) => {
+                        root.currentApiModel = v;
+                        Settings.chatBotApi = v;
+                        root.loadSessions();
                     }
                 }
             }

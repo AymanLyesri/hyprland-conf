@@ -448,18 +448,10 @@ Item {
                     anchors.centerIn: parent
                     spacing: 10
 
-                    Row {
-                        spacing: 2
-                        Repeater {
-                            model: root.targetTypes
-                            delegate: AppButton {
-                                required property string modelData
-                                text: modelData
-                                toggle: true
-                                checked: root.targetType === modelData
-                                onClicked: root.targetType = modelData
-                            }
-                        }
+                    AppSegmentedControl {
+                        model: root.targetTypes
+                        currentIndex: root.targetTypes.indexOf(root.targetType)
+                        onActivated: (i, v) => root.targetType = v
                     }
 
                     Text {

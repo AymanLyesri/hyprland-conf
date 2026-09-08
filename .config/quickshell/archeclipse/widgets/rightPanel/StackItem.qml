@@ -18,6 +18,16 @@ Item {
     // top-anchored, never fill-anchored: no height feedback loop.
     height: stackCol.height
 
+    // Fade-in on arrival (NotificationPopups parity).
+    opacity: 0
+    Component.onCompleted: opacity = 1
+    Behavior on opacity {
+        NumberAnimation {
+            duration: 250
+            easing.type: Easing.OutCubic
+        }
+    }
+
     Column {
         id: stackCol
         anchors.top: parent.top

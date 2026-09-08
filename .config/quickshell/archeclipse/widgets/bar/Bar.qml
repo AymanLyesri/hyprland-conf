@@ -43,8 +43,6 @@ PanelWindow {
     // Inner content (pill width spring + island expand spring) carries motion.
     implicitHeight: pill.height
 
-    readonly property bool fullWidth: Settings.barFullWidth
-
     // visibility: fullscreen focused client hides; search pins; override wins;
     // otherwise lock/smart-hide geometric room-check (matches AGS Bar.tsx).
     // AGS: fullscreenClient = focusedClient with fullscreen === 2.
@@ -349,7 +347,7 @@ PanelWindow {
                         case "wallpaper":
                             return wallpaperPage;
                         default:
-                            return compactPage;
+                            return defaultPage;
                         }
                     }
                     // Feed the per-state width registry (AGS barWidths)

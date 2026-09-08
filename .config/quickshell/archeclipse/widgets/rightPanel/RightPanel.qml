@@ -340,20 +340,27 @@ PanelWindow {
                                         const w = width - 16;
                                         const a = (wd.width > 0 && wd.height > 0) ? wd.width / wd.height : 1.0;
                                         const h = Math.min(Math.max(w / a, 120), 520);
-                                        // media + 4 action sections (4x28 + 3x8)
-                                        // + gap + widget's own vertical padding.
-                                        return h + 136 + 8 + 16;
+                                        // Overlay layout: actions float on top of
+                                        // the image, so the card is just the
+                                        // media + the widget's own vertical padding.
+                                        return h + 16;
                                     }
                                 case "Media":
                                     return 170;
                                 case "NotificationHistory":
                                     {
-                                        // Content-sized: compact when empty (header + hint + filter),
-                                        // grows with history up to the 440 cap where internal scroll takes over.
+                                        // Dynamic: follow the widget's measured
+                                        // content height (header + real list
+                                        // height capped internally + filter)
+                                        // instead of guessing per-notification
+                                        // pixels, which clipped tall cards.
+                                        const measured = widgetLoader.item ? widgetLoader.item.implicitHeight : 0;
+                                        if (measured > 0)
+                                            return Math.min(520, Math.max(150, measured + 16));
                                         const n = Notifications.history ? Notifications.history.length : 0;
                                         if (n === 0)
                                             return 150;
-                                        return Math.min(440, 150 + n * 110);
+                                        return Math.min(520, 150 + n * 110);
                                     }
                                 case "ScriptTimer":
                                     return 320;

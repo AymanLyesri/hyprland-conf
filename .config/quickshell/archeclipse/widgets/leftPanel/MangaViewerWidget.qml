@@ -309,23 +309,28 @@ Item {
                 color: Theme.fg
                 Layout.fillWidth: true
             }
-            Row {
-                spacing: 2
-                Repeater {
-                    model: ["Manga", "Chapters", "Pages"]
-                    delegate: AppButton {
-                        toggle: true
-                        checked: root.currentTab === modelData
-                        enabled: modelData === "Manga" ? true : modelData === "Chapters" ? (root.selectedManga !== null) && (root.selectedManga !== undefined) : (root.selectedChapter !== null) && (root.selectedChapter !== undefined)
-                        implicitHeight: 28
-                        // Tab label (was missing: invisible zero-width tabs)
-                        text: modelData
-                        onClicked: {
-                            if (enabled)
-                                root.currentTab = modelData;
-                        }
+            AppSegmentedControl {
+                // Per-tab availability rides in the model (Chapters needs a
+                // manga, Pages a chapter) — disabled cells don't activate.
+                model: [
+                    {
+                        value: "Manga",
+                        label: "Manga",
+                        enabled: true
+                    },
+                    {
+                        value: "Chapters",
+                        label: "Chapters",
+                        enabled: (root.selectedManga !== null) && (root.selectedManga !== undefined)
+                    },
+                    {
+                        value: "Pages",
+                        label: "Pages",
+                        enabled: (root.selectedChapter !== null) && (root.selectedChapter !== undefined)
                     }
-                }
+                ]
+                currentIndex: ["Manga", "Chapters", "Pages"].indexOf(root.currentTab)
+                onActivated: (i, v) => root.currentTab = v
             }
         }
 
@@ -661,16 +666,14 @@ Item {
         RowLayout {
             Layout.fillWidth: true
             spacing: 4
-            Repeater {
-                model: root.providers
-                delegate: AppButton {
-                    toggle: true
-                    checked: root.provider === modelData.id
-                    Layout.fillWidth: true
-                    implicitHeight: 26
-                    text: modelData.label
-                    onClicked: root.switchProvider(modelData.id)
-                }
+            AppSegmentedControl {
+                Layout.alignment: Qt.AlignHCenter
+                model: root.providers.map(p => ({
+                    value: p.id,
+                    label: p.label
+                }))
+                currentIndex: root.providers.findIndex(p => p.id === root.provider)
+                onActivated: (i, v) => root.switchProvider(v)
             }
         }
 

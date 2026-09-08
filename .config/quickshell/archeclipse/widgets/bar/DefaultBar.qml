@@ -3,25 +3,22 @@ import qs.theme
 import qs.services
 import qs.widgets.bar
 
-// Port of barStates/DefaultBar.tsx — centerbox: workspaces | information | utilities,
-// each section toggleable via settings bar.layout[].enabled.
+// Port of barStates/DefaultBar.tsx — centerbox: workspaces | information | utilities.
+// All sections always show (the bar-layout setting was removed).
 Row {
     id: root
     spacing: Theme.sectionSpacing
 
     Item {
-        visible: Settings.barLayout.workspaces ?? false
-        width: visible ? childrenRect.width : 0
+        width: childrenRect.width
         height: 24
         Workspaces { height: 24 }
     }
     Information {
-        visible: Settings.barLayout.information ?? false
         anchors.verticalCenter: parent.verticalCenter
     }
     Row {
         id: utilities
-        visible: Settings.barLayout.utilities ?? false
         spacing: Theme.spacing
 
         Battery {}

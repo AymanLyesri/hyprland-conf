@@ -202,12 +202,13 @@ Singleton {
         root.blockedMonitors = blocked
     }
 
-    // AGS barAutoVisible core: lock => always visible; else smart-hide =>
-    // visible iff nothing geometrically overlaps the bar band.
+    // AGS barAutoVisible core, minus the removed smart-hide setting:
+    // lock => always visible; unlocked => hidden until the screen-edge
+    // hover strip (BarHoverWindow) sets an explicit override. The override
+    // wins over this in Bar.barVisible.
     function barVisibleFor(monitorName) {
         if (root.lock) return true
-        if (!root.smartHide) return false
-        return !(root.blockedMonitors[monitorName] ?? false)
+        return false
     }
 
     // ===== Volume watcher (AGS watchTransient on notify::volume) =====
@@ -509,6 +510,26 @@ Singleton {
         function onIsRecordingChanged() {
             if (ScreenRecorder.isRecording) root.activate("recording")
             else root.deactivate("recording")
+        }
+    }
+
+    // Live mirror of the lock/orientation/expanded settings (AGS
+    // globalSettings.subscribe in Bar.tsx). Without this the toggles only
+    // took effect after a shell restart. Re-locking clears stale
+    // per-monitor overrides — otherwise a bar hidden while unlocked stays
+    // hidden with no hover strip left to reveal it.
+    Connections {
+        target: Settings
+        function onBarLockChanged() {
+            root.lock = Settings.barLock ?? true
+            if (root.lock) root.barShown = {}
+        }
+        function onBarDefaultChanged() {
+            root.expanded = Settings.barDefault ?? true
+            root.isDefault = Settings.barDefault ?? true
+        }
+        function onBarOrientationChanged() {
+            root.orientation = Settings.barOrientation ?? true
         }
     }
 

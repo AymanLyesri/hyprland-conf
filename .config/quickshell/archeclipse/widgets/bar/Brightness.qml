@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs.theme
+import qs.services
 import qs.widgets.shared
 
 Rectangle {
@@ -11,20 +12,12 @@ Rectangle {
     property bool pulse: false
     readonly property int fixedWidth: 220
 
-    // AGS: visible only when hasBacklight (no /sys/class/backlight/* → hidden)
-    readonly property bool hasBacklight: {
-        try {
-            return backlightCheck.outputLines.length > 0;
-        } catch (e) {
-            return true;
-        }
-    }
-    Process {
-        id: backlightCheck
-        command: ["sh", "-c", "ls -d /sys/class/backlight/* 2>/dev/null | head -1"]
-        running: true
-        stdout: StdioCollector {}
-    }
+    // AGS: visible only when a backlight exists (no /sys/class/backlight/*
+    // on desktops → hidden). Single source of truth is the Brightness
+    // service; the old local `backlightCheck.outputLines` read a
+    // non-existent StdioCollector property, threw, and the catch{}
+    // returned true — so the icon showed on desktops.
+    readonly property bool hasBacklight: Brightness.hasBacklight
 
     width: pulse ? fixedWidth : content.width
     height: 22

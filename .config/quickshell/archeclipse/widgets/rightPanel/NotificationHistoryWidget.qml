@@ -62,6 +62,14 @@ Item {
 
     property var stackedNotifications: stackNotifications(notifications, filterText)
 
+    // Natural height for embedders (RightPanel card): header + list
+    // (capped — internal scroll takes over past the cap) + empty hint +
+    // filter + spacing/margins. The list measures real delegate heights
+    // instead of guessing per-notification pixels.
+    readonly property real maxListH: 380
+    readonly property real listH: stackedNotifications.length === 0 ? 0 : Math.min(listColumn.height, maxListH)
+    implicitHeight: headerLabel.implicitHeight + listH + emptyHint.height + filterField.implicitHeight + mainCol.spacing * 3 + 16
+
     Column {
         id: mainCol
         anchors.fill: parent
@@ -79,13 +87,13 @@ Item {
             elide: Text.ElideRight
         }
 
-        // Notification List — content-sized: grows with listColumn up to
-        // the space left by header + filter, collapses to 0 when empty
-        // instead of filling the card with blank scroll area.
+        // Notification List — content-sized: grows with the real delegate
+        // heights up to maxListH, collapses to 0 when empty instead of
+        // filling the card with blank scroll area.
         SmoothFlickable {
             id: nScroll
             width: parent.width
-            height: stackedNotifications.length === 0 ? 0 : Math.min(listColumn.height, Math.max(0, parent.height - y - filterField.height - mainCol.spacing))
+            height: root.listH
             visible: stackedNotifications.length > 0
             clip: true
             contentWidth: width
@@ -131,6 +139,7 @@ Item {
 
         // Empty state — small fixed hint, no blank scroll area.
         Text {
+            id: emptyHint
             width: parent.width
             visible: stackedNotifications.length === 0
             height: visible ? implicitHeight : 0

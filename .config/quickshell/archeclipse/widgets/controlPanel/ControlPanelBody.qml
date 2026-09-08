@@ -126,7 +126,7 @@ Item {
                 ToolTip.delay: 600
                 Text {
                     anchors.centerIn: parent
-                    text: GlobalTheme.currentTheme ? "\u{F07C5}" : "\u{F0D9C}"
+                    text: GlobalTheme.currentTheme ? "\uf185" : "\uf186"
                     color: Theme.fg
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontSize + 2
@@ -151,7 +151,7 @@ Item {
                 ToolTip.delay: 600
                 Text {
                     anchors.centerIn: parent
-                    text: Settings.notifDnd ? "\u{F0436}" : "\u{F044E}"
+                    text: Settings.notifDnd ? "\uf1f6" : "\uf0f3"
                     color: Theme.fg
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontSize + 2
@@ -190,61 +190,6 @@ Item {
                     onTriggered: dndBtn.dndPing = false
                 }
             }
-            // UserPanel (SUPER+ESC)
-            Rectangle {
-                width: 46
-                height: 46
-                radius: Theme.radius
-                color: upM.containsMouse ? Theme.surfaceHover : Theme.surface
-                ToolTip.visible: upM.containsMouse
-                ToolTip.text: "User Panel\n<b>SUPER + ESC</b>"
-                ToolTip.delay: 600
-                Text {
-                    anchors.centerIn: parent
-                    text: "\u{F058C}"
-                    color: Theme.fg
-                    font.family: Theme.fontFamily
-                    font.pixelSize: Theme.fontSize + 2
-                }
-                MouseArea {
-                    id: upM
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        BarState.deactivate("control");
-                        Registry.toggle(`user-panel-${body.effectiveMonitor}`);
-                    }
-                }
-            }
-            // AppLauncher (SUPER)
-            Rectangle {
-                width: 46
-                height: 46
-                radius: Theme.radius
-                color: alM.containsMouse ? Theme.surfaceHover : Theme.surface
-                ToolTip.visible: alM.containsMouse
-                ToolTip.text: "App Launcher\n<b>SUPER</b>"
-                ToolTip.delay: 600
-                Text {
-                    anchors.centerIn: parent
-                    text: "\u{F0580}"
-                    color: Theme.fg
-                    font.family: Theme.fontFamily
-                    font.pixelSize: Theme.fontSize + 2
-                }
-                MouseArea {
-                    id: alM
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        BarState.deactivate("control");
-                        BarState.activate("search", 0);
-                    }
-                }
-            }
-            // WallpaperSwitcher (SUPER+W)
             Rectangle {
                 width: 46
                 height: 46
@@ -255,7 +200,7 @@ Item {
                 ToolTip.delay: 600
                 Text {
                     anchors.centerIn: parent
-                    text: "\u{F0F82}"
+                    text: "\udb83\ude09"
                     color: Theme.fg
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontSize + 2
