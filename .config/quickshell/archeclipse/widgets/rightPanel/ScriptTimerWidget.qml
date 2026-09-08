@@ -187,6 +187,7 @@ Item {
 
     Column {
         anchors.fill: parent
+        anchors.margins: 8
         spacing: 8
 
         // Header (RowLayout: the title takes leftover width — a plain
@@ -222,11 +223,13 @@ Item {
         }
 
         // Task List
-        ScrollView {
+        SmoothFlickable {
             width: parent.width
             // Guarded: a negative height sends Flickable into a silent polish loop
             height: Math.max(0, parent.height - y - 8)
             clip: true
+            contentWidth: width
+            contentHeight: listColumn.height
 
             Column {
                 id: listColumn

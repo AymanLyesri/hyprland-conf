@@ -88,6 +88,7 @@ Item {
 
     Column {
         anchors.fill: parent
+        anchors.margins: 8
         spacing: 6
 
         // Header: month nav + title (RowLayout: the title takes leftover

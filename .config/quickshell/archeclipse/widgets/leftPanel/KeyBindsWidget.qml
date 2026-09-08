@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import qs.theme
+import qs.widgets.shared
 
 // Key Binds widget — port of AGS KeyBinds.tsx + KeyBind.tsx
 // Loads keybinds from ~/.config/ags/scripts/get-keybinds.sh (JSON),
@@ -60,16 +61,21 @@ Item {
             visible: root.loading
         }
 
-        ScrollView {
+        SmoothFlickable {
             id: keyScroll
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
             visible: !root.loading
-            ScrollBar.vertical.policy: ScrollBar.AsNeeded
+            contentWidth: width
+            contentHeight: keyCol.height
+            ScrollBar.vertical: ScrollBar {
+                policy: ScrollBar.AsNeeded
+            }
 
             Column {
-                width: keyScroll.availableWidth
+                id: keyCol
+                width: keyScroll.width
                 spacing: 10
 
                 Repeater {

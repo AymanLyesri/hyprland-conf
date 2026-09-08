@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Hyprland
 import Quickshell.Io
 import qs.theme
 import qs.widgets.shared
@@ -12,8 +11,8 @@ import qs.services
 // Scrollable list of utility scripts. Record entries route through the
 // ScreenRecorder service (AGS toggleRecording), the file manager entry uses
 // Settings.fileManager (AGS globalSettings), reset shows a Yes/No
-// confirmation (AGS Reset AGS Settings), everything else dispatches via
-// Hyprland exec. Scripts requiring an installed binary show an install
+// confirmation (AGS Reset AGS Settings), everything else spawns via
+// Quickshell.execDetached. Scripts requiring an installed binary show an install
 // button when the app is missing (yay/paru/pacman via kitty).
 Item {
     id: root
@@ -260,7 +259,10 @@ Item {
             command: ["bash", "-c", "rm -rf $HOME/.cache/quickshell/settings/settings.json"]
             stdout: StdioCollector {
                 onStreamFinished: {
-                    Hyprland.dispatch("exec bash -c \"$HOME/.config/hypr/scripts/bar.sh\"");
+                    // NOTE: must not go through Hyprland.dispatch("exec ...") —
+                    // Hyprland >= 0.55 uses a Lua config and rejects the legacy
+                    // string-dispatch exec syntax. execDetached spawns directly.
+                    Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/hypr/scripts/bar.sh"]);
                     _resetProc.destroy();
                 }
             }
@@ -285,12 +287,16 @@ Item {
             ScreenRecorder.toggleRecording("area");
             return;
         }
+        // NOTE: spawn via Quickshell.execDetached, NOT Hyprland.dispatch("exec ...").
+        // Hyprland >= 0.55 (Lua config) rejects the legacy string-dispatch exec
+        // syntax ("... ')' expected ..."), so every click silently did nothing.
+        // Running through bash -c preserves the complex quoted commands below.
         if (def.kind === "file-manager") {
-            Hyprland.dispatch("exec " + (Settings.fileManager || "thunar"));
+            Quickshell.execDetached(["bash", "-c", (Settings.fileManager || "thunar")]);
             return;
         }
         if (def.command)
-            Hyprland.dispatch("exec " + def.command);
+            Quickshell.execDetached(["bash", "-c", def.command]);
     }
 
     function appInstalled(def) {
@@ -325,16 +331,21 @@ Item {
             Layout.fillWidth: true
         }
 
-        ScrollView {
+        SmoothFlickable {
             id: scriptScroll
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
-            ScrollBar.vertical.policy: ScrollBar.AsNeeded
+            contentWidth: width
+            contentHeight: scriptCol.height
+            ScrollBar.vertical: ScrollBar {
+                policy: ScrollBar.AsNeeded
+            }
 
             Column {
+                id: scriptCol
                 spacing: 8
-                width: scriptScroll.availableWidth
+                width: scriptScroll.width
 
                 Repeater {
                     model: root.scriptDefs

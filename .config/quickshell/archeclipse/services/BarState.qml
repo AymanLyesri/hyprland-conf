@@ -82,6 +82,7 @@ Singleton {
 
     // Player pulse tracking
     property var _activePlayer: null
+    property string _lastPlayerTitle: ""
     property bool _playerFirstRender: true
     property int playerPolls: 0
 
@@ -299,19 +300,25 @@ Singleton {
             root.playerPolls++
             const player = findPlayablePlayer()
             if (!player) return
+            const curTitle = player.trackTitle ?? ""
 
             // Skip first render
             if (root._playerFirstRender) {
                 root._playerFirstRender = false
                 root._activePlayer = player
+                root._lastPlayerTitle = curTitle
                 return
             }
 
-            // Ignore if same player and no title change
-            if (root._activePlayer === player && player.trackTitle === root._activePlayer?.trackTitle) {
+            // Ignore if same player object and title unchanged (compare
+            // against the stored snapshot — comparing player.trackTitle to
+            // _activePlayer.trackTitle is always equal when they are the
+            // same object, so title changes would never fire).
+            if (root._activePlayer === player && curTitle === root._lastPlayerTitle) {
                 return
             }
             root._activePlayer = player
+            root._lastPlayerTitle = curTitle
 
             root.activate("player", 2500)
         })
@@ -502,6 +509,24 @@ Singleton {
         function onIsRecordingChanged() {
             if (ScreenRecorder.isRecording) root.activate("recording")
             else root.deactivate("recording")
+        }
+    }
+
+    // Instant player-title trigger: fires the island the moment the active
+    // player's title changes instead of waiting for the 2s poll above.
+    // The poll stays as fallback for player-list switches.
+    Connections {
+        target: root._activePlayer
+        function onTrackTitleChanged() {
+            const cur = root._activePlayer?.trackTitle ?? ""
+            if (root._playerFirstRender) {
+                root._playerFirstRender = false
+                root._lastPlayerTitle = cur
+                return
+            }
+            if (cur === root._lastPlayerTitle) return
+            root._lastPlayerTitle = cur
+            root.activate("player", 2500)
         }
     }
 }

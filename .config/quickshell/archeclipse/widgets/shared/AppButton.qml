@@ -31,7 +31,8 @@ Item {
     property bool autoToggle: false
     property bool outlined: false
     property color idleBg: "transparent"
-    property color hoverBg: "transparent"
+    property color hoverBg: Theme.surfaceHover
+    property color pressedBg: Theme.surfaceActive
     property color activeBg: Theme.surfaceActive
     property color idleFg: Theme.fg
     property color hoverFg: idleFg
@@ -70,11 +71,17 @@ Item {
     ToolTip.delay: 600
 
     Rectangle {
+        id: bgRect
         anchors.fill: parent
         radius: root.cornerRadius
+        // Subtle grow on hover, shrink on press — visual only, layout unchanged.
+        scale: !root.enabled ? 1 : (hoverArea.pressed ? 0.96 : (root.hovered ? 1.04 : 1))
         color: {
             if (root.dragging)
                 return Theme.accent;
+
+            if (hoverArea.pressed)
+                return root.pressedBg;
 
             if (root.highlighted)
                 return root.activeBg;
@@ -83,6 +90,16 @@ Item {
                 return root.hoverBg;
 
             return root.idleBg;
+        }
+        Behavior on color {
+            ColorAnimation {
+                duration: 150
+            }
+        }
+        Behavior on scale {
+            NumberAnimation {
+                duration: 120
+            }
         }
         border.width: root.outlined ? 1 : ((root.highlighted || root.dragging) && root.borderedWhenActive ? 1 : 0)
         border.color: {
@@ -134,6 +151,7 @@ Item {
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton
         enabled: root.enabled
+        cursorShape: root.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
         drag.target: root.draggable ? root.dragTarget : null
         drag.axis: root.dragAxis
         drag.minimumY: root.dragMinimum

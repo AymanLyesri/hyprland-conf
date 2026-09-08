@@ -1,39 +1,43 @@
 import QtQuick
-import Quickshell
-import Quickshell.Services.Mpris
 import qs.theme
+import qs.services
+import qs.widgets.media
 
-// Port of barStates PlayerWidget pulse — shown for 2.5s when a player's
-// title changes. Watcher lives in BarState via the "player" activation.
-Rectangle {
+// Player island now shows the full MediaWidget (cover art, track info,
+// controls, seek bar) instead of the old title-only ticker.
+// Size derives from the MediaWidget's implicit size — no hardcoded
+// width/height here.
+Item {
     id: root
-    width: 320; height: 24
-    radius: Theme.radius
-    color: Theme.surface
+    property int islandMargins: 4
 
-    readonly property var player: {
-        for (const p of Mpris.players.values)
-            if ((p.trackTitle ?? "").trim() !== "" || p.playbackState === MprisPlaybackState.Playing)
-                return p;
-        return null;
+    implicitWidth: media.implicitWidth + islandMargins * 2
+    implicitHeight: media.implicitHeight + islandMargins * 2
+    width: implicitWidth
+    height: implicitHeight
+
+    MediaWidget {
+        id: media
+        anchors.fill: parent
+        anchors.margins: root.islandMargins
     }
 
-    Row {
-        anchors.centerIn: parent
-        spacing: Theme.spacing
-        Text {
-            text: root.player?.playbackState === MprisPlaybackState.Playing ? "\u{F03E5}" : "\u{F040A}"
-            color: Theme.fg
-            font.family: Theme.fontFamily
-            font.pixelSize: Theme.fontSize - 2
-        }
-        Text {
-            text: root.player?.trackTitle ?? ""
-            elide: Text.ElideRight
-            width: Math.min(implicitWidth, 240)
-            color: Theme.fg
-            font.family: Theme.fontFamily
-            font.pixelSize: Theme.fontSize
+    // Pin while hovered so the 2.5s pulse doesn't close it mid-interaction.
+    HoverHandler {
+        id: islandHover
+        onHoveredChanged: {
+            if (islandHover.hovered) {
+                leaveTimer.stop();
+                BarState.activate("player", 0);
+            } else {
+                leaveTimer.restart();
+            }
         }
     }
+    Timer {
+        id: leaveTimer
+        interval: 1000
+        onTriggered: BarState.deactivate("player")
+    }
+    Component.onCompleted: leaveTimer.restart()
 }

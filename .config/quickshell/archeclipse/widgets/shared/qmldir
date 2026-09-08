@@ -9,3 +9,6 @@ AppComboBox 1.0 AppComboBox.qml
 AppTextField 1.0 AppTextField.qml
 AppTextArea 1.0 AppTextArea.qml
 SmoothFlickable 1.0 SmoothFlickable.qml
+SmoothListView 1.0 SmoothListView.qml
+SmoothWheelHandler 1.0 SmoothWheelHandler.qml
+AppMasonry 1.0 AppMasonry.qml

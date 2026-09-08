@@ -49,7 +49,8 @@ Item {
     readonly property real mediaHeight: {
         if (!root.hasWaifu)
             return 0;
-        var w = root.widgetWidth - 20;
+        // Widget owns its padding: 8px per side.
+        var w = root.widgetWidth - 16;
         if (w <= 0)
             w = root.widgetWidth;
         var h = w / root.aspectRatio;
@@ -290,6 +291,9 @@ Item {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
+        anchors.topMargin: 8
+        anchors.leftMargin: 8
+        anchors.rightMargin: 8
         height: root.mediaHeight
         visible: root.hasWaifu
 
@@ -370,7 +374,11 @@ Item {
     Column {
         id: actionsCol
         anchors.bottom: parent.bottom
-        width: parent.width
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottomMargin: 8
+        anchors.leftMargin: 8
+        anchors.rightMargin: 8
         spacing: 8
         visible: root.hasWaifu
 

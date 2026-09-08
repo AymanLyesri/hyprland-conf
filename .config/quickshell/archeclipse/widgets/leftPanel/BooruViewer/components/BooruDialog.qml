@@ -50,7 +50,7 @@ Item {
             border.width: 1
         }
 
-    Flickable {
+    SmoothFlickable {
         id: contentScroll
         anchors.fill: parent
         anchors.margins: 8

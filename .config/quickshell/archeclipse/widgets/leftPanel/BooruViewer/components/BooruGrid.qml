@@ -3,8 +3,8 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import qs.widgets.shared
 
-// Masonry image grid (extracted verbatim from BooruViewerWidget).
-// viewer: entry root (masonryColumns, columns).
+// Masonry image grid (shared AppMasonry + slide transition).
+// viewer: entry root (images, columns).
 SmoothFlickable {
     id: gridScroll
 
@@ -17,7 +17,7 @@ SmoothFlickable {
 
     function slideFrom(x) {
         slideAnim.stop();
-        masonryRow.x = x;
+        masonry.x = x;
         slideAnim.start();
     }
 
@@ -27,7 +27,7 @@ SmoothFlickable {
     Layout.fillHeight: true
     clip: true
     contentWidth: width
-    contentHeight: masonryRow.height
+    contentHeight: masonry.implicitHeight
     // Booru pins the fling speed lower than the shared default.
     maximumFlickVelocity: 1000
 
@@ -43,63 +43,58 @@ SmoothFlickable {
             viewer.refreshDialogTop(-1);
     }
 
-    // Masonry row: N shortest-column Columns (AGS algorithm above)
-    Row {
-        id: masonryRow
+    // Shared masonry: shortest-column by aspect ratio (AGS algorithm).
+    AppMasonry {
+        id: masonry
 
         width: parent.width
+        columns: viewer ? viewer.columns : 3
         spacing: 6
-
-        // Slide transition on page change (AGS Gtk.Stack
-        // SLIDE_LEFT/RIGHT + scroll-to-top after transition)
-        NumberAnimation {
-            id: slideAnim
-
-            target: masonryRow
-            property: "x"
-            duration: 200
-            to: 0
+        model: viewer ? viewer.images : []
+        aspectRatio: function (img) {
+            return (img && img.width && img.height) ? img.height / img.width : 1;
         }
 
-        Repeater {
-            model: viewer.masonryColumns
+        // NOTE: plain (not required) modelData — Loader cannot supply
+        // required props at creation; AppMasonry pushes it onLoaded.
+        // BooruImage has required image/viewer, so guard undefined on
+        // first creation and only bind once modelData arrives.
+        delegate: Item {
+            property var modelData
+            width: parent.width
+            height: cardLoader.item ? cardLoader.item.height : 0
 
-            delegate: Column {
-                required property var modelData
-                property var columnItems: modelData
-
-                width: (masonryRow.width - (viewer.columns - 1) * 6) / viewer.columns
-                spacing: 6
-
-                Repeater {
-                    model: parent.columnItems
-
-                    // NOTE: a cross-file delegate cannot see the inner
-                    // modelData (resolves to the outer column array /
-                    // undefined). Capture it in a same-file wrapper first —
-                    // `property var img: modelData` here is proven correct —
-                    // then hand it to the card via parent.
-                    delegate: Column {
-                        property var img: modelData
-
-                        width: parent.width
-
-                        BooruImage {
-                            viewer: gridScroll.viewer
-                            image: parent.img
-                        }
-
-                    }
-
-                }
-
+            Loader {
+                id: cardLoader
+                width: parent.width
+                active: parent.modelData !== undefined
+                sourceComponent: cardComp
+                property var image: parent.modelData
+                property var viewer: gridScroll.viewer
             }
 
+            Component {
+                id: cardComp
+                BooruImage {
+                    width: parent.width
+                    viewer: parent.viewer
+                    image: parent.image
+                }
+            }
         }
+    }
 
+    // Slide transition on page change (AGS Gtk.Stack
+    // SLIDE_LEFT/RIGHT + scroll-to-top after transition)
+    NumberAnimation {
+        id: slideAnim
+
+        target: masonry
+        property: "x"
+        duration: 200
+        to: 0
     }
 
     ScrollBar.vertical: ScrollBar {
     }
-
 }

@@ -65,6 +65,7 @@ Item {
     Column {
         id: mainCol
         anchors.fill: parent
+        anchors.margins: 8
         spacing: 8
 
         // Header title only — filter lives at the bottom.
@@ -81,30 +82,26 @@ Item {
         // Notification List — content-sized: grows with listColumn up to
         // the space left by header + filter, collapses to 0 when empty
         // instead of filling the card with blank scroll area.
-        ScrollView {
+        SmoothFlickable {
             id: nScroll
             width: parent.width
             height: stackedNotifications.length === 0 ? 0 : Math.min(listColumn.height, Math.max(0, parent.height - y - filterField.height - mainCol.spacing))
             visible: stackedNotifications.length > 0
             clip: true
+            contentWidth: width
+            contentHeight: listColumn.height
 
             // Scroll position save/restore across notification changes
             // (AGS NotificationHistory savedScrollPosition + idle_add).
             property real savedPosition: 0
-            onContentItemChanged: {
-                if (contentItem)
-                    contentItem.contentYChanged.connect(function () {
-                        nScroll.savedPosition = contentItem.contentY;
-                    });
+            onContentYChanged: {
+                nScroll.savedPosition = contentY;
             }
             onContentHeightChanged: {
                 // model updated → restore (clamped) scroll position
                 Qt.callLater(function () {
-                    const c = nScroll.contentItem;
-                    if (!c)
-                        return;
-                    const max = Math.max(0, c.contentHeight - nScroll.height);
-                    c.contentY = Math.min(nScroll.savedPosition, max);
+                    const max = Math.max(0, nScroll.contentHeight - nScroll.height);
+                    nScroll.contentY = Math.min(nScroll.savedPosition, max);
                 });
             }
 

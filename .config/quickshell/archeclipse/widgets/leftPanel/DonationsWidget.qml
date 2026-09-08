@@ -25,14 +25,19 @@ Item {
     ]
 
     // Scrolled window wrapper (AGS <scrolledwindow hexpand vexpand>)
-    ScrollView {
+    SmoothFlickable {
         id: donateScroll
         anchors.fill: parent
         clip: true
-        ScrollBar.vertical.policy: ScrollBar.AsNeeded
+        contentWidth: width
+        contentHeight: donateCol.implicitHeight
+        ScrollBar.vertical: ScrollBar {
+            policy: ScrollBar.AsNeeded
+        }
 
         Column {
-            width: donateScroll.availableWidth
+            id: donateCol
+            width: donateScroll.width
             spacing: 16
             topPadding: 4
 
@@ -74,66 +79,88 @@ Item {
                 }
             }
 
-        // Donation options - render two-by-two like AGS
-        Column {
-            spacing: 12
+        // Donation options — masonry grid (2 columns). AppButton is a
+        // bare Item: it needs explicit height + icon/text, otherwise it
+        // collapses to height 0 with a transparent background (the old
+        // bug — invisible buttons).
+        AppMasonry {
             width: parent.width
+            columns: 2
+            spacing: 10
+            model: root.donationOptions
 
-            // pairs computed as a proper binding so the Repeater updates
-            property var pairs: {
-                const arr = root.donationOptions
-                const out = []
-                for (let i = 0; i < arr.length; i += 2) {
-                    out.push(arr.slice(i, i + 2))
-                }
-                return out
-            }
+            delegate: Item {
+                property var modelData
+                // Guarded shortcut: Loader creates the delegate with
+                // modelData undefined, then AppMasonry pushes it in
+                // onLoaded — every access must tolerate undefined.
+                property var opt: modelData ?? ({})
+                property string addr: opt.address ?? ""
+                property string url: opt.url ?? ""
+                property string qrData: opt.address ?? opt.url ?? ""
+                property color brandColor: opt.color ?? Theme.accent
 
-            Repeater {
-                model: parent.pairs
-                delegate: Row {
+                width: parent.width
+                height: cardCol.implicitHeight
+
+                Column {
+                    id: cardCol
                     width: parent.width
-                    spacing: 10
-                    // NOTE: no intermediate half-width Row — each card is
-                    // half the pair row directly (the old nesting gave every
-                    // card the full half-row width and left half the grid empty).
-                    Repeater {
-                        model: modelData
-                        delegate: Column {
-                            width: (parent.width - 10) / 2
-                            spacing: 5
+                    spacing: 6
 
-                                // Main action button (AGS brand gradients:
-                                // kofi #72a5f2→#ff6433, paypal #00457c→#0070ba,
-                                // reversed on hover with glow border)
-                                AppButton {
-                                    id: donateBtn
-                                    width: parent.width
-                                    property string addr: modelData.address ?? ""
-                                    property string url: modelData.url ?? ""
-                                    onClicked: {
-                                        if (modelData.type === "crypto" && addr) {
-                                            copyToClipboard(addr, modelData.name)
-                                        } else if (url) {
-                                            openUrl(url)
-                                        }
-                                    }
-                                    tooltipText: modelData.type === "crypto" && addr
-                                        ? "Copy " + modelData.name + " address\n" + addr
-                                        : "Donate via " + modelData.name + "\n" + url
-                                }
-
-                                // QR Code button
-                                AppButton {
-                                    width: parent.width
-                                    property string qrData: modelData.address ?? modelData.url ?? ""
-                                    onClicked: {
-                                        if (qrData) showQRCode(qrData, modelData.name)
-                                    }
-                                    tooltipText: "Show QR Code"
-                                }
+                    // Main action button (brand color border, fills with
+                    // the brand color on hover)
+                    AppButton {
+                        width: parent.width
+                        height: 46
+                        icon: opt.icon ?? ""
+                        text: opt.name ?? ""
+                        pixelSize: Theme.fontSize
+                        outlined: true
+                        outlineColor: brandColor
+                        idleBg: Theme.surface
+                        hoverBg: brandColor
+                        idleFg: Theme.fg
+                        hoverFg: "white"
+                        tooltipText: opt.type === "crypto" && addr
+                            ? "Copy " + opt.name + " address\n" + addr
+                            : "Donate via " + opt.name + "\n" + url
+                        onClicked: {
+                            if (opt.type === "crypto" && addr) {
+                                copyToClipboard(addr, opt.name)
+                            } else if (url) {
+                                openUrl(url)
                             }
                         }
+                    }
+
+                    // Optional subtitle (e.g. "BNB Smart Chain") + address hint
+                    Label {
+                        visible: (opt.description ?? "") !== ""
+                        width: parent.width
+                        text: opt.description ?? ""
+                        font.pixelSize: Theme.fontSize - 3
+                        color: Theme.fgDim
+                        horizontalAlignment: Text.AlignHCenter
+                        wrapMode: Text.WordWrap
+                    }
+
+                    // QR Code button
+                    AppButton {
+                        width: parent.width
+                        height: 32
+                        icon: "\u{F029}"
+                        text: "QR"
+                        pixelSize: Theme.fontSize - 2
+                        outlined: true
+                        outlineColor: Theme.border
+                        idleBg: "transparent"
+                        hoverBg: Theme.surfaceActive
+                        tooltipText: "Show QR Code"
+                        onClicked: {
+                            if (qrData) showQRCode(qrData, opt.name)
+                        }
+                    }
                 }
             }
         }

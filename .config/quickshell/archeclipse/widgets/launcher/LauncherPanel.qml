@@ -157,7 +157,7 @@ Rectangle {
                 }
             }
 
-            ListView {
+            SmoothListView {
                 id: resultsList
                 visible: Launcher.results.length > 0
                 anchors.fill: parent

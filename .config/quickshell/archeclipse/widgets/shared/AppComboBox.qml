@@ -43,7 +43,7 @@ ComboBox {
             border.width: 1
             radius: 6
         }
-        contentItem: ListView {
+        contentItem: SmoothListView {
             clip: true
             implicitHeight: contentHeight
             model: root.popup.visible ? root.delegateModel : null

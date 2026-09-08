@@ -33,16 +33,21 @@ Item {
             }
         }
 
-        ScrollView {
+        SmoothFlickable {
             id: settingsScroll
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
-            ScrollBar.vertical.policy: ScrollBar.AsNeeded
+            contentWidth: width
+            contentHeight: settingsCol.height
+            ScrollBar.vertical: ScrollBar {
+                policy: ScrollBar.AsNeeded
+            }
 
             Column {
+                id: settingsCol
                 spacing: 16
-                width: settingsScroll.availableWidth
+                width: settingsScroll.width
 
                 // ============ BAR LAYOUT (drag-reorder) ============
                 Column {

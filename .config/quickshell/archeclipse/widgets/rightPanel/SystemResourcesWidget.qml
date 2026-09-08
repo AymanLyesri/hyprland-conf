@@ -14,6 +14,7 @@ Item {
 
     Column {
         anchors.fill: parent
+        anchors.margins: 8
         spacing: 8
 
         // Header (RowLayout: the title takes leftover width and the

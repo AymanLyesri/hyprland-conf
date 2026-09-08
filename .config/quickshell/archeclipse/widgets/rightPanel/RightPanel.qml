@@ -266,23 +266,30 @@ PanelWindow {
             }
 
             // ----- Main content area — all enabled widgets -----
-            ScrollView {
+            SmoothFlickable {
                 id: contentScroll
                 width: parent.width - sidebar.width
                 height: parent.height
                 clip: true
-                ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+                contentWidth: width
+                contentHeight: contentColumn.height
+                flickableDirection: Flickable.VerticalFlick
+                ScrollBar.vertical: ScrollBar {
+                    policy: ScrollBar.AlwaysOn
+                }
+                ScrollBar.horizontal: ScrollBar {
+                    policy: ScrollBar.AlwaysOff
+                }
 
                 Column {
                     id: contentColumn
-                    // Width MUST come from the ScrollView's explicit width, never
+                    // Width MUST come from the Flickable's explicit width, never
                     // the viewport (parent.width): the viewport width negotiates
                     // with content size, which feeds back through delegates and
                     // wedges the scene in a silent polish loop (0-width freeze).
-                    width: contentScroll.availableWidth
-                    spacing: 10
-                    padding: 5
+                    width: contentScroll.width
+                    spacing: 8
+                    padding: 8
 
                     Repeater {
                         id: enabledWidgetRepeater
@@ -300,10 +307,23 @@ PanelWindow {
 
                         delegate: Item {
                             required property var modelData
-                            width: parent.width - parent.leftPadding - parent.rightPadding
+                            readonly property bool isMedia: modelData.name === "Media"
+                            width: parent.width
+                            // AGS: .right-panel .main-content > * box-shadow 0 5 10 rgba(0,0,0,0.2)
+                            // + .new-widget opacity-in 0.6s.
+                            opacity: 0
+                            Behavior on opacity {
+                                NumberAnimation {
+                                    duration: 600
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
+                            Component.onCompleted: opacity = 1
                             // Panel-card heights per widget (AGS stacks natural-height
                             // cards; QS cards have fixed heights with internal scroll).
                             // Heights must stay in sync with each widget's content.
+                            // Each widget owns its inner padding (8px per side);
+                            // Media has no outer card and sizes to its content.
                             height: {
                                 switch (modelData.name) {
                                 case "Waifu":
@@ -312,16 +332,16 @@ PanelWindow {
                                         if (!wd || !wd.id)
                                             return 200;
                                         // Same base as WaifuWidget.mediaHeight
-                                        // (Loader is inset 8px per side in the card).
-                                        const w = width - 16 - 20;
+                                        // (widget insets 8px per side for its own padding).
+                                        const w = width - 16;
                                         const a = (wd.width > 0 && wd.height > 0) ? wd.width / wd.height : 1.0;
                                         const h = Math.min(Math.max(w / a, 120), 520);
                                         // media + 4 action sections (4x28 + 3x8)
-                                        // + gap + Loader inset.
+                                        // + gap + widget's own vertical padding.
                                         return h + 136 + 8 + 16;
                                     }
                                 case "Media":
-                                    return 220;
+                                    return 170;
                                 case "NotificationHistory":
                                     {
                                         // Content-sized: compact when empty (header + hint + filter),
@@ -343,25 +363,17 @@ PanelWindow {
                                     return 300;
                                 }
                             }
-                            // AGS: .right-panel .main-content > * box-shadow 0 5 10 rgba(0,0,0,0.2)
-                            // + .new-widget opacity-in 0.6s. The card is a tinted Rectangle
-                            // with a RectangularShadow effect (QtQuick.Effects, Qt6).
+                            // AGS: .right-panel .main-content > * box-shadow 0 5 10 rgba(0,0,0,0.2).
+                            // The card is a tinted Rectangle with a RectangularShadow
+                            // effect (QtQuick.Effects, Qt6). Media renders as-is
+                            // with no outer card container.
                             Rectangle {
                                 id: cardBg
                                 anchors.fill: parent
+                                visible: !isMedia
 
                                 color: Theme.surface
                                 radius: Theme.radius
-
-                                // AGS opacity-in on freshly added widget (.new-widget class)
-                                opacity: 0
-                                Behavior on opacity {
-                                    NumberAnimation {
-                                        duration: 600
-                                        easing.type: Easing.OutCubic
-                                    }
-                                }
-                                Component.onCompleted: opacity = 1
 
                                 RectangularShadow {
                                     anchors.fill: parent
@@ -376,12 +388,10 @@ PanelWindow {
 
                             Loader {
                                 id: widgetLoader
-                                // Inset into the card: cardBg carries a 5px
-                                // margin and this adds 3px inner padding, so
-                                // widget content never paints over the card
-                                // border (full-bleed width/height overflowed).
+                                // No inset here: each widget sets its own inner
+                                // padding so content never paints over the card
+                                // border. Media fills the delegate with no card.
                                 anchors.fill: parent
-                                anchors.margins: 8
                                 sourceComponent: {
                                     switch (modelData.name) {
                                     case "Waifu":
