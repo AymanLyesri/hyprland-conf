@@ -66,7 +66,7 @@ Item {
                             width: parent.width
                             height: 34
                             radius: 4
-                            color: Theme.buttonHoverBg
+                            color: Theme.surfaceHover
 
                             property bool dragActive: false
 
@@ -572,7 +572,7 @@ Item {
                                 // section Column instead.
                                 width: parent.width
                                 height: 34
-                                color: Theme.moduleBg
+                                color: Theme.surface
                                 radius: 4
 
                                 property bool reveal: false
@@ -586,11 +586,12 @@ Item {
                                         color: Theme.fg
                                         Layout.preferredWidth: 140
                                     }
-                                    TextField {
+                                    AppTextField {
                                         id: keyField
                                         text: root.getNested(Settings.apiKeys, modelData.path)
                                         placeholderText: "Enter " + modelData.label
                                         echoMode: parent.parent.reveal ? TextField.Normal : TextField.Password
+                                        fillColor: "transparent"
                                         Layout.fillWidth: true
                                         onAccepted: {
                                             root.setNestedValue("apiKeys", modelData.path, keyField.text, true);
@@ -599,9 +600,6 @@ Item {
                                                 summary: modelData.label,
                                                 body: "Changed to ••••••••"
                                             });
-                                        }
-                                        background: Rectangle {
-                                            color: "transparent"
                                         }
                                     }
                                     AppButton {

@@ -30,7 +30,7 @@ Rectangle {
     width: pulse ? fixedWidth : content.width
     height: 22
     radius: Theme.radius
-    color: pulse ? Theme.moduleBg : "transparent"
+    color: pulse ? Theme.surface : "transparent"
     visible: root.hasBacklight
 
     // tooltip (AGS tooltipText "Brightness: N%")
@@ -88,14 +88,14 @@ Rectangle {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: root.level > 0.75 ? "\udb80\udce0" : root.level > 0.5 ? "\udb80\udcdf" : "\udb80\udcde"
-            color: Theme.foreground
+            color: Theme.fg
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontSize + 1
         }
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: Math.round(root.level * 100) + "%"
-            color: Theme.foreground
+            color: Theme.fg
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontSize
         }

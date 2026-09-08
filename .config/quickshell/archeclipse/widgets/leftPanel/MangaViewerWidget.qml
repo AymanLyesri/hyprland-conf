@@ -330,16 +330,12 @@ Item {
         }
 
         // Search bar (Manga tab)
-        TextField {
+        AppTextField {
             id: searchField
             Layout.fillWidth: true
             visible: root.currentTab === "Manga"
             placeholderText: "Search manga..."
             onAccepted: root.searchManga(text)
-            background: Rectangle {
-                color: Theme.bg
-                radius: 6
-            }
         }
 
         // Content area (fills leftover space)
@@ -378,7 +374,7 @@ Item {
                             // Grows with content (cover + 3 labels), not a
                             // fixed 210px that tall covers would overflow.
                             implicitHeight: mangaCardCol.implicitHeight + 20
-                            color: Theme.moduleBg
+                            color: Theme.surface
                             radius: 8
                             clip: true
 
@@ -570,16 +566,12 @@ Item {
             }
             opacity: root.bottomRevealed ? 1 : 0
 
-            TextField {
+            AppTextField {
                 width: parent.width
                 placeholderText: "Search manga..."
                 text: root.searchQuery
                 onTextChanged: root.searchQuery = text
                 onAccepted: root.searchManga(text)
-                background: Rectangle {
-                    color: Theme.bg
-                    radius: 6
-                }
             }
             RowLayout {
                 width: parent.width

@@ -102,7 +102,7 @@ Item {
                 text: showAddForm ? "\u{f00d}" : "+"
                 pixelSize: Theme.fontSize
                 cornerRadius: 4
-                idleBg: showAddForm ? Theme.dangerBg : Theme.accentBg
+                idleBg: showAddForm ? Theme.dangerBg : Theme.surfaceActive
                 idleFg: showAddForm ? Theme.danger : Theme.accent
                 outlined: true
                 outlineColor: showAddForm ? Theme.danger : Theme.accent
@@ -147,7 +147,7 @@ Item {
     Component {
         id: formComponent
         Rectangle {
-            color: Theme.moduleBg
+            color: Theme.surface
             radius: Theme.radius
 
             Layout.fillWidth: true
@@ -169,7 +169,7 @@ Item {
                         font.pixelSize: Theme.fontSize
                         color: Theme.fg
                     }
-                    TextField {
+                    AppTextField {
                         id: symbolField
                         placeholderText: "e.g. btc, eth, sol"
                         text: editingEntry ? editingEntry.symbol : ""
@@ -243,7 +243,7 @@ Item {
                         text: editingEntry ? "✓ Update" : "+ Add Crypto"
                         pixelSize: Theme.fontSize
                         cornerRadius: 4
-                        idleBg: Theme.accentBg
+                        idleBg: Theme.surfaceActive
                         idleFg: Theme.accent
                         outlined: true
                         outlineColor: Theme.accent

@@ -15,11 +15,15 @@ Item {
 
     MediaPlayer {
         id: player
-        source: root.source !== "" ? "file://" + root.source : ""
+        // Gate the source on visibility: VideoOutput.visible alone does NOT
+        // stop decoding — a hidden player fed an image (e.g. WaifuWidget's
+        // png with visible:false) loops ffmpeg errors thousands of times
+        // per second, filling /run/user/1000 and killing IPC/panels.
+        source: (root.visible && root.source !== "") ? "file://" + root.source : ""
         audioOutput: AudioOutput {}
         videoOutput: videoOut
         loops: root.loop ? MediaPlayer.Infinite : 1
-        autoPlay: root.autoplay
+        autoPlay: root.autoplay && root.visible
     }
 
     VideoOutput {
@@ -31,8 +35,13 @@ Item {
 
     // AGS Video.tsx teardown: pause + release the stream when the widget
     // leaves the screen (prevents the GStreamer GL context crash on re-init).
+    // Stop (not just pause) so a re-shown item rebinds a fresh source
+    // instead of resuming a failed decode loop.
     onVisibleChanged: {
-        if (!visible) player.pause()
+        if (!visible)
+            player.stop();
+        else if (root.autoplay && root.source !== "")
+            player.play();
     }
     Component.onDestruction: {
         player.stop()

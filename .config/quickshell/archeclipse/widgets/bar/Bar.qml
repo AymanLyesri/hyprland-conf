@@ -222,7 +222,7 @@ PanelWindow {
             }
             bottomRightRadius: Theme.radius
             bottomLeftRadius: Theme.radius
-            color: Theme.moduleBg
+            color: Theme.surface
 
             // Hover detection lives on the pill itself (stable container).
             // AGS parity: the motion controller is on the bar pill — hot-zone

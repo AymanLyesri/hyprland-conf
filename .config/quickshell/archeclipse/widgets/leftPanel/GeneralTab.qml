@@ -164,7 +164,7 @@ Item {
                     text: "ArchEclipse"
                     font.pixelSize: Theme.fontSize + 6
                     font.bold: true
-                    color: Theme.foreground
+                    color: Theme.fg
                 }
                 Text {
                     text: root.starsCount > 0 ? "\u{F02D9} " + root.starsCount : ""
@@ -199,7 +199,7 @@ Item {
                         width: 40
                         height: 40
                         radius: 8
-                        color: linkMa.containsMouse ? Theme.accentBg : Theme.moduleBg
+                        color: linkMa.containsMouse ? Theme.surfaceActive : Theme.surface
                         border.color: linkMa.containsMouse ? Theme.accent : Theme.border
                         Text {
                             anchors.centerIn: parent
@@ -283,7 +283,7 @@ Item {
                             height: 32
                             radius: 6
                             x: (parent.width - width) / 2
-                            color: updateMa.containsMouse ? Theme.accentBg : Theme.accent
+                            color: updateMa.containsMouse ? Theme.surfaceActive : Theme.accent
                             Behavior on width {
                                 NumberAnimation {
                                     duration: 150
@@ -293,7 +293,7 @@ Item {
                                 anchors.centerIn: parent
                                 text: root.isUpdating ? "\u{F2F0} Updating..." : "\u{F019} Update"
                                 font.pixelSize: Theme.fontSize
-                                color: root.isUpdating ? Theme.fgDim : Theme.background
+                                color: root.isUpdating ? Theme.fgDim : Theme.bg
                                 font.bold: true
                             }
                             MouseArea {

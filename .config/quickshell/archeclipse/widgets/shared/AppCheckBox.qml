@@ -20,7 +20,7 @@ CheckBox {
             text: "\u{F012C}" // or checkmark Nerd Font
             font.family: "JetBrainsMono NFP"
             font.pixelSize: 12
-            color: Theme.accentFg || "#000000"
+            color: Theme.bg
             visible: root.checked
         }
     }

@@ -19,7 +19,7 @@ Rectangle {
     width: pulse ? fixedWidth : content.width
     height: 22
     radius: Theme.radius
-    color: pulse ? Theme.moduleBg : "transparent"
+    color: pulse ? Theme.surface : "transparent"
 
     // default sink via Pipewire service
     readonly property PwNode sink: Pipewire.defaultAudioSink
@@ -73,14 +73,14 @@ Rectangle {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: VolumeWatcher.volumeIcon
-            color: Theme.foreground
+            color: Theme.fg
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontSize + 1
         }
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: Math.round(root.vol * 100) + "%"
-            color: Theme.foreground
+            color: Theme.fg
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontSize
         }

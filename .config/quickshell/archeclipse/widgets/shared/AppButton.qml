@@ -32,7 +32,7 @@ Item {
     property bool outlined: false
     property color idleBg: "transparent"
     property color hoverBg: "transparent"
-    property color activeBg: Theme.accentBg
+    property color activeBg: Theme.surfaceActive
     property color idleFg: Theme.fg
     property color hoverFg: idleFg
     property color activeFg: Theme.accent

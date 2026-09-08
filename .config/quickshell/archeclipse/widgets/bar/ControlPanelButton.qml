@@ -10,12 +10,12 @@ Rectangle {
 
     width: 24; height: 20
     radius: Theme.radius
-    color: mouse.containsMouse ? Theme.buttonHoverBg : "transparent"
+    color: mouse.containsMouse ? Theme.surfaceHover : "transparent"
 
     Text {
         anchors.centerIn: parent
         text: "\u{F15FC}"
-        color: Theme.foreground
+        color: Theme.fg
         font.family: Theme.fontFamily
         font.pixelSize: Theme.fontSize + 1
     }

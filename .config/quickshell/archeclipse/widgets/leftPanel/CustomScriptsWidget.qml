@@ -344,7 +344,7 @@ Item {
                         property bool confirming: false
                         width: parent.width
                         implicitHeight: rowContent.implicitHeight + 20
-                        color: Theme.moduleBg
+                        color: Theme.surface
                         radius: 8
 
                         // AGS: the whole row is the script button — click runs it.
@@ -429,7 +429,7 @@ Item {
                                                 width: kChip.implicitWidth + 10
                                                 height: 22
                                                 radius: 4
-                                                color: Theme.moduleBg
+                                                color: Theme.surface
 
                                                 Label {
                                                     id: kChip

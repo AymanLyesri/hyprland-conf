@@ -17,7 +17,7 @@ TextField {
     font.pixelSize: Theme.fontSize
     color: Theme.fg
     placeholderTextColor: Theme.fgDim
-    selectionColor: Theme.accentBg
+    selectionColor: Theme.surfaceActive
     selectedTextColor: Theme.fg
     leftPadding: 10
     rightPadding: 10

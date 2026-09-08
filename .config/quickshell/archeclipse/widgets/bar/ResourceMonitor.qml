@@ -29,7 +29,7 @@ Row {
         padding: 6
         closePolicy: Popup.NoAutoClose
         background: Rectangle {
-            color: Theme.moduleBg
+            color: Theme.surface
             radius: 8
             border.color: Theme.border
         }
@@ -111,7 +111,7 @@ Row {
                     ctx.arc(cx, cy, r, 0, Math.PI * 2);
                     ctx.stroke();
                     if (ringItem.frac > 0) {
-                        ctx.strokeStyle = Theme.foregroundSecondary;
+                        ctx.strokeStyle = Theme.muted;
                         ctx.beginPath();
                         ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + ringItem.frac * Math.PI * 2);
                         ctx.stroke();
@@ -122,7 +122,7 @@ Row {
             Text {
                 anchors.centerIn: parent
                 text: ringItem.modelData.icon
-                color: Theme.foreground
+                color: Theme.fg
                 font.family: Theme.fontFamily
                 font.pixelSize: 9
             }

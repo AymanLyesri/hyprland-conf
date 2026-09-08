@@ -110,7 +110,7 @@ Rectangle {
                         readonly property bool isRating: modelData.match(/[-]rating:explicit|rating:explicit/) !== null
                         width: tagText.implicitWidth + 16
                         height: 22
-                        color: isRating ? Theme.accentBg : Theme.bg
+                        color: isRating ? Theme.surfaceActive : Theme.bg
                         radius: 4
                         border.color: isRating ? Theme.accent : Theme.border
 
@@ -160,15 +160,12 @@ Rectangle {
             Row {
                 spacing: 4
                 width: parent.width
-                TextField {
+                AppTextField {
                     id: tagEntry
                     placeholderText: "Search tags..."
                     font.pixelSize: Theme.fontSize - 2
                     width: parent.width - 60
-                    background: Rectangle {
-                        color: Theme.bg
-                        radius: 4
-                    }
+                    cornerRadius: 4
                     onTextChanged: {
                         // Debounced tag fetch
                         if (text.length > 0) {

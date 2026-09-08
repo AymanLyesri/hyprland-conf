@@ -33,7 +33,7 @@ Column {
         width: 460
         height: 30
         radius: Theme.radius
-        color: Theme.moduleBg
+        color: Theme.surface
 
         TextInput {
             id: input
@@ -41,7 +41,7 @@ Column {
             anchors.leftMargin: 12
             anchors.rightMargin: 12
             verticalAlignment: TextInput.AlignVCenter
-            color: Theme.foreground
+            color: Theme.fg
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontSize
             clip: true
@@ -78,7 +78,7 @@ Column {
             anchors.left: parent.left
             anchors.leftMargin: 12
             text: "Search…"
-            color: Theme.secondary
+            color: Theme.muted
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontSize
         }

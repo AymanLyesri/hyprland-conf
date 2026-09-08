@@ -21,7 +21,7 @@ Item {
     Rectangle {
         id: container
         anchors.fill: parent
-        color: task.active ? Theme.moduleBg : Theme.bg
+        color: task.active ? Theme.surface : Theme.bg
         radius: Theme.radius
 
         border.color: task.active ? Theme.border : Theme.fgDim
@@ -94,7 +94,7 @@ Item {
                     }
                     AppButton {
                         icon: "\u{f040}"
-                        idleBg: Theme.accentBg
+                        idleBg: Theme.surfaceActive
                         idleFg: Theme.accent
                         outlined: true
                         outlineColor: Theme.accent

@@ -48,7 +48,7 @@ Item {
                     icon: isExpanded ? "\u{f106}" : "\u{f107}"
                     pixelSize: Theme.fontSize - 2
                     cornerRadius: 4
-                    idleBg: Theme.accentBg
+                    idleBg: Theme.surfaceActive
                     idleFg: Theme.accent
                     outlined: true
                     outlineColor: Theme.accent

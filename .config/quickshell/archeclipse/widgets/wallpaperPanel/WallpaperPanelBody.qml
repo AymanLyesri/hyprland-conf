@@ -368,7 +368,7 @@ Item {
                         radius: 6
                         color: modelData === "" ? "black" : "transparent"
                         border.width: isFocused ? 1 : 0
-                        border.color: Theme.secondary
+                        border.color: Theme.muted
 
                         AppImage {
                             visible: wsTile.modelData !== ""
@@ -383,7 +383,7 @@ Item {
                             visible: wsTile.modelData === ""
                             anchors.centerIn: parent
                             text: "No Wallpaper"
-                            color: Theme.foregroundSecondary
+                            color: Theme.muted
                             font.family: Theme.fontFamily
                         }
                         ToolTip.visible: wsMa.containsMouse
@@ -423,7 +423,7 @@ Item {
 
                 Text {
                     text: `Wallpaper -> ${root.targetType}` + (root.targetType === "workspace" ? " " + root.selectedWorkspaceId : "")
-                    color: Theme.foreground
+                    color: Theme.fg
                     font.family: Theme.fontFamily
                 }
 
@@ -431,7 +431,7 @@ Item {
                 Row {
                     spacing: 6
                     Repeater {
-                        model: [Theme.color0, Theme.color1, Theme.color2, Theme.color3, Theme.color4, Theme.color8, Theme.foreground]
+                        model: [Theme.color0, Theme.color1, Theme.color2, Theme.color3, Theme.color4, Theme.color8, Theme.fg]
                         delegate: Rectangle {
                             required property string modelData
                             width: 12
@@ -503,9 +503,9 @@ Item {
                             width: 150
                             height: Math.max(0, wallScroll.height - 4)
                             radius: 6
-                            color: tileMa.containsMouse ? Theme.buttonHoverBg : Theme.moduleBg
+                            color: tileMa.containsMouse ? Theme.surfaceHover : Theme.surface
                             border.width: tileMa.containsMouse ? 2 : 0
-                            border.color: Theme.foregroundSecondary
+                            border.color: Theme.muted
 
                             AppImage {
                                 anchors.fill: parent

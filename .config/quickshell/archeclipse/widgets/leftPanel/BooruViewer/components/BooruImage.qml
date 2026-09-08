@@ -15,7 +15,7 @@ Rectangle {
 
     width: parent ? parent.width : 0
     height: image && image.width && image.height ? Math.max(80, width * image.height / image.width) : width
-    color: Theme.moduleBg
+    color: Theme.surface
     radius: 10
     clip: true
     ToolTip.visible: imgMa.containsMouse

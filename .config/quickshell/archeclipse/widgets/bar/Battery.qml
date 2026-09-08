@@ -14,7 +14,7 @@ Rectangle {
     width: visible ? content.width + 8 : 0
     height: 22
     radius: Theme.radius
-    color: hover.hovered || batteryPop.visible ? Theme.buttonHoverBg : "transparent"
+    color: hover.hovered || batteryPop.visible ? Theme.surfaceHover : "transparent"
 
     readonly property real pct: UPower.displayDevice?.percentage ?? 1
     readonly property bool present: UPower.displayDevice?.isLaptopBattery ?? false
@@ -93,7 +93,7 @@ Rectangle {
         padding: 6
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
         background: Rectangle {
-            color: Theme.moduleBg
+            color: Theme.surface
             radius: 8
             border.color: Theme.border
         }
@@ -107,7 +107,7 @@ Rectangle {
                     width: parent.width
                     height: 28
                     radius: 4
-                    color: ma.containsMouse ? Theme.accentBg : "transparent"
+                    color: ma.containsMouse ? Theme.surfaceActive : "transparent"
                     Text {
                         anchors.left: parent.left
                         anchors.leftMargin: 8
@@ -155,14 +155,14 @@ Rectangle {
                     return "\uf0e7";
                 return p > 0.9 ? "\uf240" : p > 0.7 ? "\uf241" : p > 0.5 ? "\uf242" : p > 0.25 ? "\uf243" : "\uf244";
             }
-            color: root.pct < 0.15 ? "#a94545" : Theme.foreground
+            color: root.pct < 0.15 ? "#a94545" : Theme.fg
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontSize + 1
         }
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: Math.floor(root.pct * 100) + "%"
-            color: Theme.foreground
+            color: Theme.fg
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontSize
         }

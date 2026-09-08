@@ -100,7 +100,7 @@ Item {
                 width: 26
                 height: 26
                 radius: 6
-                color: prevMa.containsMouse ? Theme.accentBg : Theme.moduleBg
+                color: prevMa.containsMouse ? Theme.surfaceActive : Theme.surface
                 Text {
                     anchors.centerIn: parent
                     text: "\u{F053}" // chevron-left
@@ -121,7 +121,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 text: Qt.locale().monthName(root.viewDate.getMonth(), Locale.LongFormat) + " " + root.viewDate.getFullYear()
-                color: Theme.foreground
+                color: Theme.fg
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontSize + 2
                 font.bold: true
@@ -131,7 +131,7 @@ Item {
                 width: 26
                 height: 26
                 radius: 6
-                color: nextMa.containsMouse ? Theme.accentBg : Theme.moduleBg
+                color: nextMa.containsMouse ? Theme.surfaceActive : Theme.surface
                 Text {
                     anchors.centerIn: parent
                     text: "\u{F054}" // chevron-right
@@ -178,7 +178,7 @@ Item {
                     width: Math.max(0, root.width / 7 - 1)
                     height: 26
                     radius: 4
-                    color: modelData.inMonth ? (cellMa.containsMouse ? Theme.accentBg : Theme.moduleBg) : "transparent"
+                    color: modelData.inMonth ? (cellMa.containsMouse ? Theme.surfaceActive : Theme.surface) : "transparent"
                     border.width: modelData.inMonth && cellMa.containsMouse ? 1 : 0
                     border.color: Theme.accent
 
@@ -194,7 +194,7 @@ Item {
                     Text {
                         anchors.centerIn: parent
                         text: modelData.d
-                        color: !modelData.inMonth ? Theme.fgDim : (root.isToday(modelData.y, modelData.m, modelData.d) ? Theme.accent : Theme.foreground)
+                        color: !modelData.inMonth ? Theme.fgDim : (root.isToday(modelData.y, modelData.m, modelData.d) ? Theme.accent : Theme.fg)
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontSize
                         font.bold: root.isToday(modelData.y, modelData.m, modelData.d)

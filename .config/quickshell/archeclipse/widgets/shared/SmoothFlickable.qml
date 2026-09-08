@@ -26,7 +26,7 @@ Flickable {
         property double lastT: 0
 
         acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
-        onWheel: (event) => {
+        onWheel: event => {
             // Time-based decay: smooth-scroll devices send tiny deltas at
             // high frequency, which an event-count decay crushes to a crawl.
             // Velocity accumulates across rapid events and dies within ~120ms

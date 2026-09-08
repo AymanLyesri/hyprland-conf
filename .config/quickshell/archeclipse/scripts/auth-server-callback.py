@@ -71,6 +71,10 @@ if (!hash) {
 
 
 class Handler(BaseHTTPRequestHandler):
+    def log_message(self, fmt, *args):
+        # Quieter stdout: Quickshell's authServerProc redirects this to
+        # /tmp/qs-auth-server.log. Keep one line per request.
+        print(f"[{self.log_date_time_string()}] {self.address_string()} {fmt % args}", flush=True)
     def do_GET(self):
         parsed = urlparse(self.path)
 
@@ -114,8 +118,12 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(b"ok")
 
 
+HTTPServer.allow_reuse_address = True
 server = HTTPServer(("127.0.0.1", 53100), Handler)
 
-print("Auth server running on http://127.0.0.1:53100")
+print("Auth server running on http://127.0.0.1:53100", flush=True)
 
-server.serve_forever()
+try:
+    server.serve_forever()
+except KeyboardInterrupt:
+    pass

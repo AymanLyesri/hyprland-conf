@@ -9,7 +9,7 @@ import qs.services
 Rectangle {
     width: 180; height: 24
     radius: Theme.radius
-    color: Theme.moduleBg
+    color: Theme.surface
 
     property string elapsed: "00:00"
 
@@ -27,8 +27,8 @@ Rectangle {
                 NumberAnimation { from: 0.3; to: 1; duration: 600 }
             }
         }
-        Text { text: "Recording"; color: Theme.foreground; font.family: Theme.fontFamily; font.pixelSize: Theme.fontSize }
-        Text { text: parent.parent.elapsed; color: Theme.foreground; font.family: Theme.fontFamily; font.pixelSize: Theme.fontSize }
+        Text { text: "Recording"; color: Theme.fg; font.family: Theme.fontFamily; font.pixelSize: Theme.fontSize }
+        Text { text: parent.parent.elapsed; color: Theme.fg; font.family: Theme.fontFamily; font.pixelSize: Theme.fontSize }
     }
 
     function formatElapsed(ms) {

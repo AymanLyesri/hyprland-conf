@@ -77,7 +77,7 @@ Item {
         id: bg
         anchors.fill: parent
         radius: 8
-        color: root.connected ? Theme.moduleBg : Theme.color0
+        color: root.connected ? Theme.surface : Theme.color0
         border.color: Theme.color8
 
         Row {
@@ -98,7 +98,7 @@ Item {
                 text: root.label
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontSize
-                color: Theme.foreground
+                color: Theme.fg
                 elide: Text.ElideRight
                 width: 120
                 verticalAlignment: Text.AlignVCenter

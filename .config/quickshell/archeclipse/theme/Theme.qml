@@ -13,40 +13,47 @@ QtObject {
     // --- raw palette (parsed from cwal colors.scss) ---
     property string background: "#08080c"
     property string foreground: "#aaabb2"
+    property string color0: "#08080c"
     property string color1: "#493028"
     property string color2: "#413945"
     property string color3: "#4e505d"
-    property string color4: "#5a5a7a"
-    property string color8: "#888888"
-    property string color0: "#1a1a2a"
+    property string color4: "#917f7a"
+    property string color5: "#b7b5ae"
+    property string color6: "#d7af96"
+    property string color7: "#aaabb2"
+    property string color8: "#555765"
 
-    // --- derived, mirroring colors.scss ---
+    // --- derived helpers ---
     readonly property real phi: 1.618
     readonly property real phiMin: phi - 1          // 0.618
-    readonly property real phiPercentage: phiMin * 100
 
     function mix(a: string, b: string, t: real): string {
-        const pa = Qt.rgba(parseInt(a.slice(1,3),16)/255, parseInt(a.slice(3,5),16)/255, parseInt(a.slice(5,7),16)/255, 1);
-        const pb = Qt.rgba(parseInt(b.slice(1,3),16)/255, parseInt(b.slice(3,5),16)/255, parseInt(b.slice(5,7),16)/255, 1);
-        const c = Qt.rgba(pa.r+(pb.r-pa.r)*t, pa.g+(pb.g-pa.g)*t, pa.b+(pb.b-pa.b)*t, 1);
-        return "#" + Math.round(c.r*255).toString(16).padStart(2,"0")
-                   + Math.round(c.g*255).toString(16).padStart(2,"0")
-                   + Math.round(c.b*255).toString(16).padStart(2,"0");
+        const pa = Qt.rgba(parseInt(a.slice(1, 3), 16) / 255, parseInt(a.slice(3, 5), 16) / 255, parseInt(a.slice(5, 7), 16) / 255, 1);
+        const pb = Qt.rgba(parseInt(b.slice(1, 3), 16) / 255, parseInt(b.slice(3, 5), 16) / 255, parseInt(b.slice(5, 7), 16) / 255, 1);
+        const c = Qt.rgba(pa.r + (pb.r - pa.r) * t, pa.g + (pb.g - pa.g) * t, pa.b + (pb.b - pa.b) * t, 1);
+        return "#" + Math.round(c.r * 255).toString(16).padStart(2, "0") + Math.round(c.g * 255).toString(16).padStart(2, "0") + Math.round(c.b * 255).toString(16).padStart(2, "0");
     }
     function rgba(hex: string, alpha: real): string {
-        const r = parseInt(hex.slice(1,3),16)/255;
-        const g = parseInt(hex.slice(3,5),16)/255;
-        const b = parseInt(hex.slice(5,7),16)/255;
+        const r = parseInt(hex.slice(1, 3), 16) / 255;
+        const g = parseInt(hex.slice(3, 5), 16) / 255;
+        const b = parseInt(hex.slice(5, 7), 16) / 255;
         return Qt.rgba(r, g, b, alpha).toString();
     }
 
-    // $secondary: mix($color2,$foreground,$phi-percentage) — note t>1 clamps naturally
-    readonly property string secondary: mix(color2, foreground, phiMin)
-    readonly property string tertiary: color3
-    // $background-transparent: rgba($background, $OPACITY) ; OPACITY comes from settings.ui.opacity
-    readonly property string backgroundTransparent: rgba(background, Settings.uiOpacity)
-    readonly property string backgroundSecondary: mix(background, secondary, phiMin)
-    readonly property string foregroundSecondary: mix(foreground, secondary, phiMin)
+    // --- semantic colors, derived from the raw palette ---
+    readonly property string bg: background
+    readonly property string fg: foreground
+    readonly property string fgDim: rgba(foreground, 0.5)
+    // Accent tracks a vibrant wallpaper color (not foreground, which pywal
+    // keeps a near-constant gray) so it visibly shifts with the wallpaper.
+    readonly property string accent: color5
+    // Muted secondary text/icons.
+    readonly property string muted: mix(foreground, color2, phiMin)
+    // Surfaces: translucent base, opaque hover, accent-tinted active.
+    readonly property string surface: rgba(background, Settings.uiOpacity)
+    readonly property string surfaceHover: background
+    readonly property string surfaceActive: mix(background, accent, 0.2)
+    readonly property string border: rgba(foreground, 0.15)
 
     // --- typography / scale (settings-driven, like $FONT-SIZE / $SCALE) ---
     readonly property string fontFamily: "JetBrainsMono NFP"
@@ -55,20 +62,6 @@ QtObject {
     readonly property int radius: 10
     readonly property int spacing: 8          // bar element spacing (AGS look)
     readonly property int sectionSpacing: 20  // between compact sections / expanded groups
-
-    // --- lib.scss @include module / button equivalents ---
-    readonly property string moduleBg: backgroundTransparent
-    readonly property string buttonCheckedBg: foregroundSecondary
-    readonly property string buttonCheckedFg: background
-    readonly property string buttonHoverBg: background
-
-    // Panel-specific colors
-    readonly property string accent: foreground
-    readonly property string accentBg: mix(background, foreground, 0.1)
-    readonly property string fgDim: Qt.rgba(parseInt(foreground.slice(1,3),16)/255, parseInt(foreground.slice(3,5),16)/255, parseInt(foreground.slice(5,7),16)/255, 0.5).toString()
-    readonly property string border: Qt.rgba(parseInt(foreground.slice(1,3),16)/255, parseInt(foreground.slice(3,5),16)/255, parseInt(foreground.slice(5,7),16)/255, 0.15).toString()
-    readonly property string fg: foreground
-    readonly property string bg: background
 
     // Danger colors for destructive actions
     readonly property string danger: "#ff4444"
@@ -86,9 +79,15 @@ QtObject {
             };
             root.background = grab("background", "#08080c");
             root.foreground = grab("foreground", "#aaabb2");
+            root.color0 = grab("color0", "#08080c");
             root.color1 = grab("color1", "#493028");
             root.color2 = grab("color2", "#413945");
             root.color3 = grab("color3", "#4e505d");
+            root.color4 = grab("color4", "#917f7a");
+            root.color5 = grab("color5", "#b7b5ae");
+            root.color6 = grab("color6", "#d7af96");
+            root.color7 = grab("color7", "#aaabb2");
+            root.color8 = grab("color8", "#555765");
         }
     }
 }

@@ -51,7 +51,7 @@ Row {
     // ---- special workspace button ----
     Rectangle {
         radius: Theme.radius
-        color: root.specialActive ? Theme.buttonCheckedBg : "transparent"
+        color: root.specialActive ? Theme.surfaceActive : "transparent"
         width: specialLabel.implicitWidth + 12
         height: parent.height - 6
         anchors.verticalCenter: parent.verticalCenter
@@ -66,7 +66,7 @@ Row {
             id: specialLabel
             anchors.centerIn: parent
             text: WorkspaceIcons.specialIcon
-            color: root.specialActive ? Theme.buttonCheckedFg : Theme.foreground
+            color: Theme.fg
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontSize
         }
@@ -92,7 +92,7 @@ Row {
                 readonly property bool focused: (Hyprland.focusedWorkspace?.id ?? 1) === wid
 
                 radius: Theme.radius
-                color: focused ? Theme.buttonCheckedBg : "transparent"
+                color: focused ? Theme.surfaceActive : "transparent"
                 opacity: !exists ? 0.4 : 1.0
                 implicitWidth: label.implicitWidth + (focused ? 32 : 8)
                 implicitHeight: 24
@@ -119,7 +119,7 @@ Row {
                     anchors.centerIn: parent
                     textFormat: Text.RichText
                     text: Settings.workspaceNumbers ? modelData.icon + WorkspaceIcons.numberBadge(btn.wid) : modelData.icon
-                    color: btn.focused ? Theme.buttonCheckedFg : Theme.foreground
+                    color: Theme.fg
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontSize
                 }

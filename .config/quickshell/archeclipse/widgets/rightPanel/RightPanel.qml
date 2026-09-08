@@ -87,7 +87,7 @@ PanelWindow {
         anchors.rightMargin: 5
         anchors.topMargin: 5
         anchors.bottomMargin: 5
-        color: Theme.moduleBg
+        color: Theme.surface
         radius: Theme.radius
 
         Row {
@@ -195,7 +195,7 @@ PanelWindow {
                     anchors.right: parent.right
                     anchors.margins: 8
                     width: parent.width
-                    spacing: 4
+                    spacing: 5
 
                     // Expand (+50 to max 1500)
                     AppButton {
@@ -203,7 +203,7 @@ PanelWindow {
                         icon: "\u{F067}"
                         pixelSize: 14
                         cornerRadius: 6
-                        hoverBg: Theme.moduleBg
+                        hoverBg: Theme.surface
                         hoverFg: Theme.accent
                         tooltipText: "Expand panel"
                         onClicked: {
@@ -217,7 +217,7 @@ PanelWindow {
                         icon: "\u{F068}"
                         pixelSize: 14
                         cornerRadius: 6
-                        hoverBg: Theme.moduleBg
+                        hoverBg: Theme.surface
                         hoverFg: Theme.accent
                         tooltipText: "Shrink panel"
                         onClicked: {
@@ -233,7 +233,7 @@ PanelWindow {
                         cornerRadius: 6
                         toggle: true
                         checked: !Settings.rightPanelExclusivity
-                        hoverBg: Theme.moduleBg
+                        hoverBg: Theme.surface
                         tooltipText: Settings.rightPanelExclusivity ? "Exclusive zone: on" : "Exclusive zone: off"
                         // checked is the inverse of the setting: writing it
                         // back as-is toggles exclusivity.
@@ -247,7 +247,7 @@ PanelWindow {
                         cornerRadius: 6
                         toggle: true
                         checked: Settings.rightPanelLock
-                        hoverBg: Theme.moduleBg
+                        hoverBg: Theme.surface
                         tooltipText: Settings.rightPanelLock ? "Unlock panel" : "Lock panel"
                         onClicked: Settings.rightPanelLock = !checked
                     }
@@ -257,7 +257,7 @@ PanelWindow {
                         icon: "\u{F00D}"
                         pixelSize: 14
                         cornerRadius: 6
-                        hoverBg: Theme.moduleBg
+                        hoverBg: Theme.surface
                         hoverFg: Theme.danger
                         tooltipText: "Close panel"
                         onClicked: root.visible = false
@@ -281,7 +281,7 @@ PanelWindow {
                     // with content size, which feeds back through delegates and
                     // wedges the scene in a silent polish loop (0-width freeze).
                     width: contentScroll.availableWidth
-                    spacing: 5
+                    spacing: 10
                     padding: 5
 
                     Repeater {
@@ -323,7 +323,14 @@ PanelWindow {
                                 case "Media":
                                     return 220;
                                 case "NotificationHistory":
-                                    return 440;
+                                    {
+                                        // Content-sized: compact when empty (header + hint + filter),
+                                        // grows with history up to the 440 cap where internal scroll takes over.
+                                        const n = Notifications.history ? Notifications.history.length : 0;
+                                        if (n === 0)
+                                            return 150;
+                                        return Math.min(440, 150 + n * 110);
+                                    }
                                 case "ScriptTimer":
                                     return 320;
                                 case "Crypto":
@@ -342,8 +349,8 @@ PanelWindow {
                             Rectangle {
                                 id: cardBg
                                 anchors.fill: parent
-                                anchors.margins: 5
-                                color: Theme.moduleBg
+
+                                color: Theme.surface
                                 radius: Theme.radius
 
                                 // AGS opacity-in on freshly added widget (.new-widget class)

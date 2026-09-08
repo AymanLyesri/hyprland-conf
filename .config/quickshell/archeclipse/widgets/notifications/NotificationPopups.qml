@@ -49,8 +49,8 @@ PanelWindow {
                 width: 400
                 height: contentCol.childrenRect.height + 20 + (buttonsRow.visible ? buttonsRow.height + 8 : 0)
                 radius: Theme.radius
-                color: critical ? Qt.rgba(0.66, 0.27, 0.27, 0.95) : Theme.moduleBg
-                border.color: Qt.alpha(Theme.foreground, 0.1)
+                color: critical ? Qt.rgba(0.66, 0.27, 0.27, 0.95) : Theme.surface
+                border.color: Qt.alpha(Theme.fg, 0.1)
 
                 opacity: 0
                 Component.onCompleted: opacity = 1
@@ -110,7 +110,7 @@ PanelWindow {
                                 width: parent.width
                                 height: parent.height
                                 text: card.critical ? "\u{F0266}" : "\u{F059A}"
-                                color: card.critical ? "white" : Theme.foreground
+                                    color: card.critical ? "white" : Theme.fg
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 22
                                 horizontalAlignment: Text.AlignHCenter
@@ -131,7 +131,7 @@ PanelWindow {
                                     textFormat: Text.StyledText
                                     elide: Text.ElideRight
                                     Layout.fillWidth: true
-                                    color: card.critical ? "white" : Theme.foreground
+                                color: card.critical ? "white" : Theme.fg
                                     font.family: Theme.fontFamily
                                     font.bold: true
                                     font.pixelSize: Theme.fontSize
@@ -157,7 +157,7 @@ PanelWindow {
                                 wrapMode: Text.WordWrap
                                 maximumLineCount: card.bodyExpanded ? undefined : 4
                                 elide: card.bodyExpanded ? Text.ElideNone : Text.ElideRight
-                                color: card.critical ? Qt.alpha("white", 0.85) : Theme.foregroundSecondary
+                                color: card.critical ? Qt.alpha("white", 0.85) : Theme.muted
                                 font.family: Theme.fontFamily
                                 font.pixelSize: Theme.fontSize - 1
                             }
@@ -177,7 +177,7 @@ PanelWindow {
                                 height: 24
                                 pixelSize: Theme.fontSize - 2
                                 cornerRadius: 4
-                                idleBg: Theme.moduleBg
+                                idleBg: Theme.surface
                                 outlined: true
                                 onClicked: {
                                     try {
@@ -197,7 +197,7 @@ PanelWindow {
                             icon: "󰃅"
                             pixelSize: 11
                             cornerRadius: 4
-                            idleBg: Theme.moduleBg
+                            idleBg: Theme.surface
                             outlined: true
                             onClicked: {
                                 const n = card.notif;
@@ -229,7 +229,7 @@ PanelWindow {
                             icon: card.bodyExpanded ? "󰁾" : "󰁼"
                             pixelSize: 11
                             cornerRadius: 4
-                            idleBg: Theme.moduleBg
+                            idleBg: Theme.surface
                             outlined: true
                             visible: (card.notif && (card.notif.body || "")).length > 60
                             onClicked: card.bodyExpanded = !card.bodyExpanded
@@ -238,7 +238,7 @@ PanelWindow {
                             icon: "󰀍"
                             pixelSize: 11
                             cornerRadius: 4
-                            idleBg: Theme.moduleBg
+                            idleBg: Theme.surface
                             outlined: true
                             onClicked: Notifications.closePopup(card.modelData.id, true)
                         }

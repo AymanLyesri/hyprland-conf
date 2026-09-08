@@ -32,7 +32,7 @@ SpinBox {
         x: parent.width - width
         height: parent.height / 2
         width: 24
-        color: root.up.pressed ? Theme.accentBg : "transparent"
+        color: root.up.pressed ? Theme.surfaceActive : "transparent"
         border.color: Theme.border
         border.width: 1
         radius: 4
@@ -49,7 +49,7 @@ SpinBox {
         y: parent.height / 2
         height: parent.height / 2
         width: 24
-        color: root.down.pressed ? Theme.accentBg : "transparent"
+        color: root.down.pressed ? Theme.surfaceActive : "transparent"
         border.color: Theme.border
         border.width: 1
         radius: 4

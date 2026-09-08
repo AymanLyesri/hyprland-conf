@@ -18,7 +18,7 @@ Rectangle {
     implicitWidth: 300 + 500 + 300           // left + center + right
     implicitHeight: Math.max(400, contentColumn.height)
     radius: Theme.radius
-    color: Theme.moduleBg
+    color: Theme.surface
 
     property int selectedIndex: 0
 
@@ -127,7 +127,7 @@ Rectangle {
                             width: parent.width * 0.46
                             text: modelData.desc
                             font.pixelSize: Theme.fontSize - 1
-                            color: Theme.foregroundSecondary
+                            color: Theme.muted
                             wrapMode: Text.WordWrap
                         }
                         Row {
@@ -140,7 +140,7 @@ Rectangle {
                                     width: 18
                                     height: 16
                                     radius: 3
-                                    color: Theme.accentBg
+                                    color: Theme.surfaceActive
                                     border.color: Theme.accent
 
                                     Text {
@@ -172,7 +172,7 @@ Rectangle {
                     width: resultsList.width
                     height: modelData.isHeader ? 28 : (modelData.actions && modelData.actions.length > 0 ? 52 : 46)
                     radius: Theme.radius - 2
-                    color: (modelData.isHeader || resultsList.currentIndex !== index) ? "transparent" : Theme.buttonCheckedBg
+                    color: (modelData.isHeader || resultsList.currentIndex !== index) ? "transparent" : Theme.surfaceActive
 
                     // Header row (AGS AppButton app_type === "header")
                     Row {
@@ -195,7 +195,7 @@ Rectangle {
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fontSize - 1
                             font.bold: true
-                            color: Theme.foregroundSecondary
+                            color: Theme.muted
                         }
                     }
 
@@ -212,7 +212,7 @@ Rectangle {
                             width: 24
                             anchors.verticalCenter: parent.verticalCenter
                             text: modelData.icon || ""
-                            color: resultsList.currentIndex === index ? Theme.buttonCheckedFg : Theme.foreground
+                            color: Theme.fg
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fontSize + 4
                             visible: text !== ""
@@ -225,7 +225,7 @@ Rectangle {
                                 width: parent.width
                                 elide: Text.ElideRight
                                 text: modelData.name || ""
-                                color: resultsList.currentIndex === index ? Theme.buttonCheckedFg : Theme.foreground
+                                color: Theme.fg
                                 font.family: Theme.fontFamily
                                 font.pixelSize: Theme.fontSize + 1
                                 font.bold: resultsList.currentIndex === index
@@ -235,7 +235,7 @@ Rectangle {
                                 elide: Text.ElideRight
                                 visible: !!(modelData.description)
                                 text: modelData.description || ""
-                                color: resultsList.currentIndex === index ? Qt.alpha(Theme.buttonCheckedFg, 0.7) : Theme.foregroundSecondary
+                                color: resultsList.currentIndex === index ? Qt.alpha(Theme.fg, 0.7) : Theme.muted
                                 font.family: Theme.fontFamily
                                 font.pixelSize: Theme.fontSize - 1
                             }
@@ -244,7 +244,7 @@ Rectangle {
                                 elide: Text.ElideRight
                                 visible: !!(modelData.argText)
                                 text: modelData.argText || ""
-                                color: resultsList.currentIndex === index ? Qt.alpha(Theme.buttonCheckedFg, 0.5) : Theme.foregroundSecondary
+                                color: resultsList.currentIndex === index ? Qt.alpha(Theme.fg, 0.5) : Theme.muted
                                 font.family: Theme.fontFamily
                                 font.pixelSize: Theme.fontSize - 2
                             }
@@ -265,7 +265,7 @@ Rectangle {
                                 height: 26
                                 pixelSize: Theme.fontSize - 1
                                 cornerRadius: 4
-                                idleBg: Theme.moduleBg
+                                idleBg: Theme.surface
                                 outlined: true
                                 tooltipText: modelData.tooltip || modelData.label
                                 onClicked: modelData.onClick()
@@ -325,7 +325,7 @@ Rectangle {
                             width: parent.width
                             height: 38
                             radius: Theme.radius - 2
-                            color: mouse.hovered ? Theme.buttonHoverBg : "transparent"
+                            color: mouse.hovered ? Theme.surfaceHover : "transparent"
                             Row {
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.left: parent.left
@@ -356,7 +356,7 @@ Rectangle {
                                         elide: Text.ElideRight
                                         text: modelData.description || ""
                                         font.pixelSize: Theme.fontSize - 2
-                                        color: Theme.foregroundSecondary
+                                        color: Theme.muted
                                     }
                                 }
                             }
@@ -393,7 +393,7 @@ Rectangle {
                         visible: Launcher.recentApps().length === 0
                         text: "Empty History"
                         font.pixelSize: Theme.fontSize - 1
-                        color: Theme.foregroundSecondary
+                        color: Theme.muted
                         leftPadding: 8
                     }
                     Repeater {
@@ -403,7 +403,7 @@ Rectangle {
                             width: parent.width
                             height: 34
                             radius: Theme.radius - 2
-                            color: rmouse.hovered ? Theme.buttonHoverBg : "transparent"
+                            color: rmouse.hovered ? Theme.surfaceHover : "transparent"
                             Row {
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.left: parent.left

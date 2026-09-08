@@ -9,7 +9,7 @@ Rectangle {
     id: root
     width: 320; height: 24
     radius: Theme.radius
-    color: Theme.moduleBg
+    color: Theme.surface
 
     readonly property var player: {
         for (const p of Mpris.players.values)
@@ -23,7 +23,7 @@ Rectangle {
         spacing: Theme.spacing
         Text {
             text: root.player?.playbackState === MprisPlaybackState.Playing ? "\u{F03E5}" : "\u{F040A}"
-            color: Theme.foreground
+            color: Theme.fg
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontSize - 2
         }
@@ -31,7 +31,7 @@ Rectangle {
             text: root.player?.trackTitle ?? ""
             elide: Text.ElideRight
             width: Math.min(implicitWidth, 240)
-            color: Theme.foreground
+            color: Theme.fg
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontSize
         }

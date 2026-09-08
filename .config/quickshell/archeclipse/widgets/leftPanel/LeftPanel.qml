@@ -141,7 +141,7 @@ PanelWindow {
         anchors.leftMargin: 5
         anchors.topMargin: 5
         anchors.bottomMargin: 5
-        color: Theme.moduleBg
+        color: Theme.surface
         radius: Theme.radius
 
         // Left sidebar with widget selectors
@@ -249,7 +249,7 @@ PanelWindow {
                     icon: "\u{F067}"
                     pixelSize: 14
                     cornerRadius: 6
-                    hoverBg: Theme.moduleBg
+                    hoverBg: Theme.surface
                     hoverFg: Theme.accent
                     tooltipText: "Expand panel"
                     // implicitWidth tracks Settings via binding — only
@@ -262,7 +262,7 @@ PanelWindow {
                     icon: "\u{F068}"
                     pixelSize: 14
                     cornerRadius: 6
-                    hoverBg: Theme.moduleBg
+                    hoverBg: Theme.surface
                     hoverFg: Theme.accent
                     tooltipText: "Shrink panel"
                     onClicked: Settings.leftPanelWidth = Math.max(400, Settings.leftPanelWidth - 50)
@@ -275,7 +275,7 @@ PanelWindow {
                     cornerRadius: 6
                     toggle: true
                     checked: !Settings.leftPanelExclusivity
-                    hoverBg: Theme.moduleBg
+                    hoverBg: Theme.surface
                     tooltipText: Settings.leftPanelExclusivity ? "Exclusive zone: on" : "Exclusive zone: off"
                     // checked is the inverse of the setting: writing it
                     // back as-is toggles exclusivity.
@@ -289,7 +289,7 @@ PanelWindow {
                     cornerRadius: 6
                     toggle: true
                     checked: Settings.leftPanelLock
-                    hoverBg: Theme.moduleBg
+                    hoverBg: Theme.surface
                     tooltipText: Settings.leftPanelLock ? "Unlock panel" : "Lock panel"
                     onClicked: Settings.leftPanelLock = !checked
                 }
@@ -299,7 +299,7 @@ PanelWindow {
                     icon: "\u{F00D}"
                     pixelSize: 14
                     cornerRadius: 6
-                    hoverBg: Theme.moduleBg
+                    hoverBg: Theme.surface
                     hoverFg: Theme.danger
                     tooltipText: "Close panel"
                     onClicked: root.visible = false

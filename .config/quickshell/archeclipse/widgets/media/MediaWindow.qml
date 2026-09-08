@@ -42,7 +42,7 @@ PanelWindow {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.margins: 12
-        color: Theme.background
+        color: Theme.bg
         radius: 12
 
         border.color: Theme.border

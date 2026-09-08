@@ -352,7 +352,7 @@ Item {
             width: 64
             height: 20
             radius: 4
-            color: root.loadingState === "error" ? Theme.danger : (root.loadingState === "success" ? Theme.accentBg : Theme.bg)
+            color: root.loadingState === "error" ? Theme.danger : (root.loadingState === "success" ? Theme.surfaceActive : Theme.bg)
             border.color: root.loadingState === "error" ? Theme.danger : Theme.border
             visible: root.loadingState !== "idle"
             Text {

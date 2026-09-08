@@ -264,7 +264,7 @@ Item {
                         anchors.horizontalCenter: parent.horizontalCenter
                         width: parent.width * 0.9
 
-                        TextField {
+                        AppTextField {
                             id: cityEntry
                             placeholderText: (root.wx?.city ? "Search..." : "Not " + (root.wx?.city || "IP") + "?...")
                             text: root.savedCity
@@ -273,11 +273,7 @@ Item {
                             width: parent.width - 76
                             height: 30
                             color: "white"
-                            background: Rectangle {
-                                color: "#33000000"
-                                radius: 6
-                                border.color: "#55FFFFFF"
-                            }
+                            fillColor: "#33000000"
                             placeholderTextColor: "#CCFFFFFF"
                         }
                         AppButton {
@@ -351,7 +347,7 @@ Item {
                             width: parent.width / 4 - 6
                             height: 56
                             radius: 8
-                            color: Theme.moduleBg
+                            color: Theme.surface
                             border.color: Theme.border
                             Column {
                                 anchors.centerIn: parent
@@ -399,7 +395,7 @@ Item {
                             width: parent.width / 4 - 6
                             height: 78
                             radius: 8
-                            color: Theme.moduleBg
+                            color: Theme.surface
                             border.color: Theme.border
                             Column {
                                 anchors.centerIn: parent

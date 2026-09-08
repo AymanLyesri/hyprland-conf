@@ -66,7 +66,7 @@ ComboBox {
         }
         background: Rectangle {
             radius: 4
-            color: parent.highlighted ? Theme.accentBg : "transparent"
+            color: parent.highlighted ? Theme.surfaceActive : "transparent"
             border.color: parent.highlighted ? Theme.border : "transparent"
             border.width: 1
         }

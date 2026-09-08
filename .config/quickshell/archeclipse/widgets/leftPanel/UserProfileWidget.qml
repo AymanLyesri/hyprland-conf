@@ -104,10 +104,10 @@ Item {
 
     Component.onCompleted: {
         applySettingsSyncMeta();
-        // Start the callback server at startup so the magic-link redirect
-        // always has something listening — sendMagicLink() alone is not
-        // enough (the link may be opened much later / after a reboot).
-        ensureAuthServer();
+        // On-demand auth server: NOT started here. sendMagicLink() starts
+        // the Quickshell-managed listener, and it stops itself once
+        // session.json appears (or after a timeout). This avoids a stale
+        // detached server dying across reboots and leaving /callback dead.
         _netTimer.restart();
     }
 
@@ -187,6 +187,9 @@ Item {
             root.isRefreshing = false;
             return;
         }
+        // Session arrived (via /save POST or manual paste) — the on-demand
+        // listener has done its job, stop it so it only runs when needed.
+        root.stopAuthServer("session saved");
         // Fast path: session.json already embeds the user (older saves) —
         // skip straight to the profile query like AGS does after /user.
         const embeddedId = session?.user?.id ?? session?.id ?? "";
@@ -231,11 +234,22 @@ Item {
         if (!session?.access_token)
             return;
         const p = fetchProfileComp.createObject(root);
-        p.command = ["bash", "-c", "curl -sS -H 'apikey: " + supabaseKey + "' -H 'Authorization: Bearer " + session.access_token + "' '" + supabaseUrl + "/rest/v1/user_profiles?select=id,username,avatar,is_supporter&id=eq." + encodeURIComponent(uid) + "'"];
+        p.command = ["bash", "-c", "curl -sS -H 'apikey: " + supabaseKey + "' -H 'Authorization: Bearer " + session.access_token + "' '" + supabaseUrl + "/rest/v1/user_profiles?select=id,username,avatar&id=eq." + encodeURIComponent(uid) + "'"];
         p.running = true;
     }
 
     // ===== MAGIC LINK =====
+    // Quickshell-managed on-demand listener: authServerProc (below) runs
+    // scripts/auth-server-callback.py as a child Process while
+    // authServerActive is true — no nohup/detach, so Quickshell owns its
+    // lifetime and it dies with the shell instead of going stale.
+    property bool authServerActive: false
+    property string authServerStatus: "stopped"
+    // Local-only fallback when the browser can't reach the listener (server
+    // down, link opened on another machine, etc.): paste the full
+    // http://127.0.0.1:53100/callback#... URL and we parse the #fragment
+    // in pure QML — no HTTP server involved at all.
+    property string callbackUrlText: ""
     function sendMagicLink(email) {
         if (!email || email.trim() === "") {
             Notifications.notify({
@@ -246,7 +260,7 @@ Item {
         }
         // Start the listener first so it is up by the time the user
         // opens the email link (server must be listening for /callback).
-        ensureAuthServer();
+        startAuthServer();
         const p = magicLinkComp.createObject(root);
         p.command = ["bash", "-c", "curl -sS -X POST -H 'Content-Type: application/json' -H 'apikey: " + supabaseKey + "' -d '" + JSON.stringify({
                 email: email.trim(),
@@ -258,16 +272,75 @@ Item {
         p.running = true;
     }
 
-    function ensureAuthServer() {
-        // Single-shot restart: pkill any stale server (including the legacy
-        // AGS one, which held the same port) then detach a fresh quickshell
-        // one. The [a] bracket trick keeps pkill from matching this very
-        // bash process (its own cmdline contains the pattern) — without it
-        // pkill SIGTERMs the invoker and the server never starts.
+    function startAuthServer() {
+        // Kill any stale detached server (legacy nohup one holding the port
+        // or a previous crash), then the onExited handler flips
+        // authServerActive=true which spawns the managed child.
         // (The #fragment never reaches the server — the /callback JS must
         // POST it to /save, which requires the server to be listening.)
-        const p = authServerComp.createObject(root);
-        p.command = ["bash", "-c", "pkill -f '[a]uth-server-callback\\.py' || true; nohup python3 '" + root.authServerScript + "' >'" + root.authLogPath + "' 2>&1 &"];
+        if (root.authServerActive)
+            return;
+        root.authServerStatus = "starting";
+        const p = authServerKickComp.createObject(root);
+        p.command = ["bash", "-c", "pkill -f '[a]uth-server-callback\\.py' || true"];
+        p.running = true;
+    }
+
+    function stopAuthServer(reason) {
+        if (!root.authServerActive && root.authServerStatus !== "starting")
+            return;
+        root.authServerActive = false;
+        root.authServerStatus = "stopped";
+        authServerTimeout.stop();
+        if (reason)
+            console.log("[auth] server stopped: " + reason);
+    }
+
+    // Server-less fallback: parse the pasted callback URL's #fragment
+    // (browsers never send it to any server) and write session.json
+    // directly. Works even if the listener was never started.
+    function importCallbackUrl(url) {
+        const s = (url || "").trim();
+        if (!s) {
+            Notifications.notify({
+                summary: "Auth",
+                body: "Paste the callback URL first."
+            });
+            return;
+        }
+        const hashIdx = s.indexOf("#");
+        const frag = hashIdx >= 0 ? s.slice(hashIdx + 1) : "";
+        if (!frag || frag.indexOf("access_token=") < 0) {
+            Notifications.notify({
+                summary: "Invalid link",
+                body: "That URL has no #access_token=… fragment."
+            });
+            return;
+        }
+        const params = {};
+        for (const part of frag.split("&")) {
+            const eq = part.indexOf("=");
+            if (eq > 0)
+                params[decodeURIComponent(part.slice(0, eq))] = decodeURIComponent(part.slice(eq + 1));
+        }
+        if (!params.access_token) {
+            Notifications.notify({
+                summary: "Invalid link",
+                body: "Could not find access_token in the URL."
+            });
+            return;
+        }
+        // Stop the listener — we got the session without it.
+        root.stopAuthServer("manual import");
+        const session = {
+            access_token: params.access_token || "",
+            refresh_token: params.refresh_token || "",
+            expires_at: params.expires_at || "",
+            token_type: params.token_type || "bearer",
+            type: params.type || "magiclink"
+        };
+        const p = manualSaveComp.createObject(root);
+        p.command = ["bash", "-c", "mkdir -p " + JSON.stringify(root.authSessionPath.split("/").slice(0, -1).join("/")) + " && cat > " + JSON.stringify(root.authSessionPath) + " <<'EOF'\n" + JSON.stringify(session, null, 2) + "\nEOF"];
         p.running = true;
     }
 
@@ -538,7 +611,7 @@ Item {
                 }
                 Rectangle {
                     anchors.fill: parent
-                    color: Theme.accentBg
+                    color: Theme.surfaceActive
                     visible: minAvatarImg.status !== Image.Ready
                     Text {
                         anchors.centerIn: parent
@@ -554,7 +627,7 @@ Item {
                 text: root.profile?.username ?? "Not signed in"
                 font.pixelSize: Theme.fontSize * 2
                 font.bold: true
-                color: Theme.foreground
+                color: Theme.fg
                 elide: Text.ElideRight
             }
         }
@@ -646,7 +719,7 @@ Item {
                                 }
                                 Rectangle {
                                     anchors.fill: parent
-                                    color: Theme.accentBg
+                                    color: Theme.surfaceActive
                                     visible: avatarImg.status !== Image.Ready
                                     Text {
                                         anchors.centerIn: parent
@@ -935,6 +1008,28 @@ Item {
                                 enabled: emailField.text.trim().length > 0
                                 onClicked: root.sendMagicLink(emailField.text)
                             }
+                            Label {
+                                width: parent.width
+                                text: root.authServerActive ? "Listener: running on :53100 — open the email link now." : root.authServerStatus === "error" ? "Listener failed — paste the link below instead." : "Listener: idle (starts when you send a link)."
+                                font.pixelSize: Theme.fontSize - 2
+                                color: Theme.fgDim
+                                wrapMode: Text.WordWrap
+                            }
+                            AppTextField {
+                                id: callbackField
+                                width: parent.width
+                                cornerRadius: 4
+                                placeholderText: "Paste callback URL here if the link fails…"
+                                onTextChanged: root.callbackUrlText = text
+                                onAccepted: root.importCallbackUrl(text)
+                            }
+                            AppButton {
+                                text: "Import Pasted Link"
+                                width: parent.width
+                                enabled: root.callbackUrlText.trim().length > 0
+                                outlined: true
+                                onClicked: root.importCallbackUrl(callbackField.text)
+                            }
                         }
                     }
                 }
@@ -1071,9 +1166,75 @@ Item {
             }
         }
     }
+    // On-demand listener: child of the widget, running only while
+    // authServerActive. stdout goes to the log file for debugging.
+    Process {
+        id: authServerProc
+        command: ["bash", "-c", "exec python3 " + JSON.stringify(root.authServerScript) + " >>" + JSON.stringify(root.authLogPath) + " 2>&1"]
+        running: root.authServerActive
+        onStarted: {
+            root.authServerStatus = "running";
+            console.log("[auth] callback server started on :53100");
+            authServerTimeout.restart();
+        }
+        onExited: code => {
+            if (root.authServerActive) {
+                // Crashed or port busy while still wanted — surface it.
+                root.authServerActive = false;
+                root.authServerStatus = "error";
+                authServerTimeout.stop();
+                console.log("[auth] server exited unexpectedly code=" + code + " see " + root.authLogPath);
+                Notifications.notify({
+                    summary: "Auth server failed",
+                    body: "Listener exited (code " + code + "). Paste the callback URL below instead — no server needed."
+                });
+            }
+        }
+    }
+    // Kills stale detached servers, then hands off to authServerProc.
     Component {
-        id: authServerComp
-        Process {}
+        id: authServerKickComp
+        Process {
+            onExited: code => {
+                root.authServerActive = true;
+            }
+        }
+    }
+    // Shows listener state in the sign-in card.
+    Timer {
+        id: authServerTimeout
+        interval: 15 * 60 * 1000
+        repeat: false
+        running: false
+        onTriggered: {
+            root.stopAuthServer("15min timeout");
+            Notifications.notify({
+                summary: "Auth server stopped",
+                body: "No sign-in completed in 15 minutes. Send a new magic link to restart it."
+            });
+        }
+    }
+    // Manual paste fallback writer (importCallbackUrl).
+    Component {
+        id: manualSaveComp
+        Process {
+            onExited: code => {
+                if (code !== 0) {
+                    Notifications.notify({
+                        summary: "Auth",
+                        body: "Could not write session file."
+                    });
+                    return;
+                }
+                root.callbackUrlText = "";
+                callbackField.text = "";
+                Notifications.notify({
+                    summary: "Signed in",
+                    body: "Session imported from the pasted link."
+                });
+                root.loadProfile();
+            }
+        }
     }
     Component {
         id: updateProfileComp

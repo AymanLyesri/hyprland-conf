@@ -30,7 +30,7 @@ Row {
         text: root.firstPlayable ? (root.firstPlayable.playbackState === MprisPlaybackState.Playing ? "\uF03E5" : "\uF040A") + " " + root.firstPlayable.trackTitle : ""
         elide: Text.ElideRight
         width: Math.min(implicitWidth, 200)
-        color: Theme.foreground
+        color: Theme.fg
         font.family: Theme.fontFamily
         font.pixelSize: Theme.fontSize
     }
@@ -47,10 +47,10 @@ Row {
     Row {
         spacing: 4
         anchors.verticalCenter: parent.verticalCenter
-        Text { text: SysInfo.bandwidth[0] + ""; color: Theme.foreground; font.family: Theme.fontFamily; font.pixelSize: Theme.fontSize }
-        Text { text: "\uF062"; color: Theme.secondary; font.family: Theme.fontFamily; font.pixelSize: Theme.fontSize - 2 }
-        Text { text: SysInfo.bandwidth[1] + ""; color: Theme.foreground; font.family: Theme.fontFamily; font.pixelSize: Theme.fontSize }
-        Text { text: "\uF063"; color: Theme.secondary; font.family: Theme.fontFamily; font.pixelSize: Theme.fontSize - 2 }
+        Text { text: SysInfo.bandwidth[0] + ""; color: Theme.fg; font.family: Theme.fontFamily; font.pixelSize: Theme.fontSize }
+        Text { text: "\uF062"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: Theme.fontSize - 2 }
+        Text { text: SysInfo.bandwidth[1] + ""; color: Theme.fg; font.family: Theme.fontFamily; font.pixelSize: Theme.fontSize }
+        Text { text: "\uF063"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: Theme.fontSize - 2 }
     }
 
     // ---- weather button (AGS WeatherButton) ----

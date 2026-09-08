@@ -205,7 +205,7 @@ Item {
                 text: showAddForm ? "\u{f00d}" : "+"
                 pixelSize: Theme.fontSize
                 cornerRadius: 4
-                idleBg: showAddForm ? Theme.dangerBg : Theme.accentBg
+                idleBg: showAddForm ? Theme.dangerBg : Theme.surfaceActive
                 idleFg: showAddForm ? Theme.danger : Theme.accent
                 outlined: true
                 outlineColor: showAddForm ? Theme.danger : Theme.accent
@@ -251,7 +251,7 @@ Item {
     Component {
         id: formComponent
         Rectangle {
-            color: Theme.moduleBg
+            color: Theme.surface
             radius: Theme.radius
 
             Layout.fillWidth: true
@@ -273,7 +273,7 @@ Item {
                         font.pixelSize: Theme.fontSize
                         color: Theme.fg
                     }
-                    TextField {
+                    AppTextField {
                         id: nameField
                         placeholderText: "Enter task name"
                         text: editingTask ? editingTask.name : ""
@@ -290,7 +290,7 @@ Item {
                         font.pixelSize: Theme.fontSize
                         color: Theme.fg
                     }
-                    TextField {
+                    AppTextField {
                         id: timeField
                         placeholderText: "12:00"
                         text: editingTask ? editingTask.time : "12:00"
@@ -308,7 +308,7 @@ Item {
                         font.pixelSize: Theme.fontSize
                         color: Theme.fg
                     }
-                    TextField {
+                    AppTextField {
                         id: commandField
                         placeholderText: "Enter command or select preset"
                         text: editingTask ? editingTask.command : ""
@@ -382,7 +382,7 @@ Item {
                         text: editingTask ? "✓ Update" : "+ Add Task"
                         pixelSize: Theme.fontSize
                         cornerRadius: 4
-                        idleBg: Theme.accentBg
+                        idleBg: Theme.surfaceActive
                         idleFg: Theme.accent
                         outlined: true
                         outlineColor: Theme.accent

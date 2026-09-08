@@ -90,7 +90,7 @@ Row {
             padding: 6
             closePolicy: Popup.CloseOnPressOutside
             background: Rectangle {
-                color: Theme.moduleBg
+                color: Theme.surface
                 radius: 8
                 border.color: Theme.border
             }
@@ -132,7 +132,7 @@ Row {
                             Text {
                                 text: modelData.tooltip_text
                                 font.pixelSize: Theme.fontSize
-                                color: Theme.foreground
+                                color: Theme.fg
                                 elide: Text.ElideRight
                             }
                         }

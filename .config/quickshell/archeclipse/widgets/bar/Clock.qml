@@ -13,7 +13,7 @@ Rectangle {
     width: clockLabel.width + 10
     height: 22
     radius: Theme.radius
-    color: hover.hovered ? Theme.buttonHoverBg : "transparent"
+    color: hover.hovered ? Theme.surfaceHover : "transparent"
 
     property string timeText: Settings.fmt(new Date(), Settings.dateFormat)
     SystemClock { precision: SystemClock.Minutes; onDateChanged: root.timeText = Settings.fmt(new Date(), Settings.dateFormat) }
@@ -24,7 +24,7 @@ Rectangle {
         id: clockLabel
         anchors.centerIn: parent
         text: hover.hovered ? Qt.formatDate(new Date(), root.longFormat) : root.timeText
-        color: Theme.foreground
+        color: Theme.fg
         font.family: Theme.fontFamily
         font.pixelSize: Theme.fontSize
     }

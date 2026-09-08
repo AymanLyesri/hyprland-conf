@@ -101,7 +101,7 @@ Item {
                 width: 40
                 height: 40
                 radius: 4
-                color: Theme.accentBg
+                color: Theme.surfaceActive
                 visible: root.artUrl !== ""
 
                 WaveVisualizer {
@@ -122,7 +122,7 @@ Item {
                     text: root.title
                     font.family: "JetBrainsMono NFP"
                     font.pixelSize: 11
-                    color: Theme.foreground
+                    color: Theme.fg
                     elide: Text.ElideRight
                     width: 200
                 }

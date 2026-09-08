@@ -464,7 +464,7 @@ Item {
             Rectangle {
                 width: parent.width
                 height: setupGuide.implicitHeight + 8
-                color: Theme.accentBg
+                color: Theme.surfaceActive
                 radius: 8
                 border.color: Theme.accent
 
@@ -517,8 +517,13 @@ Item {
                     model: root.messages
                     delegate: Rectangle {
                         width: msgColumn.width
-                        implicitHeight: msgContent.implicitHeight + 14
-                        color: modelData.role === "user" ? Theme.accentBg : Theme.moduleBg
+                        // NOTE: msgColumn is a Column positioner, not a
+                        // ColumnLayout — it positions children by their
+                        // explicit height, ignoring implicitHeight.
+                        // An implicitHeight-only binding leaves height == 0
+                        // (content overflows) so the bubble never hugs text.
+                        height: msgContent.implicitHeight + 16
+                        color: modelData.role === "user" ? Theme.surfaceActive : Theme.surface
                         radius: 8
 
                         // Click to copy whole message (except code blocks)
@@ -531,6 +536,7 @@ Item {
                         Column {
                             id: msgContent
                             anchors.left: parent.left
+                            anchors.top: parent.top
                             anchors.right: parent.right
                             anchors.margins: 8
                             spacing: 3
@@ -542,45 +548,42 @@ Item {
                                 color: Theme.accent
                             }
 
-                            // Message content
+                            // Message content (flat Labels — no wrapper Column per
+                            // block, so no extra spacing/implicitHeight per line)
                             Repeater {
                                 model: root.formatMessage(modelData.content)
-                                delegate: Column {
-                                    width: parent.width
-                                    spacing: 2
+                                delegate: Label {
+                                    property var txt: modelData.type === "list" ? "\u{2022} " + modelData.content : modelData.type === "ordered" ? "  " + modelData.content : modelData.type === "quote" ? "\u{276E} " + modelData.content : modelData.type === "header" ? modelData.content : modelData.content ?? ""
+                                    text: modelData.type === "code" ? modelData.content : txt
+                                    font.pixelSize: modelData.type === "header" ? Theme.fontSize + 2 : Theme.fontSize
+                                    font.bold: modelData.type === "header"
+                                    font.family: modelData.type === "code" ? "JetBrainsMono NFP" : Theme.fontFamily
+                                    color: modelData.type === "code" ? Theme.fgDim : Theme.fg
+                                    wrapMode: Text.WordWrap
+                                    textFormat: modelData.type === "code" ? Text.PlainText : Text.RichText
+                                    width: msgContent.width
+                                    // Code blocks need room for the copy pill
+                                    topPadding: modelData.type === "code" ? 22 : 0
+                                    // Code block copy button
+                                    Rectangle {
+                                        visible: modelData.type === "code"
+                                        anchors.top: parent.top
+                                        anchors.right: parent.right
+                                        width: 54
+                                        height: 20
+                                        radius: 4
+                                        color: Theme.bg
+                                        border.color: Theme.accent
 
-                                    Label {
-                                        property var txt: modelData.type === "list" ? "\u{2022} " + modelData.content : modelData.type === "ordered" ? "  " + modelData.content : modelData.type === "quote" ? "\u{276E} " + modelData.content : modelData.type === "header" ? modelData.content : modelData.content ?? ""
-                                        text: modelData.type === "code" ? modelData.content : txt
-                                        font.pixelSize: modelData.type === "header" ? Theme.fontSize + 2 : Theme.fontSize
-                                        font.bold: modelData.type === "header"
-                                        font.family: modelData.type === "code" ? "JetBrainsMono NFP" : Theme.fontFamily
-                                        color: modelData.type === "code" ? Theme.fgDim : Theme.fg
-                                        wrapMode: Text.WordWrap
-                                        textFormat: modelData.type === "code" ? Text.PlainText : Text.RichText
-                                        width: parent.width
-
-                                        // Code block copy button
-                                        Rectangle {
-                                            visible: modelData.type === "code"
-                                            anchors.top: parent.top
-                                            anchors.right: parent.right
-                                            width: 54
-                                            height: 20
-                                            radius: 4
-                                            color: Theme.bg
-                                            border.color: Theme.accent
-
-                                            Text {
-                                                anchors.centerIn: parent
-                                                text: "copy"
-                                                color: Theme.accent
-                                                font.pixelSize: 9
-                                            }
-                                            MouseArea {
-                                                anchors.fill: parent
-                                                onClicked: root.copyToClipboard(modelData.content)
-                                            }
+                                        Text {
+                                            anchors.centerIn: parent
+                                            text: "copy"
+                                            color: Theme.accent
+                                            font.pixelSize: 9
+                                        }
+                                        MouseArea {
+                                            anchors.fill: parent
+                                            onClicked: root.copyToClipboard(modelData.content)
                                         }
                                     }
                                 }
@@ -602,13 +605,22 @@ Item {
                             }
 
                             // Assistant-generated image (AGS message.image, scaled down)
+                            // NOTE: Column positioners do NOT collapse
+                            // visible:false children — a fixed height:200
+                            // reserves ~200px in every text-only bubble.
+                            // Collapse to 0 when there is no image.
+                            // IMPORTANT: derive hasImage from the string in
+                            // modelData, NOT from `source` (a url alias):
+                            // `source !== ""` is always true for urls, so the
+                            // image slot never collapsed.
                             AppImage {
-                                width: parent.width
-                                height: 200
-                                source: modelData.image && modelData.image.length > 0 ? modelData.image : ""
+                                property bool hasImage: modelData.image !== undefined && modelData.image !== null && String(modelData.image).length > 0
+                                width: msgContent.width
+                                height: hasImage ? 200 : 0
+                                source: hasImage ? modelData.image : ""
 
                                 clip: true
-                                visible: source !== ""
+                                visible: hasImage
                             }
                         }
                     }
@@ -643,17 +655,11 @@ Item {
                 spacing: 6
                 // AGS uses Gtk.TextView (multiline, WORD_CHAR wrap): Enter
                 // sends, Shift+Enter inserts a newline.
-                TextArea {
+                AppTextArea {
                     id: inputField
                     placeholderText: "Ask anything... (Enter send, Shift+Enter newline)"
                     Layout.fillWidth: true
-                    implicitHeight: 40
-                    wrapMode: TextArea.Wrap
                     inputMethodHints: Qt.ImhPreferLowercase
-                    background: Rectangle {
-                        color: Theme.bg
-                        radius: 8
-                    }
                     Keys.onReturnPressed: {
                         if (event.modifiers & Qt.ShiftModifier)
                             // newline (default)
@@ -677,26 +683,26 @@ Item {
                 AppButton {
                     implicitWidth: 36
                     implicitHeight: 40
-                    text: "\u{F2ED}"
+                    text: "\uf1f8"
                     onClicked: root.clearMessages()
                     tooltipText: "Clear current session messages"
                 }
-                AppButton {
-                    id: imageGenBtn
-                    implicitWidth: 36
-                    implicitHeight: 40
-                    // AGS ImageGenerationSwitch label is the image glyph (F03E)
-                    text: "\u{F03E}"
-                    toggle: true
-                    checked: root.imageGeneration
-                    enabled: root.currentImageGenSupport()
-                    opacity: root.currentImageGenSupport() ? 1 : 0.4
-                    onClicked: {
-                        root.imageGeneration = !checked;
-                        Settings.chatBotImageGeneration = !checked;
-                    }
-                    tooltipText: "Image generation" + (root.currentImageGenSupport() ? "" : " (not supported by this model)")
-                }
+                // AppButton {
+                //     id: imageGenBtn
+                //     implicitWidth: 36
+                //     implicitHeight: 40
+                //     // AGS ImageGenerationSwitch label is the image glyph (F03E)
+                //     text: "\u{F03E}"
+                //     toggle: true
+                //     checked: root.imageGeneration
+                //     enabled: root.currentImageGenSupport()
+                //     opacity: root.currentImageGenSupport() ? 1 : 0.4
+                //     onClicked: {
+                //         root.imageGeneration = !checked;
+                //         Settings.chatBotImageGeneration = !checked;
+                //     }
+                //     tooltipText: "Image generation" + (root.currentImageGenSupport() ? "" : " (not supported by this model)")
+                // }
             }
 
             // Session tabs + create button
@@ -772,7 +778,7 @@ Item {
         Rectangle {
             Layout.fillWidth: true
             height: root.progressStatus === "loading" || root.progressStatus === "error" ? 22 : 0
-            color: root.progressStatus === "error" ? Theme.dangerBg : Theme.accentBg
+            color: root.progressStatus === "error" ? Theme.dangerBg : Theme.surfaceActive
             radius: 6
             border.color: root.progressStatus === "error" ? Theme.danger : Theme.accent
 

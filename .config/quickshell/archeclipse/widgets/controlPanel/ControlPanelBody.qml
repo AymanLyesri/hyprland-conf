@@ -54,14 +54,14 @@ Item {
                 spacing: 8
                 Text {
                     text: VolumeWatcher.volumeIcon
-                    color: Theme.foreground
+                    color: Theme.fg
                     font.family: "JetBrainsMono NFP"
                     font.pixelSize: 18
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
                     text: "Volume"
-                    color: Theme.foregroundSecondary
+                    color: Theme.muted
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontSize - 1
                 }
@@ -88,14 +88,14 @@ Item {
                 spacing: 8
                 Text {
                     text: body.brightnessIcon
-                    color: Theme.foreground
+                    color: Theme.fg
                     font.family: "JetBrainsMono NFP"
                     font.pixelSize: 18
                     verticalAlignment: Text.AlignVCenter
                 }
                 Text {
                     text: "Brightness"
-                    color: Theme.foregroundSecondary
+                    color: Theme.muted
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontSize - 1
                 }
@@ -120,14 +120,14 @@ Item {
                 width: 46
                 height: 46
                 radius: Theme.radius
-                color: tm.containsMouse ? Theme.buttonHoverBg : Theme.moduleBg
+                color: tm.containsMouse ? Theme.surfaceHover : Theme.surface
                 ToolTip.visible: tm.containsMouse
                 ToolTip.text: GlobalTheme.currentTheme ? "Switch to Light Theme" : "Switch to Dark Theme"
                 ToolTip.delay: 600
                 Text {
                     anchors.centerIn: parent
                     text: GlobalTheme.currentTheme ? "\u{F07C5}" : "\u{F0D9C}"
-                    color: Theme.foreground
+                    color: Theme.fg
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontSize + 2
                 }
@@ -145,14 +145,14 @@ Item {
                 width: 46
                 height: 46
                 radius: Theme.radius
-                color: (dndM.containsMouse || Settings.notifDnd || dndPing) ? Theme.buttonCheckedBg : Theme.moduleBg
+                color: (dndM.containsMouse || Settings.notifDnd || dndPing) ? Theme.surfaceActive : Theme.surface
                 ToolTip.visible: dndM.containsMouse
                 ToolTip.text: Settings.notifDnd ? "Disable Do Not Disturb" : "Enable Do Not Disturb"
                 ToolTip.delay: 600
                 Text {
                     anchors.centerIn: parent
                     text: Settings.notifDnd ? "\u{F0436}" : "\u{F044E}"
-                    color: Settings.notifDnd ? Theme.buttonCheckedFg : Theme.foreground
+                    color: Theme.fg
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontSize + 2
                 }
@@ -195,14 +195,14 @@ Item {
                 width: 46
                 height: 46
                 radius: Theme.radius
-                color: upM.containsMouse ? Theme.buttonHoverBg : Theme.moduleBg
+                color: upM.containsMouse ? Theme.surfaceHover : Theme.surface
                 ToolTip.visible: upM.containsMouse
                 ToolTip.text: "User Panel\n<b>SUPER + ESC</b>"
                 ToolTip.delay: 600
                 Text {
                     anchors.centerIn: parent
                     text: "\u{F058C}"
-                    color: Theme.foreground
+                    color: Theme.fg
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontSize + 2
                 }
@@ -222,14 +222,14 @@ Item {
                 width: 46
                 height: 46
                 radius: Theme.radius
-                color: alM.containsMouse ? Theme.buttonHoverBg : Theme.moduleBg
+                color: alM.containsMouse ? Theme.surfaceHover : Theme.surface
                 ToolTip.visible: alM.containsMouse
                 ToolTip.text: "App Launcher\n<b>SUPER</b>"
                 ToolTip.delay: 600
                 Text {
                     anchors.centerIn: parent
                     text: "\u{F0580}"
-                    color: Theme.foreground
+                    color: Theme.fg
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontSize + 2
                 }
@@ -249,14 +249,14 @@ Item {
                 width: 46
                 height: 46
                 radius: Theme.radius
-                color: wsM.containsMouse ? Theme.buttonHoverBg : Theme.moduleBg
+                color: wsM.containsMouse ? Theme.surfaceHover : Theme.surface
                 ToolTip.visible: wsM.containsMouse
                 ToolTip.text: "Wallpaper Switcher\n<b>SUPER + W</b>"
                 ToolTip.delay: 600
                 Text {
                     anchors.centerIn: parent
                     text: "\u{F0F82}"
-                    color: Theme.foreground
+                    color: Theme.fg
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontSize + 2
                 }

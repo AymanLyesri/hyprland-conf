@@ -89,8 +89,8 @@ PanelWindow {
             Shape {
                 anchors.fill: parent
                 ShapePath {
-                    fillColor: ma.containsMouse ? Theme.bg : Theme.backgroundTransparent
-                    strokeColor: ma.containsMouse ? Theme.secondary : "transparent"
+                    fillColor: ma.containsMouse ? Theme.bg : Theme.surface
+                    strokeColor: ma.containsMouse ? Theme.muted : "transparent"
                     strokeWidth: 5
                     // Per-corner rounded rect (AGS .logout/.shutdown/.sleep/.reboot radii).
                     PathMove {
@@ -142,7 +142,7 @@ PanelWindow {
             Text {
                 anchors.centerIn: parent
                 text: btn.glyph
-                color: Theme.foreground
+                color: Theme.fg
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontSize * 4
             }

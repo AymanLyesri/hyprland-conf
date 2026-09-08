@@ -57,7 +57,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: Theme.moduleBg
+        color: Theme.surface
         radius: Theme.radius
 
         clip: true
@@ -133,7 +133,7 @@ Item {
                     height: 24
                     pixelSize: 11
                     cornerRadius: 4
-                    idleBg: Theme.moduleBg
+                    idleBg: Theme.surface
                     outlined: true
                     tooltipText: "Copy text"
                     visible: root.isHovered
@@ -148,7 +148,7 @@ Item {
                     height: 24
                     pixelSize: 11
                     cornerRadius: 4
-                    idleBg: Theme.moduleBg
+                    idleBg: Theme.surface
                     outlined: true
                     visible: root.notification && root.notification.body && root.notification.body.length > 100
                     onClicked: root.bodyExpanded = !root.bodyExpanded
@@ -161,7 +161,7 @@ Item {
                     height: 24
                     pixelSize: 11
                     cornerRadius: 4
-                    idleBg: Theme.moduleBg
+                    idleBg: Theme.surface
                     outlined: true
                     tooltipText: "Dismiss"
                     onClicked: {
@@ -221,7 +221,7 @@ Item {
                         height: 24
                         pixelSize: Theme.fontSize - 2
                         cornerRadius: 4
-                        idleBg: Theme.accentBg
+                        idleBg: Theme.surfaceActive
                         idleFg: Theme.accent
                         outlined: true
                         outlineColor: Theme.accent

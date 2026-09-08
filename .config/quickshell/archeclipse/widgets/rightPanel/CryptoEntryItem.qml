@@ -30,7 +30,7 @@ Item {
             id: entryRect
             width: parent.width
             height: 80
-            color: Theme.moduleBg
+            color: Theme.surface
             radius: Theme.radius
 
             CryptoItem {
@@ -55,7 +55,7 @@ Item {
                 height: 24
                 pixelSize: 11
                 cornerRadius: 4
-                idleBg: Theme.moduleBg
+                idleBg: Theme.surface
                 idleFg: Theme.accent
                 outlined: true
                 tooltipText: "Pin to bar"
@@ -75,7 +75,7 @@ Item {
                 height: 24
                 pixelSize: 11
                 cornerRadius: 4
-                idleBg: Theme.moduleBg
+                idleBg: Theme.surface
                 outlined: true
                 tooltipText: "Edit"
                 onClicked: root.editClicked(root.entry)

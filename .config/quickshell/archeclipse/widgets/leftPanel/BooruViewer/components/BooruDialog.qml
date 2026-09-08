@@ -46,7 +46,7 @@ Item {
             anchors.fill: parent
             color: Theme.bg
             radius: 10
-            border.color: Theme.accentBg
+            border.color: Theme.surfaceActive
             border.width: 1
         }
 
@@ -181,7 +181,7 @@ Item {
                     width: tagDetail.implicitWidth + 12
                     height: 20
                     radius: 10
-                    color: tagDetailMa.containsMouse ? Theme.accentBg : Theme.moduleBg
+                    color: tagDetailMa.containsMouse ? Theme.surfaceActive : Theme.surface
                     Text {
                         id: tagDetail
                         anchors.centerIn: parent

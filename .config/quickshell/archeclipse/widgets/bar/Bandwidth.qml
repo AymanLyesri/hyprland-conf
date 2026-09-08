@@ -43,7 +43,7 @@ Item {
         padding: 8
         closePolicy: Popup.CloseOnPressOutside
         background: Rectangle {
-            color: Theme.moduleBg
+            color: Theme.surface
             radius: 8
             border.color: Theme.border
         }
@@ -54,7 +54,7 @@ Item {
                 text: "Network Statistics"
                 font.pixelSize: Theme.fontSize + 2
                 font.bold: true
-                color: Theme.foreground
+                color: Theme.fg
             }
 
             Row {
@@ -65,7 +65,7 @@ Item {
                     spacing: 4
                     Text {
                         text: "Upload"
-                        color: Theme.foregroundSecondary
+                        color: Theme.muted
                         font.pixelSize: Theme.fontSize
                     }
                     Row {
@@ -74,12 +74,12 @@ Item {
                             spacing: 2
                             Text {
                                 text: "Packets"
-                                color: Theme.foregroundSecondary
+                                color: Theme.muted
                                 font.pixelSize: Theme.fontSize - 2
                             }
                             Text {
                                 text: root.uploadSpeed + " KB/s"
-                                color: Theme.foreground
+                                color: Theme.fg
                                 font.pixelSize: Theme.fontSize
                             }
                         }
@@ -87,12 +87,12 @@ Item {
                             spacing: 2
                             Text {
                                 text: "Data"
-                                color: Theme.foregroundSecondary
+                                color: Theme.muted
                                 font.pixelSize: Theme.fontSize - 2
                             }
                             Text {
                                 text: root.formatData(root.todayUpload)
-                                color: Theme.foreground
+                                color: Theme.fg
                                 font.pixelSize: Theme.fontSize
                             }
                         }
@@ -104,7 +104,7 @@ Item {
                     spacing: 4
                     Text {
                         text: "Download"
-                        color: Theme.foregroundSecondary
+                        color: Theme.muted
                         font.pixelSize: Theme.fontSize
                     }
                     Row {
@@ -113,12 +113,12 @@ Item {
                             spacing: 2
                             Text {
                                 text: "Packets"
-                                color: Theme.foregroundSecondary
+                                color: Theme.muted
                                 font.pixelSize: Theme.fontSize - 2
                             }
                             Text {
                                 text: root.downloadSpeed + " KB/s"
-                                color: Theme.foreground
+                                color: Theme.fg
                                 font.pixelSize: Theme.fontSize
                             }
                         }
@@ -126,12 +126,12 @@ Item {
                             spacing: 2
                             Text {
                                 text: "Data"
-                                color: Theme.foregroundSecondary
+                                color: Theme.muted
                                 font.pixelSize: Theme.fontSize - 2
                             }
                             Text {
                                 text: root.formatData(root.todayDownload)
-                                color: Theme.foreground
+                                color: Theme.fg
                                 font.pixelSize: Theme.fontSize
                             }
                         }
@@ -169,7 +169,7 @@ Item {
                 spacing: 1
                 Text {
                     text: root.uploadSpeed
-                    color: Theme.foreground
+                    color: Theme.fg
                     font.pixelSize: 10
                     font.family: Theme.fontFamily
                 }
@@ -184,7 +184,7 @@ Item {
                 spacing: 1
                 Text {
                     text: root.downloadSpeed
-                    color: Theme.foreground
+                    color: Theme.fg
                     font.pixelSize: 10
                     font.family: Theme.fontFamily
                 }

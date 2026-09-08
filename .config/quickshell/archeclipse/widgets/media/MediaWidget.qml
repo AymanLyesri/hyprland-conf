@@ -84,7 +84,7 @@ Item {
             height: 170
             radius: 8
             clip: true
-            color: Theme.moduleBg
+            color: Theme.surface
 
             border.color: Theme.border
             visible: root.player !== null
@@ -204,7 +204,7 @@ Item {
                                 width: parent.width
                                 elide: Text.ElideRight
                                 font.pixelSize: Theme.fontSize - 1
-                                color: Theme.foregroundSecondary
+                                color: Theme.muted
                                 text: root.artist
                             }
                         }
@@ -279,7 +279,7 @@ Item {
                         Layout.preferredWidth: 30
                         Layout.minimumWidth: 22
                         implicitHeight: 30
-                        idleBg: Theme.accentBg
+                        idleBg: Theme.surfaceActive
                         idleFg: Theme.accent
                         onClicked: {
                             if (root.playing)

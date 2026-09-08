@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import qs.services
 import qs.theme
+import qs.widgets.shared
 
 // Notification History widget ported from widgets/rightPanel/components/NotificationHistory.tsx
 Item {
@@ -62,41 +63,29 @@ Item {
     property var stackedNotifications: stackNotifications(notifications, filterText)
 
     Column {
+        id: mainCol
         anchors.fill: parent
         spacing: 8
 
-        // Header with filter, stacked vertically: a side-by-side title +
-        // filter row cannot fit the narrow panel without eliding the title.
-        Column {
+        // Header title only — filter lives at the bottom.
+        Label {
+            id: headerLabel
+            text: "Notification History"
+            font.pixelSize: Theme.fontSize + 4
+            font.bold: true
+            color: Theme.fg
             width: parent.width
-            spacing: 6
-            Label {
-                text: "Notification History"
-                font.pixelSize: Theme.fontSize + 4
-                font.bold: true
-                color: Theme.fg
-                width: parent.width
-                elide: Text.ElideRight
-            }
-            TextField {
-                id: filterField
-                placeholderText: "Filter..."
-                text: filterText
-                onTextChanged: root.filterText = text
-                width: parent.width
-                background: Rectangle {
-                    color: Theme.bg
-                    radius: 4
-                }
-            }
+            elide: Text.ElideRight
         }
 
-        // Notification List
+        // Notification List — content-sized: grows with listColumn up to
+        // the space left by header + filter, collapses to 0 when empty
+        // instead of filling the card with blank scroll area.
         ScrollView {
             id: nScroll
             width: parent.width
-            // Guarded: a negative height sends Flickable into a silent polish loop
-            height: Math.max(0, parent.height - y - 8)
+            height: stackedNotifications.length === 0 ? 0 : Math.min(listColumn.height, Math.max(0, parent.height - y - filterField.height - mainCol.spacing))
+            visible: stackedNotifications.length > 0
             clip: true
 
             // Scroll position save/restore across notification changes
@@ -141,6 +130,26 @@ Item {
                     }
                 }
             }
+        }
+
+        // Empty state — small fixed hint, no blank scroll area.
+        Text {
+            width: parent.width
+            visible: stackedNotifications.length === 0
+            height: visible ? implicitHeight : 0
+            text: filterText !== "" ? "No matching notifications" : "No notifications"
+            font.pixelSize: Theme.fontSize
+            color: Theme.fgDim
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
+        }
+
+        AppTextField {
+            id: filterField
+            width: parent.width
+            placeholderText: "Filter..."
+            text: root.filterText
+            onTextChanged: root.filterText = text
         }
     }
 }

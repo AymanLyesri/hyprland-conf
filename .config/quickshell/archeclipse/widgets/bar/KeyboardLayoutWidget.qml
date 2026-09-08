@@ -58,7 +58,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             text: root.showFlag ? (KeyboardLayout.flagEmoji(KeyboardLayout.layout) || KeyboardLayout.layout) : KeyboardLayout.layout
             visible: KeyboardLayout.layout.length > 0
-            color: Theme.foreground
+            color: Theme.fg
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontSize
         }
