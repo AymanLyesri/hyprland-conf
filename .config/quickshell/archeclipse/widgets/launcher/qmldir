@@ -1,3 +1,4 @@
 module qs.widgets.launcher
 
 LauncherPanel 1.0 LauncherPanel.qml
+AppEntry 1.0 AppEntry.qml

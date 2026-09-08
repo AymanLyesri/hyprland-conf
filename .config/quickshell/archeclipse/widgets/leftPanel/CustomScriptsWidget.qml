@@ -197,7 +197,37 @@ Item {
     // bindings re-evaluate when each check finishes.
     property var appStatus: ({})
 
-    Component.onCompleted: refreshAppStatus()
+    // Replayable staggered reveal: StackLayout builds all tabs once at
+    // startup (hidden), so creation-time timers would fire unseen and the
+    // tab switch would only play the container-wide fade. Instead a
+    // counter steps 0→N each time this tab becomes visible and rows key
+    // their opacity off their index.
+    property int revealCount: 0
+    Timer {
+        id: revealTimer
+        interval: 30
+        repeat: true
+        onTriggered: {
+            if (root.revealCount >= root.scriptDefs.length)
+                revealTimer.stop();
+            else
+                root.revealCount++;
+        }
+    }
+    function playReveal() {
+        root.revealCount = 0;
+        revealTimer.restart();
+    }
+    onVisibleChanged: {
+        if (visible)
+            root.playReveal();
+    }
+
+    Component.onCompleted: {
+        refreshAppStatus();
+        if (visible)
+            playReveal();
+    }
 
     function refreshAppStatus() {
         const needed = [];
@@ -351,12 +381,21 @@ Item {
                     model: root.scriptDefs
                     delegate: Rectangle {
                         required property var modelData
-                        property var keys: modelData.keybind || []
+                        required property int index
                         property bool confirming: false
                         width: parent.width
                         implicitHeight: rowContent.implicitHeight + 20
                         color: Theme.surface
                         radius: 8
+                        // Row appears when the reveal counter passes its
+                        // position (see root.playReveal).
+                        opacity: index < root.revealCount ? 1 : 0
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: 250
+                                easing.type: Easing.OutCubic
+                            }
+                        }
 
                         // AGS: the whole row is the script button — click runs it.
                         // Reset shows a Yes/No confirmation instead (AGS Reset AGS Settings).
@@ -420,47 +459,10 @@ Item {
                                     }
                                 }
 
-                                // Keybind display (AGS KeyBind component - key chips joined by "+")
-                                Row {
-                                    id: keyChips
-                                    visible: keys.length > 0
-                                    spacing: 3
+                                // Keybind display (shared AppKeybind widget)
+                                AppKeybind {
+                                    keys: modelData.keybind || []
                                     Layout.alignment: Qt.AlignVCenter
-                                    Repeater {
-                                        model: keys
-                                        delegate: Row {
-                                            required property string modelData
-                                            required property int index
-                                            spacing: 3
-                                            // Fixed height so the "+" label can
-                                            // center deterministically (anchors
-                                            // are ignored inside positioners).
-                                            height: 22
-                                            Rectangle {
-                                                width: kChip.implicitWidth + 10
-                                                height: 22
-                                                radius: 4
-                                                color: Theme.surface
-
-                                                Label {
-                                                    id: kChip
-                                                    anchors.centerIn: parent
-                                                    text: modelData
-                                                    font.pixelSize: Theme.fontSize - 1
-                                                    font.bold: true
-                                                    color: Theme.accent
-                                                    font.family: "JetBrainsMono NFP"
-                                                }
-                                            }
-                                            Label {
-                                                text: "+"
-                                                y: (parent.height - height) / 2
-                                                visible: index < (keys.length - 1)
-                                                color: Theme.fgDim
-                                                font.pixelSize: Theme.fontSize
-                                            }
-                                        }
-                                    }
                                 }
 
                                 // Install button (only when app missing)
@@ -472,21 +474,6 @@ Item {
                                     text: "\u{F019}" // download glyph (raw U+F019, kept as escape)
                                     tooltipText: "Install " + (modelData.package || modelData.app)
                                     onClicked: root.installApp(modelData)
-                                }
-
-                                // Run button
-                                AppButton {
-                                    id: runBtn
-                                    Layout.preferredWidth: 32
-                                    Layout.alignment: Qt.AlignVCenter
-                                    enabled: root.appInstalled(modelData)
-                                    tooltipText: modelData.description
-                                    onClicked: {
-                                        if (modelData.kind === "reset-settings")
-                                            confirming = true;
-                                        else
-                                            root.runScript(modelData);
-                                    }
                                 }
                             }
 

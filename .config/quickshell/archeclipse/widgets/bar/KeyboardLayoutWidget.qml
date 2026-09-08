@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
 import qs.theme
@@ -49,8 +48,6 @@ Item {
                     root._switchLayoutProc.running = true;
                 }
             }
-            ToolTip.visible: hovered
-            ToolTip.text: KeyboardLayout.layoutName
         }
 
         Text {

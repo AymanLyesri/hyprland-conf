@@ -131,8 +131,28 @@ QtObject {
     }
 
     // ---- result row factory ----
+    // `icon` accepts either a desktop icon reference (theme name, absolute
+    // path, or legacy "image://icon/..." URL) or a single text glyph
+    // (Nerd Font "\uF..." codepoint, emoji). It is auto-split into
+    // `icon` (theme name / file path, resolved by AppEntry through
+    // Quickshell.iconPath into an image://icon/ URL) vs `glyph`
+    // (for Text) so AppEntry can render both without callers caring.
     function mkResult(name, icon, description, launch, argText) {
-        return { name, icon, description, launch, argText: argText || "" };
+        const s = String(icon ?? "");
+        let iconSrc = "", glyph = "";
+        if (s.startsWith("image://icon/"))
+            iconSrc = s.slice("image://icon/".length).split("?")[0];
+        else if (s.startsWith("image://") || s.startsWith("file://") || s.startsWith("qrc:/") || s.startsWith("/"))
+            iconSrc = s;
+        else if (s === "")
+            iconSrc = "";
+        else if (/^[A-Za-z0-9_\-+.:]+$/.test(s) && s.length > 2)
+            iconSrc = s; // theme icon name like "firefox" (glyphs are 1-2 chars)
+        else if (s.length <= 2 || /[^\x00-\x7F]/.test(s))
+            glyph = s; // Nerd Font codepoint or emoji (incl. ZWJ/VS16 sequences)
+        else
+            iconSrc = s;
+        return { name, icon: iconSrc, glyph, description, launch, argText: argText || "" };
     }
     // header row factory (AGS app_type === "header")
     function mkHeader(name) {

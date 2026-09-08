@@ -19,6 +19,53 @@ Item {
     property var keybinds: ({})
     property bool loading: true
 
+    // Replayable staggered reveal (same reason as CustomScriptsWidget:
+    // StackLayout builds tabs once, hidden). A counter steps 0→totalBinds
+    // each time the tab becomes visible; rows key off their flat position
+    // (category offset + row index) so the cascade runs across categories.
+    property int revealCount: 0
+    property var flatOffsets: []
+    property int totalBinds: 0
+    Timer {
+        id: revealTimer
+        interval: 25
+        repeat: true
+        onTriggered: {
+            if (root.revealCount >= root.totalBinds)
+                revealTimer.stop();
+            else
+                root.revealCount++;
+        }
+    }
+    function recomputeOffsets() {
+        const cats = Object.keys(root.keybinds).sort();
+        const offs = [];
+        let n = 0;
+        for (const c of cats) {
+            offs.push(n);
+            n += ((root.keybinds[c] || []).length);
+        }
+        root.flatOffsets = offs;
+        root.totalBinds = n;
+    }
+    function catBase(i) {
+        const o = root.flatOffsets;
+        return (o && o[i] !== undefined) ? o[i] : 0;
+    }
+    function playReveal() {
+        root.revealCount = 0;
+        revealTimer.restart();
+    }
+    onVisibleChanged: {
+        if (visible && !root.loading)
+            root.playReveal();
+    }
+    onKeybindsChanged: {
+        root.recomputeOffsets();
+        if (visible)
+            root.playReveal();
+    }
+
     // ---- load keybinds from script (AGS execAsync get-keybinds.sh -> JSON.parse) ----
     Process {
         id: loadProc
@@ -82,9 +129,21 @@ Item {
                     model: root.categories
                     delegate: Column {
                         required property string modelData
+                        required property int index
                         property string category: modelData
+                        // Flat base of this category's rows in the reveal
+                        // order (inner rows add their own index to it).
+                        property int rowBase: root.catBase(index)
                         width: parent.width
                         spacing: 5
+                        // Header appears just before its first row.
+                        opacity: root.revealCount > rowBase ? 1 : 0
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: 250
+                                easing.type: Easing.OutCubic
+                            }
+                        }
 
                         Label {
                             text: category
@@ -101,10 +160,19 @@ Item {
                             model: root.keybinds[category] || []
                             delegate: Rectangle {
                                 required property var modelData
-                                property var bindKeys: modelData.keys || []
+                                required property int index
                                 width: parent.width
                                 color: "transparent"
                                 height: 28
+                                // Flat position (category base + row) vs the
+                                // reveal counter; +1 so rows trail the header.
+                                opacity: (rowBase + index + 1) <= root.revealCount ? 1 : 0
+                                Behavior on opacity {
+                                    NumberAnimation {
+                                        duration: 220
+                                        easing.type: Easing.OutCubic
+                                    }
+                                }
                                 // NOTE: RowLayout — the description stretches,
                                 // chips keep implicit size (verticalCenter
                                 // anchors are ignored inside positioners).
@@ -120,45 +188,10 @@ Item {
                                         Layout.fillWidth: true
                                     }
 
-                                    // key chips joined by "+" (AGS KeyBind)
-                                    Row {
-                                        id: keysRow
-                                        spacing: 3
+                                    // key chips joined by "+" (shared AppKeybind widget)
+                                    AppKeybind {
+                                        keys: modelData.keys || []
                                         Layout.alignment: Qt.AlignVCenter
-                                        Repeater {
-                                            model: bindKeys
-                                            delegate: Row {
-                                                required property string modelData
-                                                required property int index
-                                                spacing: 3
-                                                // Fixed height so "+" centers
-                                                // deterministically.
-                                                height: 22
-                                                Rectangle {
-                                                    width: kChip.implicitWidth + 10
-                                                    height: 22
-                                                    radius: 4
-                                                    color: Theme.surface
-
-                                                    Label {
-                                                        id: kChip
-                                                        anchors.centerIn: parent
-                                                        text: modelData
-                                                        font.pixelSize: Theme.fontSize - 1
-                                                        font.bold: true
-                                                        color: Theme.accent
-                                                        font.family: "JetBrainsMono NFP"
-                                                    }
-                                                }
-                                                Label {
-                                                    text: "+"
-                                                    y: (parent.height - height) / 2
-                                                    visible: index < (bindKeys.length - 1)
-                                                    color: Theme.fgDim
-                                                    font.pixelSize: Theme.fontSize
-                                                }
-                                            }
-                                        }
                                     }
                                 }
                             }

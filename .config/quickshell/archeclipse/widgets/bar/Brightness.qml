@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
 import qs.theme
@@ -32,11 +31,6 @@ Rectangle {
     radius: Theme.radius
     color: pulse ? Theme.surface : "transparent"
     visible: root.hasBacklight
-
-    // tooltip (AGS tooltipText "Brightness: N%")
-    ToolTip.visible: briHover.hovered
-    ToolTip.text: "Brightness: " + Math.round(root.level * 100) + "%"
-    ToolTip.delay: 400
 
     Process {
         id: getBri

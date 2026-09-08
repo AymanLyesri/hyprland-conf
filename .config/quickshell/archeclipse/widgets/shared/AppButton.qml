@@ -39,7 +39,7 @@ Item {
     property color activeFg: Theme.accent
     property color borderColor: Theme.accent
     property color outlineColor: Theme.border
-    property bool borderedWhenActive: true
+    property bool borderedWhenActive: false
     property bool dragging: false
     // Reorder drag (right selector rail). Null target = plain click cell.
     property bool draggable: false
@@ -60,9 +60,9 @@ Item {
         return root.idleFg;
     }
 
-    signal clicked()
-    signal pressed()
-    signal released()
+    signal clicked
+    signal pressed
+    signal released
 
     implicitWidth: contentRow.implicitWidth + 28
     implicitHeight: 34
@@ -139,9 +139,7 @@ Item {
                 elide: Text.ElideRight
                 color: root.fgColor
             }
-
         }
-
     }
 
     MouseArea {
@@ -165,5 +163,4 @@ Item {
             root.clicked();
         }
     }
-
 }

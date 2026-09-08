@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Controls
 import Quickshell
 import Quickshell.Services.Mpris
 import qs.theme
@@ -84,8 +83,6 @@ Row {
                 Settings.cryptoFavorite = { symbol: "", timeframe: "" }
                 Settings.updateSetting("crypto.favorite", Settings.cryptoFavorite)
             }
-            ToolTip.visible: hovered
-            ToolTip.text: "click to remove"
         }
     }
 }

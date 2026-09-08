@@ -461,7 +461,8 @@ Singleton {
                 // legacy QS files used the flat "leftPanel.widget" key.
                 const _lpw = s["leftPanel.widget"] ?? s.leftPanel?.widget
                 root.leftPanelWidget = (typeof _lpw === "string" ? _lpw : _lpw?.name) ?? "UserProfile"
-                root.wallpaperCategory = s.wallpaperSwitcher?.category ?? "defaults/sfw"
+                const _wc = s.wallpaperSwitcher?.category
+                root.wallpaperCategory = ((typeof _wc === "object" && _wc !== null ? _wc.value : _wc) ?? "defaults/sfw")
                 root.rightPanelWidth = (typeof s.rightPanel?.width === "object" && s.rightPanel?.width !== null ? s.rightPanel.width.value : s.rightPanel?.width) ?? 250
                 root.rightPanelWidgets = s.rightPanel?.widgets ?? root.rightPanelWidgets
                 root.autoWorkspaceSwitching = s.autoWorkspaceSwitching?.value ?? true

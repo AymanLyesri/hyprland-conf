@@ -76,9 +76,6 @@ Row {
             acceptedButtons: Qt.LeftButton
             onClicked: overflowPopup.open()
             cursorShape: Qt.PointingHandCursor
-
-            ToolTip.visible: hovered
-            ToolTip.text: "More icons"
         }
 
         // Popup with hidden items (AGS tray-popover)

@@ -123,34 +123,21 @@ Rectangle {
                             color: Theme.accent
                             wrapMode: Text.WordWrap
                         }
-                        Text {
-                            width: parent.width * 0.46
-                            text: modelData.desc
-                            font.pixelSize: Theme.fontSize - 1
-                            color: Theme.muted
-                            wrapMode: Text.WordWrap
-                        }
-                        Row {
-                            visible: !!modelData.keys && modelData.keys.length > 0
-                            anchors.verticalCenter: parent.verticalCenter
-                            spacing: 2
-                            Repeater {
-                                model: modelData.keys || []
-                                delegate: Rectangle {
-                                    width: 18
-                                    height: 16
-                                    radius: 3
-                                    color: Theme.surfaceActive
-                                    border.color: Theme.accent
-
-                                    Text {
-                                        anchors.centerIn: parent
-                                        text: modelData
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: Theme.fontSize - 3
-                                        color: Theme.accent
-                                    }
-                                }
+                        Column {
+                            width: parent.width * 0.62 - 8
+                            spacing: 4
+                            Text {
+                                width: parent.width
+                                text: modelData.desc
+                                font.pixelSize: Theme.fontSize - 1
+                                color: Theme.muted
+                                wrapMode: Text.WordWrap
+                            }
+                            // Keybind chips below the description (shared
+                            // AppKeybind widget; hidden automatically when
+                            // the entry has no keys).
+                            AppKeybind {
+                                keys: modelData.keys || []
                             }
                         }
                     }
@@ -170,13 +157,17 @@ Rectangle {
                     required property var modelData
                     required property int index
                     width: resultsList.width
-                    height: modelData.isHeader ? 28 : (modelData.actions && modelData.actions.length > 0 ? 52 : 46)
+                    height: modelData.isHeader === true ? 28 : ((modelData.actions !== undefined && modelData.actions.length > 0) ? 56 : 52)
                     radius: Theme.radius - 2
-                    color: (modelData.isHeader || resultsList.currentIndex !== index) ? "transparent" : Theme.surfaceActive
+                    color: (modelData.isHeader === true || resultsList.currentIndex !== index) ? "transparent" : Theme.surfaceActive
 
-                    // Header row (AGS AppButton app_type === "header")
+                    // Header row (AGS AppButton app_type === "header").
+                    // NOTE: strict `=== true` — a bare `modelData.isHeader`
+                    // is undefined for normal rows, and assigning undefined
+                    // to bool keeps the default (true), painting the header
+                    // name over every row's icon.
                     Row {
-                        visible: modelData.isHeader
+                        visible: modelData.isHeader === true
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.left: parent.left
                         anchors.right: parent.right
@@ -199,61 +190,23 @@ Rectangle {
                         }
                     }
 
-                    // Normal result row
-                    Row {
-                        visible: !modelData.isHeader
+                    // Normal result row — unified AppEntry (real app icons
+                    // via IconImage, glyphs via Text, letter fallback).
+                    AppEntry {
+                        visible: modelData.isHeader !== true
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.leftMargin: 10
-                        anchors.rightMargin: modelData.actions && modelData.actions.length > 0 ? 92 : 10
-                        spacing: 10
-                        Text {
-                            width: 24
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: modelData.icon || ""
-                            color: Theme.fg
-                            font.family: Theme.fontFamily
-                            font.pixelSize: Theme.fontSize + 4
-                            visible: text !== ""
-                        }
-                        Column {
-                            anchors.verticalCenter: parent.verticalCenter
-                            spacing: 1
-                            width: parent.width - 34
-                            Text {
-                                width: parent.width
-                                elide: Text.ElideRight
-                                text: modelData.name || ""
-                                color: Theme.fg
-                                font.family: Theme.fontFamily
-                                font.pixelSize: Theme.fontSize + 1
-                                font.bold: resultsList.currentIndex === index
-                            }
-                            Text {
-                                width: parent.width
-                                elide: Text.ElideRight
-                                visible: !!(modelData.description)
-                                text: modelData.description || ""
-                                color: resultsList.currentIndex === index ? Qt.alpha(Theme.fg, 0.7) : Theme.muted
-                                font.family: Theme.fontFamily
-                                font.pixelSize: Theme.fontSize - 1
-                            }
-                            Text {
-                                width: parent.width
-                                elide: Text.ElideRight
-                                visible: !!(modelData.argText)
-                                text: modelData.argText || ""
-                                color: resultsList.currentIndex === index ? Qt.alpha(Theme.fg, 0.5) : Theme.muted
-                                font.family: Theme.fontFamily
-                                font.pixelSize: Theme.fontSize - 2
-                            }
-                        }
+                        height: parent.height - 4
+                        entry: modelData
+                        selected: resultsList.currentIndex === index
+                        rightReserve: (modelData.actions !== undefined && modelData.actions.length > 0) ? 102 : 10
                     }
 
                     // Inline action buttons (AGS AppButton app_actions)
                     Row {
-                        visible: !modelData.isHeader && modelData.actions && modelData.actions.length > 0
+                        visible: modelData.isHeader !== true && modelData.actions !== undefined && modelData.actions.length > 0
                         anchors.right: parent.right
                         anchors.rightMargin: 8
                         anchors.verticalCenter: parent.verticalCenter
@@ -273,7 +226,12 @@ Rectangle {
                         }
                     }
 
-                    // Hover selection + click launch + tooltip
+                    // Hover selection + click launch.
+                    // NOTE: no attached ToolTip here — name/description/args
+                    // are already fully visible inline via AppEntry, and a
+                    // second rendering of the name is exactly the
+                    // "duplicated name" artifact (tooltips can stick on
+                    // layer-shell surfaces). Recent/Quick rows never had one.
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
@@ -288,8 +246,6 @@ Rectangle {
                                 BarState.deactivate("search");
                             }
                         }
-                        ToolTip.visible: hovered && !modelData.isHeader && modelData.description
-                        ToolTip.text: (modelData.name || "") + "\n<b>" + (modelData.description || "") + "</b>"
                     }
                 }
             }
@@ -323,42 +279,16 @@ Rectangle {
                         delegate: Rectangle {
                             required property var modelData
                             width: parent.width
-                            height: 38
+                            height: 46
                             radius: Theme.radius - 2
                             color: mouse.hovered ? Theme.surfaceHover : "transparent"
-                            Row {
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.left: parent.left
-                                anchors.right: parent.right
-                                anchors.margins: 8
-                                spacing: 8
-                                Text {
-                                    width: 22
-                                    text: modelData.icon || ""
-                                    font.family: Theme.fontFamily
-                                    font.pixelSize: Theme.fontSize + 4
-                                    color: Theme.fg
-                                }
-                                Column {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 1
-                                    width: parent.width - 30
-                                    Text {
-                                        width: parent.width
-                                        elide: Text.ElideRight
-                                        text: modelData.name || ""
-                                        font.pixelSize: Theme.fontSize
-                                        color: Theme.fg
-                                        font.bold: true
-                                    }
-                                    Text {
-                                        width: parent.width
-                                        elide: Text.ElideRight
-                                        text: modelData.description || ""
-                                        font.pixelSize: Theme.fontSize - 2
-                                        color: Theme.muted
-                                    }
-                                }
+                            AppEntry {
+                                anchors.fill: parent
+                                anchors.leftMargin: 8
+                                anchors.rightMargin: 8
+                                entry: modelData
+                                selected: mouse.hovered === true
+                                compact: true
                             }
                             MouseArea {
                                 id: mouse
@@ -401,29 +331,16 @@ Rectangle {
                         delegate: Rectangle {
                             required property var modelData
                             width: parent.width
-                            height: 34
+                            height: 42
                             radius: Theme.radius - 2
                             color: rmouse.hovered ? Theme.surfaceHover : "transparent"
-                            Row {
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.left: parent.left
-                                anchors.right: parent.right
-                                anchors.margins: 8
-                                spacing: 8
-                                Text {
-                                    width: 22
-                                    text: modelData.icon || ""
-                                    font.family: Theme.fontFamily
-                                    font.pixelSize: Theme.fontSize + 4
-                                    color: Theme.fg
-                                }
-                                Text {
-                                    width: parent.width - 30
-                                    elide: Text.ElideRight
-                                    text: modelData.name || ""
-                                    font.pixelSize: Theme.fontSize
-                                    color: Theme.fg
-                                }
+                            AppEntry {
+                                anchors.fill: parent
+                                anchors.leftMargin: 8
+                                anchors.rightMargin: 8
+                                entry: modelData
+                                selected: rmouse.hovered === true
+                                compact: true
                             }
                             MouseArea {
                                 id: rmouse

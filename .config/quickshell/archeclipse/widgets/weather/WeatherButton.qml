@@ -24,11 +24,6 @@ Rectangle {
     readonly property string weatherBg: hasData ? Weather.background(cur.weather_code) : "transparent"
     color: hasData ? root.weatherBg : "transparent"
 
-    // Tooltip
-    ToolTip.visible: hover.hovered
-    ToolTip.text: hasData ? Weather.description(cur.weather_code) : "Weather data unavailable"
-    ToolTip.delay: 400
-
     Row {
         id: content
         anchors.centerIn: parent

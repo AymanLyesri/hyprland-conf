@@ -1,6 +1,7 @@
 module qs.widgets.shared
 
 AppButton 1.0 AppButton.qml
+AppKeybind 1.0 AppKeybind.qml
 AppSlider 1.0 AppSlider.qml
 AppImage 1.0 AppImage.qml
 AppCheckBox 1.0 AppCheckBox.qml

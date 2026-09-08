@@ -275,7 +275,7 @@ PanelWindow {
                 contentHeight: contentColumn.height
                 flickableDirection: Flickable.VerticalFlick
                 ScrollBar.vertical: ScrollBar {
-                    policy: ScrollBar.AlwaysOn
+                    policy: ScrollBar.AsNeeded
                 }
                 ScrollBar.horizontal: ScrollBar {
                     policy: ScrollBar.AlwaysOff
@@ -308,7 +308,11 @@ PanelWindow {
                         delegate: Item {
                             required property var modelData
                             readonly property bool isMedia: modelData.name === "Media"
-                            width: parent.width
+                            // Fill the padded area, not the full Column width:
+                            // width: parent.width here overshoots the viewport
+                            // by leftPadding+rightPadding and clip cuts the
+                            // right edge off every card.
+                            width: contentColumn.width - contentColumn.leftPadding - contentColumn.rightPadding
                             // AGS: .right-panel .main-content > * box-shadow 0 5 10 rgba(0,0,0,0.2)
                             // + .new-widget opacity-in 0.6s.
                             opacity: 0

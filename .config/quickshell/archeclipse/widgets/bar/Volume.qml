@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Controls
 import Quickshell
 import Quickshell.Services.Pipewire
 import qs.theme
@@ -33,11 +32,6 @@ Rectangle {
         const v = sink.audio.volume;
         return isNaN(v) || v < 0 ? 0 : (v > 1 ? 1 : v);
     }
-
-    // tooltip (AGS tooltipText "Volume: N%\nClick to open Volume Mixer")
-    ToolTip.visible: hover.hovered
-    ToolTip.text: "Volume: " + Math.round(root.vol * 100) + "%\nClick to open Volume Mixer"
-    ToolTip.delay: 400
 
     // AGS: reveal slider on volume change, auto-hide after 2s (hover keeps open).
     // AGS Volume.tsx skips the mount notification — first vol evaluation must

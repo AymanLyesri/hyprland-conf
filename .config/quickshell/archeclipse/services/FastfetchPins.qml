@@ -2,6 +2,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import qs.theme
 
 // Port of services/fastfetch.ts — syncs booru pins to fastfetch cache directory
 // as rounded WebP images for fastfetch display.
@@ -10,6 +11,11 @@ QtObject {
     id: root
 
     property string cacheDir: Quickshell.env("HOME") + "/.config/fastfetch/cache"
+    // Single source of truth for pin sources: must match BooruViewer.booruPath
+    // (~/.cache/quickshell/booru). AGS used ~/.config/ags/cache/booru; the old
+    // ported path ~/.config/booru never existed, so magick never found a
+    // source file and pinning silently did nothing.
+    readonly property string booruBase: Quickshell.env("HOME") + "/.cache/quickshell/booru"
     readonly property string generatedPrefix: "booru-pin-"
     readonly property int cornerRadiusPercent: 5
     readonly property int debounceMs: 250
@@ -53,9 +59,8 @@ QtObject {
             currentSource = item.src
             currentCache = item.dst
             if (!currentSource || !currentCache) { processNext(); return }
-            // Check if source exists and cache already exists
-            root._checkFileExists(currentSource, (srcExists) => {
-                if (!srcExists) { processNext(); return }
+            // Cache-exists check + magick conversion for a present source.
+            const convertIfStale = () => {
                 root._checkFileExists(currentCache, (cacheExists) => {
                     if (cacheExists) { processNext(); return }
                     // Build rounded-corner WebP via ImageMagick
@@ -79,7 +84,63 @@ QtObject {
                     ]
                     running = true
                 })
+            }
+            // Check if source exists and cache already exists
+            root._checkFileExists(currentSource, (srcExists) => {
+                if (!srcExists) {
+                    // Self-heal: the pin was stored before the full file was
+                    // ever downloaded (legacy pins, hand-edited settings.json).
+                    // Fetch it, then continue the pipeline instead of skipping.
+                    root._ensureSource(item, (ok) => {
+                        if (!ok) { processNext(); return }
+                        convertIfStale()
+                    })
+                    return
+                }
+                convertIfStale()
             })
+        }
+    }
+
+    // Self-heal a missing pin source: fetch the full image the pin points
+    // at (same UA + Referer headers as the viewer's downloads — Qt/curl get
+    // 403 without them), then report whether the file landed. Local-path
+    // urls (custom uploads) are copied instead of curled.
+    function _ensureSource(item, cb) {
+        const done = (ok) => { if (cb) cb(ok) }
+        if (!item || !item.src) { done(false); return }
+        if (!item.url) {
+            console.warn("[FastfetchPins] No url to fetch missing source: " + item.src)
+            done(false)
+            return
+        }
+        const dir = item.src.substring(0, item.src.lastIndexOf("/"))
+        let fetchCmd
+        if (/^https?:\/\//.test(item.url)) {
+            const referer = item.referer ? ` -H "Referer: ${item.referer}"` : ""
+            fetchCmd = `mkdir -p ${JSON.stringify(dir)} && curl -sSfL -H "User-Agent: QuickshellBooru/1.0 (ArchLinux; Hyprland)"${referer} -o ${JSON.stringify(item.src)} ${JSON.stringify(item.url)}`
+        } else {
+            fetchCmd = `mkdir -p ${JSON.stringify(dir)} && cp -- ${JSON.stringify(item.url)} ${JSON.stringify(item.src)}`
+        }
+        _dlProc.callback = done
+        _dlProc.expectSrc = item.src
+        _dlProc.command = ["bash", "-c", fetchCmd]
+        _dlProc.running = true
+    }
+
+    property Process _dlProc: Process {
+        property var callback: null
+        property string expectSrc: ""
+        onExited: (code) => {
+            const cb = _dlProc.callback
+            _dlProc.callback = null
+            if (code !== 0) {
+                console.warn("[FastfetchPins] Failed to fetch missing source: " + _dlProc.expectSrc)
+                if (cb) cb(false)
+                return
+            }
+            // Verify a non-empty file actually landed before converting.
+            root._checkFileExists(_dlProc.expectSrc, (ok) => { if (cb) cb(ok) })
         }
     }
 
@@ -130,7 +191,7 @@ QtObject {
                     // Check if this key is in expected set
                     const fullKey = rest  // This is <api>-<id>
                     let found = false
-                    for (const ep of parent.parent.expectedSet) {
+                    for (const ep of _cleanupProc.expectedSet) {
                         const epKey = ep.key
                         if (epKey) {
                             const epName = root.generatedPrefix + ep.api + "-" + ep.id + ".webp"
@@ -197,7 +258,7 @@ QtObject {
         if (!key) return null
         const [id, apiValue] = key.split(":")
         if (!id || !apiValue || !pin.extension) return null
-        return Quickshell.env("HOME") + "/.config/booru/" + apiValue + "/images/" + id + "." + pin.extension
+        return root.booruBase + "/" + apiValue + "/images/" + id + "." + pin.extension
     }
 
     function getCachePath(pin) {
@@ -212,37 +273,42 @@ QtObject {
         const pins = (Settings.booru || {}).pins || []
         console.log("[FastfetchPins] Sync requested for " + pins.length + " pins")
 
-        // Build expected paths list
+        // Build expected paths list (carry url + referer so missing
+        // sources can be self-healed by _ensureSource during the run)
         const expected = []
         for (const pin of pins) {
             const src = getSourcePath(pin)
             const dst = getCachePath(pin)
             const key = getPinKey(pin)
             if (src && dst && key) {
-                expected.push({ src: src, dst: dst, key: key, api: (pin.api || {}).value, id: pin.id })
+                expected.push({ src: src, dst: dst, key: key, api: (pin.api || {}).value, id: pin.id, url: pin.url, referer: (pin.api || {}).url || "" })
             }
         }
 
         root._currentExpectedPaths = expected
 
-        // Ensure cache dir exists
+        // Ensure cache dir exists (batch handoff via _pendingExpected:
+        // signal handlers can't be reassigned per-run — `exited` is
+        // read-only here, and re-connect()ing would stack duplicates)
+        root._pendingExpected = expected
         _mkdirProc.command = ["mkdir", "-p", cacheDir]
-        _mkdirProc.onExited = (code) => {
+        _mkdirProc.running = true
+    }
+
+    property var _pendingExpected: []
+
+    property Process _mkdirProc: Process {
+        onExited: (code) => {
             if (code === 0) {
                 // Start sequential magick processing
-                _magickProc.expectedPaths = expected
-                _magickProc.pendingCount = expected.length
+                _magickProc.expectedPaths = root._pendingExpected
+                _magickProc.pendingCount = root._pendingExpected.length
                 _magickProc.processNext()
             } else {
                 console.warn("[FastfetchPins] Failed to create cache dir: " + cacheDir)
                 root._syncInProgress = false
             }
         }
-        _mkdirProc.running = true
-    }
-
-    property Process _mkdirProc: Process {
-        onExited: {}
     }
 
     function runSync() {

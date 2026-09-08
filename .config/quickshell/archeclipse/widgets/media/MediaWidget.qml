@@ -70,8 +70,7 @@ Item {
     }
 
     Rectangle {
-        width: parent.width
-        height: 170
+        anchors.fill: parent
         radius: 8
         clip: true
         color: Theme.surface
@@ -88,14 +87,14 @@ Item {
             visible: root._lastCover !== ""
         }
 
-        Column {
+        ColumnLayout {
             anchors.fill: parent
             anchors.margins: 12
             spacing: 8
 
             // Top row: spinner cover art + title/artist + app icon
             Row {
-                width: parent.width
+                Layout.fillWidth: true
                 spacing: 10
 
                 // Spinning cover art thumbnail (AGS cover-art-spinner)
@@ -224,9 +223,15 @@ Item {
                 }
             }
 
+            // Flexible spacer: absorbs extra vertical space when the
+            // widget is stretched (e.g. app-launcher left pane), pinning
+            // controls + slider toward the bottom while keeping the
+            // compact 170px layout unchanged (minimum height 6).
             Item {
-                width: 1
-                height: 6
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                Layout.minimumHeight: 6
+                Layout.preferredHeight: 6
             }
 
             // Position/length + controls
@@ -235,7 +240,7 @@ Item {
             // narrow panel at natural widths, so buttons/spacers shrink
             // to their minimums instead of painting past the parent.
             RowLayout {
-                width: parent.width
+                Layout.fillWidth: true
                 spacing: 3
 
                 Label {
@@ -305,7 +310,9 @@ Item {
             // Drag-scrubbable position slider (AGS GestureDrag scrub)
             Rectangle {
                 id: progBg
-                width: parent.width
+                Layout.fillWidth: true
+                Layout.minimumHeight: 6
+                Layout.preferredHeight: 6
                 height: 6
                 radius: 3
                 color: Theme.bg
@@ -347,11 +354,11 @@ Item {
         }
     }
 
-    // No player state — centered container (anchors inside Column unreliable)
+    // No player state — fill parent so empty state also expands
+    // vertically (e.g. app-launcher left pane) instead of staying 170px.
     Item {
         visible: root.player === null
-        height: 170
-        width: parent.width
+        anchors.fill: parent
         Label {
             anchors.centerIn: parent
             text: "No player found"

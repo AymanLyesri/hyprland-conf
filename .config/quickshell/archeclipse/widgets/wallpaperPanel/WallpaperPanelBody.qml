@@ -64,15 +64,46 @@ Item {
 
     property var wallpapers: ({})               // category -> [paths]
     readonly property var categories: Object.keys(wallpapers)
-    // Persisted via Settings (AGS globalSettings wallpaperSwitcher.category).
-    property string selectedCategory: Settings.wallpaperCategory
-    onSelectedCategoryChanged: {
-        if (Settings.wallpaperCategory !== selectedCategory)
-            Settings.wallpaperCategory = selectedCategory;
+    // Single source of truth: Settings.wallpaperCategory (AGS
+    // globalSettings wallpaperSwitcher.category). This binding is NEVER
+    // assigned locally, so it can't desync like a mirrored var: every
+    // writer goes through Settings.updateSetting (immediate persist) and
+    // every reader — grid, combobox — follows the binding.
+    readonly property string selectedCategory: Settings.wallpaperCategory
+    // Self-heal a saved category that no longer exists (dir deleted).
+    // Gated on ready + non-empty categories so a fast fetch can't clobber
+    // the saved value before Settings.reload() has adopted the file.
+    function validateCategory() {
+        if (!Settings.ready || root.categories.length === 0)
+            return;
+        if (!root.categories.includes(Settings.wallpaperCategory))
+            Settings.updateSetting("wallpaperSwitcher.category", root.categories[0]);
     }
-    onCategoriesChanged: if (!categories.includes(selectedCategory))
-        selectedCategory = categories.includes(Settings.wallpaperCategory) ? Settings.wallpaperCategory : (categories[0] ?? "")
+    // ComboBox sets currentIndex internally on user pick and resets it
+    // to 0 on model replacement, which breaks/clobbers any currentIndex
+    // binding — re-sync imperatively, deferred past the ComboBox's own
+    // model-reset handling (it runs after our change handlers).
+    function syncCategoryCombo() {
+        Qt.callLater(() => {
+            const i = root.categories.indexOf(root.selectedCategory);
+            if (categoryCombo.currentIndex !== i)
+                categoryCombo.currentIndex = i;
+        });
+    }
+    Connections {
+        target: Settings
+        function onWallpaperCategoryChanged() {
+            root.validateCategory();
+            root.syncCategoryCombo();
+        }
+    }
+    onCategoriesChanged: {
+        root.validateCategory();
+        root.syncCategoryCombo();
+    }
     readonly property var selectedWallpapers: wallpapers[selectedCategory] ?? []
+    // Exposed for Ipc wallpaperDiag ("strip" query) and tests.
+    readonly property alias wallStrip: wallScroll
 
     property var currentWallpapers: []           // path per workspace index, this monitor
 
@@ -402,86 +433,100 @@ Item {
                 }
             }
 
-            // action bar
-            RowLayout {
+            // action bar — wrapped so radius / bg / border apply as one pill
+            Rectangle {
                 Layout.alignment: Qt.AlignHCenter
-                spacing: 10
+                implicitWidth: actionBar.implicitWidth + 24
+                implicitHeight: actionBar.implicitHeight + 16
+                radius: Theme.radius
+                color: Theme.surface
 
-                Row {
-                    spacing: 2
-                    Repeater {
-                        model: root.targetTypes
-                        delegate: AppButton {
-                            required property string modelData
-                            text: modelData
-                            toggle: true
-                            checked: root.targetType === modelData
-                            onClicked: root.targetType = modelData
+                clip: true
+
+                RowLayout {
+                    id: actionBar
+                    anchors.centerIn: parent
+                    spacing: 10
+
+                    Row {
+                        spacing: 2
+                        Repeater {
+                            model: root.targetTypes
+                            delegate: AppButton {
+                                required property string modelData
+                                text: modelData
+                                toggle: true
+                                checked: root.targetType === modelData
+                                onClicked: root.targetType = modelData
+                            }
                         }
                     }
-                }
 
-                Text {
-                    text: `Wallpaper -> ${root.targetType}` + (root.targetType === "workspace" ? " " + root.selectedWorkspaceId : "")
-                    color: Theme.fg
-                    font.family: Theme.fontFamily
-                }
+                    Text {
+                        text: `Wallpaper -> ${root.targetType}` + (root.targetType === "workspace" ? " " + root.selectedWorkspaceId : "")
+                        color: Theme.fg
+                        font.family: Theme.fontFamily
+                    }
 
-                // pywal palette swatches (AGS displayColorScheme: color1..7)
-                Row {
-                    spacing: 6
-                    Repeater {
-                        model: [Theme.color0, Theme.color1, Theme.color2, Theme.color3, Theme.color4, Theme.color8, Theme.fg]
-                        delegate: Rectangle {
-                            required property string modelData
-                            width: 12
-                            height: 12
-                            radius: 6
-                            color: modelData
+                    // pywal palette swatches (AGS displayColorScheme: color1..7)
+                    Row {
+                        spacing: 6
+                        Repeater {
+                            model: [Theme.color0, Theme.color1, Theme.color2, Theme.color3, Theme.color4, Theme.color8, Theme.fg]
+                            delegate: Rectangle {
+                                required property string modelData
+                                width: 12
+                                height: 12
+                                radius: 6
+                                color: modelData
+                            }
                         }
                     }
-                }
 
-                AppComboBox {
-                    model: root.categories
-                    currentIndex: root.categories.indexOf(root.selectedCategory)
-                    onActivated: root.selectedCategory = root.categories[currentIndex]
-                }
+                    AppComboBox {
+                        id: categoryCombo
+                        objectName: "categoryCombo"
+                        model: root.categories
+                        currentIndex: root.categories.indexOf(root.selectedCategory)
+                        onActivated: i => Settings.updateSetting("wallpaperSwitcher.category", root.categories[i])
+                    }
 
-                AppButton {
-                    text: "Random"
-                    onClicked: root.setRandomWallpaper()
-                }
-                AppButton {
-                    text: "Reload"
-                    onClicked: root.reloadDaemon()
-                }
-                AppButton {
-                    text: "Add…"
-                    onClicked: root.pickWallpaper()
-                }
+                    AppButton {
+                        text: "Random"
+                        onClicked: root.setRandomWallpaper()
+                    }
+                    AppButton {
+                        text: "Reload"
+                        onClicked: root.reloadDaemon()
+                    }
+                    AppButton {
+                        text: "Add…"
+                        onClicked: root.pickWallpaper()
+                    }
 
-                BusyIndicator {
-                    running: root.progressStatus === "loading"
-                    visible: running
-                    implicitWidth: 20
-                    implicitHeight: 20
-                }
-                Text {
-                    visible: root.progressStatus === "error"
-                    text: "⚠"
-                    color: "red"
-                }
-                Text {
-                    visible: root.progressStatus === "success"
-                    text: "✓"
-                    color: "lightgreen"
+                    BusyIndicator {
+                        running: root.progressStatus === "loading"
+                        visible: running
+                        implicitWidth: 20
+                        implicitHeight: 20
+                    }
+                    Text {
+                        visible: root.progressStatus === "error"
+                        text: "⚠"
+                        color: "red"
+                    }
+                    Text {
+                        visible: root.progressStatus === "success"
+                        text: "✓"
+                        color: "lightgreen"
+                    }
                 }
             }
 
             // all wallpapers in the selected category — horizontal strip
             SmoothFlickable {
                 id: wallScroll
+                objectName: "wallStrip"
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 flickableDirection: Flickable.HorizontalFlick
@@ -500,21 +545,58 @@ Item {
                         delegate: Rectangle {
                             id: tile
                             required property string modelData
-                            width: 150
+                            required property int index
+                            // Staggered fade pop-in: each tile's turn
+                            // arrives with its position, and it only fades
+                            // in once the thumbnail decoded (Error counts
+                            // as settled so a missing thumb can't hide a
+                            // tile forever).
+                            property bool revealed: false
+                            readonly property bool thumbSettled: tileImg.status === Image.Ready || tileImg.status === Image.Error
+                            opacity: (revealed && thumbSettled) ? 1 : 0
+                            Behavior on opacity {
+                                NumberAnimation {
+                                    duration: 250
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
+                            Timer {
+                                interval: Math.min(index, 24) * 35
+                                repeat: false
+                                running: true
+                                onTriggered: tile.revealed = true
+                            }
+                            // Hovered tile widens to its image aspect ratio
+                            // relative to the current height (never shrinks
+                            // below base, capped so panoramas stay sane).
+                            readonly property real imgRatio: (tileImg.implicitImageWidth > 0 && tileImg.implicitImageHeight > 0) ? tileImg.implicitImageWidth / tileImg.implicitImageHeight : 0
+                            width: tileMa.containsMouse && tile.imgRatio > 0 ? Math.min(Math.max(tile.height * tile.imgRatio, 150), 480) : 150
+                            Behavior on width {
+                                NumberAnimation {
+                                    duration: 180
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
                             height: Math.max(0, wallScroll.height - 4)
                             radius: 6
+                            z: tileMa.containsMouse ? 1 : 0
                             color: tileMa.containsMouse ? Theme.surfaceHover : Theme.surface
                             border.width: tileMa.containsMouse ? 2 : 0
                             border.color: Theme.muted
 
                             AppImage {
+                                id: tileImg
                                 anchors.fill: parent
                                 anchors.margins: 3
                                 source: "file://" + root.toThumbnailPath(tile.modelData)
                                 fallbackSource: !root.isVideoFile(tile.modelData) ? "file://" + tile.modelData : ""
                             }
 
-                            ToolTip.visible: tileMa.containsMouse
+                            // Hidden while the strip moves: a visible tooltip
+                            // window sits under the cursor and swallows wheel
+                            // events, which kills the momentum glide.
+                            ToolTip.visible: tileMa.containsMouse && !wallScroll.moving
+                            ToolTip.delay: 400
                             ToolTip.text: `Click to set as ${root.targetType} wallpaper.\nRight-click to delete.\n${tile.modelData.split("/").pop()}\nSize: ${root.formatBytes(root.getFileSize(tile.modelData))}`
 
                             MouseArea {
@@ -523,6 +605,10 @@ Item {
                                 hoverEnabled: true
                                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                                 cursorShape: Qt.PointingHandCursor
+                                // Tiles cover the strip: let wheel fall through
+                                // to the strip's SmoothWheelHandler so the
+                                // horizontal momentum glide actually receives it.
+                                onWheel: wheel => wheel.accepted = false
                                 onClicked: mouse => {
                                     if (mouse.button === Qt.RightButton)
                                         root.deleteWallpaper(tile.modelData);

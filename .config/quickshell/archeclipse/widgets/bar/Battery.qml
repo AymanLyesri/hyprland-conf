@@ -75,14 +75,9 @@ Rectangle {
         onExited: refreshProfiles()
     }
 
-    // Tooltip (AGS tooltipMarkup "Battery: % \nProfile: x")
     HoverHandler {
         id: hover
-        // handled below
     }
-    ToolTip.visible: hover.hovered
-    ToolTip.text: "Battery: " + Math.floor(root.pct * 100) + "% \nProfile: " + (root.activeProfile || "—")
-    ToolTip.delay: 600
 
     // ---- popover with profiles ----
     Popup {

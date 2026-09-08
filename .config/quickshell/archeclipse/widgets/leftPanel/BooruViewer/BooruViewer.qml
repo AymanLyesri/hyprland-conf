@@ -34,6 +34,10 @@ Item {
     // fetches and a stale (older tag set) response must not overwrite the
     // grid after a newer one landed.
     property int _fetchSeq: 0
+    // Download generation: a new downloadPreviews() call supersedes the
+    // previous queue (page turn / new search) — leftover tasks are
+    // dropped instead of spending bandwidth on a stale grid.
+    property int _dlSeq: 0
     // AGS createImagesContent masonry: distribute to the shortest column by
     // aspect ratio (NOT row-by-row Flow). NOTE: must live on root — a
     // property declared among ColumnLayout children belongs to the layout.
@@ -134,6 +138,12 @@ Item {
     // Local preview-file ids verified present on disk. Grid prefers these
     // (AGS renders the downloaded local preview via getPreviewPath()).
     property var previewIds: ({})
+    // Cards allowed to fade in. previewIds flips the moment a file lands
+    // on disk (Image starts decoding ASAP); revealedIds is drained one
+    // id per _revealTimer tick so cards pop in sequentially instead of
+    // bursting all at once.
+    property var revealedIds: ({})
+    property var _revealQueue: []
     // Local full-original ids verified present on disk (dialog cache).
     // Remote danbooru URLs 403 inside Qt, so the dialog can only show
     // originals downloaded with Referer headers by fetchOriginal().
@@ -255,6 +265,8 @@ Item {
     }
 
     function isCurrentWaifu(img) {
+        if (!img)
+            return false;
         const w = Settings.waifu;
         return w && (String(w.id) === String(img.id));
     }
@@ -264,9 +276,11 @@ Item {
     }
 
     function isVideo(img) {
+        if (!img)
+            return false;
         // AGS isVideo = mp4/webm/mkv/gif; zip is a separate isZip with its
         // own placeholder (dialog special-cases it below)
-        return ["mp4", "webm", "mkv", "gif"].includes((img.extension || "").toLowerCase());
+        return ["mp4", "webm", "mkv", "gif"].includes(((img.extension) || "").toLowerCase());
     }
 
     function isDownloaded(img) {
@@ -386,20 +400,55 @@ Item {
         }
     }
 
+    // AGS BooruImage.pinToTerminal parity: videos/zip can't pin (magick
+    // needs a real image), the full file must be downloaded first (the
+    // fastfetch sync converts <booruPath>/<api>/images/<id>.<ext>), and
+    // every outcome notifies instead of failing silently.
     function togglePinned(img) {
+        if (!img)
+            return false;
+        if (root.isVideo(img) || (img.extension || "").toLowerCase() === "zip") {
+            Notifications.notify({
+                "summary": "Error pinning to terminal",
+                "body": "Cannot pin videos to terminal"
+            });
+            return false;
+        }
+        if (!root.isDownloaded(img)) {
+            Notifications.notify({
+                "summary": "Error pinning to terminal",
+                "body": "Download image first"
+            });
+            return false;
+        }
         const arr = (Settings.booru.pins || []).slice();
         const i = arr.findIndex(x => {
             return x && String(x.id) === String(img.id) && root.apiOf(x) === root.apiOf(img);
         });
-        if (i >= 0)
+        if (i >= 0) {
             arr.splice(i, 1);
-        else
-            arr.push(img);
+            Settings.booru.pins = arr;
+            Settings.booru = Settings.booru; // touch parent var (see above)
+            Settings.schedulePersist();
+            FastfetchPins.scheduleSync();
+            Notifications.notify({
+                "summary": "Waifu",
+                "body": "UN-Pinned from Terminal"
+            });
+            if (root.selectedTab === "Pins")
+                root.loadPins();
+            return false;
+        }
+        arr.push(img);
         Settings.booru.pins = arr;
         Settings.booru = Settings.booru; // touch parent var (see above)
         Settings.schedulePersist();
         FastfetchPins.scheduleSync();
-        return i < 0;
+        Notifications.notify({
+            "summary": "Waifu",
+            "body": "Pinned To Terminal"
+        });
+        return true;
     }
 
     function downloadImage(img) {
@@ -624,6 +673,40 @@ Item {
         return !!img && !!root.previewIds[String(img.id)];
     }
 
+    function isRevealed(img) {
+        return !!img && !!root.revealedIds[String(img.id)];
+    }
+
+    function resetReveal() {
+        root.revealedIds = ({});
+        root._revealQueue = [];
+    }
+
+    // Scan images in order; anything cached/downloaded but neither
+    // revealed nor queued joins the FIFO. The timer drains one per tick
+    // so cards fade in one at a time in grid order.
+    function queueAvailableForReveal() {
+        const imgs = root.images || [];
+        let q = root._revealQueue.slice();
+        const revealed = root.revealedIds;
+        let added = false;
+        for (const img of imgs) {
+            if (!img)
+                continue;
+            const key = String(img.id);
+            if (revealed[key] || q.includes(key))
+                continue;
+            if (root.previewIds[key] || root.downloadedIds[key]) {
+                q.push(key);
+                added = true;
+            }
+        }
+        if (added) {
+            root._revealQueue = q;
+            _revealTimer.start();
+        }
+    }
+
     // Grid source: full image file if downloaded, else cached preview file,
     // else blank until downloadPreviews() caches it (no remote fallback —
     // Qt TLS segfaults on cdn.donmai.us and gets 403 anyway).
@@ -631,61 +714,99 @@ Item {
         return BooruUtils.gridSource(root.booruPath, root.downloadedIds, root.previewIds, img);
     }
 
+    // Bounded-concurrency preview downloads (max 4 parallel curls).
+    // Was: one check-Process per image + one detached curl per missing
+    // file (up to `limit` parallel curls) + a 700ms polling timer.
+    // Now: a single batch existence check, then a worker pump that keeps
+    // at most MAX_DL downloads in flight. Each worker is a managed
+    // Process (not execDetached), so completion directly flips that one
+    // card to file:// — no polling, and a page turn drops the stale
+    // queue via _dlSeq instead of downloading images nobody sees.
     function downloadPreviews(imgList) {
-        const pending = [];
-        imgList.forEach(img => {
-            const previewDir = `${root.booruPath}/${img.api.value}/previews`;
-            const filePath = `${previewDir}/${img.id}.${img.extension}`;
-            const previewUrl = img.preview;
-            if (!previewUrl)
+        root._dlSeq++;
+        const mySeq = root._dlSeq;
+        const MAX_DL = 4;
+        const tasks = [];
+        (imgList || []).forEach(img => {
+            if (!img || !img.preview || !img.api || !img.api.value)
                 return;
-
-            pending.push({
+            const previewDir = `${root.booruPath}/${img.api.value}/previews`;
+            tasks.push({
                 "id": String(img.id),
-                "path": filePath
+                "dir": previewDir,
+                "path": `${previewDir}/${img.id}.${img.extension}`,
+                "url": img.preview,
+                "referer": img.api.url || ""
             });
-            // Check if file exists, download if not. NOTE: the stdout
-            // collector must be attached in the constructor — setting
-            // running=true before assigning stdout races and drops output.
-            const checkProc = Qt.createQmlObject('import Quickshell.Io; Process { stdout: StdioCollector {} }', root);
-            checkProc.command = ["bash", "-c", "test -f " + JSON.stringify(filePath) + " && echo yes || echo no"];
-            checkProc.stdout.onStreamFinished.connect(function () {
-                if (checkProc.stdout.text.trim() === "no") {
-                    Quickshell.execDetached(["bash", "-c", `mkdir -p \"${previewDir}\" && ` + `curl -sSf -H \"User-Agent: QuickshellBooru/1.0 (ArchLinux; Hyprland)\" ` + `-H \"Referer: ${img.api.url}\" ` + `-H \"Accept: image/avif,image/webp,image/png,image/svg+xml,image/*;q=0.8\" ` + `-o \"${filePath}\" \"${previewUrl}\"`]);
-                } else {
-                    const ids = Object.assign({}, root.previewIds);
-                    ids[String(img.id)] = true;
-                    root.previewIds = ids;
-                }
-                checkProc.destroy();
-            });
-            checkProc.running = true;
         });
-        // Single delayed verification pass: curls run detached, so re-check
-        // the batch once and flip the grid to file:// URLs as files land.
-        if (pending.length === 0)
+        if (tasks.length === 0)
             return;
 
-        const verify = Qt.createQmlObject('import QtQuick; Timer { repeat: false; interval: 6000 }', root);
-        verify.triggered.connect(function () {
-            const script = pending.map(p => {
-                return "test -s " + JSON.stringify(p.path) + " && echo " + p.id;
-            }).join(" || true; ");
-            const vp = Qt.createQmlObject('import Quickshell.Io; Process { stdout: StdioCollector {} }', root);
-            vp.command = ["bash", "-c", script + " || true"];
-            vp.stdout.onStreamFinished.connect(function () {
-                const ids = Object.assign({}, root.previewIds);
-                vp.stdout.text.trim().split(/\s+/).forEach(id => {
-                    if (id)
-                        ids[id] = true;
-                });
-                root.previewIds = ids;
-                vp.destroy();
+        // One batch check for everything already on disk (warm cache /
+        // revisits flip instantly with zero network). NOTE: the stdout
+        // collector must be attached in the constructor — setting
+        // running=true before assigning stdout races and drops output.
+        const checkProc = Qt.createQmlObject('import Quickshell.Io; Process { stdout: StdioCollector {} }', root);
+        checkProc.command = ["bash", "-c", tasks.map(t => {
+            return "test -s " + JSON.stringify(t.path) + " && echo " + t.id;
+        }).join("; ") + "; true"];
+        checkProc.stdout.onStreamFinished.connect(function () {
+            const current = (mySeq === root._dlSeq);
+            const have = {};
+            checkProc.stdout.text.trim().split(/\s+/).forEach(id => {
+                if (id)
+                    have[id] = true;
             });
-            vp.running = true;
-            verify.destroy();
+            checkProc.destroy();
+            if (Object.keys(have).length > 0) {
+                const ids = Object.assign({}, root.previewIds);
+                for (const id in have)
+                    ids[id] = true;
+                root.previewIds = ids;
+            }
+            if (current)
+                pump(tasks.filter(t => {
+                    return !have[t.id];
+                }));
         });
-        verify.start();
+        checkProc.running = true;
+
+        function pump(missing) {
+            let next = 0;
+            let active = 0;
+            function pumpMore() {
+                // Superseded (new search/page): stop scheduling stale
+                // tasks; in-flight workers finish and warm the disk cache.
+                if (mySeq !== root._dlSeq)
+                    return;
+                while (active < MAX_DL && next < missing.length) {
+                    const t = missing[next++];
+                    active++;
+                    // curl -f fails on HTTP errors and --max-time caps a
+                    // hung connection so a stuck worker can't wedge the
+                    // queue; trailing test -s only reports real files.
+                    const dl = Qt.createQmlObject('import Quickshell.Io; Process {}', root);
+                    dl.command = ["bash", "-c", `mkdir -p ${JSON.stringify(t.dir)} && curl -sSf --max-time 30 -H "User-Agent: QuickshellBooru/1.0 (ArchLinux; Hyprland)" -H "Referer: ${t.referer}" -H "Accept: image/avif,image/webp,image/png,image/svg+xml,image/*;q=0.8" -o ${JSON.stringify(t.path)} ${JSON.stringify(t.url)} && test -s ${JSON.stringify(t.path)}`];
+                    dl.exited.connect(function (code) {
+                        active--;
+                        // Mark even when superseded: the file is warm on
+                        // disk now, and the reveal queue only admits ids
+                        // in the current result set, so this is harmless.
+                        if (code === 0) {
+                            const ids = Object.assign({}, root.previewIds);
+                            if (!ids[t.id]) {
+                                ids[t.id] = true;
+                                root.previewIds = ids;
+                            }
+                        }
+                        dl.destroy();
+                        pumpMore();
+                    });
+                    dl.running = true;
+                }
+            }
+            pumpMore();
+        }
     }
 
     // --- fetch tag suggestions ---
@@ -819,12 +940,18 @@ Item {
     onImagesChanged: {
         root.requestClose();
         grid.resetScroll();
+        // New result set: restart the staggered pop-in from scratch, then
+        // reveal anything already cached (bookmarks/pins revisits).
+        root.resetReveal();
+        root.queueAvailableForReveal();
         if (root._firstImages) {
             root._firstImages = false;
             return;
         }
         grid.slideFrom(root.pageDirection === "next" ? 60 : -60);
     }
+    onPreviewIdsChanged: root.queueAvailableForReveal()
+    onDownloadedIdsChanged: root.queueAvailableForReveal()
     Component.onCompleted: {
         if (Settings.ready)
             root.boot();
@@ -861,6 +988,32 @@ Item {
         onTriggered: {
             // Slide-out finished: drop the content (hides the popup).
             root.dialogImage = null;
+        }
+    }
+
+    Timer {
+        id: _revealTimer
+
+        interval: 45
+        repeat: true
+        onTriggered: {
+            // Drain one card per tick: the sequential pop-in.
+            const q = root._revealQueue || [];
+            if (q.length === 0) {
+                _revealTimer.stop();
+                return;
+            }
+            const key = q[0];
+            root._revealQueue = q.slice(1);
+            // Skip ids that vanished from the current result set.
+            const stillThere = (root.images || []).some(img => img && String(img.id) === String(key));
+            if (!stillThere)
+                return;
+            const ids = Object.assign({}, root.revealedIds);
+            ids[String(key)] = true;
+            root.revealedIds = ids;
+            if (root._revealQueue.length === 0)
+                _revealTimer.stop();
         }
     }
 
@@ -951,7 +1104,9 @@ Item {
         anchor.rect.height: 1
         // Defaults (edges Top|Left, gravity Bottom|Right) already mean:
         // top-left corner at the rect, expanding down-right. No overrides.
-        width: 232
+        // Wider than the old 232px: the overhauled dialog uses 2-col
+        // action grids + meta/tag pills that need the breathing room.
+        width: 264
         height: Math.max(48, Math.round(root.height))
         visible: root.dialogImage !== null
         color: "transparent"

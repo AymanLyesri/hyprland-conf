@@ -71,20 +71,17 @@ Row {
             {
                 icon: "",
                 val: root.res?.cpuLoad ?? null,
-                tip: "CPU",
-                tooltip: root.res?.cpuLoad !== undefined ? `CPU Usage ${root.res.cpuLoad}%` : ""
+                tip: "CPU"
             },
             {
                 icon: "",
                 val: (root.res?.ramUsedGB && root.res?.ramTotalGB) ? root.res.ramUsedGB / root.res.ramTotalGB : null,
-                tip: "RAM",
-                tooltip: (root.res?.ramUsedGB && root.res?.ramTotalGB) ? `RAM Usage ${Math.round(root.res.ramUsedGB / root.res.ramTotalGB * 100)}%` : ""
+                tip: "RAM"
             },
             {
                 icon: "󱤟",
                 val: root.maxGpu || null,
-                tip: "GPU",
-                tooltip: (root.res?.gpus?.length ?? 0) > 0 ? (root.res.gpus.map(g => `${g.driver}: ${g.load ?? "N/A"}%`).join(" | ")) : ""
+                tip: "GPU"
             }
         ]
 
@@ -126,9 +123,6 @@ Row {
                 font.family: Theme.fontFamily
                 font.pixelSize: 9
             }
-
-            ToolTip.visible: ringItemMa.containsMouse && ringItem.modelData.tooltip !== ""
-            ToolTip.text: ringItem.modelData.tooltip
 
             MouseArea {
                 id: ringItemMa

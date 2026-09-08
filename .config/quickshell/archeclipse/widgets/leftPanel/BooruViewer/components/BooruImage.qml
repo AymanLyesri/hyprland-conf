@@ -18,13 +18,35 @@ Rectangle {
     color: Theme.surface
     radius: 10
     clip: true
+    // Staggered pop-in: the viewer reveals one id per tick (see
+    // _revealTimer); the card fades/scales in only once its file is
+    // decoded (Image.Ready) AND its turn arrived. Videos skip the
+    // image gate since they show a badge, not a bitmap.
+    readonly property bool imgReady: previewImg.status === Image.Ready
+    readonly property bool turnArrived: viewer && typeof viewer.isRevealed === "function" ? viewer.isRevealed(image) : true
+    readonly property bool popped: card.isVideo ? turnArrived : (turnArrived && imgReady)
+    opacity: popped ? 1 : 0
+    scale: popped ? 1 : 0.97
+    Behavior on opacity {
+        NumberAnimation {
+            duration: 280
+            easing.type: Easing.OutCubic
+        }
+    }
+    Behavior on scale {
+        NumberAnimation {
+            duration: 280
+            easing.type: Easing.OutCubic
+        }
+    }
     ToolTip.visible: imgMa.containsMouse
-    ToolTip.text: `Click to Open\nID: ${image.id}  ${image.width}x${image.height}\nRight-click: Set as waifu`
+    ToolTip.text: image ? ("Click to Open\nID: " + image.id + "  " + image.width + "x" + image.height + "\nRight-click: Set as waifu") : ""
 
     // Preview image (or placeholder). AGS renders the
     // downloaded local preview; prefer the local file once
     // cached instead of re-downloading the remote URL.
     AppImage {
+        id: previewImg
         anchors.fill: parent
 
         source: viewer.gridSource(image)

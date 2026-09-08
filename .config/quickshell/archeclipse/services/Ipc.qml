@@ -362,7 +362,7 @@ Item {
 
         // Wallpaper-switcher probe for parity QA. query is one of:
         //   "visible", "categories", "selected", "count", "current",
-        //   "target", "workspace", "progress", or "setCategory:<name>".
+        //   "target", "workspace", "progress", "strip", or "setCategory:<name>".
         // monitor selects the per-monitor island body (default eDP-1).
         // Reads the bar island body (widgets/wallpaperPanel via WallpaperIsland).
         function wallpaperDiag(query: string, monitor: string): string {
@@ -379,11 +379,18 @@ Item {
                 if (query === "current") return "current=" + (w.currentWallpapers || []).length;
                 if (query === "target") return "target=" + w.targetType + " ws=" + w.selectedWorkspaceId;
                 if (query === "progress") return "progress=" + w.progressStatus;
+                if (query === "strip") {
+                    const s = w.wallStrip;
+                    if (!s) return "strip=NOALIAS";
+                    return "stripW=" + Math.round(s.width) + " contentW=" + Math.round(s.contentWidth)
+                        + " contentX=" + Math.round(s.contentX) + " dir=" + s.flickableDirection
+                        + " maxV=" + s.maximumFlickVelocity + " decel=" + s.flickDeceleration;
+                }
                 if (query === "theme") return "dynamicColors=" + Settings.dynamicThemeColors
                     + " variant=" + (GlobalTheme.currentTheme ? "light" : "dark");
                 if (query.startsWith("setCategory:")) {
-                    w.selectedCategory = query.substring(12);
-                    return "selected=" + w.selectedCategory;
+                    Settings.updateSetting("wallpaperSwitcher.category", query.substring(12));
+                    return "selected=" + Settings.wallpaperCategory;
                 }
                 if (query === "show") {
                     BarState.activate("wallpaper", 0); return "shown (island)";
