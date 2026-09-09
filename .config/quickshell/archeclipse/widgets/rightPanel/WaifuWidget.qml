@@ -362,7 +362,7 @@ Item {
         }
 
         // Progress indicator (AGS Progress bound to _loadingState)
-        Rectangle {
+        AppProgress {
             id: progressBadge
             z: 3
             anchors.top: parent.top
@@ -370,16 +370,12 @@ Item {
             anchors.margins: 6
             width: 64
             height: 20
-            radius: 4
-            color: root.loadingState === "error" ? Theme.danger : (root.loadingState === "success" ? Theme.surfaceActive : Theme.bg)
-            border.color: root.loadingState === "error" ? Theme.danger : Theme.border
-            visible: root.loadingState !== "idle"
-            Text {
-                anchors.centerIn: parent
-                text: root.loadingState === "loading" ? "Loading..." : (root.loadingState === "error" ? "Error" : "Ready")
-                color: root.loadingState === "loading" ? Theme.fgDim : (root.loadingState === "error" ? "#fff" : Theme.accent)
-                font.pixelSize: 11
-            }
+            status: root.loadingState
+            variant: "badge"
+            loadingText: "Loading..."
+            errorText: "Error"
+            successText: "Ready"
+            showSuccess: true
         }
 
         // Peek handle — affordance hint shown while the overlay is hidden.

@@ -14,3 +14,4 @@ SmoothListView 1.0 SmoothListView.qml
 SmoothWheelHandler 1.0 SmoothWheelHandler.qml
 AppMasonry 1.0 AppMasonry.qml
 AppSegmentedControl 1.0 AppSegmentedControl.qml
+AppProgress 1.0 AppProgress.qml

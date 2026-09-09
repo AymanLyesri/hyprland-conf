@@ -50,24 +50,21 @@ Rectangle {
         anchors.fill: parent
 
         source: viewer.gridSource(image)
-        visible: !card.isVideo
-    }
-
-    // Video indicator
-    Rectangle {
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
-        width: 16
-        height: 16
-        radius: 8
-        color: Theme.accent
-        visible: card.isVideo
-
-        Text {
-            text: "\u{f03d}" // video icon
-            color: "white"
-            font.pixelSize: 10
-            anchors.centerIn: parent
+        badges: {
+            if (!viewer || !image)
+                return [];
+            const b = [];
+            if (card.isVideo)
+                b.push("\uf03d");
+            if (viewer.isDownloaded && viewer.isDownloaded(image))
+                b.push("\uf019");
+            if (viewer.isBookmarked && viewer.isBookmarked(image))
+                b.push("\uf02e");
+            if (viewer.isPinned && viewer.isPinned(image))
+                b.push("\uf08d");
+            if (viewer.isCurrentWaifu && viewer.isCurrentWaifu(image))
+                b.push("\uf004");
+            return b;
         }
     }
 
@@ -87,37 +84,6 @@ Rectangle {
                 // Left-click: float the detail card at this card's Y
                 // (viewer captures the anchor + opens the island).
                 viewer.openDialog(image, card);
-            }
-        }
-    }
-
-    // Pinned / bookmarked / waifu badges (AGS info icons)
-    Rectangle {
-        anchors.top: card.top
-        anchors.left: card.left
-        anchors.margins: 6
-        height: 16
-        width: infoBadges.implicitWidth + 8
-        radius: 8
-        color: Theme.accent
-        visible: viewer.isInfoTagged(image)
-
-        Row {
-            id: infoBadges
-
-            anchors.centerIn: parent
-            spacing: 3
-
-            Text {
-                text: viewer.isPinned(image) ? "\u{f96c}" : "\u{f02e}"
-                color: "white"
-                font.pixelSize: 9
-            }
-
-            Text {
-                text: viewer.isCurrentWaifu(image) ? "\u{f004}" : ""
-                color: "white"
-                font.pixelSize: 9
             }
         }
     }

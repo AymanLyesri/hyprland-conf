@@ -7,7 +7,6 @@ local terminal = "kitty"
 local menu = scriptsDir .. "/menu"
 local lock = scriptsDir .. "/hyprlock.sh"
 local suspend = scriptsDir .. "/hyprlock.sh suspend"
-local keyboardLayout = scriptsDir .. "/dvorak-qwerty.sh"
 local statusBar = scriptsDir .. "/bar.sh"
 local monitor = "$(hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .name')"
 local resizeAmount = 25
@@ -88,8 +87,6 @@ hl.bind(mainMod .. " + CTRL + SHIFT + R", hl.dsp.exec_cmd(qsIpc .. "screenrecord
 hl.bind(mainMod .. " + CTRL + S", hl.dsp.window.move({ workspace = "special" }))
 --- toggle special workspace
 hl.bind(mainMod .. " + S", hl.dsp.workspace.toggle_special())
---- toggle Dvorak keyboard layout
-hl.bind("ALT + F10", hl.dsp.exec_cmd(keyboardLayout))
 
 -- Media, Brightness and Volume Controls
 --- volume up

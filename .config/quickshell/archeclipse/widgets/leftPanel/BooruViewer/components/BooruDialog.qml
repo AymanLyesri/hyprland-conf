@@ -156,7 +156,10 @@ Item {
                         cornerRadius: 6
                         outlined: true
                         tooltipText: "Open in browser"
-                        onClicked: { if (viewer && dlg) viewer.openInBrowser(dlg); }
+                        onClicked: {
+                            if (viewer && dlg)
+                                viewer.openInBrowser(dlg);
+                        }
                     }
                     AppButton {
                         icon: ""
@@ -167,12 +170,15 @@ Item {
                         outlined: true
                         hoverFg: Theme.danger
                         tooltipText: "Close (Esc)"
-                        onClicked: { if (viewer) viewer.requestClose(); }
+                        onClicked: {
+                            if (viewer)
+                                viewer.requestClose();
+                        }
                     }
                 }
 
-                // Media (image / video / zip-placeholder) with badge
-                // overlays and a loading spinner.
+                // Media (image / video / zip-placeholder) with unified
+                // AppImage top-right badges and a loading spinner.
                 Rectangle {
                     id: dialogMedia
                     width: parent.width
@@ -183,13 +189,6 @@ Item {
                     border.width: 1
                     clip: true
 
-                    AppImage {
-                        anchors.fill: parent
-                        anchors.margins: 2
-                        source: dlg ? viewer.dialogSource(dlg) : ""
-                        sourceWidth: parent.width
-                        visible: dlg ? !dialogRoot.dlgIsVideo : false
-                    }
                     // video downloaded → playable via QtMultimedia (AGS Video.tsx)
                     MediaVideo {
                         anchors.fill: parent
@@ -220,43 +219,31 @@ Item {
                             font.family: Theme.fontFamily
                         }
                     }
-                    BusyIndicator {
-                        anchors.centerIn: parent
-                        running: dialogRoot.dlgLoading
-                        visible: running
-                        implicitWidth: 28
-                        implicitHeight: 28
-                    }
-                    // Status badges (BooruImage infoBadges parity, pill style).
-                    Row {
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.margins: 6
-                        spacing: 4
-                        visible: !!dlg && (dialogRoot.dlgDownloaded || dialogRoot.dlgBookmarked || dialogRoot.dlgPinned || dialogRoot.dlgIsWaifu)
-                        Repeater {
-                            model: [
-                                { show: dialogRoot.dlgDownloaded, icon: "", tip: "Downloaded" },
-                                { show: dialogRoot.dlgBookmarked, icon: "", tip: "Bookmarked" },
-                                { show: dialogRoot.dlgPinned, icon: "", tip: "Pinned" },
-                                { show: dialogRoot.dlgIsWaifu, icon: "", tip: "Current waifu" }
-                            ]
-                            delegate: Rectangle {
-                                required property var modelData
-                                width: 18
-                                height: 18
-                                radius: 9
-                                color: Theme.accent
-                                visible: modelData.show
-                                Text {
-                                    anchors.centerIn: parent
-                                    text: modelData.icon
-                                    font.pixelSize: 9
-                                    font.family: Theme.fontFamily
-                                    color: "white"
-                                }
-                            }
+                    AppImage {
+                        anchors.fill: parent
+                        anchors.margins: 2
+                        source: dlg ? viewer.dialogSource(dlg) : ""
+                        sourceWidth: parent.width
+                        visible: !!dlg
+                        badges: {
+                            const b = [];
+                            if (dialogRoot.dlgDownloaded)
+                                b.push("\uf019");
+                            if (dialogRoot.dlgBookmarked)
+                                b.push("\uf02e");
+                            if (dialogRoot.dlgPinned)
+                                b.push("\uf08d");
+                            if (dialogRoot.dlgIsWaifu)
+                                b.push("\uf004");
+                            return b;
                         }
+                    }
+                    AppProgress {
+                        anchors.centerIn: parent
+                        width: 20
+                        height: 20
+                        status: dialogRoot.dlgLoading ? "loading" : "idle"
+                        variant: "spinner"
                     }
                     // zoom-to-full on click
                     MouseArea {
@@ -266,7 +253,10 @@ Item {
                         ToolTip.visible: containsMouse
                         ToolTip.text: "Open post in browser"
                         ToolTip.delay: 600
-                        onClicked: { if (viewer && dlg) viewer.openInBrowser(dlg); }
+                        onClicked: {
+                            if (viewer && dlg)
+                                viewer.openInBrowser(dlg);
+                        }
                     }
                 }
 
@@ -376,8 +366,14 @@ Item {
                                         anchors.fill: parent
                                         hoverEnabled: true
                                         cursorShape: Qt.PointingHandCursor
-                                        onClicked: { if (viewer) viewer.copyTag(modelData); }
-                                        onPressAndHold: { if (viewer) viewer.openTags(modelData); }
+                                        onClicked: {
+                                            if (viewer)
+                                                viewer.copyTag(modelData);
+                                        }
+                                        onPressAndHold: {
+                                            if (viewer)
+                                                viewer.openTags(modelData);
+                                        }
                                     }
                                 }
                             }
@@ -422,7 +418,10 @@ Item {
                             outlined: true
                             pixelSize: Theme.fontSize - 2
                             tooltipText: dialogRoot.dlgBookmarked ? "Remove bookmark" : "Bookmark this post"
-                            onClicked: { if (viewer && dlg) viewer.toggleBookmark(dlg); }
+                            onClicked: {
+                                if (viewer && dlg)
+                                    viewer.toggleBookmark(dlg);
+                            }
                         }
                         AppButton {
                             Layout.fillWidth: true
@@ -438,7 +437,10 @@ Item {
                             // converts it) and never for video/zip.
                             enabled: dialogRoot.dlgDownloaded && !dialogRoot.dlgIsVideo && !dialogRoot.dlgIsZip
                             tooltipText: dialogRoot.dlgIsVideo || dialogRoot.dlgIsZip ? "Cannot pin videos" : !dialogRoot.dlgDownloaded ? "Download first to pin" : dialogRoot.dlgPinned ? "Unpin from terminal" : "Pin to terminal"
-                            onClicked: { if (viewer && dlg) viewer.togglePinned(dlg); }
+                            onClicked: {
+                                if (viewer && dlg)
+                                    viewer.togglePinned(dlg);
+                            }
                         }
                     }
                     RowLayout {
@@ -456,7 +458,10 @@ Item {
                             outlineColor: Theme.accent
                             pixelSize: Theme.fontSize - 2
                             tooltipText: "Download full original"
-                            onClicked: { if (viewer && dlg) viewer.downloadImage(dlg); }
+                            onClicked: {
+                                if (viewer && dlg)
+                                    viewer.downloadImage(dlg);
+                            }
                         }
                         AppButton {
                             Layout.fillWidth: true
@@ -468,7 +473,10 @@ Item {
                             outlined: true
                             pixelSize: Theme.fontSize - 2
                             tooltipText: dialogRoot.dlgIsWaifu ? "Current waifu" : "Set as waifu"
-                            onClicked: { if (viewer && dlg) viewer.setAsWaifu(dlg); }
+                            onClicked: {
+                                if (viewer && dlg)
+                                    viewer.setAsWaifu(dlg);
+                            }
                         }
                     }
                     RowLayout {
@@ -482,7 +490,10 @@ Item {
                             outlined: true
                             pixelSize: Theme.fontSize - 2
                             tooltipText: "Open post in browser"
-                            onClicked: { if (viewer && dlg) viewer.openInBrowser(dlg); }
+                            onClicked: {
+                                if (viewer && dlg)
+                                    viewer.openInBrowser(dlg);
+                            }
                         }
                         AppButton {
                             Layout.fillWidth: true
@@ -492,7 +503,10 @@ Item {
                             outlined: true
                             pixelSize: Theme.fontSize - 2
                             tooltipText: "Copy post ID"
-                            onClicked: { if (viewer && dlg) viewer.copyTag(String(dlg.id)); }
+                            onClicked: {
+                                if (viewer && dlg)
+                                    viewer.copyTag(String(dlg.id));
+                            }
                         }
                     }
                     AppButton {
@@ -503,13 +517,19 @@ Item {
                         pixelSize: Theme.fontSize - 2
                         idleFg: Theme.fgDim
                         tooltipText: "Close (Esc)"
-                        onClicked: { if (viewer) viewer.requestClose(); }
+                        onClicked: {
+                            if (viewer)
+                                viewer.requestClose();
+                        }
                     }
                 }
             }
         } // contentScroll
     } // slider
 
-    Keys.onEscapePressed: { if (viewer) viewer.requestClose(); }
+    Keys.onEscapePressed: {
+        if (viewer)
+            viewer.requestClose();
+    }
     focus: visible
 }

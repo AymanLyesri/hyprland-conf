@@ -159,20 +159,16 @@ Item {
                 }
             }
 
-            // Progress bar
-            Rectangle {
-                id: progressBg
+            // Progress bar (determinate AppProgress bar)
+            AppProgress {
                 width: 100
-                height: 3
-                radius: 1.5
-                color: Theme.color8
-
-                Rectangle {
-                    width: progressBg.width * (root.length > 0 ? root.position / root.length : 0)
-                    height: 3
-                    radius: 1.5
-                    color: Theme.accent
-                }
+                // Plain Row ignores implicitHeight — bind it explicitly.
+                height: implicitHeight
+                status: root.length > 0 ? "success" : "idle"
+                variant: "bar"
+                value: root.length > 0 ? root.position / root.length : 0
+                showSuccess: true
+                showIdle: true
             }
         }
     }

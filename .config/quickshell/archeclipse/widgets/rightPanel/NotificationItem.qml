@@ -128,7 +128,7 @@ Item {
                 // via wl-copy --type image/png with Copied/Error toast, else text)
                 AppButton {
                     id: copyBtn
-                    icon: "󰃅"
+                    icon: "\uf0c5"
                     width: 24
                     height: 24
                     pixelSize: 11
@@ -143,7 +143,7 @@ Item {
                 // Expand/collapse body
                 AppButton {
                     id: expandBtn
-                    icon: root.bodyExpanded ? "󰁾" : "󰁼"
+                    icon: root.bodyExpanded ? "\udb81\ude15" : "\udb81\ude16"
                     width: 24
                     height: 24
                     pixelSize: 11
@@ -154,9 +154,8 @@ Item {
                     onClicked: root.bodyExpanded = !root.bodyExpanded
                 }
 
-                // Dismiss (AGS dismissNotification → n.dismiss())
                 AppButton {
-                    icon: "󰀍"
+                    icon: "\uf00d"
                     width: 24
                     height: 24
                     pixelSize: 11

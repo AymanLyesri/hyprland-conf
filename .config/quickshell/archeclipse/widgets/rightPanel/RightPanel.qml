@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Effects
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Wayland
@@ -313,8 +312,7 @@ PanelWindow {
                             // by leftPadding+rightPadding and clip cuts the
                             // right edge off every card.
                             width: contentColumn.width - contentColumn.leftPadding - contentColumn.rightPadding
-                            // AGS: .right-panel .main-content > * box-shadow 0 5 10 rgba(0,0,0,0.2)
-                            // + .new-widget opacity-in 0.6s.
+                            // Fade-in on show.
                             opacity: 0
                             Behavior on opacity {
                                 NumberAnimation {
@@ -374,9 +372,7 @@ PanelWindow {
                                     return 300;
                                 }
                             }
-                            // AGS: .right-panel .main-content > * box-shadow 0 5 10 rgba(0,0,0,0.2).
-                            // The card is a tinted Rectangle with a RectangularShadow
-                            // effect (QtQuick.Effects, Qt6). Media renders as-is
+                            // Flat card. Media renders as-is
                             // with no outer card container.
                             Rectangle {
                                 id: cardBg
@@ -385,16 +381,6 @@ PanelWindow {
 
                                 color: Theme.surface
                                 radius: Theme.radius
-
-                                RectangularShadow {
-                                    anchors.fill: parent
-                                    // AGS BOX-SHADOW: 0px 5px 10px rgba(0,0,0,0.2)
-                                    offset.x: 0
-                                    offset.y: 5
-                                    radius: 10
-                                    spread: 0
-                                    color: Qt.rgba(0, 0, 0, 0.2)
-                                }
                             }
 
                             Loader {

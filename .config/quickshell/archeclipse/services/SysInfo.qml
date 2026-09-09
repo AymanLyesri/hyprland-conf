@@ -75,7 +75,7 @@ QtObject {
                     onRead: data => {
                         try {
                             const p = JSON.parse(data);
-                            const kb = v => Math.round((v / 1024) * 100) / 100;
+                            const kb = v => Math.round(v / 1024);
                             root.bandwidth = [kb(p[0]), kb(p[1]), kb(p[2]), kb(p[3])];
                         } catch (e) { root.bandwidth = [0, 0, 0, 0]; }
                     }

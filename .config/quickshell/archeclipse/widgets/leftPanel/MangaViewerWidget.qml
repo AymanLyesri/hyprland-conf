@@ -365,11 +365,15 @@ Item {
                     spacing: 10
 
                     // Progress
-                    Label {
+                    AppProgress {
                         width: parent.width
-                        text: root.progressStatus === "loading" ? "Loading..." : (root.mangaList.length === 0 ? "No manga found" : "")
-                        color: Theme.fgDim
-                        font.pixelSize: Theme.fontSize - 1
+                        // Plain Column ignores implicitHeight — bind it explicitly.
+                        height: implicitHeight
+                        status: root.progressStatus
+                        variant: "inline"
+                        loadingText: "Loading..."
+                        idleText: root.mangaList.length === 0 ? "No manga found" : ""
+                        showIdle: true
                     }
 
                     Repeater {
@@ -509,13 +513,14 @@ Item {
                         clip: true
                     }
 
-                    Label {
+                    AppProgress {
                         anchors.horizontalCenter: parent.horizontalCenter
                         y: root.pageCache[root.currentPageIndex]?.path ? pageImg.height + 8 : 0
-                        visible: !root.pageCache[root.currentPageIndex]?.path
-                        text: root.progressStatus === "loading" ? "Loading page..." : ""
-                        color: Theme.fgDim
-                        font.pixelSize: Theme.fontSize
+                        width: implicitWidth
+                        height: implicitHeight
+                        status: root.progressStatus
+                        variant: "inline"
+                        loadingText: "Loading page..."
                     }
                 }
 

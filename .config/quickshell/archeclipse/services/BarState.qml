@@ -23,6 +23,8 @@ Singleton {
         "brightness": 80,
         "network": 80,
         "player": 80,
+        "weather": 80,
+        "system": 80,
         "control": 90,
         "wallpaper": 95,
         "search": 100

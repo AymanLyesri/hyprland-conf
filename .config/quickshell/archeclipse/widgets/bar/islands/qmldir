@@ -4,4 +4,6 @@ ControlIsland 1.0 ControlIsland.qml
 PlayerIsland 1.0 PlayerIsland.qml
 RecordingIsland 1.0 RecordingIsland.qml
 SearchIsland 1.0 SearchIsland.qml
+SystemMonitorIsland 1.0 SystemMonitorIsland.qml
 WallpaperIsland 1.0 WallpaperIsland.qml
+WeatherIsland 1.0 WeatherIsland.qml

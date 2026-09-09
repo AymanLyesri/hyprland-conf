@@ -1044,7 +1044,7 @@ Item {
     ColumnLayout {
         // Grid claims the full widget width at all times: the detail is a
         // floating popup (below), so opening it never resizes or relayouts
-        // the grid, toolbar, navigation or settings panels.
+        // the grid, navigation or settings panels.
         anchors.fill: parent
         spacing: 10
 
@@ -1058,10 +1058,8 @@ Item {
             Layout.fillHeight: true
         }
 
-        // Tabs
-        Booru.BooruToolbar {
-            viewer: root
-        }
+        // Tabs + page buttons + prev/reveal/next live in BooruNavigation
+        // (BooruToolbar was merged into it).
 
         // Backend bookmark toggle (booru.py toggle-bookmark --payload-json).
         // Stdout carries {bookmarked, bookmarks}; exit code gates the parse.

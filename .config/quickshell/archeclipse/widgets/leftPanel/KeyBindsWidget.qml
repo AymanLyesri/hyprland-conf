@@ -102,10 +102,10 @@ Item {
 
         // Loading indicator (centered manually: parent is a layout,
         // which ignores anchors on children)
-        BusyIndicator {
-            running: root.loading
+        AppProgress {
             Layout.alignment: Qt.AlignHCenter
-            visible: root.loading
+            status: root.loading ? "loading" : "idle"
+            variant: "spinner"
         }
 
         SmoothFlickable {

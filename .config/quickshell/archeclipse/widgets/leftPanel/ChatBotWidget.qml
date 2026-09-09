@@ -781,21 +781,11 @@ Item {
             }
         }
 
-        // [5] Progress indicator
-        Rectangle {
+        // [5] Progress indicator (shared AppProgress pill)
+        AppProgress {
             Layout.fillWidth: true
-            height: root.progressStatus === "loading" || root.progressStatus === "error" ? 22 : 0
-            color: root.progressStatus === "error" ? Theme.dangerBg : Theme.surfaceActive
-            radius: 6
-            border.color: root.progressStatus === "error" ? Theme.danger : Theme.accent
-
-            visible: root.progressStatus === "loading" || root.progressStatus === "error"
-            Label {
-                anchors.centerIn: parent
-                text: root.progressStatus === "loading" ? "Working..." : "Error — see notification"
-                color: root.progressStatus === "error" ? Theme.danger : Theme.accent
-                font.pixelSize: Theme.fontSize - 1
-            }
+            status: root.progressStatus
+            variant: "pill"
         }
     }
 

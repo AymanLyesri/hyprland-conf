@@ -9,7 +9,6 @@ Clock 1.0 Clock.qml
 ControlPanelButton 1.0 ControlPanelButton.qml
 DefaultBar 1.0 DefaultBar.qml
 HotZone 1.0 HotZone.qml
-Information 1.0 Information.qml
 KeyboardLayoutWidget 1.0 KeyboardLayoutWidget.qml
 NetworkWidget 1.0 NetworkWidget.qml
 ResourceMonitor 1.0 ResourceMonitor.qml

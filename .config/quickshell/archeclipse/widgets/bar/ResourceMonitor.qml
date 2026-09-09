@@ -1,95 +1,62 @@
 import QtQuick
 import QtQuick.Controls
-import Quickshell
 import Quickshell.Hyprland
 import qs.theme
 import qs.services
-import qs.widgets.bar
-import qs.widgets.rightPanel
 
 // Port of Utilities.tsx ResourceMonitor — CPU / RAM / GPU circular rings.
-// Clicking dispatches to workspace 5 (AGS Gtk.GestureClick); hovering reveals
-// the full SystemResources popover (AGS Gtk.Popover + EventControllerMotion).
+// Hover/click pulses the system-monitor island (BarState "system").
+// Middle-click keeps the legacy AGS behavior (dispatch to workspace 5).
 Row {
     id: root
     spacing: 10
 
     readonly property var res: SysInfo.systemResources
-    readonly property real maxGpu: {
-        const loads = (res?.gpus ?? []).map(g => g.load).filter(l => l !== null);
-        return loads.length ? Math.max(...loads) / 100 : 0;
+    // AGS maxGpuLoad returns 0-100; the ring expects 0-1, so normalize here.
+    readonly property real cpuFrac: (res?.cpuLoad ?? null) !== null ? Math.max(0, Math.min(1, res.cpuLoad / 100)) : -1
+    readonly property real ramFrac: (res?.ramUsedGB ?? null) !== null && (res?.ramTotalGB ?? null) ? Math.max(0, Math.min(1, res.ramUsedGB / res.ramTotalGB)) : -1
+    readonly property real gpuFrac: {
+        const loads = (res?.gpus ?? []).map(g => g.load).filter(l => l !== null && l !== undefined);
+        if (!loads.length)
+            return -1;
+        return Math.max(0, Math.min(1, Math.max(...loads) / 100));
+    }
+    readonly property string gpuTip: {
+        const gpus = res?.gpus ?? [];
+        if (!gpus.length)
+            return "GPU: N/A";
+        return gpus.map(g => `${g.driver}: ${g.load ?? "N/A"}%`).join(" | ");
     }
 
-    // Hover popover (AGS ResourceMonitor popover with SystemResources)
-    Popup {
-        id: resPopup
-        parent: root
-        y: root.height + 6
-        x: root.width / 2 - resPopup.implicitWidth / 2
-        padding: 6
-        closePolicy: Popup.NoAutoClose
-        background: Rectangle {
-            color: Theme.surface
-            radius: 8
-            border.color: Theme.border
-        }
-
-        SystemResourcesWidget {
-            width: 300
-            className: "resource-monitor-popover"
-        }
-
-        // Stay open while hovering popover (AGS popoverMotion)
-        HoverHandler {
-            onHoveredChanged: {
-                if (hovered)
-                    root._hideTimer.stop();
-                else
-                    root._hideTimer.start();
-            }
-        }
-    }
-
-    HoverHandler {
-        onHoveredChanged: {
-            if (hovered) {
-                root._hideTimer.stop();
-                resPopup.open();
-            } else
-                root._hideTimer.start();
-        }
-    }
-
-    Timer {
-        id: _hideTimer
-        interval: 80
-        onTriggered: resPopup.close()
+    function pulseIsland(holdMs) {
+        BarState.activate("system", holdMs);
     }
 
     Repeater {
         model: [
             {
-                icon: "",
-                val: root.res?.cpuLoad ?? null,
-                tip: "CPU"
+                icon: "",
+                frac: root.cpuFrac,
+                tip: root.res ? `CPU Usage ${Number(root.res.cpuLoad).toFixed(1)}%` : "CPU: N/A"
             },
             {
-                icon: "",
-                val: (root.res?.ramUsedGB && root.res?.ramTotalGB) ? root.res.ramUsedGB / root.res.ramTotalGB : null,
-                tip: "RAM"
+                icon: "",
+                frac: root.ramFrac,
+                tip: root.res ? `RAM Usage ${Math.round(root.ramFrac * 100)}% (${Number(root.res.ramUsedGB).toFixed(2)}/${Number(root.res.ramTotalGB).toFixed(2)} GB)` : "RAM: N/A"
             },
             {
                 icon: "󱤟",
-                val: root.maxGpu || null,
-                tip: "GPU"
+                frac: root.gpuFrac,
+                tip: root.gpuTip
             }
         ]
 
         Item {
             id: ringItem
             required property var modelData
-            readonly property real frac: modelData.val === null ? 0 : Math.min(1, modelData.val)
-            visible: modelData.val !== null && modelData.val !== undefined
+            // -1 = no data -> hide ring (AGS visible={...} parity)
+            readonly property real frac: modelData.frac
+            visible: frac >= 0
 
             width: 18
             height: 18
@@ -115,6 +82,15 @@ Row {
                     }
                 }
             }
+            // Canvas only repaints on request — re-fire when the fraction
+            // (or theme) changes, otherwise the ring freezes at its first
+            // paint (which is why it looked stuck at max).
+            onFracChanged: canvas.requestPaint()
+            Connections {
+                target: Theme
+                function onMutedChanged() { canvas.requestPaint(); }
+            }
+            Component.onCompleted: canvas.requestPaint()
 
             Text {
                 anchors.centerIn: parent
@@ -124,12 +100,34 @@ Row {
                 font.pixelSize: 9
             }
 
+            ToolTip.visible: ringHover.hovered
+            ToolTip.text: ringItem.modelData.tip
+            ToolTip.delay: 500
+
+            HoverHandler {
+                id: ringHover
+                onHoveredChanged: {
+                    if (ringHover.hovered)
+                        root.pulseIsland(3000);
+                }
+            }
             MouseArea {
-                id: ringItemMa
                 anchors.fill: parent
                 hoverEnabled: true
-                // AGS: clicking the whole resource monitor dispatches workspace 5
-                onClicked: Hyprland.dispatch("workspace 5")
+                cursorShape: Qt.PointingHandCursor
+                acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+                onClicked: mouse => {
+                    if (mouse.button === Qt.MiddleButton) {
+                        // Legacy AGS behavior: jump to the monitor workspace.
+                        Hyprland.dispatch("workspace 5");
+                        return;
+                    }
+                    // Left-click pins the island; clicking again dismisses it.
+                    if (BarState.state === "system")
+                        BarState.deactivate("system");
+                    else
+                        BarState.activate("system", 0);
+                }
             }
         }
     }

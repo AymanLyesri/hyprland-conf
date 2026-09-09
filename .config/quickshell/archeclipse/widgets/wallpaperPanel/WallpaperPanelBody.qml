@@ -409,6 +409,7 @@ Item {
                             // Still images can render directly if the thumbnail is missing;
                             // videos cannot, so keep the thumbnail source for those.
                             fallbackSource: (wsTile.modelData !== "" && !root.isVideoFile(wsTile.modelData)) ? "file://" + wsTile.modelData : ""
+                            badges: [(wsTile.index + 1).toString()]
                         }
                         Text {
                             visible: wsTile.modelData === ""
@@ -496,21 +497,13 @@ Item {
                         onClicked: root.pickWallpaper()
                     }
 
-                    BusyIndicator {
-                        running: root.progressStatus === "loading"
-                        visible: running
-                        implicitWidth: 20
-                        implicitHeight: 20
-                    }
-                    Text {
-                        visible: root.progressStatus === "error"
-                        text: "⚠"
-                        color: "red"
-                    }
-                    Text {
-                        visible: root.progressStatus === "success"
-                        text: "✓"
-                        color: "lightgreen"
+                    AppProgress {
+                        // Plain Row ignores implicitHeight — fix the size.
+                        width: 20
+                        height: 20
+                        status: root.progressStatus
+                        variant: "spinner"
+                        showSuccess: true
                     }
                 }
             }
@@ -582,6 +575,17 @@ Item {
                                 anchors.margins: 3
                                 source: "file://" + root.toThumbnailPath(tile.modelData)
                                 fallbackSource: !root.isVideoFile(tile.modelData) ? "file://" + tile.modelData : ""
+                                // Workspace number badge: which workspace(s)
+                                // currently use this wallpaper (top-right).
+                                badges: {
+                                    const ids = [];
+                                    const cur = root.currentWallpapers;
+                                    for (let i = 0; i < cur.length; i++) {
+                                        if (cur[i] !== "" && cur[i] === tile.modelData)
+                                            ids.push(String(i + 1));
+                                    }
+                                    return ids;
+                                }
                             }
 
                             // Hidden while the strip moves: a visible tooltip

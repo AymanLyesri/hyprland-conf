@@ -207,8 +207,8 @@ Item {
         const parts = m[1].split(",").map(x => parseInt(x, 10));
         if (parts.length !== 4)
             return;
-        root.uploadSpeed = Math.round(parts[0] / 1024 * 100) / 100;
-        root.downloadSpeed = Math.round(parts[1] / 1024 * 100) / 100;
+        root.uploadSpeed = Math.round(parts[0] / 1024);
+        root.downloadSpeed = Math.round(parts[1] / 1024);
         root.todayUpload = parts[2];
         root.todayDownload = parts[3];
     }

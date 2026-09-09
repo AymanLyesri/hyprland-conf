@@ -773,12 +773,18 @@ Item {
                                         color: Theme.fgDim
                                     }
                                 }
-                                Label {
+                                AppProgress {
                                     width: parent.width
-                                    text: root.progressText
-                                    font.pixelSize: Theme.fontSize - 1
-                                    color: root.progressStatus === "error" ? Theme.danger : root.progressStatus === "success" ? Theme.accent : Theme.fgDim
-                                    wrapMode: Text.WordWrap
+                                    // Plain Column ignores implicitHeight — bind it explicitly.
+                                    height: implicitHeight
+                                    status: root.progressStatus
+                                    variant: "inline"
+                                    loadingText: root.progressText !== "" ? root.progressText : "Working..."
+                                    errorText: root.progressText !== "" ? root.progressText : "Error — see notification"
+                                    successText: root.progressText !== "" ? root.progressText : "Ready"
+                                    idleText: root.progressText
+                                    showSuccess: true
+                                    showIdle: true
                                 }
                             }
                         }

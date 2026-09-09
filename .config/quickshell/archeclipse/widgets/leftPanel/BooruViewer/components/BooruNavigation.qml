@@ -4,9 +4,11 @@ import qs.services
 import qs.theme
 import qs.widgets.shared
 
-// Bottom bar: progress + page buttons + prev/reveal/next
-// (extracted verbatim from BooruViewerWidget).
-// viewer: entry root (page, progressStatus, gotoPage, fetchImages...).
+// Bottom bar: tabs + progress + page buttons + prev/reveal/next.
+// (BooruToolbar merged in: API / Bookmarks / Pins tabs live here now,
+// so BooruViewer only instantiates this + the settings panel).
+// viewer: entry root (page, selectedTab, progressStatus, gotoPage,
+// fetchImages, loadBookmarks, loadPins...).
 Column {
     property var viewer
 
@@ -14,20 +16,70 @@ Column {
     width: parent.width
     spacing: 4
 
-    Rectangle {
-        width: parent.width
-        height: viewer.progressStatus === "idle" ? 0 : 4
-        radius: 2
-        color: viewer.progressStatus === "loading" ? Theme.accent : viewer.progressStatus === "error" ? Theme.danger : "transparent"
-        visible: viewer.progressStatus !== "idle" && viewer.progressStatus !== "success"
+    // Tab values mirror viewer.selectedTab: API names + Bookmarks + Pins.
+    readonly property var tabValues: viewer ? viewer.booruApis.map(a => a.name).concat(["Bookmarks", "Pins"]) : []
 
-        Behavior on height {
-            NumberAnimation {
-                duration: 150
-            }
-
+    // Shared tab-switch plumbing (page reset); the per-tab load call differs.
+    function resetPage() {
+        viewer.page = 1;
+        Settings.booru.page = 1;
+        Settings.updateSetting("booru.page", 1);
+    }
+    function activateTab(v) {
+        if (v === "Bookmarks") {
+            viewer.selectedTab = "Bookmarks";
+            Settings.booru.selectedTab = "Bookmarks";
+            Settings.updateSetting("booru.selectedTab", "Bookmarks");
+            resetPage();
+            // Load bookmarks (AGS: paginate + download previews)
+            viewer.loadBookmarks();
+        } else if (v === "Pins") {
+            viewer.selectedTab = "Pins";
+            Settings.booru.selectedTab = "Pins";
+            Settings.updateSetting("booru.selectedTab", "Pins");
+            resetPage();
+            // Load pins (AGS: paginate + download previews)
+            viewer.loadPins();
+        } else {
+            const api = viewer.booruApis.find(a => a.name === v) || viewer.booruApis[0];
+            Settings.booru.api = api;
+            Settings.updateSetting("booru.api", api);
+            viewer.selectedTab = api.name;
+            Settings.booru.selectedTab = api.name;
+            Settings.updateSetting("booru.selectedTab", api.name);
+            resetPage();
+            viewer.fetchImages();
         }
+    }
 
+    // API / Bookmarks / Pins tabs (was BooruToolbar).
+    Row {
+        id: tabBar
+
+        spacing: 4
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        AppSegmentedControl {
+            enabled: viewer && viewer.progressStatus !== "loading"
+            pixelSize: Theme.fontSize - 2
+            model: viewer ? viewer.booruApis.map(a => ({
+                        value: a.name,
+                        label: a.name
+                    })).concat([
+                {
+                    value: "Bookmarks",
+                    label: "\u{F02E}",
+                    tooltip: "Bookmarks"
+                },
+                {
+                    value: "Pins",
+                    label: "\u{F435}",
+                    tooltip: "Pins"
+                }
+            ]) : []
+            currentIndex: tabValues.indexOf(viewer ? viewer.selectedTab : "")
+            onActivated: (i, v) => activateTab(v)
+        }
     }
 
     Row {
@@ -42,16 +94,21 @@ Column {
             enabled: viewer.progressStatus !== "loading"
             pixelSize: Theme.fontSize - 2
             model: viewer.buildPageButtons().map(b => ({
-                value: b.page,
-                label: b.label,
-                enabled: b.page > 0
-            }))
+                        value: b.page,
+                        label: b.label,
+                        enabled: b.page > 0
+                    }))
             currentIndex: viewer.buildPageButtons().findIndex(b => b.active)
             onActivated: (i, v) => viewer.gotoPage(v)
         }
     }
 
+    // Revealer trigger container: prev / expand-to-fill toggle / next.
+    // The middle chevron claims all leftover width so the whole bar is a
+    // big, easy-to-hit trigger (no dead spacer).
     Row {
+        id: triggerRow
+
         spacing: 8
         width: parent.width
         height: 28
@@ -69,9 +126,10 @@ Column {
         }
 
         AppButton {
-            text: viewer.bottomRevealed ? "\u{f07e}" : "\u{f07c}" // down/up chevron
-            width: 32
+            text: viewer.bottomRevealed ? "\uf107" : "\uf106" // down/up chevron
+            width: Math.max(0, parent.width - 32 - 32 - parent.spacing * 2)
             height: 28
+            tooltipText: viewer.bottomRevealed ? "Hide settings" : "Show settings"
             onClicked: viewer.bottomRevealed = !viewer.bottomRevealed
         }
 
@@ -84,34 +142,15 @@ Column {
                 viewer.gotoPage(viewer.page + 1);
             }
         }
-
-        Text {
-            id: pageLabel
-
-            text: "Page " + viewer.page
-            color: Theme.fgDim
-            font.pixelSize: Theme.fontSize - 1
-            height: parent.height
-            verticalAlignment: Text.AlignVCenter
-        }
-
-        Item {
-            id: navSpacer
-
-            height: 1
-            width: Math.max(0, parent.width - 96 - pageLabel.width - statusLabel.width - 40)
-        }
-
-        Text {
-            id: statusLabel
-
-            text: viewer.progressStatus
-            color: Theme.accent
-            font.pixelSize: Theme.fontSize - 2
-            height: parent.height
-            verticalAlignment: Text.AlignVCenter
-        }
-
     }
 
+    // Progress pill at the very bottom (ChatBot parity: full-width pill,
+    // visible on loading/error only, default Working... / Error texts).
+    AppProgress {
+        width: parent.width
+        // Plain Column ignores implicitHeight — bind it explicitly.
+        height: implicitHeight
+        status: viewer.progressStatus
+        variant: "pill"
+    }
 }

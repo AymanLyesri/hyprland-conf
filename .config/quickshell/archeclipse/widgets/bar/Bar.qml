@@ -338,10 +338,14 @@ PanelWindow {
                             return recordingPage;
                         case "player":
                             return playerPage;
+                        case "weather":
+                            return weatherPage;
                         case "network":
                             return networkPage;
                         case "search":
                             return searchPage;
+                        case "system":
+                            return systemPage;
                         case "control":
                             return controlPage;
                         case "wallpaper":
@@ -376,12 +380,20 @@ PanelWindow {
                     PlayerIsland {}
                 }
                 Component {
+                    id: weatherPage
+                    WeatherIsland {}
+                }
+                Component {
                     id: networkPage
                     NetworkWidget {}
                 }
                 Component {
                     id: searchPage
                     SearchIsland {}
+                }
+                Component {
+                    id: systemPage
+                    SystemMonitorIsland {}
                 }
                 Component {
                     id: controlPage

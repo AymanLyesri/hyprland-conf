@@ -1,18 +1,15 @@
 import QtQuick
-import QtQuick.Controls
 import qs.theme
 import qs.services
 
-// Port of Weather.tsx WeatherButton — compact bar button with icon + temp,
-// weather-code-colored background, click opens popover with full WeatherWidget.
-// AGS: <button class="weather-button" css={dynamic background} onClicked={popover.popup/popdown}>
-// QS: Rectangle + MouseArea + Popup with WeatherWidget { moreDetails: true }
+// Compact bar button with icon + temp on a weather-code-colored background.
+// Hover/click pulses the full weather island (BarState "weather").
 Rectangle {
     id: root
     height: 22
+    width: content.implicitWidth + 14
     radius: Theme.radius
     // color set by weatherBg binding below
-    property var popover: null
 
     // Reactive weather data
     readonly property var wx: Weather.data
@@ -22,12 +19,14 @@ Rectangle {
 
     // Dynamic background color based on weather code (matches AGS CSS)
     readonly property string weatherBg: hasData ? Weather.background(cur.weather_code) : "transparent"
-    color: hasData ? root.weatherBg : "transparent"
+    color: hover.hovered ? (hasData ? root.weatherBg : Theme.surfaceHover) : (hasData ? root.weatherBg : "transparent")
+
+    Behavior on color { ColorAnimation { duration: 200 } }
 
     Row {
         id: content
         anchors.centerIn: parent
-        spacing: Theme.spacing
+        spacing: 6
 
         // Weather icon
         Text {
@@ -39,7 +38,7 @@ Rectangle {
             font.pixelSize: Theme.fontSize + 1
         }
 
-        // Temp + description (ellided)
+        // Temp + description (ellided, capped so it can't stretch the bar)
         Text {
             visible: root.hasData
             anchors.verticalCenter: parent.verticalCenter
@@ -51,52 +50,26 @@ Rectangle {
                 return `${t}${unit} ${desc}`;
             }
             elide: Text.ElideRight
-            width: 200
+            width: Math.min(implicitWidth, 120)
             color: "white"
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontSize
         }
     }
 
-    // Click toggles popover
     MouseArea {
         id: mouse
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: {
-            if (!root.popover) return;
-            if (root.popover.visible) root.popover.close();
-            else root.popover.open();
-        }
+        onClicked: BarState.activate("weather", 3000)
     }
 
-    // Popover with full WeatherWidget (moreDetails=true)
-    Popup {
-        id: wxPopover
-        parent: root
-        y: root.height + 6
-        x: root.width / 2 - wxPopover.implicitWidth / 2
-        padding: 0
-        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-        // Background handled by WeatherWidget's own card background
-        background: Rectangle { color: "transparent" }
-
-        onVisibleChanged: {
-            if (visible) wxPopover.add_css_class("popover-open");
-            else wxPopover.remove_css_class("popover-open");
+    HoverHandler {
+        id: hover
+        onHoveredChanged: {
+            if (hover.hovered)
+                BarState.activate("weather", 3000);
         }
-
-        WeatherWidget {
-            moreDetails: true
-            compact: true
-        }
-    }
-
-    HoverHandler { id: hover }
-
-    // Auto-create popover on first use
-    Component.onCompleted: {
-        root.popover = wxPopover
     }
 }

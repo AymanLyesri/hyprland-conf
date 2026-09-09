@@ -43,9 +43,26 @@ Row {
         return out.slice(0, maxId);
     }
 
+    // AGS parity (variables.ts): specialWorkspace = focusedClient.workspace.id < 0.
+    // Quickshell: Hyprland.activeToplevel is the focused client (HyprlandToplevel).
+    // focusedWorkspace stays on the normal workspace while special is open
+    // (activeworkspace=1, activewindow on -99), so checking focusedWorkspace
+    // alone never toggles. Also consider an open-but-unfocused special via
+    // workspaces active flag.
     readonly property bool specialActive: {
+        Hyprland.activeToplevel?.workspace?.id;
         Hyprland.focusedWorkspace?.id;
-        return (Hyprland.focusedWorkspace?.id ?? 1) < 0;
+        Hyprland.workspaces.values;
+        const activeWsId = Hyprland.activeToplevel?.workspace?.id;
+        if ((activeWsId ?? 1) < 0)
+            return true;
+        if ((Hyprland.focusedWorkspace?.id ?? 1) < 0)
+            return true;
+        for (const w of Hyprland.workspaces.values) {
+            if ((w.id ?? 1) < 0 && w.active)
+                return true;
+        }
+        return false;
     }
 
     // ---- special workspace button ----
