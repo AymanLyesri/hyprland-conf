@@ -168,6 +168,102 @@ Item {
     // so the profile query cannot reuse lookupUserId() synchronously.
     property string _cachedUid: ""
     property string _cachedEmail: ""
+    // Auto-refresh: Supabase access_tokens expire after 1h (expires_in=3600).
+    // Without this every API call fails with "JWT expired" ~1h after login,
+    // which surfaced as "profile not found" / "No settings found" and forced
+    // a full magic-link re-login. We refresh via grant_type=refresh_token
+    // and retry the original request once.
+    property bool _refreshing: false
+    property string _retryAfterRefresh: ""
+
+    function tokenNeedsRefresh() {
+        const s = root._cachedSession;
+        if (!s?.access_token)
+            return false;
+        const exp = Number(s.expires_at || 0);
+        if (!exp)
+            return false;
+        // Refresh 60s before expiry; expires_at is unix seconds.
+        return Date.now() / 1000 >= exp - 60;
+    }
+
+    function isAuthErrorText(text) {
+        const t = String(text || "");
+        return t.indexOf("JWT expired") >= 0 || t.indexOf("bad_jwt") >= 0 || t.indexOf("invalid JWT") >= 0 || t.indexOf("PGRST303") >= 0 || t.indexOf("JWT expired") >= 0 || t.indexOf("expired") >= 0 && t.indexOf("token") >= 0;
+    }
+
+    function doRefresh(reason) {
+        if (root._refreshing)
+            return;
+        const rt = root._cachedSession?.refresh_token || "";
+        if (!rt) {
+            root.progressStatus = "error";
+            root.progressText = "Session expired — please sign in again";
+            Notifications.notify({
+                summary: "Session expired",
+                body: "Please send a new magic link to sign in again."
+            });
+            return;
+        }
+        root._refreshing = true;
+        root._retryAfterRefresh = reason || "";
+        root.progressStatus = "loading";
+        root.progressText = "Refreshing session...";
+        const p = refreshTokenComp.createObject(root);
+        p.command = ["bash", "-c", "curl -sS -X POST -H 'apikey: " + supabaseKey + "' -H 'Content-Type: application/json' -d " + JSON.stringify(JSON.stringify({
+                refresh_token: rt
+            })) + " " + JSON.stringify(supabaseUrl + "/auth/v1/token?grant_type=refresh_token")];
+        p.running = true;
+    }
+
+    function onRefreshFinished(text) {
+        root._refreshing = false;
+        let r = null;
+        try {
+            r = text ? JSON.parse(text) : null;
+        } catch (e) {
+            r = null;
+        }
+        if (!r?.access_token) {
+            const reason = root._retryAfterRefresh;
+            root._retryAfterRefresh = "";
+            root.progressStatus = "error";
+            root.progressText = "Session expired — please sign in again";
+            Notifications.notify({
+                summary: "Session expired",
+                body: "Refresh failed. Please send a new magic link."
+            });
+            return;
+        }
+        // Merge refreshed tokens into the cached session, preserving the
+        // embedded user (session.json from older saves carries it) and the
+        // magic-link type marker.
+        const prev = root._cachedSession || {};
+        root._cachedSession = {
+            access_token: r.access_token,
+            refresh_token: r.refresh_token || prev.refresh_token || "",
+            expires_at: r.expires_at || prev.expires_at || "",
+            expires_in: r.expires_in || prev.expires_in || 3600,
+            token_type: r.token_type || prev.token_type || "bearer",
+            type: prev.type || "magiclink",
+            user: r.user || prev.user || undefined,
+            email: r.user?.email || prev.email || undefined
+        };
+        // Persist so the next shell start / poll sees the fresh token.
+        const sp = refreshSaveComp.createObject(root);
+        sp.command = ["bash", "-c", "mkdir -p " + JSON.stringify(root.authSessionPath.split("/").slice(0, -1).join("/")) + " && cat > " + JSON.stringify(root.authSessionPath) + " <<'EOF'\n" + JSON.stringify(root._cachedSession, null, 2) + "\nEOF"];
+        sp.running = true;
+        const reason = root._retryAfterRefresh;
+        root._retryAfterRefresh = "";
+        if (reason === "download" || reason === "upload") {
+            root.isSyncing = false;
+            root.syncSettings(reason);
+        } else {
+            // Profile path: re-run from the top so uid resolution retries
+            // with the fresh token (handles both /user and profile steps).
+            root.loadProfile();
+        }
+    }
 
     function handleSessionJson(text) {
         root._lastSessionText = text || "";
@@ -190,6 +286,14 @@ Item {
         // Session arrived (via /save POST or manual paste) — the on-demand
         // listener has done its job, stop it so it only runs when needed.
         root.stopAuthServer("session saved");
+        // Proactive refresh: don't burn a failing /user call when we can
+        // see from expires_at that the token is already stale.
+        if (root.tokenNeedsRefresh()) {
+            root.progressStatus = "loading";
+            root.progressText = "Refreshing session...";
+            root.doRefresh("profile");
+            return;
+        }
         // Fast path: session.json already embeds the user (older saves) —
         // skip straight to the profile query like AGS does after /user.
         const embeddedId = session?.user?.id ?? session?.id ?? "";
@@ -216,6 +320,12 @@ Item {
             user = null;
         }
         if (!user?.id) {
+            // Expired access_token returns {"code":403,...,"msg":"...expired"}
+            // here — refresh once and retry instead of looking signed out.
+            if (!root._refreshing && root.isAuthErrorText(text)) {
+                root.doRefresh("profile");
+                return;
+            }
             root.profile = null;
             root.progressStatus = "error";
             root.progressText = "Signed in, but profile not found";
@@ -409,19 +519,46 @@ Item {
             });
             return;
         }
+        // Proactive refresh: never send a visibly-expired token — that
+        // failure used to surface as the misleading "No settings found".
+        if (root.tokenNeedsRefresh()) {
+            root.doRefresh(direction);
+            return;
+        }
         root.isSyncing = true;
         root.progressStatus = "loading";
         root.progressText = direction === "upload" ? "Uploading settings..." : "Downloading settings...";
         const uid = lookupUserId();
+        if (!uid) {
+            root.isSyncing = false;
+            root.progressStatus = "error";
+            root.progressText = "Refreshing session...";
+            root.doRefresh(direction);
+            return;
+        }
 
         if (direction === "upload") {
             const settingsJson = readLocalSettings();
+            // Never upload an empty stub — it would wipe the remote copy.
+            if (!settingsJson || Object.keys(settingsJson).length === 0) {
+                root.progressStatus = "error";
+                root.progressText = "Upload refused: local settings empty";
+                Notifications.notify({
+                    summary: "Settings Sync",
+                    body: "Local settings file is empty — refusing to overwrite the cloud copy."
+                });
+                return;
+            }
+            // Write the payload to a temp file and --data-binary it: inlining
+            // the JSON in -d '<json>' breaks on any single quote inside the
+            // settings (e.g. xal'atath) and always reported "Upload failed".
+            const payload = JSON.stringify({
+                id: uid,
+                settings: settingsJson,
+                updated_at: new Date().toISOString()
+            });
             const p = syncUploadComp.createObject(root);
-            p.command = ["bash", "-c", "curl -sS -X POST -H 'Content-Type: application/json' -H 'apikey: " + supabaseKey + "' -H 'Authorization: Bearer " + session.access_token + "' -H 'Prefer: resolution=merge-duplicates,return=representation' -d '" + JSON.stringify({
-                    id: uid,
-                    settings: settingsJson,
-                    updated_at: new Date().toISOString()
-                }) + "' '" + supabaseUrl + "/rest/v1/user_settings?on_conflict=id'"];
+            p.command = ["bash", "-c", "cat > /tmp/qs-settings-upload.json <<'QSSETTINGSEOF'\n" + payload + "\nQSSETTINGSEOF\ncurl -sS -X POST -H 'Content-Type: application/json' -H 'apikey: " + supabaseKey + "' -H 'Authorization: Bearer " + session.access_token + "' -H 'Prefer: resolution=merge-duplicates,return=representation' --data-binary @/tmp/qs-settings-upload.json '" + supabaseUrl + "/rest/v1/user_settings?on_conflict=id'"];
             p.running = true;
         } else {
             const p = syncDownloadComp.createObject(root);
@@ -1096,7 +1233,14 @@ Item {
             stdout: StdioCollector {
                 onStreamFinished: {
                     try {
-                        const prof = JSON.parse(text.trim());
+                        const raw = text.trim();
+                        // Expired token returns an error object, not an array —
+                        // refresh once instead of reporting "not found".
+                        if (!root._refreshing && root.isAuthErrorText(raw)) {
+                            root.doRefresh("profile");
+                            return;
+                        }
+                        const prof = JSON.parse(raw);
                         if (prof?.[0]) {
                             root.profile = {
                                 id: root._cachedUid,
@@ -1343,7 +1487,22 @@ Item {
                     return;
                 }
                 try {
+                    if (!root._refreshing && root.isAuthErrorText(root._syncOut)) {
+                        root.doRefresh("upload");
+                        return;
+                    }
                     const r = JSON.parse(root._syncOut);
+                    // PostgREST errors come back as {message, code, ...} with
+                    // curl exit 0 — surface them instead of fake success.
+                    if (r?.message || r?.msg || r?.error) {
+                        root.progressStatus = "error";
+                        root.progressText = "Upload failed: " + (r.message || r.msg || r.error);
+                        Notifications.notify({
+                            summary: "Settings Sync",
+                            body: "Upload failed: " + (r.message || r.msg || r.error)
+                        });
+                        return;
+                    }
                     const updated = r?.updated_at ?? (Array.isArray(r) ? r[0]?.updated_at : null);
                     root.writeSyncMeta("upload", updated);
                     root.progressStatus = "success";
@@ -1385,6 +1544,12 @@ Item {
                     return;
                 }
                 try {
+                    // Auth failure looks like {"message":"JWT expired"} — that
+                    // is NOT "no settings", it just needs a token refresh.
+                    if (!root._refreshing && root.isAuthErrorText(root._syncOut)) {
+                        root.doRefresh("download");
+                        return;
+                    }
                     const r = JSON.parse(root._syncOut);
                     if (r?.[0]?.settings) {
                         const p = writeSettingsComp.createObject(root);
@@ -1401,10 +1566,10 @@ Item {
                     } else {
                         root.isSyncing = false;
                         root.progressStatus = "error";
-                        root.progressText = "No settings found";
+                        root.progressText = "No settings found — upload first";
                         Notifications.notify({
                             summary: "Settings Sync",
-                            body: "No remote settings found."
+                            body: "No remote settings for this account yet. Press Upload on the device that has your settings, then Download here."
                         });
                     }
                 } catch (e) {
@@ -1417,6 +1582,31 @@ Item {
                 }
             }
         }
+    }
+    Component {
+        id: refreshTokenComp
+        Process {
+            stdout: StdioCollector {
+                onStreamFinished: root.onRefreshFinished(text)
+            }
+            onExited: code => {
+                if (code !== 0 && root._refreshing) {
+                    root._refreshing = false;
+                    root._retryAfterRefresh = "";
+                    root.isSyncing = false;
+                    root.progressStatus = "error";
+                    root.progressText = "Session expired — please sign in again";
+                    Notifications.notify({
+                        summary: "Session expired",
+                        body: "Could not refresh the session. Please send a new magic link."
+                    });
+                }
+            }
+        }
+    }
+    Component {
+        id: refreshSaveComp
+        Process {}
     }
     Component {
         id: writeSettingsComp

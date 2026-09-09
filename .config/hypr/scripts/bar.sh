@@ -8,19 +8,20 @@ AGS_TMP="/tmp/ags-${USER}"
 QS_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/archeclipse"
 
 run_ags() {
-  mkdir -p "$AGS_TMP"
-  ags quit
-  killall gjs >/dev/null 2>&1
-  ags bundle "$HOME/.config/ags/app.tsx" "$AGS_TMP/ags-bin"
-  nohup "$AGS_TMP/ags-bin" > "$AGS_TMP/ags-bin.log" 2>&1 &
+    mkdir -p "$AGS_TMP"
+    ags quit
+    killall gjs >/dev/null 2>&1
+    ags bundle "$HOME/.config/ags/app.tsx" "$AGS_TMP/ags-bin"
+    nohup "$AGS_TMP/ags-bin" > "$AGS_TMP/ags-bin.log" 2>&1 &
 }
 
 run_quickshell() {
-pkill -f "qs -p ${QS_CONF}"
-while pgrep -f "qs -p ${QS_CONF}" >/dev/null; do sleep 0.1; done
-
-MANGOHUD=0 QML_DISABLE_DISK_CACHE=1 \
-nohup qs -p "$QS_CONF" > "/tmp/qs-bar-${USER}.log" 2>&1 &
+    pkill -f "qs -p ${QS_CONF}"
+    killall qs >/dev/null 2>&1
+    while pgrep -f "qs -p ${QS_CONF}" >/dev/null; do sleep 0.1; done
+    
+    MANGOHUD=0 QML_DISABLE_DISK_CACHE=1 \
+    nohup qs -p "$QS_CONF" > "/tmp/qs-bar-${USER}.log" 2>&1 &
 }
 
 # ---- active implementation ----

@@ -158,6 +158,33 @@ QtObject {
         Quickshell.execDetached(["xdg-open", base + img.id]);
     }
 
+    // Local full-image path for a post (<api>/images/<id>.<ext>).
+    function localImagePath(img) {
+        if (!img || img.id === undefined || img.id === null)
+            return "";
+        const api = root.apiOf(img) || "danbooru";
+        const ext = img.extension || "jpg";
+        return `${root.booruBase}/${api}/images/${img.id}.${ext}`;
+    }
+
+    // Open the downloaded file in an external viewer (AGS
+    // BooruImage.openInViewer parity: swayimg for images, mpv for videos).
+    function openInViewer(img) {
+        if (!img)
+            return;
+        if (root.isZip(img)) {
+            Notifications.notify({ summary: "Cannot open", body: "This file type cannot be previewed" });
+            return;
+        }
+        const path = root.localImagePath(img);
+        if (path === "")
+            return;
+        if (root.isVideo(img))
+            Quickshell.execDetached(["mpv", "--force-window=immediate", "--no-terminal", `--title=${img.id}`, path]);
+        else
+            Quickshell.execDetached(["swayimg", "-w", "690,690", "--class", "preview-image", path]);
+    }
+
     function copyTag(tag) {
         if (tag === undefined || tag === null)
             return;

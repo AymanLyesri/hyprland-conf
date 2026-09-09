@@ -58,20 +58,12 @@ Item {
                     icon: isExpanded ? "\u{f106}" : "\u{f107}"
                     pixelSize: Theme.fontSize - 2
                     cornerRadius: 4
-                    idleBg: Theme.surfaceActive
-                    idleFg: Theme.accent
-                    outlined: true
-                    outlineColor: Theme.accent
                     onClicked: root.toggleExpanded()
                 }
                 AppButton {
                                     icon: "\u{f014}"
                                     pixelSize: Theme.fontSize - 2
                                     cornerRadius: 4
-                                    idleBg: Theme.dangerBg
-                                    idleFg: Theme.danger
-                                    outlined: true
-                                    outlineColor: Theme.danger
                                     tooltipText: "Clear all"
                                     onClicked: root.clearStack()
                                 }

@@ -121,6 +121,14 @@ Item {
         fetchCurrentWallpapers();
     }
 
+    // Re-fetch when the bar delivers the real monitor name (onLoaded
+    // fires after our Component.onCompleted, so the first fetch may have
+    // used the Registry fallback which can resolve to the wrong monitor).
+    onMonitorNameChanged: {
+        if (root.monitorName !== "")
+            fetchCurrentWallpapers();
+    }
+
     // Keep the selected workspace synced to whatever's focused when the
     // switcher opens, like the AGS version's focusedWorkspace.subscribe().
     Connections {

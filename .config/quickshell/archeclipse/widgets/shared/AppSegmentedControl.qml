@@ -43,6 +43,13 @@ Item {
 
     signal activated(int index, var value)
 
+    // The cell the highlight tracks. Set imperatively (Repeater children
+    // only exist after delegate creation), but the highlight geometry
+    // binds to it below — so Row repositioning after a model swap is
+    // followed automatically instead of freezing at stale coordinates.
+    property Item highlightCell: null
+    property int _syncRetries: 0
+
     function valueAt(i) {
         if (!root.model || i < 0 || i >= root.model.length)
             return undefined;
@@ -116,10 +123,14 @@ Item {
         border.color: Theme.border
         opacity: root.enabled ? 1 : 0.4
 
-        // Sliding selection pill — the only animated chrome.
+        // Sliding selection pill — the only animated chrome. Geometry
+        // follows highlightCell (reactive to Row layout), so it never
+        // sticks at a stale position after a model/currentIndex swap.
         Rectangle {
             id: highlight
-            visible: root.currentIndex >= 0 && root.currentIndex < repeater.count
+            visible: root.highlightCell !== null
+            x: root.highlightCell ? row.x + root.highlightCell.x : 0
+            width: root.highlightCell ? root.highlightCell.width : 0
             y: root.highlightMargin
             height: parent.height - root.highlightMargin * 2
             radius: root.cornerRadius
@@ -227,12 +238,17 @@ Item {
     function syncHighlight() {
         const cell = repeater.itemAt(root.currentIndex);
         if (!cell) {
-            highlight.width = 0;
+            // Delegates (re)build a frame after a model swap — retry
+            // briefly instead of parking the highlight at stale coords.
+            // Keep the old highlightCell meanwhile (no clearing flash).
+            if (root.currentIndex >= 0 && root.currentIndex < repeater.count && root._syncRetries < 20) {
+                root._syncRetries++;
+                Qt.callLater(syncHighlight);
+            }
             return;
         }
-        // cell.x is relative to row; row sits at highlightMargin inside bg.
-        highlight.x = row.x + cell.x;
-        highlight.width = cell.width;
+        root._syncRetries = 0;
+        root.highlightCell = cell;
     }
 
     onCurrentIndexChanged: Qt.callLater(syncHighlight)

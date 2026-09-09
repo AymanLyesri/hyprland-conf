@@ -370,8 +370,6 @@ Item {
             variant: "badge"
             loadingText: "Loading..."
             errorText: "Error"
-            successText: "Ready"
-            showSuccess: true
         }
 
         // Peek handle — affordance hint shown while the overlay is hidden.
@@ -470,13 +468,13 @@ Item {
                     height: 28
                     spacing: 8
 
-                    // Open in viewer
+                    // Open in viewer (AGS open button: swayimg/mpv via openInViewer)
                     AppButton {
-                        text: "\u{f07c}"
+                        text: ""
                         Layout.fillWidth: true
                         Layout.preferredHeight: 28
-                        tooltipText: "Open in viewer"
-                        onClicked: Quickshell.execDetached(["xdg-open", root.imagePath])
+                        tooltipText: "Open image in viewer"
+                        onClicked: BooruActions.openInViewer(root.wd)
                     }
 
                     // Open in browser

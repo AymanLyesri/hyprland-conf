@@ -354,6 +354,10 @@ Item {
         return BooruActions.openInBrowser(img);
     }
 
+    function openInViewer(img) {
+        return BooruActions.openInViewer(img);
+    }
+
     // Shared bookmark service (booru.py toggle-bookmark). Refreshes the
     // local Bookmarks tab once the shared Settings update lands.
     function toggleBookmark(img) {
@@ -1019,7 +1023,7 @@ Item {
         // top-left corner at the rect, expanding down-right. No overrides.
         // Wider than the old 232px: the overhauled dialog uses 2-col
         // action grids + meta/tag pills that need the breathing room.
-        width: 264
+        width: 288
         height: Math.max(48, Math.round(root.height))
         visible: root.dialogImage !== null
         color: "transparent"

@@ -70,15 +70,31 @@ Column {
 
         // Windowed page buttons (AGS logic) as a sliding segment: the
         // active page carries the highlight, "..." is a disabled cell.
+        // NOTE: viewer.page / viewer.widgetWidth are read directly so
+        // these bindings re-run on page turns and panel resizes (reads
+        // buried inside buildPageButtons() alone don't retrigger them,
+        // which left the highlight stuck on the old page).
         AppSegmentedControl {
             enabled: viewer.progressStatus !== "loading"
             pixelSize: Theme.fontSize - 2
-            model: viewer.buildPageButtons().map(b => ({
-                        value: b.page,
-                        label: b.label,
-                        enabled: b.page > 0
-                    }))
-            currentIndex: viewer.buildPageButtons().findIndex(b => b.active)
+            model: {
+                if (!viewer)
+                    return [];
+                viewer.page;
+                viewer.widgetWidth;
+                return viewer.buildPageButtons().map(b => ({
+                            value: b.page,
+                            label: b.label,
+                            enabled: b.page > 0
+                        }));
+            }
+            currentIndex: {
+                if (!viewer)
+                    return -1;
+                viewer.page;
+                viewer.widgetWidth;
+                return viewer.buildPageButtons().findIndex(b => b.active);
+            }
             onActivated: (i, v) => viewer.gotoPage(v)
         }
     }

@@ -61,13 +61,13 @@ Item {
     readonly property bool dlgVideoPlayable: dlg ? (dlgIsVideo && dlgDownloaded && !dlgIsZip) : false
     readonly property bool dlgVideoPlaceholder: dlg ? (dlgIsVideo && !dlgDownloaded) : false
     // Aspect-aware media height (MangaViewer parity): follow the image
-    // ratio, clamped so panoramas/portraits stay sane in a 232px card.
+    // ratio, clamped so panoramas/portraits stay sane in the card.
     readonly property real dlgMediaH: {
         if (!dlg || !dlg.width || !dlg.height)
-            return 200;
-        const w = Math.max(1, contentCol.width || 200);
+            return 220;
+        const w = Math.max(1, contentCol.width || 220);
         const h = w * dlg.height / dlg.width;
-        return Math.min(Math.max(h, 140), 340);
+        return Math.min(Math.max(h, 160), 390);
     }
     readonly property string dlgTypeIcon: dlgIsZip ? "" : (dlgIsVideo ? "" : "")
     readonly property int dlgVisibleTagCount: showAllTags ? dlgTags.length : Math.min(dlgTags.length, 12)
@@ -463,6 +463,20 @@ Item {
                     RowLayout {
                         width: parent.width
                         spacing: 6
+                        AppButton {
+                            Layout.fillWidth: true
+                            height: 28
+                            icon: ""
+                            text: "Viewer"
+                            outlined: true
+                            pixelSize: Theme.fontSize - 2
+                            enabled: dialogRoot.dlgDownloaded && !dialogRoot.dlgIsZip
+                            tooltipText: !dialogRoot.dlgDownloaded ? "Downloading full image…" : dialogRoot.dlgIsZip ? "Cannot preview this file type" : "Open image in viewer"
+                            onClicked: {
+                                if (viewer && dlg)
+                                    viewer.openInViewer(dlg);
+                            }
+                        }
                         AppButton {
                             Layout.fillWidth: true
                             height: 28
