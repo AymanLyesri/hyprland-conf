@@ -213,7 +213,7 @@ Item {
                         }
                         Text {
                             anchors.horizontalCenter: parent.horizontalCenter
-                            text: dialogRoot.dlgIsZip ? "Cannot be played." : "Video — download to play"
+                            text: dialogRoot.dlgIsZip ? "Cannot be played." : "Video — downloading…"
                             color: Theme.fgDim
                             font.pixelSize: Theme.fontSize - 1
                             font.family: Theme.fontFamily
@@ -295,7 +295,7 @@ Item {
                             height: 1
                         }
                         Text {
-                            text: dialogRoot.dlgDownloaded ? "● Saved" : "○ Preview"
+                            text: dialogRoot.dlgDownloaded ? "● Saved" : (dialogRoot.dlgLoading ? "○ Downloading…" : "○ Preview")
                             color: dialogRoot.dlgDownloaded ? "lightgreen" : Theme.fgDim
                             font.pixelSize: Theme.fontSize - 2
                             font.family: Theme.fontFamily
@@ -428,57 +428,36 @@ Item {
                         AppButton {
                             Layout.fillWidth: true
                             height: 30
-                            icon: dialogRoot.dlgPinned ? "" : ""
+                            icon: "\uf08d"
                             text: dialogRoot.dlgPinned ? "Pinned" : "Pin"
                             toggle: true
                             checked: dialogRoot.dlgPinned
                             outlined: true
                             pixelSize: Theme.fontSize - 2
-                            // AGS pin-button parity: sensitive only once the
-                            // full file is downloaded (the fastfetch sync
-                            // converts it) and never for video/zip.
+                            // Pin auto-enables once fetchOriginal() lands the full file
+                            // in <api>/images/ (no manual download step).
                             enabled: dialogRoot.dlgDownloaded && !dialogRoot.dlgIsVideo && !dialogRoot.dlgIsZip
-                            tooltipText: dialogRoot.dlgIsVideo || dialogRoot.dlgIsZip ? "Cannot pin videos" : !dialogRoot.dlgDownloaded ? "Download first to pin" : dialogRoot.dlgPinned ? "Unpin from terminal" : "Pin to terminal"
+                            tooltipText: dialogRoot.dlgIsVideo || dialogRoot.dlgIsZip ? "Cannot pin videos" : !dialogRoot.dlgDownloaded ? "Downloading full image…" : dialogRoot.dlgPinned ? "Unpin from terminal" : "Pin to terminal"
                             onClicked: {
                                 if (viewer && dlg)
                                     viewer.togglePinned(dlg);
                             }
                         }
                     }
-                    RowLayout {
+                    // Full file auto-downloads on open; Waifu takes the full row.
+                    AppButton {
                         width: parent.width
-                        spacing: 6
-                        AppButton {
-                            Layout.fillWidth: true
-                            height: 30
-                            icon: dialogRoot.dlgDownloaded ? "" : ""
-                            text: dialogRoot.dlgDownloaded ? "Saved" : "Download"
-                            enabled: !!(dlg && viewer && !viewer.isDownloaded(dlg))
-                            idleBg: dialogRoot.dlgDownloaded ? "transparent" : Theme.surfaceActive
-                            idleFg: dialogRoot.dlgDownloaded ? Theme.fgDim : Theme.accent
-                            outlined: true
-                            outlineColor: Theme.accent
-                            pixelSize: Theme.fontSize - 2
-                            tooltipText: "Download full original"
-                            onClicked: {
-                                if (viewer && dlg)
-                                    viewer.downloadImage(dlg);
-                            }
-                        }
-                        AppButton {
-                            Layout.fillWidth: true
-                            height: 30
-                            icon: ""
-                            text: dialogRoot.dlgIsWaifu ? "Waifu ✓" : "Waifu"
-                            toggle: true
-                            checked: dialogRoot.dlgIsWaifu
-                            outlined: true
-                            pixelSize: Theme.fontSize - 2
-                            tooltipText: dialogRoot.dlgIsWaifu ? "Current waifu" : "Set as waifu"
-                            onClicked: {
-                                if (viewer && dlg)
-                                    viewer.setAsWaifu(dlg);
-                            }
+                        height: 30
+                        icon: ""
+                        text: dialogRoot.dlgIsWaifu ? "Waifu ✓" : "Waifu"
+                        toggle: true
+                        checked: dialogRoot.dlgIsWaifu
+                        outlined: true
+                        pixelSize: Theme.fontSize - 2
+                        tooltipText: dialogRoot.dlgIsWaifu ? "Current waifu" : "Set as waifu"
+                        onClicked: {
+                            if (viewer && dlg)
+                                viewer.setAsWaifu(dlg);
                         }
                     }
                     RowLayout {

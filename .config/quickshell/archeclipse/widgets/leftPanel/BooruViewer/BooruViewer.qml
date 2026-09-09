@@ -100,8 +100,8 @@ Item {
     // the grid, toolbar, navigation and settings never relayout, so this
     // cannot feed back into the layout the way a width animation did.
     property real detailSlide: 0
-    // Downloaded set: populated by downloadImage()'s completion poller (avoids
-    // needing a synchronous filesystem-exists primitive in QML).
+    // Downloaded set: populated automatically by fetchOriginal() when the
+    // full file lands in <api>/images/ (no manual download step).
     property var downloadedIds: ({})
     // forces dialog overlay to recompute toggle states after downloads
     property int dialogVersion: 0
@@ -144,9 +144,9 @@ Item {
     // bursting all at once.
     property var revealedIds: ({})
     property var _revealQueue: []
-    // Local full-original ids verified present on disk (dialog cache).
+    // Local full-image ids verified present on disk (dialog cache).
     // Remote danbooru URLs 403 inside Qt, so the dialog can only show
-    // originals downloaded with Referer headers by fetchOriginal().
+    // full files downloaded with Referer headers by fetchOriginal().
     property var fullIds: ({})
     // Initial fetch on load (AGS fetchImages branches to bookmarks/pins/API
     // from the restored tab — saved Bookmarks/Pins must not fetch the API).
@@ -243,32 +243,29 @@ Item {
         }
     }
 
-    // --------- helpers for image dialog (mirror BooruImage.class) ---------
+    // --------- helpers for image dialog (shared via BooruActions) ---------
     function getIconPath(img, which) {
         return BooruUtils.getIconPath(root.booruPath, img, which);
     }
 
     function apiOf(img) {
-        return BooruUtils.apiOf(img);
+        return BooruActions.apiOf(img);
     }
 
     function isInArray(arr, img) {
-        return BooruUtils.isInArray(arr, img);
+        return BooruActions.isInArray(arr, img);
     }
 
     function isBookmarked(img) {
-        return root.isInArray(Settings.booru.bookmarks, img);
+        return BooruActions.isBookmarked(img);
     }
 
     function isPinned(img) {
-        return root.isInArray(Settings.booru.pins, img);
+        return BooruActions.isPinned(img);
     }
 
     function isCurrentWaifu(img) {
-        if (!img)
-            return false;
-        const w = Settings.waifu;
-        return w && (String(w.id) === String(img.id));
+        return BooruActions.isCurrentWaifu(img);
     }
 
     function isInfoTagged(img) {
@@ -276,11 +273,7 @@ Item {
     }
 
     function isVideo(img) {
-        if (!img)
-            return false;
-        // AGS isVideo = mp4/webm/mkv/gif; zip is a separate isZip with its
-        // own placeholder (dialog special-cases it below)
-        return ["mp4", "webm", "mkv", "gif"].includes(((img.extension) || "").toLowerCase());
+        return BooruActions.isVideo(img);
     }
 
     function isDownloaded(img) {
@@ -297,197 +290,124 @@ Item {
         return BooruUtils.dialogSource(root.booruPath, root.downloadedIds, root.fullIds, img);
     }
 
-    // Download the full original into <api>/originals/ with the same
+    // Dialog auto-downloads the full file into <api>/images/ with the same
     // Referer+UA headers as downloadPreviews (Qt gets 403 without them).
-    // Skips videos (dialog shows a download placeholder) and anything
-    // already downloaded or cached.
+    // When it lands, downloadedIds flips and the Pin button auto-enables.
+    // Skips zip (dialog shows a placeholder) and anything already on disk.
+    // Legacy <api>/originals/ files are promoted into <api>/images/.
     function fetchOriginal(img) {
-        if (!img || !img.url || root.isVideo(img))
+        if (!img || !img.url || !img.api || !img.api.value)
             return;
-
+        if (BooruActions.isZip(img))
+            return;
         if (root.isDownloaded(img) || root.fullIds[String(img.id)])
             return;
 
-        const dir = `${root.booruPath}/${img.api.value}/originals`;
+        const dir = `${root.booruPath}/${img.api.value}/images`;
         const filePath = `${dir}/${img.id}.${img.extension}`;
+        const legacyPath = `${root.booruPath}/${img.api.value}/originals/${img.id}.${img.extension}`;
+        const markDone = function () {
+            const ids = Object.assign({}, root.downloadedIds);
+            ids[String(img.id)] = true;
+            root.downloadedIds = ids;
+            const full = Object.assign({}, root.fullIds);
+            full[String(img.id)] = true;
+            root.fullIds = full;
+            root.dialogVersion++;
+        };
+        const downloadMissing = function () {
+            const dl = Qt.createQmlObject('import Quickshell.Io; Process {}', root);
+            dl.command = ["bash", "-c", `mkdir -p \"${dir}\" && curl -sSfL --max-time 60 -H "User-Agent: QuickshellBooru/1.0 (ArchLinux; Hyprland)" -H "Referer: ${img.api.url}" -H "Accept: image/avif,image/webp,image/png,image/svg+xml,image/*;q=0.8" -o \"${filePath}\" \"${img.url}\" && test -s \"${filePath}\"`];
+            dl.exited.connect(function (code) {
+                if (code === 0)
+                    markDone();
+                dl.destroy();
+            });
+            dl.running = true;
+        };
         const checkProc = Qt.createQmlObject('import Quickshell.Io; Process { stdout: StdioCollector {} }', root);
-        checkProc.command = ["bash", "-c", "test -s " + JSON.stringify(filePath) + " && echo yes || echo no"];
+        checkProc.command = ["bash", "-c", "test -s " + JSON.stringify(filePath) + " && echo images || (test -s " + JSON.stringify(legacyPath) + " && echo legacy || echo no)"];
         checkProc.stdout.onStreamFinished.connect(function () {
-            if (checkProc.stdout.text.trim() === "yes") {
-                const ids = Object.assign({}, root.fullIds);
-                ids[String(img.id)] = true;
-                root.fullIds = ids;
-            } else {
-                const dl = Qt.createQmlObject('import Quickshell.Io; Process {}', root);
-                dl.command = ["bash", "-c", `mkdir -p \"${dir}\" && curl -sSf -H \"User-Agent: QuickshellBooru/1.0 (ArchLinux; Hyprland)\" -H \"Referer: ${img.api.url}\" -o \"${filePath}\" \"${img.url}\"`];
-                dl.exited.connect(function () {
-                    const verify = Qt.createQmlObject('import Quickshell.Io; Process { stdout: StdioCollector {} }', root);
-                    verify.command = ["bash", "-c", "test -s " + JSON.stringify(filePath) + " && echo yes || echo no"];
-                    verify.stdout.onStreamFinished.connect(function () {
-                        if (verify.stdout.text.trim() === "yes") {
-                            const ids2 = Object.assign({}, root.fullIds);
-                            ids2[String(img.id)] = true;
-                            root.fullIds = ids2;
-                        }
-                        verify.destroy();
-                    });
-                    verify.running = true;
-                    dl.destroy();
-                });
-                dl.running = true;
-            }
+            const res = checkProc.stdout.text.trim();
             checkProc.destroy();
+            if (res === "images") {
+                markDone();
+            } else if (res === "legacy") {
+                const cp = Qt.createQmlObject('import Quickshell.Io; Process {}', root);
+                cp.command = ["bash", "-c", `mkdir -p \"${dir}\" && cp -- ${JSON.stringify(legacyPath)} ${JSON.stringify(filePath)} && test -s ${JSON.stringify(filePath)}`];
+                cp.exited.connect(function (code) {
+                    if (code === 0)
+                        markDone();
+                    else
+                        downloadMissing();
+                    cp.destroy();
+                });
+                cp.running = true;
+            } else {
+                downloadMissing();
+            }
         });
         checkProc.running = true;
     }
 
     function openInBrowser(img) {
-        const base = img.api.idSearchUrl || "https://danbooru.donmai.us/posts/";
-        Quickshell.execDetached(["xdg-open", base + img.id]);
+        return BooruActions.openInBrowser(img);
     }
 
-    // AGS BooruImage.toggleBookmark: goes through booru.py toggle-bookmark
-    // (validates payload, syncs the shared settings.json) instead of mutating
-    // local state. Flush pending persists first so the script's
-    // read-modify-write doesn't race a debounced write.
+    // Shared bookmark service (booru.py toggle-bookmark). Refreshes the
+    // local Bookmarks tab once the shared Settings update lands.
     function toggleBookmark(img) {
-        if (!img || typeof img.id !== "number" || !root.apiOf(img)) {
-            Notifications.notify({
-                "summary": "Error updating bookmark",
-                "body": "Invalid image data."
-            });
-            return root.isBookmarked(img);
-        }
-        Settings.persist();
-        const payload = JSON.stringify({
-            "bookmark": img
+        const wasMarked = root.isBookmarked(img);
+        BooruActions.toggleBookmark(img, function () {
+            if (root.selectedTab === "Bookmarks")
+                root.loadBookmarks();
         });
-        const p = bookmarkProc.createObject(root);
-        p.command = ["python", root.booruScript, "--action", "toggle-bookmark", "--payload-json", payload];
-        p.running = true;
-        return !root.isBookmarked(img); // optimistic; corrected on response
+        return !wasMarked; // optimistic; corrected on response
     }
 
     function onBookmarkToggled(exitOk, stdoutText) {
-        if (!exitOk) {
-            Notifications.notify({
-                "summary": "Error updating bookmark",
-                "body": "Bookmark script failed."
-            });
-            return;
-        }
-        try {
-            const parsed = JSON.parse((stdoutText || "").trim());
-            const marked = parsed.bookmarked === true;
-            if (Array.isArray(parsed.bookmarks)) {
-                Settings.booru.bookmarks = parsed.bookmarks;
-                Settings.booru = Settings.booru; // touch: nested assign must emit
-            } else {
-                Settings.reload();
-            }
-            Notifications.notify({
-                "summary": "Success",
-                "body": marked ? "Image bookmarked" : "Bookmark removed"
-            });
+        // Legacy IPC entry point: route through the shared handler, then
+        // refresh the local tab like toggleBookmark() does.
+        BooruActions._onBookmarkToggled(exitOk, stdoutText, function () {
             if (root.selectedTab === "Bookmarks")
                 root.loadBookmarks();
-        } catch (e) {
-            Settings.reload();
-            Notifications.notify({
-                "summary": "Error updating bookmark",
-                "body": "Invalid bookmark response."
-            });
-        }
+        });
     }
 
-    // AGS BooruImage.pinToTerminal parity: videos/zip can't pin (magick
-    // needs a real image), the full file must be downloaded first (the
-    // fastfetch sync converts <booruPath>/<api>/images/<id>.<ext>), and
-    // every outcome notifies instead of failing silently.
+    // Shared pin service. Pinning still requires the auto-downloaded full
+    // file (the fastfetch sync converts <booruPath>/<api>/images/<id>.<ext>),
+    // but fetchOriginal() now fetches it on dialog open, so the button
+    // auto-enables when downloadedIds flips instead of needing a manual step.
     function togglePinned(img) {
         if (!img)
             return false;
-        if (root.isVideo(img) || (img.extension || "").toLowerCase() === "zip") {
+        if (!root.isDownloaded(img) && !BooruActions.isVideo(img) && !BooruActions.isZip(img)) {
+            // Auto-download is still in flight — kick it and tell the user.
+            root.fetchOriginal(img);
             Notifications.notify({
-                "summary": "Error pinning to terminal",
-                "body": "Cannot pin videos to terminal"
+                "summary": "Downloading full image",
+                "body": "Pin will be available once it lands"
             });
             return false;
         }
-        if (!root.isDownloaded(img)) {
-            Notifications.notify({
-                "summary": "Error pinning to terminal",
-                "body": "Download image first"
-            });
-            return false;
-        }
-        const arr = (Settings.booru.pins || []).slice();
-        const i = arr.findIndex(x => {
-            return x && String(x.id) === String(img.id) && root.apiOf(x) === root.apiOf(img);
-        });
-        if (i >= 0) {
-            arr.splice(i, 1);
-            Settings.booru.pins = arr;
-            Settings.booru = Settings.booru; // touch parent var (see above)
-            Settings.schedulePersist();
-            FastfetchPins.scheduleSync();
-            Notifications.notify({
-                "summary": "Waifu",
-                "body": "UN-Pinned from Terminal"
-            });
+        const wasPinned = root.isPinned(img);
+        const res = BooruActions.togglePinned(img, function () {
             if (root.selectedTab === "Pins")
                 root.loadPins();
-            return false;
-        }
-        arr.push(img);
-        Settings.booru.pins = arr;
-        Settings.booru = Settings.booru; // touch parent var (see above)
-        Settings.schedulePersist();
-        FastfetchPins.scheduleSync();
-        Notifications.notify({
-            "summary": "Waifu",
-            "body": "Pinned To Terminal"
         });
-        return true;
+        // BooruActions already notified + synced; mirror the local tab refresh.
+        if (res !== wasPinned && root.selectedTab === "Pins")
+            root.loadPins();
+        return res;
     }
 
+    // Legacy entry point kept for IPC callers: the dialog auto-downloads now.
     function downloadImage(img) {
-        root.progressStatus = "loading";
-        const dir = `${root.booruPath}/${img.api.value}/images`;
-        const target = `${dir}/${img.id}.${img.extension}`;
-        Quickshell.execDetached(["bash", "-c", `mkdir -p '${dir}' && curl -sL -o '${target}' '${img.url}'`]);
-        // poll for a non-empty file to appear (network fetch may take time)
-        const poll = Qt.createQmlObject('import QtQuick; import Quickshell.Io; Timer { interval: 1200; repeat: true; ' + 'property var check: null }', root);
-        poll.triggered.connect(function () {
-            if (poll.check && poll.check.running)
-                return;
-
-            // one check at a time
-            poll.check = Qt.createQmlObject('import Quickshell.Io; Process { stdout: StdioCollector {} }', root);
-            const targetJson = JSON.stringify(target);
-            poll.check.command = ["bash", "-c", `[ -s ${targetJson} ] && echo yes`];
-            const p = poll.check;
-            p.running = true;
-            p.stdout.onStreamFinished.connect(function () {
-                if (p.stdout.text.trim() === "yes") {
-                    poll.stop();
-                    poll.destroy();
-                    const ids = root.downloadedIds;
-                    ids[String(img.id)] = true;
-                    root.downloadedIds = ids;
-                    root.progressStatus = "success";
-                    root.dialogVersion++;
-                }
-                p.destroy();
-                poll.check = null;
-            });
-        });
-        poll.start();
+        root.fetchOriginal(img);
     }
 
     function setAsWaifu(img) {
-        Settings.waifu = img;
-        Settings.schedulePersist();
+        return BooruActions.setAsWaifu(img);
     }
 
     // Dialog tag hold ("Hold: search"): ADD the tag to the current search
@@ -510,7 +430,7 @@ Item {
     }
 
     function copyTag(tag) {
-        Quickshell.execDetached(["bash", "-c", "echo -n '" + tag + "' | wl-copy"]);
+        return BooruActions.copyTag(tag);
     }
 
     function formatTagForDisplay(tag) {
@@ -1060,26 +980,8 @@ Item {
 
         // Tabs + page buttons + prev/reveal/next live in BooruNavigation
         // (BooruToolbar was merged into it).
-
-        // Backend bookmark toggle (booru.py toggle-bookmark --payload-json).
-        // Stdout carries {bookmarked, bookmarks}; exit code gates the parse.
-        Component {
-            id: bookmarkProc
-
-            Process {
-                property string out: ""
-
-                onExited: code => {
-                    return root.onBookmarkToggled(code === 0, out);
-                }
-
-                stdout: StdioCollector {
-                    onStreamFinished: {
-                        out = text;
-                    }
-                }
-            }
-        }
+        // NOTE: bookmark toggling lives in the shared BooruActions service
+        // (booru.py toggle-bookmark); no local Process component needed.
 
         // Bottom bar: navigation + revealable settings
         Column {

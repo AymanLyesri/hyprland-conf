@@ -32,11 +32,12 @@ function dialogSource(booruPath, downloadedIds, fullIds, img) {
     if (!img) return ""
     if (isDownloadedIn(downloadedIds, img))
         return "file://" + getIconPath(booruPath, img, "images")
-    // Dialog shows the full original from the local originals cache.
+    // Dialog auto-downloads the full file into <api>/images/ on open.
     // Remote danbooru URLs 403 inside Qt (browser UA, no Referer), so
     // there is no remote fallback — fetchOriginal() downloads it first.
+    // The originals path below is legacy compat only.
     if (img && fullIds[String(img.id)])
-        return "file://" + getIconPath(booruPath, img, "originals")
+        return "file://" + getIconPath(booruPath, img, "images")
     return ""
 }
 

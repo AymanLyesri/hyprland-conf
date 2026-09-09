@@ -147,6 +147,7 @@ Rectangle {
                             }
                         }
                     }
+                }
             }
 
             // Add tag entry + search

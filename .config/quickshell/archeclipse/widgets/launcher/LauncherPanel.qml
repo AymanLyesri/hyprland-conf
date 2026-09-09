@@ -259,99 +259,118 @@ Rectangle {
             color: Theme.bg
             clip: true
 
-            Column {
+            ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 10
                 spacing: 10
 
-                // QuickApps (favorites)
+                // QuickApps (favorites) — own smooth flickable
                 Text {
                     text: "Quick Apps"
                     font.bold: true
                     font.pixelSize: Theme.fontSize + 2
                     color: Theme.fg
+                    Layout.fillWidth: true
                 }
-                Column {
-                    width: parent.width
+                SmoothListView {
+                    id: quickList
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    Layout.preferredHeight: 180
+                    Layout.minimumHeight: 80
+                    clip: true
                     spacing: 4
-                    Repeater {
-                        model: Launcher.quickAppOrder.length > 0 ? Launcher.quickAppOrder : []
-                        delegate: Rectangle {
-                            required property var modelData
-                            width: parent.width
-                            height: 46
-                            radius: Theme.radius - 2
-                            color: mouse.hovered ? Theme.surfaceHover : "transparent"
-                            AppEntry {
-                                anchors.fill: parent
-                                anchors.leftMargin: 8
-                                anchors.rightMargin: 8
-                                entry: modelData
-                                selected: mouse.hovered === true
-                                compact: true
-                            }
-                            MouseArea {
-                                id: mouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: {
-                                    if (modelData.launch) {
-                                        Launcher.touchQuickApp(modelData.name);
-                                        modelData.launch();
-                                        BarState.deactivate("search");
-                                    }
+                    focus: false
+                    keyNavigationEnabled: false
+                    model: Launcher.quickAppOrder.length > 0 ? Launcher.quickAppOrder : []
+                    ScrollBar.vertical: ScrollBar {
+                        policy: ScrollBar.AsNeeded
+                    }
+                    delegate: Rectangle {
+                        required property var modelData
+                        width: ListView.view.width
+                        height: 46
+                        radius: Theme.radius - 2
+                        color: mouse.hovered ? Theme.surfaceHover : "transparent"
+                        AppEntry {
+                            anchors.fill: parent
+                            anchors.leftMargin: 8
+                            anchors.rightMargin: 8
+                            entry: modelData
+                            selected: mouse.hovered === true
+                            compact: true
+                        }
+                        MouseArea {
+                            id: mouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                if (modelData.launch) {
+                                    Launcher.touchQuickApp(modelData.name);
+                                    modelData.launch();
+                                    BarState.deactivate("search");
                                 }
                             }
                         }
                     }
                 }
 
-                // AppHistory (recent apps)
+                // AppHistory (recent apps) — own smooth flickable
                 Text {
                     text: "Recent Apps"
                     font.bold: true
                     font.pixelSize: Theme.fontSize + 2
                     color: Theme.fg
-                    topPadding: 6
+                    Layout.fillWidth: true
                 }
-                Column {
-                    width: parent.width
+                // Empty state (AGS AppHistory "Empty History" label)
+                Text {
+                    visible: Launcher.recentApps().length === 0
+                    text: "Empty History"
+                    font.pixelSize: Theme.fontSize - 1
+                    color: Theme.muted
+                    leftPadding: 8
+                    Layout.fillWidth: true
+                }
+                SmoothListView {
+                    id: recentList
+                    visible: Launcher.recentApps().length > 0
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    Layout.preferredHeight: 180
+                    Layout.minimumHeight: 80
+                    clip: true
                     spacing: 4
-                    // Empty state (AGS AppHistory "Empty History" label)
-                    Text {
-                        visible: Launcher.recentApps().length === 0
-                        text: "Empty History"
-                        font.pixelSize: Theme.fontSize - 1
-                        color: Theme.muted
-                        leftPadding: 8
+                    focus: false
+                    keyNavigationEnabled: false
+                    model: Launcher.recentApps()
+                    ScrollBar.vertical: ScrollBar {
+                        policy: ScrollBar.AsNeeded
                     }
-                    Repeater {
-                        model: Launcher.recentApps()
-                        delegate: Rectangle {
-                            required property var modelData
-                            width: parent.width
-                            height: 42
-                            radius: Theme.radius - 2
-                            color: rmouse.hovered ? Theme.surfaceHover : "transparent"
-                            AppEntry {
-                                anchors.fill: parent
-                                anchors.leftMargin: 8
-                                anchors.rightMargin: 8
-                                entry: modelData
-                                selected: rmouse.hovered === true
-                                compact: true
-                            }
-                            MouseArea {
-                                id: rmouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: {
-                                    if (modelData.launch) {
-                                        modelData.launch();
-                                        BarState.deactivate("search");
-                                    }
+                    delegate: Rectangle {
+                        required property var modelData
+                        width: ListView.view.width
+                        height: 42
+                        radius: Theme.radius - 2
+                        color: rmouse.hovered ? Theme.surfaceHover : "transparent"
+                        AppEntry {
+                            anchors.fill: parent
+                            anchors.leftMargin: 8
+                            anchors.rightMargin: 8
+                            entry: modelData
+                            selected: rmouse.hovered === true
+                            compact: true
+                        }
+                        MouseArea {
+                            id: rmouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                if (modelData.launch) {
+                                    modelData.launch();
+                                    BarState.deactivate("search");
                                 }
                             }
                         }

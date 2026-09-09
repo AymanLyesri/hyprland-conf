@@ -75,9 +75,8 @@ Rectangle {
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         onClicked: mouse => {
             if (mouse.button === Qt.RightButton) {
-                // Right-click: set as waifu (AGS renderAsWaifuWidget)
-                Settings.waifu = image;
-                Settings.persist();
+                // Right-click: set as waifu (shared service, same as dialog).
+                BooruActions.setAsWaifu(image);
             } else {
                 // Left-click: float the detail card at this card's Y
                 // (viewer captures the anchor + opens the island).

@@ -306,7 +306,7 @@ PanelWindow {
 
                         delegate: Item {
                             required property var modelData
-                            readonly property bool isMedia: modelData.name === "Media"
+                            readonly property bool isBare: modelData.name === "Media" || modelData.name === "Waifu"
                             // Fill the padded area, not the full Column width:
                             // width: parent.width here overshoots the viewport
                             // by leftPadding+rightPadding and clip cuts the
@@ -325,7 +325,7 @@ PanelWindow {
                             // cards; QS cards have fixed heights with internal scroll).
                             // Heights must stay in sync with each widget's content.
                             // Each widget owns its inner padding (8px per side);
-                            // Media has no outer card and sizes to its content.
+                            // Media/Waifu have no outer card and size to content.
                             height: {
                                 switch (modelData.name) {
                                 case "Waifu":
@@ -334,14 +334,13 @@ PanelWindow {
                                         if (!wd || !wd.id)
                                             return 200;
                                         // Same base as WaifuWidget.mediaHeight
-                                        // (widget insets 8px per side for its own padding).
-                                        const w = width - 16;
+                                        // (no outside container: full width).
+                                        const w = width;
                                         const a = (wd.width > 0 && wd.height > 0) ? wd.width / wd.height : 1.0;
                                         const h = Math.min(Math.max(w / a, 120), 520);
                                         // Overlay layout: actions float on top of
-                                        // the image, so the card is just the
-                                        // media + the widget's own vertical padding.
-                                        return h + 16;
+                                        // the image, so the card is just the media.
+                                        return h;
                                     }
                                 case "Media":
                                     return 170;
@@ -360,24 +359,28 @@ PanelWindow {
                                             return 150;
                                         return Math.min(520, 150 + n * 110);
                                     }
-                                case "ScriptTimer":
-                                    return 320;
-                                case "Crypto":
-                                    return 440;
                                 case "Calendar":
                                     return 330;
                                 case "SystemResources":
-                                    return 300;
+                                    {
+                                        // Shared SystemResourcesContent stacks
+                                        // vertically on narrow panels, so measure
+                                        // instead of using a fixed height.
+                                        const measured = widgetLoader.item ? widgetLoader.item.implicitHeight : 0;
+                                        if (measured > 0)
+                                            return Math.min(700, Math.max(200, measured + 16));
+                                        return 300;
+                                    }
                                 default:
                                     return 300;
                                 }
                             }
-                            // Flat card. Media renders as-is
+                            // Flat card. Media/Waifu render as-is
                             // with no outer card container.
                             Rectangle {
                                 id: cardBg
                                 anchors.fill: parent
-                                visible: !isMedia
+                                visible: !isBare
 
                                 color: Theme.surface
                                 radius: Theme.radius
@@ -387,7 +390,7 @@ PanelWindow {
                                 id: widgetLoader
                                 // No inset here: each widget sets its own inner
                                 // padding so content never paints over the card
-                                // border. Media fills the delegate with no card.
+                                // border. Media/Waifu fill the delegate with no card.
                                 anchors.fill: parent
                                 sourceComponent: {
                                     switch (modelData.name) {
@@ -397,10 +400,6 @@ PanelWindow {
                                         return mediaWidget;
                                     case "NotificationHistory":
                                         return notificationHistoryWidget;
-                                    case "ScriptTimer":
-                                        return scriptTimerWidget;
-                                    case "Crypto":
-                                        return cryptoWidget;
                                     case "Calendar":
                                         return calendarWidget;
                                     case "SystemResources":
@@ -430,12 +429,6 @@ PanelWindow {
             }
         }
         Component {
-            id: cryptoWidget
-            CryptoWidget {
-                Layout.fillWidth: true
-            }
-        }
-        Component {
             id: mediaWidget
             MediaWidget {
                 Layout.fillWidth: true
@@ -444,12 +437,6 @@ PanelWindow {
         Component {
             id: notificationHistoryWidget
             NotificationHistoryWidget {
-                Layout.fillWidth: true
-            }
-        }
-        Component {
-            id: scriptTimerWidget
-            ScriptTimerWidget {
                 Layout.fillWidth: true
             }
         }

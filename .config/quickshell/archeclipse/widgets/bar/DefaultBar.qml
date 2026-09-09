@@ -272,11 +272,11 @@ Row {
         id: utilities
         spacing: Theme.spacing
 
+        ControlPanelButton {}
         Battery {}
         Brightness {}
         Volume {}
         Tray {}
         ResourceMonitor {}
-        ControlPanelButton {}
     }
 }

@@ -52,8 +52,6 @@ Singleton {
         { name: "Waifu",               icon: "", enabled: true },
         { name: "Media",               icon: "", enabled: true },
         { name: "NotificationHistory", icon: "", enabled: true },
-        { name: "ScriptTimer",         icon: "󰀠", enabled: false },
-        { name: "Crypto",              icon: "", enabled: false },
         { name: "Calendar",            icon: "󰃰", enabled: true },
         { name: "SystemResources",     icon: "󰍛", enabled: true },
     ]
@@ -464,7 +462,13 @@ Singleton {
                 const _wc = s.wallpaperSwitcher?.category
                 root.wallpaperCategory = ((typeof _wc === "object" && _wc !== null ? _wc.value : _wc) ?? "defaults/sfw")
                 root.rightPanelWidth = (typeof s.rightPanel?.width === "object" && s.rightPanel?.width !== null ? s.rightPanel.width.value : s.rightPanel?.width) ?? 250
-                root.rightPanelWidgets = s.rightPanel?.widgets ?? root.rightPanelWidgets
+                // Drop stale/removed widgets (e.g. retired Crypto/ScriptTimer)
+                // so deleted options never reappear from an old settings file.
+                if (Array.isArray(s.rightPanel?.widgets)) {
+                    const _known = new Set(root.rightPanelWidgets.map(w => w.name));
+                    const _filtered = s.rightPanel.widgets.filter(w => w && _known.has(w.name));
+                    root.rightPanelWidgets = _filtered.length > 0 ? _filtered : root.rightPanelWidgets;
+                }
                 root.autoWorkspaceSwitching = s.autoWorkspaceSwitching?.value ?? true
 
                 // AGS ensureRatingTagFirst parity: rating tag leads, defaulting

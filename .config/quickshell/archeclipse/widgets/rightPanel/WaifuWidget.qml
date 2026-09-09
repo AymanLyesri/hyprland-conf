@@ -49,8 +49,8 @@ Item {
     readonly property real mediaHeight: {
         if (!root.hasWaifu)
             return 0;
-        // Widget owns its padding: 8px per side.
-        var w = root.widgetWidth - 16;
+        // No outside container: image fills the widget edge-to-edge.
+        var w = root.widgetWidth;
         if (w <= 0)
             w = root.widgetWidth;
         var h = w / root.aspectRatio;
@@ -297,9 +297,6 @@ Item {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.topMargin: 8
-        anchors.leftMargin: 8
-        anchors.rightMargin: 8
         height: root.mediaHeight
         visible: root.hasWaifu
         clip: true
@@ -326,7 +323,6 @@ Item {
         MediaVideo {
             id: mediaVideo
             anchors.fill: parent
-            anchors.margins: 4
             source: root.imagePath
             autoplay: true
             loop: true
@@ -437,182 +433,145 @@ Item {
                 anchors.margins: 8
                 spacing: 8
 
-        // Section 1: bookmark + pin
-        RowLayout {
-            width: parent.width
-            height: 28
-            spacing: 8
-            // Bookmark toggle
-            AppButton {
-                property bool bookmarked: (Settings.booru.bookmarks || []).some(b => b.id === root.wd_id && b.api?.value === root.wd_apiValue)
-                text: root.bookmarked ? "\u{f004}" : "\u{f0160}"
-                Layout.fillWidth: true
-                Layout.preferredHeight: 28
-                tooltipText: "Bookmark"
-                onClicked: {
-                    const bookmarks = Settings.booru.bookmarks || [];
-                    const idx = bookmarks.findIndex(b => b.id === root.wd_id && b.api?.value === root.wd_apiValue);
-                    if (idx >= 0) {
-                        const next = bookmarks.slice();
-                        next.splice(idx, 1);
-                        Settings.booru.bookmarks = next;
-                    } else {
-                        Settings.booru.bookmarks = [...bookmarks, root.wd];
+                // Section 1: bookmark + pin
+                RowLayout {
+                    width: parent.width
+                    height: 28
+                    spacing: 8
+                    // Bookmark toggle
+                    AppButton {
+                        property bool bookmarked: BooruActions.isBookmarked(root.wd)
+                        text: bookmarked ? "" : ""
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 28
+                        toggle: true
+                        checked: bookmarked
+                        tooltipText: bookmarked ? "Remove bookmark" : "Bookmark"
+                        onClicked: BooruActions.toggleBookmark(root.wd)
                     }
-                    Settings.persist();
-                }
-            }
 
-            // Pin to terminal
-            AppButton {
-                property bool pinned: (Settings.booru.pins || []).some(p => p.id === root.wd_id && p.api?.value === root.wd_apiValue)
-                text: pinned ? "\u{f44c}" : "\u{f98b}"
-                Layout.fillWidth: true
-                Layout.preferredHeight: 28
-                tooltipText: root.isVideo ? "Cannot pin videos" : "Pin to terminal"
-                enabled: !root.isVideo
-                onClicked: {
-                    const pins = Settings.booru.pins || [];
-                    const existing = pins.findIndex(p => p.id === root.wd_id && p.api?.value === root.wd_apiValue);
-                    if (existing >= 0) {
-                        const next = pins.slice();
-                        next.splice(existing, 1);
-                        Settings.booru.pins = next;
-                    } else {
-                        Settings.booru.pins = [...pins, root.wd];
+                    // Pin to terminal
+                    AppButton {
+                        property bool pinned: BooruActions.isPinned(root.wd)
+                        text: "\uf08d"
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 28
+                        toggle: true
+                        checked: pinned
+                        tooltipText: root.isVideo ? "Cannot pin videos" : (pinned ? "Unpin from terminal" : "Pin to terminal")
+                        enabled: !root.isVideo
+                        onClicked: BooruActions.togglePinned(root.wd)
                     }
-                    Settings.persist();
                 }
-            }
-        }
 
-        // Section 2: open in viewer + browser + copy
-        RowLayout {
-            width: parent.width
-            height: 28
-            spacing: 8
+                // Section 2: open in viewer + browser + copy
+                RowLayout {
+                    width: parent.width
+                    height: 28
+                    spacing: 8
 
-            // Open in viewer
-            AppButton {
-                text: "\u{f07c}"
-                Layout.fillWidth: true
-                Layout.preferredHeight: 28
-                tooltipText: "Open in viewer"
-                onClicked: Quickshell.execDetached(["xdg-open", root.imagePath])
-            }
+                    // Open in viewer
+                    AppButton {
+                        text: "\u{f07c}"
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 28
+                        tooltipText: "Open in viewer"
+                        onClicked: Quickshell.execDetached(["xdg-open", root.imagePath])
+                    }
 
-            // Open in browser
-            AppButton {
-                text: "\u{f08e}"
-                Layout.fillWidth: true
-                Layout.preferredHeight: 28
-                tooltipText: "Open in browser"
-                onClicked: {
-                    const api = root.booruApis[root.selectedApiIndex];
-                    Quickshell.execDetached(["xdg-open", api.idSearchUrl + root.wd_id]);
+                    // Open in browser
+                    AppButton {
+                        text: "\u{f08e}"
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 28
+                        tooltipText: "Open post in browser"
+                        onClicked: BooruActions.openInBrowser(root.wd)
+                    }
+
+                    // Copy post ID (shared service — same as the dialog's Copy ID).
+                    AppButton {
+                        text: "\u{f0c5}"
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 28
+                        tooltipText: "Copy post ID"
+                        onClicked: BooruActions.copyTag(String(root.wd_id))
+                    }
                 }
-            }
 
-            // Copy to clipboard
-            AppButton {
-                text: "\u{f0c5}"
-                Layout.fillWidth: true
-                Layout.preferredHeight: 28
-                tooltipText: "Copy to clipboard"
-                enabled: !root.isVideo
-                onClicked: Quickshell.execDetached(["bash", "-c", `wl-copy --type image/png < '${root.imagePath}'`])
-            }
-        }
+                // Section 3: search by ID + entry + upload
+                RowLayout {
+                    width: parent.width
+                    height: 28
+                    spacing: 8
+                    // Search by ID
+                    AppButton {
+                        text: "\u{f002}"
+                        Layout.preferredWidth: 36
+                        Layout.preferredHeight: 28
+                        tooltipText: "Search by post ID"
+                        onClicked: idSearchField.forceActiveFocus()
+                    }
 
-        // Section 3: search by ID + entry + upload
-        RowLayout {
-            width: parent.width
-            height: 28
-            spacing: 8
-            // Search by ID
-            AppButton {
-                text: "\u{f002}"
-                Layout.preferredWidth: 36
-                Layout.preferredHeight: 28
-                tooltipText: "Search by post ID"
-                onClicked: idSearchField.forceActiveFocus()
-            }
-
-        AppTextField {
-            id: idSearchField
-            Layout.fillWidth: true
-            Layout.preferredHeight: 28
-            placeholderText: "Post ID..."
-            text: root.wd && root.wd.input_history ? root.wd.input_history : ""
-            font.family: Theme.fontFamily
-            onActiveFocusChanged: root.searchFocused = activeFocus
-            onAccepted: {
-                root.loadingState = "loading";
-                const api = root.booruApis[root.selectedApiIndex];
-                const proc = Qt.createQmlObject('import Quickshell.Io; Process { command: ["python", "' + root.booruScript + '", "--api", "' + api.value + '", "--id", "' + text + '"] }', root);
-                proc.running = true;
-                proc.stdout = Qt.createQmlObject('import Quickshell.Io; StdioCollector {}', root);
-                proc.stdout.onStreamFinished.connect(function () {
-                    const response = proc.stdout.text;
-                    try {
-                        if (response && response.trim() !== "" && response.trim().startsWith("[")) {
-                            const parsed = JSON.parse(response);
-                            if (parsed.length > 0) {
-                                const img = parsed[0];
-                                const newWaifu = {
-                                    id: img.id,
-                                    width: img.width,
-                                    height: img.height,
-                                    api: api,
-                                    tags: img.tags || [],
-                                    extension: img.extension,
-                                    url: img.url,
-                                    preview: img.preview,
-                                    input_history: text   // persist last ID (AGS waifuWidget.input_history)
-                                };
-                                Settings.waifu = newWaifu;
-                                Settings.persist();
+                    AppTextField {
+                        id: idSearchField
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 28
+                        placeholderText: "Post ID..."
+                        text: root.wd && root.wd.input_history ? root.wd.input_history : ""
+                        font.family: Theme.fontFamily
+                        onActiveFocusChanged: root.searchFocused = activeFocus
+                        onAccepted: {
+                            const query = (text || "").trim();
+                            if (query === "")
+                                return;
+                            root.loadingState = "loading";
+                            const api = root.booruApis[root.selectedApiIndex];
+                            BooruActions.fetchPostById(api.value, query, function (img, err) {
+                                if (!img) {
+                                    root.loadingState = "error";
+                                    Notifications.notify({
+                                        summary: "Waifu search failed",
+                                        body: err || "Post not found"
+                                    });
+                                    return;
+                                }
+                                img.input_history = query; // persist last ID (AGS waifuWidget.input_history)
+                                Settings.waifu = img;
+                                Settings.schedulePersist();
                                 root.loadingState = "success";
-                            }
+                            });
                         }
-                    } catch (e) {
-                        root.loadingState = "error";
                     }
-                    proc.destroy();
-                });
-            }
-        }
 
-            // Upload custom image (AGS upload button: zenity select → identify dims
-            // → copy to custom/images/-1.<ext> → set as current waifu)
-            AppButton {
-                text: "\u{f093}"
-                Layout.preferredWidth: 40
-                Layout.preferredHeight: 28
-                tooltipText: "Upload custom image"
-                onClicked: root.uploadCustomImage()
-            }
-        }
-
-
-        // Section 4: API tabs
-        RowLayout {
-            width: parent.width
-            height: 28
-            spacing: 8
-            Repeater {
-                model: root.booruApis
-                delegate: AppButton {
-                    text: modelData.name
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 28
-                    toggle: true
-                    checked: root.selectedApiIndex === index
-                    onClicked: root.selectedApiIndex = index
-                    pixelSize: Theme.fontSize - 4
+                    // Upload custom image (AGS upload button: zenity select → identify dims
+                    // → copy to custom/images/-1.<ext> → set as current waifu)
+                    AppButton {
+                        text: "\u{f093}"
+                        Layout.preferredWidth: 40
+                        Layout.preferredHeight: 28
+                        tooltipText: "Upload custom image"
+                        onClicked: root.uploadCustomImage()
+                    }
                 }
-            }
-        }
+
+                // Section 4: API tabs
+                RowLayout {
+                    width: parent.width
+                    height: 28
+                    spacing: 8
+                    Repeater {
+                        model: root.booruApis
+                        delegate: AppButton {
+                            text: modelData.name
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 28
+                            toggle: true
+                            checked: root.selectedApiIndex === index
+                            onClicked: root.selectedApiIndex = index
+                            pixelSize: Theme.fontSize - 4
+                        }
+                    }
+                }
             } // actionsCol
         } // actionsOverlay
     } // mediaContainer
