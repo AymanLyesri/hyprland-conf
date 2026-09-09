@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import qs.theme
+import qs.widgets.shared
 
 // CalendarWidget — port of AGS rightPanel/components/Calendar.tsx.
 // AGS mounts a Gtk.Calendar (navigable month view, "today" emphasis).
@@ -97,24 +98,16 @@ Item {
             width: parent.width
             spacing: 8
 
-            Rectangle {
+            AppButton {
                 width: 26
                 height: 26
-                radius: 6
-                color: prevMa.containsMouse ? Theme.surfaceActive : Theme.surface
-                Text {
-                    anchors.centerIn: parent
-                    text: "\u{F053}" // chevron-left
-                    color: prevMa.containsMouse ? Theme.accent : Theme.fg
-                    font.pixelSize: Theme.fontSize
-                }
-                MouseArea {
-                    id: prevMa
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: root.moveMonth(-1)
-                }
+                cornerRadius: 6
+                idleBg: Theme.surface
+                hoverFg: Theme.accent
+                icon: "\u{F053}"
+                pixelSize: Theme.fontSize
+                tooltipText: "Previous month"
+                onClicked: root.moveMonth(-1)
             }
 
             Text {
@@ -128,24 +121,16 @@ Item {
                 font.bold: true
             }
 
-            Rectangle {
+            AppButton {
                 width: 26
                 height: 26
-                radius: 6
-                color: nextMa.containsMouse ? Theme.surfaceActive : Theme.surface
-                Text {
-                    anchors.centerIn: parent
-                    text: "\u{F054}" // chevron-right
-                    color: nextMa.containsMouse ? Theme.accent : Theme.fg
-                    font.pixelSize: Theme.fontSize
-                }
-                MouseArea {
-                    id: nextMa
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: root.moveMonth(1)
-                }
+                cornerRadius: 6
+                idleBg: Theme.surface
+                hoverFg: Theme.accent
+                icon: "\u{F054}"
+                pixelSize: Theme.fontSize
+                tooltipText: "Next month"
+                onClicked: root.moveMonth(1)
             }
         }
 

@@ -74,7 +74,7 @@ Item {
 
             Column {
                 id: settingsCol
-                spacing: 16
+                spacing: Theme.sectionSpacing
                 width: settingsScroll.width
 
                 // ============ BAR SETTINGS ============
@@ -707,95 +707,95 @@ Item {
                         Column {
                             width: parent.width
                             spacing: 4
-                        Repeater {
-                            id: apiKeyRepeater
-                            model: [
-                                {
-                                    path: "openrouter.user",
-                                    label: "OpenRouter User"
-                                },
-                                {
-                                    path: "openrouter.key",
-                                    label: "OpenRouter API Key"
-                                },
-                                {
-                                    path: "danbooru.user",
-                                    label: "Danbooru User"
-                                },
-                                {
-                                    path: "danbooru.key",
-                                    label: "Danbooru Key"
-                                },
-                                {
-                                    path: "gelbooru.user",
-                                    label: "Gelbooru User"
-                                },
-                                {
-                                    path: "gelbooru.key",
-                                    label: "Gelbooru Key"
-                                },
-                                {
-                                    path: "safebooru.user",
-                                    label: "Safebooru User"
-                                },
-                                {
-                                    path: "safebooru.key",
-                                    label: "Safebooru Key"
-                                }
-                            ]
-                            delegate: Rectangle {
-                                // NOTE: Repeater has no width — size off the
-                                // section Column instead.
-                                width: parent.width
-                                height: 34
-                                color: Theme.bg
-                                radius: 4
-
-                                property bool reveal: false
-
-                                RowLayout {
-                                    anchors.fill: parent
-                                    anchors.margins: 6
-                                    spacing: 6
-                                    Label {
-                                        text: modelData.label
-                                        color: Theme.fg
-                                        Layout.fillWidth: true
-                                        elide: Text.ElideRight
+                            Repeater {
+                                id: apiKeyRepeater
+                                model: [
+                                    {
+                                        path: "openrouter.user",
+                                        label: "OpenRouter User"
+                                    },
+                                    {
+                                        path: "openrouter.key",
+                                        label: "OpenRouter API Key"
+                                    },
+                                    {
+                                        path: "danbooru.user",
+                                        label: "Danbooru User"
+                                    },
+                                    {
+                                        path: "danbooru.key",
+                                        label: "Danbooru Key"
+                                    },
+                                    {
+                                        path: "gelbooru.user",
+                                        label: "Gelbooru User"
+                                    },
+                                    {
+                                        path: "gelbooru.key",
+                                        label: "Gelbooru Key"
+                                    },
+                                    {
+                                        path: "safebooru.user",
+                                        label: "Safebooru User"
+                                    },
+                                    {
+                                        path: "safebooru.key",
+                                        label: "Safebooru Key"
                                     }
-                                    AppTextField {
-                                        id: keyField
-                                        text: root.getNested(Settings.apiKeys, modelData.path)
-                                        placeholderText: "Enter " + modelData.label
-                                        echoMode: parent.parent.reveal ? TextField.Normal : TextField.Password
-                                        fillColor: "transparent"
-                                        Layout.preferredWidth: 160
-                                        onAccepted: {
-                                            root.setNestedValue("apiKeys", modelData.path, keyField.text, true);
-                                            // AGS notifies masked value on save (secret)
-                                            Notifications.notify({
-                                                summary: modelData.label,
-                                                body: "Changed to ••••••••"
-                                            });
+                                ]
+                                delegate: Rectangle {
+                                    // NOTE: Repeater has no width — size off the
+                                    // section Column instead.
+                                    width: parent.width
+                                    height: 34
+                                    color: Theme.bg
+                                    radius: 4
+
+                                    property bool reveal: false
+
+                                    RowLayout {
+                                        anchors.fill: parent
+                                        anchors.margins: 6
+                                        spacing: 6
+                                        Label {
+                                            text: modelData.label
+                                            color: Theme.fg
+                                            Layout.fillWidth: true
+                                            elide: Text.ElideRight
                                         }
-                                    }
-                                    AppButton {
-                                        text: parent.parent.reveal ? "hide" : "show"
-                                        Layout.preferredWidth: 44
-                                        Layout.preferredHeight: 24
-                                        visible: keyField.text !== ""
-                                        onClicked: parent.parent.reveal = !parent.parent.reveal
-                                    }
-                                    AppButton {
-                                        text: "copy"
-                                        Layout.preferredWidth: 44
-                                        Layout.preferredHeight: 24
-                                        onClicked: root.copyText(keyField.text)
+                                        AppTextField {
+                                            id: keyField
+                                            text: root.getNested(Settings.apiKeys, modelData.path)
+                                            placeholderText: "Enter " + modelData.label
+                                            echoMode: parent.parent.reveal ? TextField.Normal : TextField.Password
+                                            fillColor: "transparent"
+                                            Layout.preferredWidth: 160
+                                            onAccepted: {
+                                                root.setNestedValue("apiKeys", modelData.path, keyField.text, true);
+                                                // AGS notifies masked value on save (secret)
+                                                Notifications.notify({
+                                                    summary: modelData.label,
+                                                    body: "Changed to ••••••••"
+                                                });
+                                            }
+                                        }
+                                        AppButton {
+                                            text: parent.parent.reveal ? "hide" : "show"
+                                            Layout.preferredWidth: 44
+                                            Layout.preferredHeight: 24
+                                            visible: keyField.text !== ""
+                                            onClicked: parent.parent.reveal = !parent.parent.reveal
+                                        }
+                                        AppButton {
+                                            text: "copy"
+                                            Layout.preferredWidth: 44
+                                            Layout.preferredHeight: 24
+                                            onClicked: root.copyText(keyField.text)
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
                     }
                 }
 
@@ -891,354 +891,354 @@ Item {
                             width: parent.width
                             spacing: 6
 
-                        // Decoration: Rounding
-                        RowLayout {
-                            width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "Decoration: Rounding"
-                                Layout.preferredWidth: 170
-                                color: Theme.fg
-                            }
-                            AppSlider {
-                                id: hypRounding
-                                from: 0
-                                to: 50
-                                value: root.hyprGet("decoration.rounding")
-                                Layout.fillWidth: true
-                                onValueChanged: {
-                                    const v = Math.round(value);
-                                    if (v === root.hyprGet("decoration.rounding"))
-                                        return;
-                                    root.hyprSet("decoration.rounding", v);
-                                    root.applyHyprlandSettingLive("decoration.rounding", v);
+                            // Decoration: Rounding
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Decoration: Rounding"
+                                    Layout.preferredWidth: 170
+                                    color: Theme.fg
+                                }
+                                AppSlider {
+                                    id: hypRounding
+                                    from: 0
+                                    to: 50
+                                    value: root.hyprGet("decoration.rounding")
+                                    Layout.fillWidth: true
+                                    onValueChanged: {
+                                        const v = Math.round(value);
+                                        if (v === root.hyprGet("decoration.rounding"))
+                                            return;
+                                        root.hyprSet("decoration.rounding", v);
+                                        root.applyHyprlandSettingLive("decoration.rounding", v);
+                                    }
+                                }
+                                Label {
+                                    text: root.hyprGet("decoration.rounding")
+                                    Layout.preferredWidth: 30
+                                    color: Theme.fgDim
                                 }
                             }
-                            Label {
-                                text: root.hyprGet("decoration.rounding")
-                                Layout.preferredWidth: 30
-                                color: Theme.fgDim
-                            }
-                        }
-                        // Decoration: Blur Enabled
-                        RowLayout {
-                            width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "Decoration: Blur Enabled"
-                                color: Theme.fg
-                                Layout.fillWidth: true
-                            }
-                            AppCheckBox {
-                                checked: root.hyprGet("decoration.blur.enabled")
-                                onToggled: {
-                                    root.hyprSet("decoration.blur.enabled", checked);
-                                    root.applyHyprlandSettingLive("decoration.blur.enabled", checked);
+                            // Decoration: Blur Enabled
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Decoration: Blur Enabled"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppCheckBox {
+                                    checked: root.hyprGet("decoration.blur.enabled")
+                                    onToggled: {
+                                        root.hyprSet("decoration.blur.enabled", checked);
+                                        root.applyHyprlandSettingLive("decoration.blur.enabled", checked);
+                                    }
                                 }
                             }
-                        }
-                        // Decoration: Blur Size
-                        RowLayout {
-                            width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "Decoration: Blur Size"
-                                Layout.preferredWidth: 170
-                                color: Theme.fg
-                            }
-                            AppSlider {
-                                from: 0
-                                to: 10
-                                value: root.hyprGet("decoration.blur.size")
-                                Layout.fillWidth: true
-                                onValueChanged: {
-                                    const v = Math.round(value);
-                                    if (v === root.hyprGet("decoration.blur.size"))
-                                        return;
-                                    root.hyprSet("decoration.blur.size", v);
-                                    root.applyHyprlandSettingLive("decoration.blur.size", v);
+                            // Decoration: Blur Size
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Decoration: Blur Size"
+                                    Layout.preferredWidth: 170
+                                    color: Theme.fg
+                                }
+                                AppSlider {
+                                    from: 0
+                                    to: 10
+                                    value: root.hyprGet("decoration.blur.size")
+                                    Layout.fillWidth: true
+                                    onValueChanged: {
+                                        const v = Math.round(value);
+                                        if (v === root.hyprGet("decoration.blur.size"))
+                                            return;
+                                        root.hyprSet("decoration.blur.size", v);
+                                        root.applyHyprlandSettingLive("decoration.blur.size", v);
+                                    }
+                                }
+                                Label {
+                                    text: root.hyprGet("decoration.blur.size")
+                                    Layout.preferredWidth: 30
+                                    color: Theme.fgDim
                                 }
                             }
-                            Label {
-                                text: root.hyprGet("decoration.blur.size")
-                                Layout.preferredWidth: 30
-                                color: Theme.fgDim
-                            }
-                        }
-                        // Decoration: Blur Passes
-                        RowLayout {
-                            width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "Decoration: Blur Passes"
-                                Layout.preferredWidth: 170
-                                color: Theme.fg
-                            }
-                            AppSlider {
-                                from: 0
-                                to: 10
-                                value: root.hyprGet("decoration.blur.passes")
-                                Layout.fillWidth: true
-                                onValueChanged: {
-                                    const v = Math.round(value);
-                                    if (v === root.hyprGet("decoration.blur.passes"))
-                                        return;
-                                    root.hyprSet("decoration.blur.passes", v);
-                                    root.applyHyprlandSettingLive("decoration.blur.passes", v);
+                            // Decoration: Blur Passes
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Decoration: Blur Passes"
+                                    Layout.preferredWidth: 170
+                                    color: Theme.fg
+                                }
+                                AppSlider {
+                                    from: 0
+                                    to: 10
+                                    value: root.hyprGet("decoration.blur.passes")
+                                    Layout.fillWidth: true
+                                    onValueChanged: {
+                                        const v = Math.round(value);
+                                        if (v === root.hyprGet("decoration.blur.passes"))
+                                            return;
+                                        root.hyprSet("decoration.blur.passes", v);
+                                        root.applyHyprlandSettingLive("decoration.blur.passes", v);
+                                    }
+                                }
+                                Label {
+                                    text: root.hyprGet("decoration.blur.passes")
+                                    Layout.preferredWidth: 30
+                                    color: Theme.fgDim
                                 }
                             }
-                            Label {
-                                text: root.hyprGet("decoration.blur.passes")
-                                Layout.preferredWidth: 30
-                                color: Theme.fgDim
-                            }
-                        }
-                        // Decoration: Blur Xray
-                        RowLayout {
-                            width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "Decoration: Blur Xray"
-                                color: Theme.fg
-                                Layout.fillWidth: true
-                            }
-                            AppCheckBox {
-                                checked: root.hyprGet("decoration.blur.xray")
-                                onToggled: {
-                                    root.hyprSet("decoration.blur.xray", checked);
-                                    root.applyHyprlandSettingLive("decoration.blur.xray", checked);
+                            // Decoration: Blur Xray
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Decoration: Blur Xray"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppCheckBox {
+                                    checked: root.hyprGet("decoration.blur.xray")
+                                    onToggled: {
+                                        root.hyprSet("decoration.blur.xray", checked);
+                                        root.applyHyprlandSettingLive("decoration.blur.xray", checked);
+                                    }
                                 }
                             }
-                        }
-                        // Decoration: Shadow Enabled
-                        RowLayout {
-                            width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "Decoration: Shadow Enabled"
-                                color: Theme.fg
-                                Layout.fillWidth: true
-                            }
-                            AppCheckBox {
-                                checked: root.hyprGet("decoration.shadow.enabled")
-                                onToggled: {
-                                    root.hyprSet("decoration.shadow.enabled", checked);
-                                    root.applyHyprlandSettingLive("decoration.shadow.enabled", checked);
+                            // Decoration: Shadow Enabled
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Decoration: Shadow Enabled"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppCheckBox {
+                                    checked: root.hyprGet("decoration.shadow.enabled")
+                                    onToggled: {
+                                        root.hyprSet("decoration.shadow.enabled", checked);
+                                        root.applyHyprlandSettingLive("decoration.shadow.enabled", checked);
+                                    }
                                 }
                             }
-                        }
-                        // Decoration: Shadow Range
-                        RowLayout {
-                            width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "Decoration: Shadow Range"
-                                Layout.preferredWidth: 170
-                                color: Theme.fg
-                            }
-                            AppSlider {
-                                from: 0
-                                to: 20
-                                value: root.hyprGet("decoration.shadow.range")
-                                Layout.fillWidth: true
-                                onValueChanged: {
-                                    const v = Math.round(value);
-                                    if (v === root.hyprGet("decoration.shadow.range"))
-                                        return;
-                                    root.hyprSet("decoration.shadow.range", v);
-                                    root.applyHyprlandSettingLive("decoration.shadow.range", v);
+                            // Decoration: Shadow Range
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Decoration: Shadow Range"
+                                    Layout.preferredWidth: 170
+                                    color: Theme.fg
+                                }
+                                AppSlider {
+                                    from: 0
+                                    to: 20
+                                    value: root.hyprGet("decoration.shadow.range")
+                                    Layout.fillWidth: true
+                                    onValueChanged: {
+                                        const v = Math.round(value);
+                                        if (v === root.hyprGet("decoration.shadow.range"))
+                                            return;
+                                        root.hyprSet("decoration.shadow.range", v);
+                                        root.applyHyprlandSettingLive("decoration.shadow.range", v);
+                                    }
+                                }
+                                Label {
+                                    text: root.hyprGet("decoration.shadow.range")
+                                    Layout.preferredWidth: 30
+                                    color: Theme.fgDim
                                 }
                             }
-                            Label {
-                                text: root.hyprGet("decoration.shadow.range")
-                                Layout.preferredWidth: 30
-                                color: Theme.fgDim
-                            }
-                        }
-                        // Decoration: Shadow Render Power
-                        RowLayout {
-                            width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "Shadow Render Power"
-                                Layout.preferredWidth: 170
-                                color: Theme.fg
-                            }
-                            AppSlider {
-                                from: 0
-                                to: 20
-                                value: root.hyprGet("decoration.shadow.render_power")
-                                Layout.fillWidth: true
-                                onValueChanged: {
-                                    const v = Math.round(value);
-                                    if (v === root.hyprGet("decoration.shadow.render_power"))
-                                        return;
-                                    root.hyprSet("decoration.shadow.render_power", v);
-                                    root.applyHyprlandSettingLive("decoration.shadow.render_power", v);
+                            // Decoration: Shadow Render Power
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Shadow Render Power"
+                                    Layout.preferredWidth: 170
+                                    color: Theme.fg
+                                }
+                                AppSlider {
+                                    from: 0
+                                    to: 20
+                                    value: root.hyprGet("decoration.shadow.render_power")
+                                    Layout.fillWidth: true
+                                    onValueChanged: {
+                                        const v = Math.round(value);
+                                        if (v === root.hyprGet("decoration.shadow.render_power"))
+                                            return;
+                                        root.hyprSet("decoration.shadow.render_power", v);
+                                        root.applyHyprlandSettingLive("decoration.shadow.render_power", v);
+                                    }
+                                }
+                                Label {
+                                    text: root.hyprGet("decoration.shadow.render_power")
+                                    Layout.preferredWidth: 30
+                                    color: Theme.fgDim
                                 }
                             }
-                            Label {
-                                text: root.hyprGet("decoration.shadow.render_power")
-                                Layout.preferredWidth: 30
-                                color: Theme.fgDim
-                            }
-                        }
-                        // General: Border Size
-                        RowLayout {
-                            width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "General: Border Size"
-                                Layout.preferredWidth: 170
-                                color: Theme.fg
-                            }
-                            AppSlider {
-                                from: 0
-                                to: 10
-                                value: root.hyprGet("general.border_size")
-                                Layout.fillWidth: true
-                                onValueChanged: {
-                                    const v = Math.round(value);
-                                    if (v === root.hyprGet("general.border_size"))
-                                        return;
-                                    root.hyprSet("general.border_size", v);
-                                    root.applyHyprlandSettingLive("general.border_size", v);
+                            // General: Border Size
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "General: Border Size"
+                                    Layout.preferredWidth: 170
+                                    color: Theme.fg
+                                }
+                                AppSlider {
+                                    from: 0
+                                    to: 10
+                                    value: root.hyprGet("general.border_size")
+                                    Layout.fillWidth: true
+                                    onValueChanged: {
+                                        const v = Math.round(value);
+                                        if (v === root.hyprGet("general.border_size"))
+                                            return;
+                                        root.hyprSet("general.border_size", v);
+                                        root.applyHyprlandSettingLive("general.border_size", v);
+                                    }
+                                }
+                                Label {
+                                    text: root.hyprGet("general.border_size")
+                                    Layout.preferredWidth: 30
+                                    color: Theme.fgDim
                                 }
                             }
-                            Label {
-                                text: root.hyprGet("general.border_size")
-                                Layout.preferredWidth: 30
-                                color: Theme.fgDim
-                            }
-                        }
-                        // General: Gaps In
-                        RowLayout {
-                            width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "General: Gaps In"
-                                Layout.preferredWidth: 170
-                                color: Theme.fg
-                            }
-                            AppSlider {
-                                from: 0
-                                to: 20
-                                value: root.hyprGet("general.gaps_in")
-                                Layout.fillWidth: true
-                                onValueChanged: {
-                                    const v = Math.round(value);
-                                    if (v === root.hyprGet("general.gaps_in"))
-                                        return;
-                                    root.hyprSet("general.gaps_in", v);
-                                    root.applyHyprlandSettingLive("general.gaps_in", v);
+                            // General: Gaps In
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "General: Gaps In"
+                                    Layout.preferredWidth: 170
+                                    color: Theme.fg
+                                }
+                                AppSlider {
+                                    from: 0
+                                    to: 20
+                                    value: root.hyprGet("general.gaps_in")
+                                    Layout.fillWidth: true
+                                    onValueChanged: {
+                                        const v = Math.round(value);
+                                        if (v === root.hyprGet("general.gaps_in"))
+                                            return;
+                                        root.hyprSet("general.gaps_in", v);
+                                        root.applyHyprlandSettingLive("general.gaps_in", v);
+                                    }
+                                }
+                                Label {
+                                    text: root.hyprGet("general.gaps_in")
+                                    Layout.preferredWidth: 30
+                                    color: Theme.fgDim
                                 }
                             }
-                            Label {
-                                text: root.hyprGet("general.gaps_in")
-                                Layout.preferredWidth: 30
-                                color: Theme.fgDim
-                            }
-                        }
-                        // General: Gaps Out
-                        RowLayout {
-                            width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "General: Gaps Out"
-                                Layout.preferredWidth: 170
-                                color: Theme.fg
-                            }
-                            AppSlider {
-                                from: 0
-                                to: 40
-                                value: root.hyprGet("general.gaps_out")
-                                Layout.fillWidth: true
-                                onValueChanged: {
-                                    const v = Math.round(value);
-                                    if (v === root.hyprGet("general.gaps_out"))
-                                        return;
-                                    root.hyprSet("general.gaps_out", v);
-                                    root.applyHyprlandSettingLive("general.gaps_out", v);
+                            // General: Gaps Out
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "General: Gaps Out"
+                                    Layout.preferredWidth: 170
+                                    color: Theme.fg
+                                }
+                                AppSlider {
+                                    from: 0
+                                    to: 40
+                                    value: root.hyprGet("general.gaps_out")
+                                    Layout.fillWidth: true
+                                    onValueChanged: {
+                                        const v = Math.round(value);
+                                        if (v === root.hyprGet("general.gaps_out"))
+                                            return;
+                                        root.hyprSet("general.gaps_out", v);
+                                        root.applyHyprlandSettingLive("general.gaps_out", v);
+                                    }
+                                }
+                                Label {
+                                    text: root.hyprGet("general.gaps_out")
+                                    Layout.preferredWidth: 30
+                                    color: Theme.fgDim
                                 }
                             }
-                            Label {
-                                text: root.hyprGet("general.gaps_out")
-                                Layout.preferredWidth: 30
-                                color: Theme.fgDim
-                            }
-                        }
-                        // Decoration: Active Opacity (float)
-                        RowLayout {
-                            width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "Decoration: Active Opacity"
-                                Layout.preferredWidth: 170
-                                color: Theme.fg
-                            }
-                            AppSlider {
-                                from: 0
-                                to: 1
-                                stepSize: 0.01
-                                value: root.hyprGet("decoration.active_opacity")
-                                Layout.fillWidth: true
-                                onValueChanged: {
-                                    const v = parseFloat(value.toFixed(2));
-                                    if (v === root.hyprGet("decoration.active_opacity"))
-                                        return;
-                                    root.hyprSet("decoration.active_opacity", v);
-                                    root.applyHyprlandSettingLive("decoration.active_opacity", v);
+                            // Decoration: Active Opacity (float)
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Decoration: Active Opacity"
+                                    Layout.preferredWidth: 170
+                                    color: Theme.fg
+                                }
+                                AppSlider {
+                                    from: 0
+                                    to: 1
+                                    stepSize: 0.01
+                                    value: root.hyprGet("decoration.active_opacity")
+                                    Layout.fillWidth: true
+                                    onValueChanged: {
+                                        const v = parseFloat(value.toFixed(2));
+                                        if (v === root.hyprGet("decoration.active_opacity"))
+                                            return;
+                                        root.hyprSet("decoration.active_opacity", v);
+                                        root.applyHyprlandSettingLive("decoration.active_opacity", v);
+                                    }
+                                }
+                                Label {
+                                    text: Number(root.hyprGet("decoration.active_opacity")).toFixed(2)
+                                    Layout.preferredWidth: 30
+                                    color: Theme.fgDim
                                 }
                             }
-                            Label {
-                                text: Number(root.hyprGet("decoration.active_opacity")).toFixed(2)
-                                Layout.preferredWidth: 30
-                                color: Theme.fgDim
-                            }
-                        }
-                        // Decoration: Inactive Opacity (float)
-                        RowLayout {
-                            width: parent.width
-                            spacing: 8
-                            Label {
-                                text: "Decoration: Inactive Opacity"
-                                Layout.preferredWidth: 170
-                                color: Theme.fg
-                            }
-                            AppSlider {
-                                from: 0
-                                to: 1
-                                stepSize: 0.01
-                                value: root.hyprGet("decoration.inactive_opacity")
-                                Layout.fillWidth: true
-                                onValueChanged: {
-                                    const v = parseFloat(value.toFixed(2));
-                                    if (v === root.hyprGet("decoration.inactive_opacity"))
-                                        return;
-                                    root.hyprSet("decoration.inactive_opacity", v);
-                                    root.applyHyprlandSettingLive("decoration.inactive_opacity", v);
+                            // Decoration: Inactive Opacity (float)
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Decoration: Inactive Opacity"
+                                    Layout.preferredWidth: 170
+                                    color: Theme.fg
+                                }
+                                AppSlider {
+                                    from: 0
+                                    to: 1
+                                    stepSize: 0.01
+                                    value: root.hyprGet("decoration.inactive_opacity")
+                                    Layout.fillWidth: true
+                                    onValueChanged: {
+                                        const v = parseFloat(value.toFixed(2));
+                                        if (v === root.hyprGet("decoration.inactive_opacity"))
+                                            return;
+                                        root.hyprSet("decoration.inactive_opacity", v);
+                                        root.applyHyprlandSettingLive("decoration.inactive_opacity", v);
+                                    }
+                                }
+                                Label {
+                                    text: Number(root.hyprGet("decoration.inactive_opacity")).toFixed(2)
+                                    Layout.preferredWidth: 30
+                                    color: Theme.fgDim
                                 }
                             }
-                            Label {
-                                text: Number(root.hyprGet("decoration.inactive_opacity")).toFixed(2)
-                                Layout.preferredWidth: 30
-                                color: Theme.fgDim
-                            }
-                        }
 
-                        // Apply / Reset
-                        RowLayout {
-                            width: parent.width
-                            spacing: 8
-                            AppButton {
-                                text: "Apply Hyprland Settings"
-                                onClicked: root.applyHyprlandSettings()
+                            // Apply / Reset
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                AppButton {
+                                    text: "Apply Hyprland Settings"
+                                    onClicked: root.applyHyprlandSettings()
+                                }
+                                AppButton {
+                                    text: "Reset to Default"
+                                    onClicked: root.resetToDefaults()
+                                }
                             }
-                            AppButton {
-                                text: "Reset to Default"
-                                onClicked: root.resetToDefaults()
-                            }
-                        }
                         }
                     }
                 }

@@ -31,38 +31,63 @@ QtObject {
         }
     }
 
-    // Stop recording process
+    // Stop recording process: the script now verifies the target PID,
+    // falls back to pgrep, and exits non-zero with a message when there
+    // is nothing to stop — surface that instead of failing silently.
     property Process _stopRecProc: Process {
         command: [root.scriptPath, "stop"]
-        stderr: StdioCollector {
-            onStreamFinished: {
-                if (text.trim()) {
-                    console.warn("[ScreenRecorder] Stop failed: " + text);
-                    Notifications.send("ScreenRecord Error", "Failed to stop screen recording.");
-                }
+        stdout: StdioCollector {}
+        stderr: StdioCollector {}
+        onExited: code => {
+            // Reconcile immediately so the island doesn't linger on the
+            // poll interval; the periodic check corrects us if wrong.
+            root._checkRecProc.running = true;
+            if (code !== 0) {
+                const detail = ((_stopRecProc.stderr.text || "") + " " + (_stopRecProc.stdout.text || "")).trim();
+                console.warn("[ScreenRecorder] Stop failed (" + code + "): " + detail);
+                Notifications.send("ScreenRecord Error", detail || "Failed to stop screen recording.");
             }
         }
     }
 
-    // Start recording process
+    // Start recording process: the script exits non-zero when the user
+    // cancels area selection or wf-recorder dies on startup — report it
+    // (slurp-cancel stays silent, that is a deliberate no-op).
     property Process _startRecProc: Process {
-        stderr: StdioCollector {
-            onStreamFinished: {
-                if (text.trim()) {
-                    console.warn("[ScreenRecorder] Start failed: " + text);
-                    Notifications.send("ScreenRecord Error", "Failed to start screen recording.");
+        stdout: StdioCollector {}
+        stderr: StdioCollector {}
+        onExited: code => {
+            root._settleTimer.restart();
+            if (code !== 0) {
+                const detail = ((_startRecProc.stderr.text || "") + " " + (_startRecProc.stdout.text || "")).trim();
+                // Slurp cancel / dialog dismiss: no toast, just stay idle.
+                if (detail !== "") {
+                    console.warn("[ScreenRecorder] Start failed (" + code + "): " + detail);
+                    Notifications.send("ScreenRecord Error", detail);
                 }
             }
         }
     }
 
-    // Poll every 200ms like the AGS version
+    // One-shot settle check after a start/stop so the bar island flips
+    // without waiting for the next poll tick.
+    property Timer _settleTimer: Timer {
+        interval: 1200
+        repeat: false
+        onTriggered: root._checkRecProc.running = true
+    }
+
+    // Poll like the AGS version, but at 1s: pgrep truthfully reflects
+    // wf-recorder liveness (covers kills from outside the shell too).
     property Timer _pollTimer: Timer {
-        interval: 200
+        interval: 1000
         running: true
         repeat: true
         triggeredOnStart: true
-        onTriggered: root._checkRecProc.running = true
+        onTriggered: {
+            if (!root._checkRecProc.running)
+                root._checkRecProc.running = true;
+        }
     }
 
     function toggleRecording(mode) {

@@ -250,9 +250,10 @@ Item {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         hoverEnabled: true
-                        ToolTip.visible: containsMouse
-                        ToolTip.text: "Open post in browser"
-                        ToolTip.delay: 600
+                        AppTooltip {
+                            visible: parent.containsMouse
+                            text: "Open post in browser"
+                        }
                         onClicked: {
                             if (viewer && dlg)
                                 viewer.openInBrowser(dlg);
@@ -358,9 +359,10 @@ Item {
                                         font.family: Theme.fontFamily
                                         elide: Text.ElideRight
                                     }
-                                    ToolTip.visible: tagDetailMa.containsMouse
-                                    ToolTip.text: "Click: copy • Hold: add to search"
-                                    ToolTip.delay: 600
+                                    AppTooltip {
+                                        visible: tagDetailMa.containsMouse
+                                        text: "Click: copy • Hold: add to search"
+                                    }
                                     MouseArea {
                                         id: tagDetailMa
                                         anchors.fill: parent

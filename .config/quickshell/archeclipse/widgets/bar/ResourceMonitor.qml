@@ -3,6 +3,7 @@ import QtQuick.Controls
 import Quickshell.Hyprland
 import qs.theme
 import qs.services
+import qs.widgets.shared
 
 // Port of Utilities.tsx ResourceMonitor — CPU / RAM / GPU circular rings.
 // Hover/click pulses the system-monitor island (BarState "system").
@@ -100,9 +101,11 @@ Row {
                 font.pixelSize: 9
             }
 
-            ToolTip.visible: ringHover.hovered
-            ToolTip.text: ringItem.modelData.tip
-            ToolTip.delay: 500
+            AppTooltip {
+                visible: ringHover.hovered
+                text: ringItem.modelData.tip
+                delay: 500
+            }
 
             HoverHandler {
                 id: ringHover

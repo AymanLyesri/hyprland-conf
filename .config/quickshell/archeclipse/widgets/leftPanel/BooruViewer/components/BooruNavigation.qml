@@ -52,6 +52,37 @@ Column {
         }
     }
 
+    // Progress pill at the very bottom (ChatBot parity: full-width pill,
+    // visible on loading/error only, default Working... / Error texts).
+    AppProgress {
+        width: parent.width
+        // Plain Column ignores implicitHeight — bind it explicitly.
+        height: implicitHeight
+        status: viewer.progressStatus
+        variant: "pill"
+    }
+
+    Row {
+        id: pageBar
+
+        spacing: 4
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        // Windowed page buttons (AGS logic) as a sliding segment: the
+        // active page carries the highlight, "..." is a disabled cell.
+        AppSegmentedControl {
+            enabled: viewer.progressStatus !== "loading"
+            pixelSize: Theme.fontSize - 2
+            model: viewer.buildPageButtons().map(b => ({
+                        value: b.page,
+                        label: b.label,
+                        enabled: b.page > 0
+                    }))
+            currentIndex: viewer.buildPageButtons().findIndex(b => b.active)
+            onActivated: (i, v) => viewer.gotoPage(v)
+        }
+    }
+
     // API / Bookmarks / Pins tabs (was BooruToolbar).
     Row {
         id: tabBar
@@ -79,27 +110,6 @@ Column {
             ]) : []
             currentIndex: tabValues.indexOf(viewer ? viewer.selectedTab : "")
             onActivated: (i, v) => activateTab(v)
-        }
-    }
-
-    Row {
-        id: pageBar
-
-        spacing: 4
-        anchors.horizontalCenter: parent.horizontalCenter
-
-        // Windowed page buttons (AGS logic) as a sliding segment: the
-        // active page carries the highlight, "..." is a disabled cell.
-        AppSegmentedControl {
-            enabled: viewer.progressStatus !== "loading"
-            pixelSize: Theme.fontSize - 2
-            model: viewer.buildPageButtons().map(b => ({
-                        value: b.page,
-                        label: b.label,
-                        enabled: b.page > 0
-                    }))
-            currentIndex: viewer.buildPageButtons().findIndex(b => b.active)
-            onActivated: (i, v) => viewer.gotoPage(v)
         }
     }
 
@@ -142,15 +152,5 @@ Column {
                 viewer.gotoPage(viewer.page + 1);
             }
         }
-    }
-
-    // Progress pill at the very bottom (ChatBot parity: full-width pill,
-    // visible on loading/error only, default Working... / Error texts).
-    AppProgress {
-        width: parent.width
-        // Plain Column ignores implicitHeight — bind it explicitly.
-        height: implicitHeight
-        status: viewer.progressStatus
-        variant: "pill"
     }
 }

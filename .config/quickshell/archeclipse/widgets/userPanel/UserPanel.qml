@@ -8,6 +8,7 @@ import qs.theme
 import qs.services
 import qs.widgets.bar
 import qs.widgets.leftPanel
+import qs.widgets.shared
 
 // Port of widgets/UserPanel.tsx + scss/widgets/user-panel.scss.
 // Full-screen OVERLAY power grid (Esc closes):
@@ -158,9 +159,10 @@ PanelWindow {
                     btn.transformTranslateY = containsMouse ? btn.pushY : 0;
                 }
             }
-            ToolTip.visible: ma.containsMouse
-            ToolTip.text: btn.tip
-            ToolTip.delay: 600
+            AppTooltip {
+                visible: ma.containsMouse
+                text: btn.tip
+            }
         }
     }
 

@@ -216,7 +216,12 @@ PanelWindow {
             Component.onCompleted: widthAnimReady = true
             Behavior on width {
                 enabled: pill.widthAnimReady
-                SpringAnimation { spring: 5; damping: 0.5; mass: 1.0; epsilon: 0.5 }
+                SpringAnimation {
+                    spring: 15
+                    damping: 0.5
+                    mass: 1.0
+                    epsilon: 0.5
+                }
             }
             bottomRightRadius: Theme.radius
             bottomLeftRadius: Theme.radius
@@ -312,14 +317,14 @@ PanelWindow {
                     PropertyAction {
                         target: stack
                         property: "opacity"
-                        value: 0.35
+                        value: 1
                     }
                     NumberAnimation {
                         target: stack
                         property: "opacity"
-                        from: 0.35
+                        from: 0
                         to: 1
-                        duration: 250
+                        duration: 500
                         easing.type: Easing.InOutQuad
                     }
                 }

@@ -21,7 +21,17 @@ Item {
     Connections {
         target: Notifications
         function onHistoryChanged() {
+            // New arrival while pinned at the top: re-pin after polish so
+            // the newest (first) notification is fully visible instead of
+            // sitting half-clipped above the viewport.
+            const wasTop = nScroll.contentY <= 1;
             root.notifications = Notifications.history;
+            if (wasTop) {
+                Qt.callLater(function () {
+                    nScroll.contentY = 0;
+                    nScroll.savedPosition = 0;
+                });
+            }
         }
     }
 
@@ -87,17 +97,24 @@ Item {
             elide: Text.ElideRight
         }
 
-        // Notification List — content-sized: grows with the real delegate
-        // heights up to maxListH, collapses to 0 when empty instead of
-        // filling the card with blank scroll area.
+        // Notification List — fills the leftover card space (same pattern
+        // as Crypto/ScriptTimer: height from parent remainder, NOT from the
+        // measured content). Sizing the viewport from content height while
+        // the outer card sizes itself from our implicitHeight clipped the
+        // first delegate and could push the filter field out of the card.
         SmoothFlickable {
             id: nScroll
             width: parent.width
-            height: root.listH
+            // Guarded: a negative height sends Flickable into a silent polish loop
+            height: stackedNotifications.length === 0 ? 0 : Math.max(0, parent.height - y - 8)
             visible: stackedNotifications.length > 0
             clip: true
+            flickableDirection: Flickable.VerticalFlick
             contentWidth: width
             contentHeight: listColumn.height
+            ScrollBar.vertical: ScrollBar {
+                policy: ScrollBar.AsNeeded
+            }
 
             // Scroll position save/restore across notification changes
             // (AGS NotificationHistory savedScrollPosition + idle_add).

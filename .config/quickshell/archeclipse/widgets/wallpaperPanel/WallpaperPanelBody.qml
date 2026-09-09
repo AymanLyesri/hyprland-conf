@@ -418,8 +418,10 @@ Item {
                             color: Theme.muted
                             font.family: Theme.fontFamily
                         }
-                        ToolTip.visible: wsMa.containsMouse
-                        ToolTip.text: `Set wallpaper for Workspace ${index + 1}`
+                        AppTooltip {
+                            visible: wsMa.containsMouse
+                            text: `Set wallpaper for Workspace ${index + 1}`
+                        }
                         MouseArea {
                             id: wsMa
                             anchors.fill: parent
@@ -591,9 +593,11 @@ Item {
                             // Hidden while the strip moves: a visible tooltip
                             // window sits under the cursor and swallows wheel
                             // events, which kills the momentum glide.
-                            ToolTip.visible: tileMa.containsMouse && !wallScroll.moving
-                            ToolTip.delay: 400
-                            ToolTip.text: `Click to set as ${root.targetType} wallpaper.\nRight-click to delete.\n${tile.modelData.split("/").pop()}\nSize: ${root.formatBytes(root.getFileSize(tile.modelData))}`
+                            AppTooltip {
+                                visible: tileMa.containsMouse && !wallScroll.moving
+                                delay: 400
+                                text: `Click to set as ${root.targetType} wallpaper.\nRight-click to delete.\n${tile.modelData.split("/").pop()}\nSize: ${root.formatBytes(root.getFileSize(tile.modelData))}`
+                            }
 
                             MouseArea {
                                 id: tileMa

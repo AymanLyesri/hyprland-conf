@@ -3,6 +3,7 @@ import Quickshell.Io
 import QtQuick
 import QtQuick.Controls
 import qs.theme
+import qs.widgets.shared
 
 // Port of bar/components/sub-components/Bandwidth.tsx
 // Reads real network speeds from the bandwidth-loop-ags daemon (JSON on stdout
@@ -155,8 +156,10 @@ Item {
             onClicked: bwPopup.open()
             cursorShape: Qt.PointingHandCursor
 
-            ToolTip.visible: hovered
-            ToolTip.text: "click to open"
+            AppTooltip {
+                visible: parent.containsMouse
+                text: "click to open"
+            }
         }
 
         Row {

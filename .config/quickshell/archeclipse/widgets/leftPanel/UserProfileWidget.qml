@@ -732,8 +732,10 @@ Item {
                                     id: avatarMa
                                     anchors.fill: parent
                                     onClicked: root.chooseAvatar()
-                                    ToolTip.visible: avatarMa.containsMouse
-                                    ToolTip.text: "Click to set up profile picture"
+                                    AppTooltip {
+                                        visible: avatarMa.containsMouse
+                                        text: "Click to set up profile picture"
+                                    }
                                 }
                             }
 
@@ -750,9 +752,10 @@ Item {
                                     horizontalAlignment: TextInput.AlignHCenter
                                     onAccepted: root.updateProfile()
                                     // AGS username entry tooltip
-                                    ToolTip.delay: 600
-                                    ToolTip.text: "Click to edit username"
-                                    ToolTip.visible: hovered
+                                    AppTooltip {
+                                        visible: usernameField.hovered
+                                        text: "Click to edit username"
+                                    }
                                 }
                                 Flow {
                                     width: parent.width

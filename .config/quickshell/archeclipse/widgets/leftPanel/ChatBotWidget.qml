@@ -575,26 +575,22 @@ Item {
                                     // Code blocks need room for the copy pill
                                     topPadding: modelData.type === "code" ? 22 : 0
                                     // Code block copy button
-                                    Rectangle {
+                                    AppButton {
                                         visible: modelData.type === "code"
                                         anchors.top: parent.top
                                         anchors.right: parent.right
                                         width: 54
                                         height: 20
-                                        radius: 4
-                                        color: Theme.bg
-                                        border.color: Theme.accent
-
-                                        Text {
-                                            anchors.centerIn: parent
-                                            text: "copy"
-                                            color: Theme.accent
-                                            font.pixelSize: 9
-                                        }
-                                        MouseArea {
-                                            anchors.fill: parent
-                                            onClicked: root.copyToClipboard(modelData.content)
-                                        }
+                                        cornerRadius: 4
+                                        idleBg: Theme.bg
+                                        idleFg: Theme.accent
+                                        hoverFg: Theme.accent
+                                        outlined: true
+                                        outlineColor: Theme.accent
+                                        text: "copy"
+                                        pixelSize: 9
+                                        tooltipText: "Copy code"
+                                        onClicked: root.copyToClipboard(modelData.content)
                                     }
                                 }
                             }

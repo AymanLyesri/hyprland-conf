@@ -411,8 +411,10 @@ Item {
                                 else
                                     root.runScript(modelData);
                             }
-                            ToolTip.visible: rowMouse.containsMouse
-                            ToolTip.text: root.appInstalled(modelData) ? modelData.description : modelData.description + " (Requires installation)"
+                            AppTooltip {
+                                visible: rowMouse.containsMouse
+                                text: root.appInstalled(modelData) ? modelData.description : modelData.description + " (Requires installation)"
+                            }
                         }
 
                         Column {

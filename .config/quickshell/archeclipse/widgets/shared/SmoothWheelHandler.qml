@@ -21,6 +21,38 @@ WheelHandler {
 
     acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
     onWheel: event => {
+        // Nested scrollers (e.g. NotificationHistory's inner list inside
+        // RightPanel's outer scroll): if this target has nothing to scroll
+        // or is already at the edge in the wheel direction, do NOT accept —
+        // let the event bubble to the outer Flickable. Always accepting
+        // traps the wheel: the inner list eats it while stationary and the
+        // outer panel feels stuck ("can't scroll in the category").
+        const dy0 = (event.pixelDelta.y !== 0 ? event.pixelDelta.y : event.angleDelta.y / 2);
+        const dx0 = (event.pixelDelta.x !== 0 ? event.pixelDelta.x : event.angleDelta.x / 2);
+        const dir = target.flickableDirection;
+        const horizontalOnly = (dir === Flickable.HorizontalFlick);
+        const verticalOnly = (dir === Flickable.VerticalFlick);
+        // Effective scroll deltas after the axis remap applied below.
+        let edy = verticalOnly && !horizontalOnly ? dy0 + dx0 : dy0;
+        let edx = horizontalOnly && !verticalOnly ? dx0 + dy0 : dx0;
+        // Vertical flick() polarity: positive velocity moves content
+        // down (contentY decreases). Wheel-up deltas are positive.
+        const maxY = Math.max(0, target.contentHeight - target.height);
+        const maxX = Math.max(0, target.contentWidth - target.width);
+        const canUp = target.contentY > 0;
+        const canDown = target.contentY < maxY;
+        const canLeft = target.contentX > 0;
+        const canRight = target.contentX < maxX;
+        const wantsV = (edy > 0 && canUp) || (edy < 0 && canDown);
+        const wantsH = (edx > 0 && canLeft) || (edx < 0 && canRight);
+        const canScrollV = !(verticalOnly && !horizontalOnly) || maxY > 0;
+        const canScrollH = !(horizontalOnly && !verticalOnly) || maxX > 0;
+        const handlesV = verticalOnly && !horizontalOnly ? (maxY > 0 && wantsV) : (canScrollV && wantsV);
+        const handlesH = horizontalOnly && !verticalOnly ? (maxX > 0 && wantsH) : (canScrollH && wantsH);
+        if ((!handlesV && !handlesH) || !target.interactive) {
+            event.accepted = false;
+            return;
+        }
         // Time-based decay: smooth-scroll devices send tiny deltas at
         // high frequency, which an event-count decay crushes to a crawl.
         // Velocity accumulates across rapid events and dies within ~120ms
@@ -50,9 +82,8 @@ WheelHandler {
         // Same in reverse for vertical-only targets (shift+wheel yields
         // angleDelta.x, which would otherwise be dropped). Only explicit
         // single-axis directions remap; anything else keeps both axes.
-        const dir = target.flickableDirection;
-        const horizontalOnly = (dir === Flickable.HorizontalFlick);
-        const verticalOnly = (dir === Flickable.VerticalFlick);
+        // (dir/horizontalOnly/verticalOnly are declared at the top of
+        // this handler so the edge check above shares them.)
         if (horizontalOnly && !verticalOnly) {
             dx = dx + dy;
             dy = 0;

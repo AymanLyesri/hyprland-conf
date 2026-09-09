@@ -106,54 +106,47 @@ Rectangle {
                 width: parent.width
                 Repeater {
                     model: viewer.currentTags
-                    delegate: Rectangle {
+                    delegate: AppButton {
                         readonly property bool isRating: modelData.match(/[-]rating:explicit|rating:explicit/) !== null
-                        width: tagText.implicitWidth + 16
                         height: 22
-                        color: isRating ? Theme.surfaceActive : Theme.bg
-                        radius: 4
-                        border.color: isRating ? Theme.accent : Theme.border
-
-                        Text {
-                            id: tagText
-                            anchors.centerIn: parent
-                            text: modelData
-                            color: isRating ? Theme.accent : Theme.fg
-                            font.pixelSize: Theme.fontSize - 2
-                        }
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: {
-                                // Hoist: assigning currentTags rebuilds this
-                                // Repeater and destroys the delegate
-                                // mid-click, after which bare `viewer`
-                                // lookups throw (ReferenceError) and the
-                                // refetch below never runs.
-                                const v = viewer;
-                                if (isRating) {
-                                    // AGS: toggle -rating:explicit <-> rating:explicit, move to front, refetch
-                                    const newRating = modelData.startsWith("-") ? "rating:explicit" : "-rating:explicit";
-                                    let newTags = v.currentTags.filter(t => !t.match(/[-]rating:explicit|rating:explicit/));
-                                    newTags.unshift(newRating);
-                                    v.currentTags = newTags;
-                                    Settings.booru.tags = newTags;
-                                    Settings.updateSetting("booru.tags", newTags);
-                                } else {
-                                    // AGS: remove tag, refetch
-                                    const newTags = v.currentTags.filter(t => t !== modelData);
-                                    console.info("[Booru] chip remove:", modelData, "->", JSON.stringify(newTags));
-                                    v.currentTags = newTags;
-                                    Settings.booru.tags = newTags;
-                                    Settings.updateSetting("booru.tags", newTags);
-                                }
-                                // AGS refetches except in Bookmarks/Pins tabs
-                                if (v.selectedTab !== "Bookmarks" && v.selectedTab !== "Pins") {
-                                    v.fetchImages();
-                                }
+                        cornerRadius: 4
+                        pixelSize: Theme.fontSize - 2
+                        idleBg: isRating ? Theme.surfaceActive : Theme.bg
+                        idleFg: isRating ? Theme.accent : Theme.fg
+                        hoverFg: isRating ? Theme.accent : Theme.fg
+                        outlined: true
+                        outlineColor: isRating ? Theme.accent : Theme.border
+                        text: modelData
+                        tooltipText: isRating ? "Toggle explicit filter" : "Remove tag"
+                        onClicked: {
+                            // Hoist: assigning currentTags rebuilds this
+                            // Repeater and destroys the delegate
+                            // mid-click, after which bare `viewer`
+                            // lookups throw (ReferenceError) and the
+                            // refetch below never runs.
+                            const v = viewer;
+                            if (isRating) {
+                                // AGS: toggle -rating:explicit <-> rating:explicit, move to front, refetch
+                                const newRating = modelData.startsWith("-") ? "rating:explicit" : "-rating:explicit";
+                                let newTags = v.currentTags.filter(t => !t.match(/[-]rating:explicit|rating:explicit/));
+                                newTags.unshift(newRating);
+                                v.currentTags = newTags;
+                                Settings.booru.tags = newTags;
+                                Settings.updateSetting("booru.tags", newTags);
+                            } else {
+                                // AGS: remove tag, refetch
+                                const newTags = v.currentTags.filter(t => t !== modelData);
+                                console.info("[Booru] chip remove:", modelData, "->", JSON.stringify(newTags));
+                                v.currentTags = newTags;
+                                Settings.booru.tags = newTags;
+                                Settings.updateSetting("booru.tags", newTags);
+                            }
+                            // AGS refetches except in Bookmarks/Pins tabs
+                            if (v.selectedTab !== "Bookmarks" && v.selectedTab !== "Pins") {
+                                v.fetchImages();
                             }
                         }
                     }
-                }
             }
 
             // Add tag entry + search

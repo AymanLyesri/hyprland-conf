@@ -5,10 +5,10 @@ import qs.theme
 import qs.widgets.shared
 import qs.services
 
-// Port of sub-components/Volume.tsx — icon + %, click opens pavucontrol,
+// Port of sub-components/Volume.tsx — icon + %, right-click opens pavucontrol,
 // hover reveals slider. Also used as the transient "volume" pulse page.
 // Reproduces AGS behaviors: icon, %, change-triggered reveal w/ 2s auto-hide,
-// "Volume: N%" tooltip, click → pavucontrol.
+// "Volume: N%" tooltip, right-click → pavucontrol.
 Rectangle {
     id: root
 
@@ -64,19 +64,25 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         spacing: Theme.spacing
 
-        Text {
+        Row {
+            id: labelRow
             anchors.verticalCenter: parent.verticalCenter
-            text: VolumeWatcher.volumeIcon
-            color: Theme.fg
-            font.family: Theme.fontFamily
-            font.pixelSize: Theme.fontSize + 1
-        }
-        Text {
-            anchors.verticalCenter: parent.verticalCenter
-            text: Math.round(root.vol * 100) + "%"
-            color: Theme.fg
-            font.family: Theme.fontFamily
-            font.pixelSize: Theme.fontSize
+            spacing: Theme.spacing
+
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                text: VolumeWatcher.volumeIcon
+                color: Theme.fg
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontSize + 1
+            }
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                text: Math.round(root.vol * 100) + "%"
+                color: Theme.fg
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontSize
+            }
         }
         AppSlider {
             id: slider
@@ -86,9 +92,17 @@ Rectangle {
             from: 0
             to: 1
             stepSize: 0.01
-            value: root.vol
+            // Don't bind value directly: a direct `value: root.vol` binding
+            // gets broken by the first manual drag, desyncing the slider.
+            Component.onCompleted: slider.value = root.vol
             onMoved: if (root.sink?.audio)
                 root.sink.audio.volume = slider.value
+        }
+        Binding {
+            target: slider
+            property: "value"
+            value: root.vol
+            when: !slider.pressed
         }
     }
 
@@ -106,10 +120,26 @@ Rectangle {
         }
     }
     MouseArea {
-        anchors.fill: content
-        acceptedButtons: Qt.LeftButton
+        // Only cover the icon+label — covering `content` swallowed all
+        // drag/wheel events meant for the slider, making it unmovable.
+        anchors.fill: labelRow
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
         enabled: !root.pulse
         cursorShape: Qt.PointingHandCursor
-        onClicked: Quickshell.execDetached(["pavucontrol"])
+        onClicked: mouse => {
+            if (mouse.button === Qt.RightButton) {
+                Quickshell.execDetached(["pavucontrol"]);
+            } else if (mouse.button === Qt.LeftButton) {
+                root.sliderRevealed = !root.sliderRevealed;
+                if (root.sliderRevealed)
+                    hideTimer.restart();
+            }
+        }
+        onWheel: wheel => {
+            if (!root.sink?.audio)
+                return;
+            const step = wheel.angleDelta.y > 0 ? 0.05 : -0.05;
+            root.sink.audio.volume = Math.max(0, Math.min(1, root.vol + step));
+        }
     }
 }

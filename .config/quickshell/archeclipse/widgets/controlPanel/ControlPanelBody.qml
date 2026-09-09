@@ -35,6 +35,34 @@ Item {
         return "\u{F00DE}";                        // low (󰃞)
     }
 
+    // AGS DndToggle ping state: highlight the DND button ~600ms when a
+    // notification arrives while DND is active (AppButton `checked` drives
+    // the highlight, so the flag lives here instead of on a Rectangle).
+    property bool dndPing: false
+    Connections {
+        target: Notifications
+        function onNotified() {
+            if (Settings.notifDnd)
+                body.dndPing = true;
+            if (dndPingTimer.running)
+                dndPingTimer.restart();
+            else
+                dndPingTimer.start();
+        }
+    }
+    Connections {
+        target: Settings
+        function onNotifDndChanged() {
+            if (!Settings.notifDnd)
+                body.dndPing = false;
+        }
+    }
+    Timer {
+        id: dndPingTimer
+        interval: 600
+        onTriggered: body.dndPing = false
+    }
+
     // ---- content ----
     Column {
         id: contentCol
@@ -111,112 +139,48 @@ Item {
             }
         }
 
-        // ===== Action buttons =====
+        // ===== Action buttons (shared AppButton cells) =====
         Row {
             width: parent.width
             spacing: 10
             // Theme toggle
-            Rectangle {
+            AppButton {
                 width: 46
                 height: 46
-                radius: Theme.radius
-                color: tm.containsMouse ? Theme.surfaceHover : Theme.surface
-                ToolTip.visible: tm.containsMouse
-                ToolTip.text: GlobalTheme.currentTheme ? "Switch to Light Theme" : "Switch to Dark Theme"
-                ToolTip.delay: 600
-                Text {
-                    anchors.centerIn: parent
-                    text: GlobalTheme.currentTheme ? "\uf185" : "\uf186"
-                    color: Theme.fg
-                    font.family: Theme.fontFamily
-                    font.pixelSize: Theme.fontSize + 2
-                }
-                MouseArea {
-                    id: tm
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: GlobalTheme.setTheme(!GlobalTheme.currentTheme)
-                }
+                cornerRadius: Theme.radius
+                idleBg: Theme.surface
+                icon: GlobalTheme.currentTheme ? "\uf185" : "\uf186"
+                pixelSize: Theme.fontSize + 2
+                tooltipText: GlobalTheme.currentTheme ? "Switch to Light Theme" : "Switch to Dark Theme"
+                onClicked: GlobalTheme.setTheme(!GlobalTheme.currentTheme)
             }
             // DND toggle
-            Rectangle {
-                id: dndBtn
+            AppButton {
                 width: 46
                 height: 46
-                radius: Theme.radius
-                color: (dndM.containsMouse || Settings.notifDnd || dndPing) ? Theme.surfaceActive : Theme.surface
-                ToolTip.visible: dndM.containsMouse
-                ToolTip.text: Settings.notifDnd ? "Disable Do Not Disturb" : "Enable Do Not Disturb"
-                ToolTip.delay: 600
-                Text {
-                    anchors.centerIn: parent
-                    text: Settings.notifDnd ? "\uf1f6" : "\uf0f3"
-                    color: Theme.fg
-                    font.family: Theme.fontFamily
-                    font.pixelSize: Theme.fontSize + 2
-                }
-                MouseArea {
-                    id: dndM
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: Settings.updateSetting("notifications.dnd", !Settings.notifDnd)
-                }
-                // AGS DndToggle: ping the button ~600ms when a notification
-                // arrives while DND is active, reset when DND turns off
-                property bool dndPing: false
-                Connections {
-                    target: Notifications
-                    function onNotified() {
-                        if (Settings.notifDnd)
-                            dndBtn.dndPing = true;
-                        if (dndPingTimer.running)
-                            dndPingTimer.restart();
-                        else
-                            dndPingTimer.start();
-                    }
-                }
-                Connections {
-                    target: Settings
-                    function onNotifDndChanged() {
-                        if (!Settings.notifDnd)
-                            dndBtn.dndPing = false;
-                    }
-                }
-                Timer {
-                    id: dndPingTimer
-                    interval: 600
-                    onTriggered: dndBtn.dndPing = false
-                }
+                cornerRadius: Theme.radius
+                idleBg: Theme.surface
+                icon: Settings.notifDnd ? "\uf1f6" : "\uf0f3"
+                pixelSize: Theme.fontSize + 2
+                toggle: true
+                checked: Settings.notifDnd || body.dndPing
+                tooltipText: Settings.notifDnd ? "Disable Do Not Disturb" : "Enable Do Not Disturb"
+                onClicked: Settings.updateSetting("notifications.dnd", !Settings.notifDnd)
             }
-            Rectangle {
+            AppButton {
                 width: 46
                 height: 46
-                radius: Theme.radius
-                color: wsM.containsMouse ? Theme.surfaceHover : Theme.surface
-                ToolTip.visible: wsM.containsMouse
-                ToolTip.text: "Wallpaper Switcher\n<b>SUPER + W</b>"
-                ToolTip.delay: 600
-                Text {
-                    anchors.centerIn: parent
-                    text: "\udb83\ude09"
-                    color: Theme.fg
-                    font.family: Theme.fontFamily
-                    font.pixelSize: Theme.fontSize + 2
-                }
-                MouseArea {
-                    id: wsM
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        BarState.deactivate("control");
-                        if (BarState.state === "wallpaper")
-                            BarState.deactivate("wallpaper");
-                        else
-                            BarState.activate("wallpaper", 0);
-                    }
+                cornerRadius: Theme.radius
+                idleBg: Theme.surface
+                icon: "\udb83\ude09"
+                pixelSize: Theme.fontSize + 2
+                tooltipText: "Wallpaper Switcher\n<b>SUPER + W</b>"
+                onClicked: {
+                    BarState.deactivate("control");
+                    if (BarState.state === "wallpaper")
+                        BarState.deactivate("wallpaper");
+                    else
+                        BarState.activate("wallpaper", 0);
                 }
             }
         }

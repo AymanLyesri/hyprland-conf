@@ -215,8 +215,10 @@ Item {
                     text: "\u{F1FE}"  // music-note icon
                     color: Theme.fgDim
                     font.pixelSize: 18
-                    ToolTip.visible: iconTip.hovered
-                    ToolTip.text: root.player?.identity ?? ""
+                    AppTooltip {
+                        visible: iconTip.hovered
+                        text: root.player?.identity ?? ""
+                    }
                     HoverHandler {
                         id: iconTip
                     }

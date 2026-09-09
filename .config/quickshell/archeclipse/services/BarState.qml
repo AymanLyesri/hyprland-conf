@@ -15,8 +15,6 @@ Singleton {
     // "compact"/"expanded" kept only for backward-compat with old persist files.
     // wallpaper (95) beats control (90) so SUPER+W opens over the control island.
     property var priority: {
-        "compact": 0,
-        "expanded": 0,
         "default": 0,
         "recording": 40,
         "volume": 80,
@@ -52,8 +50,12 @@ Singleton {
     // Open in-bar popovers (tray overflow/menu popups). Guards the
     // hover-leave collapse (AGS Window.popupIsOpen()).
     property int popupCount: 0
-    function holdPopup() { root.popupCount++ }
-    function releasePopup() { root.popupCount = Math.max(0, root.popupCount - 1) }
+    function holdPopup() {
+        root.popupCount++;
+    }
+    function releasePopup() {
+        root.popupCount = Math.max(0, root.popupCount - 1);
+    }
 
     // Hold timers
     property var holdTimers: {}
@@ -99,49 +101,52 @@ Singleton {
     }
 
     Component.onCompleted: {
-        root.settings = Settings
-        root.lock = Settings.barLock ?? true
-        root.expanded = Settings.barDefault ?? true
-        root.isDefault = Settings.barDefault ?? true
-        root.orientation = Settings.barOrientation ?? true
-        root.smartHide = Settings.barSmartHide ?? false
-        root.fullWidth = Settings.barFullWidth ?? false
+        root.settings = Settings;
+        root.lock = Settings.barLock ?? true;
+        root.expanded = Settings.barDefault ?? true;
+        root.isDefault = Settings.barDefault ?? true;
+        root.orientation = Settings.barOrientation ?? true;
+        root.smartHide = Settings.barSmartHide ?? false;
+        root.fullWidth = Settings.barFullWidth ?? false;
 
         root.activeStates = {
-            "default": { priority: root.priority.default }
-        }
+            "default": {
+                priority: root.priority.default
+            }
+        };
 
         // Setup volume watcher (pipewire sink)
-        setupVolumeWatcher()
+        setupVolumeWatcher();
         // Setup brightness watcher
-        setupBrightnessWatcher()
+        setupBrightnessWatcher();
         // Setup MPRIS player watcher
-        setupPlayerWatcher()
+        setupPlayerWatcher();
         // Setup network watcher
-        setupNetworkWatcher()
+        setupNetworkWatcher();
 
         // Hyprland event tick — re-evaluates the geometric smart-hide room
         // check when clients move/resize (client moves don't re-emit a
         // change to the static toplevel list, so we tick on the raw event
         // stream, debounced, exactly like AGS Bar.tsx).
-        Hyprland.rawEvent.connect((event) => {
+        Hyprland.rawEvent.connect(event => {
             if (!root._tickTimer) {
-                root._tickTimer = Qt.createQmlObject('import QtQuick; Timer { repeat: false; interval: 100 }', root)
+                root._tickTimer = Qt.createQmlObject('import QtQuick; Timer { repeat: false; interval: 100 }', root);
                 root._tickTimer.triggered.connect(() => {
-                    root._tickTimer = null
-                    root.hyprlandTick++
-                    root.updateRoomCheck()
-                })
-                root._tickTimer.start()
+                    root._tickTimer = null;
+                    root.hyprlandTick++;
+                    root.updateRoomCheck();
+                });
+                root._tickTimer.start();
             }
-        })
+        });
 
         // Initial room check
-        root.updateRoomCheck()
+        root.updateRoomCheck();
 
         // Sync persistent recording state at startup (AGS subscribes
         // isRecording from mount; a recording already in progress must show)
-        if (ScreenRecorder.isRecording) root.activate("recording")
+        if (ScreenRecorder.isRecording)
+            root.activate("recording");
     }
 
     // -----------------------------------------------------------------
@@ -155,53 +160,67 @@ Singleton {
     property var _roomMonitorText: ""
 
     function updateRoomCheck() {
-        const pc = Qt.createQmlObject('import Quickshell.Io; Process {}', root)
-        pc.command = ["hyprctl", "clients", "-j"]
-        pc.running = true
-        pc.stdout = Qt.createQmlObject('import Quickshell.Io; StdioCollector {}', root)
+        const pc = Qt.createQmlObject('import Quickshell.Io; Process {}', root);
+        pc.command = ["hyprctl", "clients", "-j"];
+        pc.running = true;
+        pc.stdout = Qt.createQmlObject('import Quickshell.Io; StdioCollector {}', root);
         pc.stdout.onStreamFinished.connect(() => {
-            root._roomClientText = pc.stdout.text
-            root.finishRoomCheck()
-        })
+            root._roomClientText = pc.stdout.text;
+            root.finishRoomCheck();
+        });
     }
 
     function finishRoomCheck() {
         // Query monitors only after clients arrive; then compute blockage.
-        const pm = Qt.createQmlObject('import Quickshell.Io; Process {}', root)
-        pm.command = ["hyprctl", "monitors", "-j"]
-        pm.running = true
-        pm.stdout = Qt.createQmlObject('import Quickshell.Io; StdioCollector {}', root)
+        const pm = Qt.createQmlObject('import Quickshell.Io; Process {}', root);
+        pm.command = ["hyprctl", "monitors", "-j"];
+        pm.running = true;
+        pm.stdout = Qt.createQmlObject('import Quickshell.Io; StdioCollector {}', root);
         pm.stdout.onStreamFinished.connect(() => {
-            root.computeRoomCheck(root._roomClientText, pm.stdout.text)
-        })
+            root.computeRoomCheck(root._roomClientText, pm.stdout.text);
+        });
     }
 
     function computeRoomCheck(clientsText, monitorsText) {
-        let clients = []
-        let monitors = []
-        try { clients = JSON.parse(clientsText) } catch(e) { return }
-        try { monitors = JSON.parse(monitorsText) } catch(e) { return }
+        let clients = [];
+        let monitors = [];
+        try {
+            clients = JSON.parse(clientsText);
+        } catch (e) {
+            return;
+        }
+        try {
+            monitors = JSON.parse(monitorsText);
+        } catch (e) {
+            return;
+        }
 
-        const blocked = {}
-        const onTop = root.orientation
-        const h = root.barHeight
+        const blocked = {};
+        const onTop = root.orientation;
+        const h = root.barHeight;
 
         for (const m of monitors) {
-            if (!m || m.name === undefined) continue
-            const wsId = m.activeWorkspace?.id
-            if (wsId === undefined) { blocked[m.name] = false; continue }
-            const bandStart = onTop ? m.y : m.y + m.height - h
-            const bandEnd = bandStart + h
-            const hit = clients.some((c) => {
-                if (!c || !c.mapped) return false
-                if (c.workspace?.id !== wsId) return false
-                const top = c.at?.[1] ?? 0
-                const bottom = top + (c.size?.[1] ?? 0)
-                return bottom > bandStart && top < bandEnd
-            })
-            blocked[m.name] = hit
+            if (!m || m.name === undefined)
+                continue;
+            const wsId = m.activeWorkspace?.id;
+            if (wsId === undefined) {
+                blocked[m.name] = false;
+                continue;
+            }
+            const bandStart = onTop ? m.y : m.y + m.height - h;
+            const bandEnd = bandStart + h;
+            const hit = clients.some(c => {
+                if (!c || !c.mapped)
+                    return false;
+                if (c.workspace?.id !== wsId)
+                    return false;
+                const top = c.at?.[1] ?? 0;
+                const bottom = top + (c.size?.[1] ?? 0);
+                return bottom > bandStart && top < bandEnd;
+            });
+            blocked[m.name] = hit;
         }
-        root.blockedMonitors = blocked
+        root.blockedMonitors = blocked;
     }
 
     // AGS barAutoVisible core, minus the removed smart-hide setting:
@@ -209,8 +228,9 @@ Singleton {
     // hover strip (BarHoverWindow) sets an explicit override. The override
     // wins over this in Bar.barVisible.
     function barVisibleFor(monitorName) {
-        if (root.lock) return true
-        return false
+        if (root.lock)
+            return true;
+        return false;
     }
 
     // ===== Volume watcher (AGS watchTransient on notify::volume) =====
@@ -219,70 +239,76 @@ Singleton {
     // the pulse never fired at all.
     property bool _volumeWired: false
     function setupVolumeWatcher() {
-        const sink = Pipewire.defaultAudioSink
+        const sink = Pipewire.defaultAudioSink;
         // volumesChanged lives on sink.audio (PwNodeAudioIface), which only
         // exists once the node is bound — retry until then.
         if (!sink || !sink.audio || root._volumeWired) {
             if ((!sink || !sink.audio) && !root._volumeWired) {
-                const t = Qt.createQmlObject('import QtQuick; Timer { repeat: false; interval: 1000 }', root)
-                t.triggered.connect(() => { t.destroy(); root.setupVolumeWatcher() })
-                t.start()
+                const t = Qt.createQmlObject('import QtQuick; Timer { repeat: false; interval: 1000 }', root);
+                t.triggered.connect(() => {
+                    t.destroy();
+                    root.setupVolumeWatcher();
+                });
+                t.start();
             }
-            return
+            return;
         }
-        root._volumeWired = true
-        root._lastVolume = sink.audio.volume ?? 0
+        root._volumeWired = true;
+        root._lastVolume = sink.audio.volume ?? 0;
         sink.audio.volumesChanged.connect(() => {
-            root.volumeEvents++
-            if (!sink.audio) return
-            const vol = sink.audio.volume
-            if (vol === undefined || isNaN(vol) || vol < 0 || vol > 1) return
+            root.volumeEvents++;
+            if (!sink.audio)
+                return;
+            const vol = sink.audio.volume;
+            if (vol === undefined || isNaN(vol) || vol < 0 || vol > 1)
+                return;
 
             // Skip the initial notification on mount (AGS isFirst guard)
             if (root._volumeFirstRender) {
-                root._volumeFirstRender = false
-                root._lastVolume = vol
-                return
+                root._volumeFirstRender = false;
+                root._lastVolume = vol;
+                return;
             }
             // Ignore spurious notifications where the value didn't change
-            if (vol === root._lastVolume) return
-            root._lastVolume = vol
+            if (vol === root._lastVolume)
+                return;
+            root._lastVolume = vol;
 
-            root.activate("volume", 2000)
-        })
+            root.activate("volume", 2000);
+        });
     }
 
     // ===== Brightness watcher =====
     function setupBrightnessWatcher() {
         // Use a timer to poll brightness directly via brightnessctl (same as Brightness service)
-        const timer = Qt.createQmlObject('import QtQuick; Timer { interval: 2000; running: true; repeat: true }', root)
-        timer.onTriggered.connect(function() {
-            const proc = Qt.createQmlObject('import Quickshell.Io; Process { command: ["brightnessctl", "-m", "info"] }', root)
-            proc.running = true
-            proc.stdout = Qt.createQmlObject('import Quickshell.Io; StdioCollector {}', root)
-            proc.stdout.onStreamFinished.connect(function() {
-                const text = proc.stdout.text
-                const lines = text.trim().split("\n")
+        const timer = Qt.createQmlObject('import QtQuick; Timer { interval: 2000; running: true; repeat: true }', root);
+        timer.onTriggered.connect(function () {
+            const proc = Qt.createQmlObject('import Quickshell.Io; Process { command: ["brightnessctl", "-m", "info"] }', root);
+            proc.running = true;
+            proc.stdout = Qt.createQmlObject('import Quickshell.Io; StdioCollector {}', root);
+            proc.stdout.onStreamFinished.connect(function () {
+                const text = proc.stdout.text;
+                const lines = text.trim().split("\n");
                 if (lines.length > 0) {
                     // brightnessctl -m: device,class,current,PERCENT,max
-                    const fields = lines[0].split(",")
+                    const fields = lines[0].split(",");
                     if (fields.length >= 5) {
-                        const current = parseInt(fields[2]) || 0
-                        const max = parseInt(fields[4]) || 1
-                        const val = current / max
+                        const current = parseInt(fields[2]) || 0;
+                        const max = parseInt(fields[4]) || 1;
+                        const val = current / max;
                         if (root._brightnessFirstRender) {
-                            root._brightnessFirstRender = false
-                            root._lastBrightness = val
-                            return
+                            root._brightnessFirstRender = false;
+                            root._lastBrightness = val;
+                            return;
                         }
                         if (val !== root._lastBrightness) {
-                            root._lastBrightness = val
-                            root.activate("brightness", 2000)
+                            root._lastBrightness = val;
+                            root.activate("brightness", 2000);
                         }
                     }
                 }
-            })
-        })
+            });
+        });
     }
 
     // ===== MPRIS player watcher =====
@@ -291,26 +317,27 @@ Singleton {
         function findPlayablePlayer() {
             for (const p of Mpris.players.values) {
                 if ((p.trackTitle ?? "").trim() !== "" || p.playbackState === MprisPlaybackState.Playing) {
-                    return p
+                    return p;
                 }
             }
-            return null
+            return null;
         }
 
         // Watch for player changes using a timer since QtObject properties don't auto-emit signals
-        const playerTimer = Qt.createQmlObject('import QtQuick; Timer { interval: 2000; running: true; repeat: true }', root)
-        playerTimer.onTriggered.connect(function() {
-            root.playerPolls++
-            const player = findPlayablePlayer()
-            if (!player) return
-            const curTitle = player.trackTitle ?? ""
+        const playerTimer = Qt.createQmlObject('import QtQuick; Timer { interval: 2000; running: true; repeat: true }', root);
+        playerTimer.onTriggered.connect(function () {
+            root.playerPolls++;
+            const player = findPlayablePlayer();
+            if (!player)
+                return;
+            const curTitle = player.trackTitle ?? "";
 
             // Skip first render
             if (root._playerFirstRender) {
-                root._playerFirstRender = false
-                root._activePlayer = player
-                root._lastPlayerTitle = curTitle
-                return
+                root._playerFirstRender = false;
+                root._activePlayer = player;
+                root._lastPlayerTitle = curTitle;
+                return;
             }
 
             // Ignore if same player object and title unchanged (compare
@@ -318,13 +345,13 @@ Singleton {
             // _activePlayer.trackTitle is always equal when they are the
             // same object, so title changes would never fire).
             if (root._activePlayer === player && curTitle === root._lastPlayerTitle) {
-                return
+                return;
             }
-            root._activePlayer = player
-            root._lastPlayerTitle = curTitle
+            root._activePlayer = player;
+            root._lastPlayerTitle = curTitle;
 
-            root.activate("player", 2500)
-        })
+            root.activate("player", 2500);
+        });
     }
 
     // ===== Network watcher =====
@@ -333,66 +360,70 @@ Singleton {
     // disconnect, ssid change, signal re-association).
     function setupNetworkWatcher() {
         function primaryDevice() {
-            if (!Networking.devices?.values) return null
+            if (!Networking.devices?.values)
+                return null;
             for (const d of Networking.devices.values) {
-                if (d && d.connected) return d
+                if (d && d.connected)
+                    return d;
             }
-            return Networking.devices.values.length > 0 ? Networking.devices.values[0] : null
+            return Networking.devices.values.length > 0 ? Networking.devices.values[0] : null;
         }
 
         function track(device) {
-            if (!device) return
-            root._networkDevice = device
+            if (!device)
+                return;
+            root._networkDevice = device;
 
             // Skip first render
             if (root._networkFirstRender) {
-                root._networkFirstRender = false
+                root._networkFirstRender = false;
                 root._lastNetSig = {
                     state: device.state,
                     connected: device.connected
-                }
-                return
+                };
+                return;
             }
 
-            const changed = device.connected !== root._lastNetSig.connected ||
-                            device.state !== root._lastNetSig.state
+            const changed = device.connected !== root._lastNetSig.connected || device.state !== root._lastNetSig.state;
 
             root._lastNetSig = {
                 state: device.state,
                 connected: device.connected
-            }
-            if (changed) root.activate("network", 3000)
+            };
+            if (changed)
+                root.activate("network", 3000);
         }
 
         // Poll primary device each 2s for state changes (reactive, no spurious
         // signal churn — NetworkManager events are coalesced here).
-        const netTimer = Qt.createQmlObject('import QtQuick; Timer { interval: 2000; running: true; repeat: true }', root)
-        netTimer.onTriggered.connect(function() {
-            const dev = primaryDevice()
+        const netTimer = Qt.createQmlObject('import QtQuick; Timer { interval: 2000; running: true; repeat: true }', root);
+        netTimer.onTriggered.connect(function () {
+            const dev = primaryDevice();
             if (dev !== root._networkDevice) {
-                root._networkDevice = dev
-                if (!dev) return
+                root._networkDevice = dev;
+                if (!dev)
+                    return;
                 // First contact with a new device: don't pulse yet
-                root._networkFirstRender = true
+                root._networkFirstRender = true;
             }
-            track(dev)
-        })
+            track(dev);
+        });
     }
 
     // Resolve highest priority active state (default is the base fallback)
     function resolveState(): string {
-        var best = "default"
-        var bestPriority = -Infinity
+        var best = "default";
+        var bestPriority = -Infinity;
         for (var name in root.activeStates) {
             // Legacy base names resolve to the default state
-            var canonical = (name === "expanded" || name === "compact") ? "default" : name
-            var entry = root.activeStates[name]
+            var canonical = (name === "expanded" || name === "compact") ? "default" : name;
+            var entry = root.activeStates[name];
             if (entry.priority > bestPriority) {
-                best = canonical
-                bestPriority = entry.priority
+                best = canonical;
+                bestPriority = entry.priority;
             }
         }
-        return best
+        return best;
     }
 
     // Activate a state (with optional holdMs for auto-deactivate).
@@ -402,116 +433,132 @@ Singleton {
     // "expanded"/"compact" are accepted as legacy aliases for "default".
     function activate(name, holdMs) {
         if (name === "expanded" || name === "compact")
-            name = "default"
-        var priority = root.priority[name]
-        if (priority === undefined) return
-
-        const timers = root.holdTimers || {}
+            name = "default";
+        var priority = root.priority[name];
+        if (priority === undefined)
+            return;
+        const timers = root.holdTimers || {};
         // Cancel existing timer for this state
         if (timers[name]) {
-            timers[name].stop()
-            timers[name] = null
+            timers[name].stop();
+            timers[name] = null;
         }
-        root.holdTimers = timers
+        root.holdTimers = timers;
 
-        var next = Object.assign({}, root.activeStates || {})
-        next[name] = { priority: priority }
-        root.activeStates = next
+        var next = Object.assign({}, root.activeStates || {});
+        next[name] = {
+            priority: priority
+        };
+        root.activeStates = next;
 
         if (holdMs !== undefined && holdMs > 0) {
-            const t = Qt.createQmlObject('import QtQuick; Timer { repeat: false; interval: ' + holdMs + ' }', root)
+            const t = Qt.createQmlObject('import QtQuick; Timer { repeat: false; interval: ' + holdMs + ' }', root);
             t.triggered.connect(() => {
-                root.deactivate(name)
-                t.destroy()
-            })
-            t.start()
-            timers[name] = t
+                root.deactivate(name);
+                t.destroy();
+            });
+            t.start();
+            timers[name] = t;
         }
 
-        root.debounceResolve()
+        root.debounceResolve();
     }
 
     // Deactivate a state (default is the permanent base and can't be removed)
     function deactivate(name) {
-        if (name === "default") return
+        if (name === "default")
+            return;
         if (name === "expanded" || name === "compact") {
             // Migrate legacy base names to default
-            var mig = Object.assign({}, root.activeStates || {})
-            delete mig[name]
-            delete mig["expanded"]
-            delete mig["compact"]
+            var mig = Object.assign({}, root.activeStates || {});
+            delete mig[name];
+            delete mig["expanded"];
+            delete mig["compact"];
             if (Object.keys(mig).length === 0)
-                mig["default"] = { priority: root.priority.default }
-            root.activeStates = mig
-            root.debounceResolve()
-            return
+                mig["default"] = {
+                    priority: root.priority.default
+                };
+            root.activeStates = mig;
+            root.debounceResolve();
+            return;
         }
 
-        const timers = root.holdTimers || {}
+        const timers = root.holdTimers || {};
         if (timers[name]) {
-            timers[name].stop()
-            timers[name] = null
+            timers[name].stop();
+            timers[name] = null;
         }
-        root.holdTimers = timers
+        root.holdTimers = timers;
 
-        var next = Object.assign({}, root.activeStates || {})
-        delete next[name]
-        root.activeStates = next
-        root.debounceResolve()
+        var next = Object.assign({}, root.activeStates || {});
+        delete next[name];
+        root.activeStates = next;
+        root.debounceResolve();
     }
 
     // Debounced resolve (100ms)
     function debounceResolve() {
         if (root.debounceTimer) {
-            root.debounceTimer.stop()
-            root.debounceTimer.destroy()
+            root.debounceTimer.stop();
+            root.debounceTimer.destroy();
         }
-        const t = Qt.createQmlObject('import QtQuick; Timer { repeat: false; interval: 100 }', root)
+        const t = Qt.createQmlObject('import QtQuick; Timer { repeat: false; interval: 100 }', root);
         t.triggered.connect(() => {
-            root.state = root.resolveState()
-            t.destroy()
-        })
-        t.start()
-        root.debounceTimer = t
+            root.state = root.resolveState();
+            t.destroy();
+        });
+        t.start();
+        root.debounceTimer = t;
     }
 
     // Reveal bar for a monitor (AGS revealBar: explicit override wins over
     // the settings-driven auto visibility; conceal deletes the key).
     function revealBar(monitorName) {
-        var next = Object.assign({}, root.barShown || {})
-        next[monitorName] = true
-        root.barShown = next
+        var next = Object.assign({}, root.barShown || {});
+        next[monitorName] = true;
+        root.barShown = next;
     }
 
     // Conceal bar for a monitor
     function concealBar(monitorName) {
-        var next = Object.assign({}, root.barShown || {})
-        delete next[monitorName]
-        root.barShown = next
+        var next = Object.assign({}, root.barShown || {});
+        delete next[monitorName];
+        root.barShown = next;
     }
 
     // Public API for IPC
-    function activateState(name, holdMs) { root.activate(name, holdMs) }
-    function deactivateState(name) { root.deactivate(name) }
-    function setBarState(name) { root.activate(name) }
+    function activateState(name, holdMs) {
+        root.activate(name, holdMs);
+    }
+    function deactivateState(name) {
+        root.deactivate(name);
+    }
+    function setBarState(name) {
+        root.activate(name);
+    }
     // AGS toggleBarShown: current = override ?? barAutoVisible, then set !current
     function toggleBarShown(monitorName) {
-        var shown = root.barShown || {}
-        var current = shown[monitorName]
-        if (current === undefined) current = root.barVisibleFor(monitorName)
-        var next = Object.assign({}, shown)
-        next[monitorName] = !current
-        root.barShown = next
+        var shown = root.barShown || {};
+        var current = shown[monitorName];
+        if (current === undefined)
+            current = root.barVisibleFor(monitorName);
+        var next = Object.assign({}, shown);
+        next[monitorName] = !current;
+        root.barShown = next;
     }
-    function toggleBar(monitorName) { root.toggleBarShown(monitorName) }
+    function toggleBar(monitorName) {
+        root.toggleBarShown(monitorName);
+    }
 
     // Recording watcher (AGS: isRecording.subscribe -> activate/deactivate
     // "recording" persistently). ScreenRecorder is a sibling singleton.
     Connections {
         target: ScreenRecorder
         function onIsRecordingChanged() {
-            if (ScreenRecorder.isRecording) root.activate("recording")
-            else root.deactivate("recording")
+            if (ScreenRecorder.isRecording)
+                root.activate("recording");
+            else
+                root.deactivate("recording");
         }
     }
 
@@ -523,15 +570,16 @@ Singleton {
     Connections {
         target: Settings
         function onBarLockChanged() {
-            root.lock = Settings.barLock ?? true
-            if (root.lock) root.barShown = {}
+            root.lock = Settings.barLock ?? true;
+            if (root.lock)
+                root.barShown = {};
         }
         function onBarDefaultChanged() {
-            root.expanded = Settings.barDefault ?? true
-            root.isDefault = Settings.barDefault ?? true
+            root.expanded = Settings.barDefault ?? true;
+            root.isDefault = Settings.barDefault ?? true;
         }
         function onBarOrientationChanged() {
-            root.orientation = Settings.barOrientation ?? true
+            root.orientation = Settings.barOrientation ?? true;
         }
     }
 
@@ -541,15 +589,16 @@ Singleton {
     Connections {
         target: root._activePlayer
         function onTrackTitleChanged() {
-            const cur = root._activePlayer?.trackTitle ?? ""
+            const cur = root._activePlayer?.trackTitle ?? "";
             if (root._playerFirstRender) {
-                root._playerFirstRender = false
-                root._lastPlayerTitle = cur
-                return
+                root._playerFirstRender = false;
+                root._lastPlayerTitle = cur;
+                return;
             }
-            if (cur === root._lastPlayerTitle) return
-            root._lastPlayerTitle = cur
-            root.activate("player", 2500)
+            if (cur === root._lastPlayerTitle)
+                return;
+            root._lastPlayerTitle = cur;
+            root.activate("player", 2500);
         }
     }
 }

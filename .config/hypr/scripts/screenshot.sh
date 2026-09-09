@@ -18,26 +18,29 @@ fi
 # notify and view screenshot
 
 if [[ "$1" == "--now" ]]; then
-    img="$screenshot_fullscreen_dir/screenshot_$timestamp.webp"
-    # Full output
-    grimblast --freeze save screen "$img"
-    
+    img="$screenshot_fullscreen_dir/screenshot_$timestamp.png"
+    # Full output (PNG: Qt/Quickshell has no webp plugin, so PNG is
+    # required for the notification preview and a correct image/png paste)
+    grimblast --freeze save screen "$img" || exit 1
+
     elif [[ "$1" == "--area" ]]; then
-    img="$screenshot_area_dir/screenshot_area_$timestamp.webp"
-    # Select region
-    grimblast --freeze save area "$img"
-    
+    img="$screenshot_area_dir/screenshot_area_$timestamp.png"
+    # Select region (non-zero exit = user cancelled, stay silent)
+    grimblast --freeze save area "$img" || exit 1
+
 else
-    
+
     echo -e "Available Options : --now --area --all"
     exit 1
 fi
 
-# Convert to WebP (high compression, visually lossless)
-magick convert "$img" -define webp:method=6 -quality 90 "$img"
+# Optimize PNG lossless (skip silently if ImageMagick is missing)
+if command -v magick >/dev/null 2>&1; then
+    magick "$img" -strip -define png:compression-level=6 "$img"
+fi
 
-# Send optimized image to clipboard
+# Send image to clipboard (bytes must match the declared MIME type)
 wl-copy --type image/png < "$img"
 
-# Notify user
-notify-send -i $img "Screenshot saved" "Saved and copied to clipboard"
+# Notify user (quoted icon path so it arrives as a loadable file URL)
+notify-send -a "Screenshot" -i "$img" "Screenshot saved" "Saved and copied to clipboard"

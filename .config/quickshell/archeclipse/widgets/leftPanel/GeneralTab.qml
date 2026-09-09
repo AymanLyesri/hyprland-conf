@@ -195,30 +195,16 @@ Item {
                             tip: "Discord Community"
                         }
                     ]
-                    delegate: Rectangle {
+                    delegate: AppButton {
                         width: 40
                         height: 40
-                        radius: 8
-                        color: linkMa.containsMouse ? Theme.surfaceActive : Theme.surface
-                        border.color: linkMa.containsMouse ? Theme.accent : Theme.border
-                        Text {
-                            anchors.centerIn: parent
-                            text: modelData.icon
-                            font.family: "Font Awesome 6 Free"
-                            font.pixelSize: 18
-                            color: linkMa.containsMouse ? Theme.accent : Theme.fg
-                        }
-                        MouseArea {
-                            id: linkMa
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: Quickshell.execDetached(["xdg-open", modelData.url])
-                            ToolTip {
-                                visible: linkMa.containsMouse
-                                text: modelData.tip
-                            }
-                        }
+                        cornerRadius: 8
+                        outlined: true
+                        icon: modelData.icon
+                        fontFamily: "Font Awesome 6 Free"
+                        pixelSize: 18
+                        tooltipText: modelData.tip
+                        onClicked: Quickshell.execDetached(["xdg-open", modelData.url])
                     }
                 }
             }
@@ -278,32 +264,21 @@ Item {
                             }
                         }
 
-                        Rectangle {
-                            width: updateMa.containsMouse ? 130 : 120
-                            height: 32
-                            radius: 6
+                        AppButton {
                             x: (parent.width - width) / 2
-                            color: updateMa.containsMouse ? Theme.surfaceActive : Theme.accent
-                            Behavior on width {
-                                NumberAnimation {
-                                    duration: 150
-                                }
-                            }
-                            Text {
-                                anchors.centerIn: parent
-                                text: root.isUpdating ? "\u{F2F0} Updating..." : "\u{F019} Update"
-                                font.pixelSize: Theme.fontSize
-                                color: root.isUpdating ? Theme.fgDim : Theme.bg
-                                font.bold: true
-                            }
-                            MouseArea {
-                                id: updateMa
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                enabled: !root.isUpdating
-                                onClicked: root.doUpdate()
-                            }
+                            width: 120
+                            height: 32
+                            cornerRadius: 6
+                            idleBg: Theme.accent
+                            hoverBg: Theme.surfaceActive
+                            pressedBg: Theme.surfaceActive
+                            idleFg: Theme.bg
+                            hoverFg: Theme.bg
+                            icon: root.isUpdating ? "\u{F2F0}" : "\u{F019}"
+                            text: root.isUpdating ? "Updating..." : "Update"
+                            pixelSize: Theme.fontSize
+                            enabled: !root.isUpdating
+                            onClicked: root.doUpdate()
                         }
 
                         Text {
@@ -330,32 +305,16 @@ Item {
                             color: "#4CAF50"
                         }
 
-                        Rectangle {
-                            width: recheckMa.containsMouse ? 120 : 110
-                            height: 28
-                            radius: 6
+                        AppButton {
                             x: (parent.width - width) / 2
-                            color: "transparent"
-
+                            width: 130
+                            height: 28
+                            cornerRadius: 6
+                            icon: "\u{F2F1}"
+                            text: "Check Update"
+                            pixelSize: Theme.fontSize - 1
                             visible: !root.isUpdating
-                            Behavior on width {
-                                NumberAnimation {
-                                    duration: 150
-                                }
-                            }
-                            Text {
-                                anchors.centerIn: parent
-                                text: "\u{F2F1} Check Update"
-                                font.pixelSize: Theme.fontSize - 1
-                                color: Theme.fg
-                            }
-                            MouseArea {
-                                id: recheckMa
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: root.checkVersions()
-                            }
+                            onClicked: root.checkVersions()
                         }
                     }
                 }

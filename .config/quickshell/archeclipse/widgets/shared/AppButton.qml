@@ -66,9 +66,11 @@ Item {
 
     implicitWidth: contentRow.implicitWidth + 28
     implicitHeight: 34
-    ToolTip.visible: root.hovered && root.tooltipText !== ""
-    ToolTip.text: root.tooltipText
-    ToolTip.delay: 600
+
+    AppTooltip {
+        visible: root.hovered && root.tooltipText !== ""
+        text: root.tooltipText
+    }
 
     Rectangle {
         id: bgRect

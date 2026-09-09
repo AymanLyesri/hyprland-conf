@@ -39,8 +39,6 @@ Rectangle {
             easing.type: Easing.OutCubic
         }
     }
-    ToolTip.visible: imgMa.containsMouse
-    ToolTip.text: image ? ("Click to Open\nID: " + image.id + "  " + image.width + "x" + image.height + "\nRight-click: Set as waifu") : ""
 
     // Preview image (or placeholder). AGS renders the
     // downloaded local preview; prefer the local file once
@@ -86,5 +84,10 @@ Rectangle {
                 viewer.openDialog(image, card);
             }
         }
+    }
+
+    AppTooltip {
+        visible: imgMa.containsMouse
+        text: image ? ("Click to Open\nID: " + image.id + "  " + image.width + "x" + image.height + "\nRight-click: Set as waifu") : ""
     }
 }

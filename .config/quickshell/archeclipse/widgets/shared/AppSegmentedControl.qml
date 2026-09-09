@@ -170,9 +170,10 @@ Item {
                     // 0 implicit size (control collapses to just margins).
                     height: implicitHeight
 
-                    ToolTip.visible: cellMa.containsMouse && root.tooltipAt(index) !== ""
-                    ToolTip.text: root.tooltipAt(index)
-                    ToolTip.delay: 600
+                    AppTooltip {
+                        visible: cellMa.containsMouse && root.tooltipAt(index) !== ""
+                        text: root.tooltipAt(index)
+                    }
 
                     Row {
                         id: cellRow

@@ -4,21 +4,70 @@ import Quickshell
 import Quickshell.Services.Notifications
 import qs.theme
 
-// Port of NotificationPopups.tsx + NotificationHistory.tsx + Notification.tsx.
-// AGS is a notification *client* (history binds the daemon's retained list,
-// popups are ephemeral widgets whose timeout does NOT dismiss from daemon).
-// Here Quickshell IS the daemon, so we keep the same split explicitly:
-//   - history: retained entries (survive popup expiry, DND keeps them too)
-//   - popups:  ephemeral toast entries (4s timeout, 8s critical)
-// Popup timeout only removes the toast; history is pruned on dismiss/close.
+// Port of NotificationPopups.tsx + NotificationHistory.tsx + Notification.tsx,
+// reworked along end4/illogical-impulse lines: the daemon keeps snapshot
+// wrapper objects (plain props, snapshotted once at receipt) instead of
+// handing live NotificationObjects to delegates. That makes every binding
+// cheap, kills the whole null-during-exit bug class (wrappers outlive the
+// row removal that plays the exit transition), and needs zero polling:
+//   - toasts:       newest-first wrappers (display strings + live ref)
+//   - popupToasts:  derived filter bound by the popup ListView's ScriptModel
+//   - one-shot self-destroying ToastTimer per toast; timeout only hides the
+//     toast (AGS parity — history keeps it, DND toasts never show)
+//   - hover holds the countdown (timer destroyed); unhover hides the toast.
+//     No remaining-time bookkeeping, no per-frame timers anywhere.
 Singleton {
     id: root
 
     readonly property int timeoutDelay: 4000
+    readonly property int criticalDelay: 8000
     readonly property int maxHistory: 50
-    property var popups: []             // [{id, time, notif}]
     property var history: []            // [{id, time, notif}] newest-first
     readonly property bool dnd: Settings.notifDnd
+
+    // Snapshot of one toast. All display state is plain data resolved once
+    // in addPopup; delegates only read these (plus notificationId). `live`
+    // is used solely for dismiss/action-invoke and never in bindings.
+    component Toast: QtObject {
+        required property int notificationId
+        property var live: null
+        property string summary: ""
+        property string body: ""
+        property string appName: ""
+        property string iconFile: ""
+        property string iconName: ""
+        property string previewFile: ""
+        property bool isRecorder: false
+        property bool critical: false
+        property bool hideBody: true
+        property bool longBody: false
+        property var actionDefs: []     // [{identifier, text}] plain snapshot
+        property double stamp: 0
+        property int life: 4000         // ms, 0 = never auto-hide
+        property bool popup: false
+        property Timer timer: null
+    }
+    component ToastTimer: Timer {
+        required property int toastId
+        repeat: false
+        onTriggered: {
+            const self = this;
+            root.hideToast(toastId);
+            root.forgetToastTimer(toastId);
+            self.destroy();
+        }
+    }
+    Component {
+        id: toastComp
+        Toast {}
+    }
+    Component {
+        id: toastTimerComp
+        ToastTimer {}
+    }
+
+    property var toasts: []             // newest-first Toast wrappers (reassigned on every mutation)
+    property var popupToasts: root.toasts.filter(t => t.popup)
 
     // ---- the daemon ----
     NotificationServer {
@@ -56,7 +105,8 @@ Singleton {
         n.closed.connect(() => root.pruneClosed(n.id));
     }
     function pruneClosed(id) {
-        root.popups = root.popups.filter(p => p.id !== id);
+        root.stopToastTimer(root.findToast(id));
+        root.toasts = root.toasts.filter(t => t.notificationId !== id);
         root.history = root.history.filter(h => h.id !== id);
         const ids = Object.assign({}, root._watched);
         delete ids[id];
@@ -74,49 +124,126 @@ Singleton {
         root.history = next;
     }
 
+    function findToast(id) {
+        return root.toasts.find(t => t.notificationId === id) || null;
+    }
+
+    // Reassigns the array so derived bindings (popupToasts) re-evaluate
+    // after in-place wrapper mutations (popup flag flips).
+    function touchToasts() {
+        root.toasts = root.toasts.slice();
+    }
+
     function addPopup(n) {
-        const entry = { id: n.id, time: Date.now() / 1000, notif: n };
-        root.popups = [entry].concat(root.popups.filter(p => p.id !== n.id));
+        // A replaced toast must not keep its old countdown.
+        root.stopToastTimer(root.findToast(n.id));
 
-        // auto-expire the TOAST after delay; critical stays 8s. Expiry never
-        // dismisses from the daemon (AGS parity) so history keeps it.
-        const life = n.urgency === NotificationUrgency.Critical ? 8000 : timeoutDelay;
-        Qt.callLater(() => expireTimerFor(entry.id, life));
-    }
-
-    property var _expireTimers: ({})
-
-    function expireTimerFor(id, ms) {
-        if (_expireTimers[id]) return;
-        const t = Qt.createQmlObject("import QtQuick; Timer { repeat:false }", root);
-        t.interval = ms;
-        t.triggered.connect(() => {
-            delete _expireTimers[id];
-            t.destroy();
-            root.closePopup(id, false);
+        const iconFile = root.isRecorder(n) ? "" : root.imageFile(n);
+        const iconName = root.iconNameFor(n);
+        const previewFile = root.previewFor(iconFile);
+        const body = (n.body || "").toString();
+        const acts = [];
+        try {
+            for (const a of n.actions.values())
+                acts.push({ identifier: a.identifier, text: a.text });
+        } catch (e) {}
+        const w = toastComp.createObject(root, {
+            notificationId: n.id,
+            live: n,
+            summary: ((n.summary || n.appName) || "").toString(),
+            body: body,
+            appName: ((n.appName || "").toString()),
+            iconFile: iconFile,
+            iconName: iconName,
+            previewFile: previewFile,
+            isRecorder: root.isRecorder(n),
+            critical: n.urgency === NotificationUrgency.Critical,
+            hideBody: body === "" || root.bodyIsImage(n, iconFile),
+            longBody: body.length > 60 && !root.bodyIsImage(n, iconFile),
+            actionDefs: acts,
+            stamp: Date.now() / 1000,
+            life: root.toastLifetime(n),
+            popup: false
         });
-        t.start();
-        _expireTimers[id] = t;
+        root.toasts = [w].concat(root.toasts.filter(t => t.notificationId !== n.id));
+
+        // auto-hide the TOAST after its life; critical lingers. Hiding never
+        // dismisses from the daemon (AGS parity) so history keeps it.
+        if (!root.dnd) {
+            w.popup = true;
+            if (w.life > 0) {
+                w.timer = toastTimerComp.createObject(root, { toastId: n.id, interval: w.life });
+                w.timer.start();
+            }
+            root.touchToasts();
+        }
     }
 
-    function closePopup(id, dismiss) {
-        const entry = root.popups.find(p => p.id === id);
-        if (!entry) return;
-        // AGS parity: timeout only hides the toast; dismiss removes everywhere
-        // (closed handler prunes both lists).
-        if (dismiss && entry.notif) {
-            try { entry.notif.dismiss(); } catch (e) {}
+    // Toast lifetime in ms (0 = never auto-hide, honors server timeout).
+    function toastLifetime(n) {
+        const hint = (n && n.expireTimeout != null) ? n.expireTimeout : -1;
+        if (hint === 0) return 0;
+        if (hint > 0) return hint;
+        return (n && n.urgency === NotificationUrgency.Critical) ? root.criticalDelay : root.timeoutDelay;
+    }
+
+    // Hide a toast (timeout, hover-leave). Idempotent; history untouched.
+    function hideToast(id) {
+        const w = root.findToast(id);
+        if (!w) return;
+        if (w.timer) {
+            try { w.timer.stop(); } catch (e) {}
         }
-        root.popups = root.popups.filter(p => p.id !== id);
+        if (!w.popup) return;
+        w.popup = false;
+        root.touchToasts();
+    }
+
+    function expireToast(id) {
+        root.hideToast(id);
+    }
+
+    // Hover holds the countdown: the bar freezes via `paused`, the timer is
+    // gone so there is nothing to drift. Unhover hides (end4 semantics).
+    function holdToast(id) {
+        root.stopToastTimer(root.findToast(id));
+    }
+    function releaseToast(id) {
+        root.hideToast(id);
+    }
+
+    // Dismiss everywhere (swipe, right-click, button): animated exit via the
+    // ListView remove transition, daemon retraction prunes history.
+    function discardToast(id) {
+        const w = root.findToast(id);
+        if (!w) return;
+        root.stopToastTimer(w);
+        const live = w.live;
+        root.toasts = root.toasts.filter(t => t.notificationId !== id);
+        if (live) {
+            try { live.dismiss(); } catch (e) {}
+        }
+    }
+
+    function stopToastTimer(w) {
+        const t = w ? w.timer : null;
+        if (w) w.timer = null;
+        if (t) {
+            try { t.stop(); t.destroy(); } catch (e) {}
+        }
+    }
+    function forgetToastTimer(id) {
+        const w = root.findToast(id);
+        if (w) w.timer = null;
     }
 
     // AGS parity: invoking an action does NOT dismiss the notification.
-    function invokeAction(id, index) {
-        const entry = root.popups.find(p => p.id === id)
-            || root.history.find(h => h.id === id);
-        const acts = entry ? liveActions(entry.notif) : [];
-        if (acts[index]) {
-            try { acts[index].invoke(); } catch (e) {}
+    function invokeToastAction(id, identifier) {
+        const w = root.findToast(id);
+        const acts = (w && w.live) ? liveActions(w.live) : [];
+        const a = acts.find(x => x.identifier === identifier);
+        if (a) {
+            try { a.invoke(); } catch (e) {}
         }
     }
 
@@ -125,6 +252,66 @@ Singleton {
     function liveActions(n) {
         if (!n || !n.actions) return [];
         try { return Array.from(n.actions.values()); } catch (e) { return []; }
+    }
+
+    // Normalizes a notification icon/image value to a local file path.
+    // The daemon may hand us a plain absolute path ("/..."), a file://
+    // URL (image-path hint), or an image://icon/ URL (Quickshell routes
+    // notify-send -i <path> through its icon provider) — accept all,
+    // decode %20-style escapes.
+    function iconToFile(v) {
+        if (!v) return "";
+        let s = String(v);
+        if (s.startsWith("file://")) {
+            s = s.replace(/^file:\/\/[^/]*/, "");
+            try { s = decodeURIComponent(s); } catch (e) {}
+        } else if (s.startsWith("image://icon/")) {
+            s = s.slice("image://icon/".length);
+            try { s = decodeURIComponent(s); } catch (e) {}
+        }
+        return s.startsWith("/") ? s : "";
+    }
+
+    // Resolved image file for a notification (preview, copy). Checks
+    // appIcon first, then image — same order as the AGS icon chain.
+    function imageFile(n) {
+        if (!n) return "";
+        return root.iconToFile(n.appIcon) || root.iconToFile(n.image);
+    }
+
+    // Theme-name/desktop-entry fallback for the small icon slot.
+    function iconNameFor(n) {
+        if (!n || root.isRecorder(n)) return "";
+        const vals = [n.appIcon, n.image];
+        for (let i = 0; i < vals.length; ++i) {
+            const s = vals[i] ? String(vals[i]) : "";
+            if (s !== "" && root.iconToFile(s) === "")
+                return s;
+        }
+        return (n.desktopEntry || "").toString();
+    }
+
+    // Large preview candidate for file-path icons (screenshots, etc.).
+    function previewFor(iconFile) {
+        if (!iconFile) return "";
+        if (!/\.(png|jpe?g|webp|gif|bmp|svg|ico)$/i.test(iconFile)) return "";
+        return iconFile;
+    }
+
+    // Recording toasts (our screenrecord.sh sends -a "Recorder") never
+    // get a large preview — just the red record-dot glyph.
+    function isRecorder(n) {
+        if (!n) return false;
+        if (n.appName === "Recorder") return true;
+        return /Recording (Started|Stopped)/.test(n.summary || "");
+    }
+
+    // True when the body is just the image path (screenshot toasts put
+    // the file in the body). Views hide it since the preview shows it.
+    function bodyIsImage(n, file) {
+        if (!n || !n.body || !file) return false;
+        const b = String(n.body);
+        return b === file || b === "file://" + file;
     }
     function actionLabel(a) {
         const t = (a && a.text) || "";
@@ -147,8 +334,14 @@ Singleton {
     function notify(opts) {
         const args = ["notify-send"];
         if (opts.appName) { args.push("-a"); args.push(opts.appName); }
+        if (opts.icon) { args.push("-i"); args.push(opts.icon); }
         if (opts.summary) args.push(opts.summary);
         if (opts.body) args.push(opts.body);
         Quickshell.execDetached(args);
+    }
+
+    // Shorthand used by services (ScreenRecorder, etc.): send(summary, body).
+    function send(summary, body) {
+        root.notify({ summary: summary, body: body });
     }
 }

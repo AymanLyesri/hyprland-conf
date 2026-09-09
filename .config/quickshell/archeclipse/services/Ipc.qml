@@ -61,7 +61,7 @@ Item {
                 if (query === "history")
                     return "history=" + Notifications.history.length
                         + (Notifications.history.length > 0 ? " first=" + (Notifications.history[0].notif.summary || "?") : "");
-                if (query === "popups") return "popups=" + Notifications.popups.length;
+                if (query === "popups") return "popups=" + Notifications.popupToasts.length;
                 if (query === "clear") { Notifications.clearHistory(); return "cleared"; }
                 if (query === "dnd") return "dnd=" + Settings.notifDnd;
                 if (query === "dndon") { Settings.updateSetting("notifications.dnd", true); return "dnd=" + Settings.notifDnd; }

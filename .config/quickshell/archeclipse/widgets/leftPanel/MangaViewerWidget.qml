@@ -298,51 +298,6 @@ Item {
         anchors.fill: parent
         spacing: 8
 
-        // Header + tabs
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 4
-            Label {
-                text: "Manga Viewer"
-                font.pixelSize: Theme.fontSize + 3
-                font.bold: true
-                color: Theme.fg
-                Layout.fillWidth: true
-            }
-            AppSegmentedControl {
-                // Per-tab availability rides in the model (Chapters needs a
-                // manga, Pages a chapter) — disabled cells don't activate.
-                model: [
-                    {
-                        value: "Manga",
-                        label: "Manga",
-                        enabled: true
-                    },
-                    {
-                        value: "Chapters",
-                        label: "Chapters",
-                        enabled: (root.selectedManga !== null) && (root.selectedManga !== undefined)
-                    },
-                    {
-                        value: "Pages",
-                        label: "Pages",
-                        enabled: (root.selectedChapter !== null) && (root.selectedChapter !== undefined)
-                    }
-                ]
-                currentIndex: ["Manga", "Chapters", "Pages"].indexOf(root.currentTab)
-                onActivated: (i, v) => root.currentTab = v
-            }
-        }
-
-        // Search bar (Manga tab)
-        AppTextField {
-            id: searchField
-            Layout.fillWidth: true
-            visible: root.currentTab === "Manga"
-            placeholderText: "Search manga..."
-            onAccepted: root.searchManga(text)
-        }
-
         // Content area (fills leftover space)
         Rectangle {
             Layout.fillWidth: true
@@ -667,16 +622,46 @@ Item {
             }
         }
 
+        RowLayout {
+            anchors.horizontalCenter: parent.horizontalCenter
+            Layout.fillWidth: true
+            spacing: 4
+            AppSegmentedControl {
+                // Per-tab availability rides in the model (Chapters needs a
+                // manga, Pages a chapter) — disabled cells don't activate.
+                model: [
+                    {
+                        value: "Manga",
+                        label: "Manga",
+                        enabled: true
+                    },
+                    {
+                        value: "Chapters",
+                        label: "Chapters",
+                        enabled: (root.selectedManga !== null) && (root.selectedManga !== undefined)
+                    },
+                    {
+                        value: "Pages",
+                        label: "Pages",
+                        enabled: (root.selectedChapter !== null) && (root.selectedChapter !== undefined)
+                    }
+                ]
+                currentIndex: ["Manga", "Chapters", "Pages"].indexOf(root.currentTab)
+                onActivated: (i, v) => root.currentTab = v
+            }
+        }
+
         // Provider tabs (AGS Tabs)
         RowLayout {
+            anchors.horizontalCenter: parent.horizontalCenter
             Layout.fillWidth: true
             spacing: 4
             AppSegmentedControl {
                 Layout.alignment: Qt.AlignHCenter
                 model: root.providers.map(p => ({
-                    value: p.id,
-                    label: p.label
-                }))
+                            value: p.id,
+                            label: p.label
+                        }))
                 currentIndex: root.providers.findIndex(p => p.id === root.provider)
                 onActivated: (i, v) => root.switchProvider(v)
             }

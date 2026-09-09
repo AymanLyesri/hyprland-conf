@@ -31,28 +31,39 @@ Item {
     height: innerCol.height + 16
 
     // ---- icon chain (AGS getNotificationIcon): appIcon path → appIcon theme
-    // name → image path → image theme name → desktopEntry → urgency fallback
+    // name → image path → image theme name → desktopEntry → urgency fallback.
+    // Values may be plain paths or file:// URLs (see
+    // Notifications.iconToFile). Recording toasts show only the red dot.
+    readonly property bool isRecorder: Notifications.isRecorder(root.notification)
     readonly property string iconFile: {
-        const n = root.notification;
-        if (!n)
+        if (!root.notification || root.isRecorder)
             return "";
-        if (n.appIcon && String(n.appIcon).startsWith("/"))
-            return n.appIcon;
-        if (n.image && String(n.image).startsWith("/"))
-            return n.image;
-        return "";
+        return Notifications.imageFile(root.notification);
     }
     readonly property string iconName: {
-        const n = root.notification;
-        if (!n)
+        if (!root.notification || root.isRecorder)
             return "";
-        if (n.appIcon && !String(n.appIcon).startsWith("/"))
-            return n.appIcon;
-        if (n.image && !String(n.image).startsWith("/"))
-            return n.image;
+        const n = root.notification;
+        const vals = [n.appIcon, n.image];
+        for (let i = 0; i < vals.length; ++i) {
+            const s = vals[i] ? String(vals[i]) : "";
+            if (s !== "" && Notifications.iconToFile(s) === "")
+                return s;
+        }
         if (n.desktopEntry)
             return n.desktopEntry;
         return "";
+    }
+
+    // Large preview for file-path icons (screenshots, etc.). Collapses to
+    // 0 height when there is no image file or the format can't load.
+    // Recording toasts never preview — red dot icon only.
+    readonly property string previewFile: {
+        if (root.isRecorder || root.iconFile === "")
+            return "";
+        if (!/\.(png|jpe?g|webp|gif|bmp|svg|ico)$/i.test(root.iconFile))
+            return "";
+        return root.iconFile;
     }
 
     Rectangle {
@@ -83,7 +94,7 @@ Item {
                     id: appIconWrap
                     width: 20
                     height: 20
-                    visible: root.iconFile !== "" || root.iconName !== "" || (root.notification && root.notification.urgency === 2)
+                    visible: root.isRecorder || root.iconFile !== "" || root.iconName !== "" || (root.notification && root.notification.urgency === 2)
                     IconImage {
                         anchors.fill: parent
                         anchors.margins: 1
@@ -93,9 +104,9 @@ Item {
                     Text {
                         anchors.fill: parent
                         visible: root.iconFile === "" && root.iconName === ""
-                        text: "\u{F059A}"
+                        text: root.isRecorder ? "" : "\u{F059A}"
                         font.pixelSize: 16
-                        color: Theme.accent
+                        color: root.isRecorder ? "#c95454" : Theme.accent
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
@@ -150,7 +161,7 @@ Item {
                     cornerRadius: 4
                     idleBg: Theme.surface
                     outlined: true
-                    visible: root.notification && root.notification.body && root.notification.body.length > 100
+                    visible: root.notification && root.notification.body && root.notification.body.length > 100 && !Notifications.bodyIsImage(root.notification, root.iconFile)
                     onClicked: root.bodyExpanded = !root.bodyExpanded
                 }
 
@@ -183,7 +194,8 @@ Item {
                 wrapMode: Text.WordWrap
             }
 
-            // Body (expandable, AGS markup handling)
+            // Body (expandable, AGS markup handling). Hidden when it's
+            // just the image path — the preview below already shows it.
             Text {
                 text: (root.notification && root.notification.body) || ""
                 textFormat: Text.StyledText
@@ -193,13 +205,47 @@ Item {
                 wrapMode: Text.WordWrap
                 maximumLineCount: root.bodyExpanded ? undefined : 3
                 elide: root.bodyExpanded ? Text.ElideNone : Text.ElideRight
-                visible: text !== ""
+                visible: text !== "" && !Notifications.bodyIsImage(root.notification, root.iconFile)
 
-                // "more" hint when collapsed and truncated
+                // "more" hint when collapsed and truncated.
+                // TapHandler (not MouseArea) so press-drag still reaches
+                // the parent Flickable — a covering MouseArea would swallow
+                // drags and break list scrolling starting on the body.
+                TapHandler {
+                    gesturePolicy: TapHandler.ReleaseWithinBounds
+                    onTapped: root.bodyExpanded = !root.bodyExpanded
+                }
+                HoverHandler {
+                    cursorShape: Qt.PointingHandCursor
+                }
+            }
+
+            // Image preview (screenshots): click to open. Square spanning
+            // the full width; innerCol height follows content, so the
+            // card grows automatically.
+            Rectangle {
+                width: parent.width
+                height: root.previewFile !== "" && previewImg.status !== Image.Error ? width : 0
+                visible: height > 0
+                radius: 6
+                clip: true
+                color: Qt.alpha(Theme.fg, 0.06)
+                Image {
+                    id: previewImg
+                    anchors.fill: parent
+                    source: root.previewFile !== "" ? "file://" + root.previewFile : ""
+                    asynchronous: true
+                    cache: false
+                    fillMode: Image.PreserveAspectCrop
+                }
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: root.bodyExpanded = !root.bodyExpanded
+                    // Let the Flickable drag too: only claim the press when
+                    // it actually ends as a click on the preview.
+                    propagateComposedEvents: true
+                    onPressed: mouse => mouse.accepted = false
+                    onClicked: Quickshell.execDetached(["xdg-open", root.previewFile])
                 }
             }
 
@@ -234,11 +280,11 @@ Item {
             }
         }
 
-        MouseArea {
-            anchors.fill: parent
-            hoverEnabled: true
-            onEntered: root.isHovered = true
-            onExited: root.isHovered = false
+        // Hover only — a covering MouseArea here would sit on top of the
+        // copy/expand/dismiss buttons AND swallow press-drags, breaking
+        // both button clicks and Flickable scrolling starting on the card.
+        HoverHandler {
+            onHoveredChanged: root.isHovered = hovered
         }
     }
 
@@ -246,14 +292,17 @@ Item {
         const n = root.notification;
         if (!n)
             return;
-        if (n.image && String(n.image).startsWith("/")) {
+        // Screenshot icons arrive as appIcon paths — copy with the real
+        // MIME type instead of mislabeling everything as image/png.
+        if (root.iconFile !== "") {
+            const imgPath = root.iconFile;
             const p = Qt.createQmlObject("import Quickshell.Io; Process {}", root);
-            p.command = ["bash", "-c", "wl-copy --type image/png < " + JSON.stringify(n.image)];
+            p.command = ["bash", "-c", "wl-copy --type \"$(file -b --mime-type " + JSON.stringify(imgPath) + ")\" < " + JSON.stringify(imgPath)];
             p.exited.connect(code => {
                 if (code === 0)
                     Notifications.notify({
                         summary: "Copied",
-                        body: n.image
+                        body: imgPath
                     });
                 else
                     Notifications.notify({

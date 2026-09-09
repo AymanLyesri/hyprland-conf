@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.Notifications
+import Quickshell.Wayland
 import Quickshell.Widgets
 import qs.theme
 import qs.services
@@ -10,7 +11,24 @@ import qs.widgets.shared
 
 // Port of NotificationPopups.tsx window — top-right stack of popup cards,
 // overlay layer, hidden when empty. One per monitor like AGS.
-// Model entries: {id, time (epoch s), notif (live NotificationObject)}.
+// Model rows are Toast snapshot wrappers (plain props resolved once at
+// receipt); delegates never touch live NotificationObjects, so bindings
+// stay cheap and the exit transition can never null-deref.
+//
+// Animation model (end4/illogical-impulse reference):
+//   - ListView over ScriptModel(Notifications.popupToasts): row-level
+//     add/displaced/remove transitions, no full rebuilds, no dual-model
+//     syncing, no polling timers anywhere.
+//   - Entrance: staggered slide-in from the right + fade (OutExpo).
+//   - Exit: slide-out + fade; swipe-to-dismiss plays first, then discards.
+//   - Timeout bar: ONE PropertyAnimation per card, paused declaratively on
+//     hover (hover destroys the service countdown; unhover hides the toast,
+//     so bar and expiry can never drift).
+//   - Region mask: clicks pass through everywhere except the cards.
+//   - Stable full-height window (anchors top+right+bottom): toasts animate
+//     inside a fixed surface. Resizing the layershell surface every frame
+//     (contentHeight-driven implicitHeight) reallocs buffers + relayouts
+//     the compositor per frame — that was the low-fps jank.
 PanelWindow {
     id: root
 
@@ -18,6 +36,7 @@ PanelWindow {
     anchors {
         top: true
         right: true
+        bottom: true
     }
     exclusiveZone: -1
     color: "transparent"
@@ -26,100 +45,303 @@ PanelWindow {
         right: 10
     }
     implicitWidth: 400
-    implicitHeight: popColumn.childrenRect.height + 4
-    visible: Notifications.popups.length > 0
 
-    Column {
-        id: popColumn
+    mask: Region {
+        item: popList.contentItem
+    }
+
+    // Grace keeps the window mapped while the last card slides out.
+    property int toastCount: Notifications.popupToasts.length
+    onToastCountChanged: {
+        if (toastCount > 0)
+            exitGuard.stop();
+        else
+            exitGuard.restart();
+    }
+    Timer {
+        id: exitGuard
+        interval: 350
+        repeat: false
+    }
+    visible: toastCount > 0 || exitGuard.running
+
+    ListView {
+        id: popList
         anchors.top: parent.top
         anchors.right: parent.right
         width: parent.width
+        height: contentHeight
         spacing: Theme.spacing
+        interactive: false
+        model: ScriptModel {
+            values: Notifications.popupToasts
+        }
 
-        Repeater {
-            model: Notifications.popups
-
-            Rectangle {
-                id: card
-                required property var modelData
-                readonly property var notif: modelData.notif
-                readonly property bool critical: notif && notif.urgency === NotificationUrgency.Critical
-                property bool bodyExpanded: false
-
-                width: 400
-                height: contentCol.childrenRect.height + 20 + (buttonsRow.visible ? buttonsRow.height + 8 : 0)
-                radius: Theme.radius
-                color: critical ? Qt.rgba(0.66, 0.27, 0.27, 0.95) : Theme.surface
-                border.color: Qt.alpha(Theme.fg, 0.1)
-
-                opacity: 0
-                Component.onCompleted: opacity = 1
-                Behavior on opacity {
+        populate: Transition {
+            ParallelAnimation {
+                NumberAnimation {
+                    property: "x"
+                    from: 120
+                    duration: 380
+                    easing.type: Easing.OutExpo
+                }
+                NumberAnimation {
+                    property: "opacity"
+                    from: 0
+                    duration: 300
+                    easing.type: Easing.OutCubic
+                }
+            }
+        }
+        add: Transition {
+            SequentialAnimation {
+                // Stagger: older rows (higher index) trail the newcomer.
+                // Clamped: a retargeted transition can report index -1.
+                PauseAnimation {
+                    duration: Math.max(0, ViewTransition.index * 45)
+                }
+                ParallelAnimation {
                     NumberAnimation {
-                        duration: 200
+                        property: "x"
+                        from: 120
+                        duration: 380
+                        easing.type: Easing.OutExpo
+                    }
+                    NumberAnimation {
+                        property: "opacity"
+                        from: 0
+                        duration: 300
+                        easing.type: Easing.OutCubic
+                    }
+                }
+            }
+        }
+        displaced: Transition {
+            NumberAnimation {
+                properties: "x,y"
+                duration: 380
+                easing.type: Easing.OutExpo
+            }
+        }
+        remove: Transition {
+            ParallelAnimation {
+                NumberAnimation {
+                    property: "x"
+                    to: 160
+                    duration: 300
+                    easing.type: Easing.InCubic
+                }
+                NumberAnimation {
+                    property: "opacity"
+                    to: 0
+                    duration: 260
+                    easing.type: Easing.InCubic
+                }
+            }
+        }
+
+        delegate: Rectangle {
+            id: card
+            required property var modelData
+            readonly property var toast: modelData
+            readonly property int toastId: toast ? toast.notificationId : -1
+            readonly property bool critical: toast ? toast.critical : false
+            property bool bodyExpanded: false
+            property bool isHovered: false
+
+            width: ListView.view ? ListView.view.width : 400
+            // Content-driven: body is top-anchored inside the fill-item
+            // shift, so this never feeds back into itself.
+            height: body.height + 22
+            Behavior on height {
+                NumberAnimation {
+                    duration: 280
+                    easing.type: Easing.OutCubic
+                }
+            }
+            radius: Theme.radius
+            color: critical ? Qt.rgba(0.66, 0.27, 0.27, 0.95) : Theme.surface
+            border.color: isHovered ? Qt.alpha(Theme.accent, 0.5) : Qt.alpha(Theme.fg, 0.1)
+            border.width: 1
+            Behavior on border.color {
+                ColorAnimation {
+                    duration: 200
+                }
+            }
+            clip: true
+
+            // Background interaction layer FIRST so buttons above stay
+            // clickable. Drag sideways past the threshold to fling-dismiss
+            // (end4 destroyWithAnimation); right-click dismisses instantly.
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                drag.target: shift
+                drag.axis: Drag.XAxis
+                drag.threshold: 8
+                drag.minimumX: -card.width - 32
+                drag.maximumX: card.width + 32
+                onReleased: {
+                    if (Math.abs(shift.x) > 70) {
+                        swipeOut.dir = shift.x < 0 ? -1 : 1;
+                        swipeOut.start();
+                    } else {
+                        snapBack.start();
+                    }
+                }
+                onClicked: mouse => {
+                    if (mouse.button === Qt.RightButton && card.toastId >= 0)
+                        Notifications.discardToast(card.toastId);
+                }
+            }
+            HoverHandler {
+                onHoveredChanged: {
+                    card.isHovered = hovered;
+                    if (card.toastId < 0)
+                        return;
+                    if (hovered)
+                        Notifications.holdToast(card.toastId);
+                    else
+                        Notifications.releaseToast(card.toastId);
+                }
+            }
+
+            NumberAnimation {
+                id: snapBack
+                target: shift
+                property: "x"
+                to: 0
+                duration: 280
+                easing.type: Easing.OutCubic
+            }
+            ParallelAnimation {
+                id: swipeOut
+                property int dir: -1
+                NumberAnimation {
+                    target: shift
+                    property: "x"
+                    to: swipeOut.dir * (card.width + 32)
+                    duration: 220
+                    easing.type: Easing.InCubic
+                }
+                NumberAnimation {
+                    target: shift
+                    property: "opacity"
+                    to: 0
+                    duration: 200
+                }
+                onFinished: {
+                    if (card.toastId >= 0)
+                        Notifications.discardToast(card.toastId);
+                }
+            }
+
+            // All content shifts (drag) and lifts (hover) as one unit.
+            // Transforms only — layout untouched.
+            Item {
+                id: shift
+                anchors.fill: parent
+                anchors.bottomMargin: 2
+                scale: card.isHovered && shift.x === 0 ? 1.012 : 1
+                Behavior on scale {
+                    NumberAnimation {
+                        duration: 220
+                        easing.type: Easing.OutCubic
                     }
                 }
 
-                // Icon chain (AGS getNotificationIcon): file path → theme
-                // name → desktopEntry → critical warning glyph → info glyph.
-                readonly property string iconFile: {
-                    if (!card.notif)
-                        return "";
-                    if (card.notif.appIcon && String(card.notif.appIcon).startsWith("/"))
-                        return card.notif.appIcon;
-                    if (card.notif.image && String(card.notif.image).startsWith("/"))
-                        return card.notif.image;
-                    return "";
-                }
-                readonly property string iconName: {
-                    if (!card.notif)
-                        return "";
-                    if (card.notif.appIcon && !String(card.notif.appIcon).startsWith("/"))
-                        return card.notif.appIcon;
-                    if (card.notif.image && !String(card.notif.image).startsWith("/"))
-                        return card.notif.image;
-                    if (card.notif.desktopEntry)
-                        return card.notif.desktopEntry;
-                    return "";
-                }
-
                 Column {
-                    id: mainCol
-                    anchors.fill: parent
-                    anchors.margins: 10
+                    id: body
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.topMargin: 10
+                    anchors.leftMargin: 10
+                    anchors.rightMargin: 10
                     spacing: 6
 
                     Row {
-                        id: contentCol
+                        id: contentRow
                         width: parent.width
                         spacing: 10
 
-                        // ---- app icon ----
+                        // ---- app icon / image: the image takes the icon's
+                        // place, spanning the text height (72-120px) ----
                         Item {
                             id: iconSlot
-                            width: 28
-                            height: 28
+                            readonly property bool showPreview: card.toast && card.toast.previewFile !== "" && previewImg.status !== Image.Error
+                            readonly property real previewSize: Math.min(Math.max(textCol.height, 72), 120)
+                            width: showPreview ? previewSize : 28
+                            height: showPreview ? previewSize : 28
+                            Behavior on width {
+                                NumberAnimation {
+                                    duration: 250
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
+                            Behavior on height {
+                                NumberAnimation {
+                                    duration: 250
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
                             IconImage {
                                 id: iconImg
-                                visible: status === Image.Ready && (card.iconFile !== "" || card.iconName !== "")
+                                visible: !parent.showPreview && status === Image.Ready && card.toast && (card.toast.iconFile !== "" || card.toast.iconName !== "")
                                 anchors.fill: parent
-                                source: card.iconFile !== "" ? card.iconFile : card.iconName
+                                source: card.toast ? (card.toast.iconFile !== "" ? card.toast.iconFile : card.toast.iconName) : ""
                             }
                             Text {
-                                visible: !iconImg.visible
+                                visible: !iconImg.visible && !parent.showPreview
                                 width: parent.width
                                 height: parent.height
-                                text: card.critical ? "\u{F0266}" : "\u{F059A}"
-                                    color: card.critical ? "white" : Theme.fg
+                                text: (card.toast && card.toast.isRecorder) ? "\uf111" : (card.critical ? "\u{F0266}" : "\u{F059A}")
+                                color: (card.toast && card.toast.isRecorder) ? "#c95454" : (card.critical ? "white" : Theme.fg)
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 22
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
                             }
+                            Rectangle {
+                                visible: parent.showPreview
+                                opacity: previewImg.status === Image.Ready ? 1 : 0
+                                Behavior on opacity {
+                                    NumberAnimation {
+                                        duration: 250
+                                    }
+                                }
+                                anchors.fill: parent
+                                radius: 8
+                                clip: true
+                                color: Qt.alpha(Theme.fg, 0.06)
+                                Image {
+                                    id: previewImg
+                                    anchors.fill: parent
+                                    source: (card.toast && card.toast.previewFile !== "") ? "file://" + card.toast.previewFile : ""
+                                    asynchronous: true
+                                    cache: false
+                                    fillMode: Image.PreserveAspectCrop
+                                }
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        if (card.toast)
+                                            Quickshell.execDetached(["xdg-open", card.toast.previewFile]);
+                                    }
+                                }
+                            }
                         }
 
                         Column {
-                            width: parent.width - 38
+                            id: textCol
+                            width: (card.toast && card.toast.previewFile !== "") ? parent.width - 130 : parent.width - 38
+                            Behavior on width {
+                                NumberAnimation {
+                                    duration: 250
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
                             spacing: 3
 
                             // ---- top bar: title + time (24h %H:%M, AGS) ----
@@ -127,17 +349,17 @@ PanelWindow {
                                 spacing: 6
                                 width: parent.width
                                 Text {
-                                    text: (card.notif && (card.notif.summary || card.notif.appName)) || ""
+                                    text: (card.toast && card.toast.summary) || ""
                                     textFormat: Text.StyledText
                                     elide: Text.ElideRight
                                     Layout.fillWidth: true
-                                color: card.critical ? "white" : Theme.fg
+                                    color: card.critical ? "white" : Theme.fg
                                     font.family: Theme.fontFamily
                                     font.bold: true
                                     font.pixelSize: Theme.fontSize
                                 }
                                 Text {
-                                    text: (card.modelData.time || 0) > 0 ? new Date(card.modelData.time * 1000).toLocaleTimeString([], {
+                                    text: (card.toast && card.toast.stamp > 0) ? new Date(card.toast.stamp * 1000).toLocaleTimeString([], {
                                         hour: "2-digit",
                                         minute: "2-digit",
                                         hour12: false
@@ -149,10 +371,12 @@ PanelWindow {
                             }
 
                             // ---- body (expandable, AGS markup handling) ----
+                            // Hidden when it's just the image path — the
+                            // image beside it already shows it.
                             Text {
                                 width: parent.width
-                                visible: (card.notif && card.notif.body) !== ""
-                                text: (card.notif && card.notif.body) || ""
+                                visible: card.toast ? !card.toast.hideBody : false
+                                text: (card.toast && card.toast.body) || ""
                                 textFormat: Text.StyledText
                                 wrapMode: Text.WordWrap
                                 maximumLineCount: card.bodyExpanded ? undefined : 4
@@ -167,10 +391,10 @@ PanelWindow {
                     // ---- action buttons (AGS: all actions, invoke, NO dismiss) ----
                     Row {
                         id: actionsRow
-                        visible: card.notif && Notifications.liveActions(card.notif).length > 0
+                        visible: card.toast ? card.toast.actionDefs.length > 0 : false
                         spacing: 4
                         Repeater {
-                            model: card.notif ? Notifications.liveActions(card.notif) : []
+                            model: card.toast ? card.toast.actionDefs : []
                             delegate: AppButton {
                                 required property var modelData
                                 text: Notifications.actionLabel(modelData)
@@ -180,9 +404,8 @@ PanelWindow {
                                 idleBg: Theme.surface
                                 outlined: true
                                 onClicked: {
-                                    try {
-                                        modelData.invoke();
-                                    } catch (e) {}
+                                    if (card.toastId >= 0)
+                                        Notifications.invokeToastAction(card.toastId, modelData.identifier);
                                 }
                             }
                         }
@@ -192,6 +415,12 @@ PanelWindow {
                     Row {
                         id: buttonsRow
                         visible: card.isHovered
+                        opacity: card.isHovered ? 1 : 0
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: 180
+                            }
+                        }
                         spacing: 4
                         AppButton {
                             icon: "󰃅"
@@ -200,17 +429,19 @@ PanelWindow {
                             idleBg: Theme.surface
                             outlined: true
                             onClicked: {
-                                const n = card.notif;
-                                if (!n)
+                                if (!card.toast)
                                     return;
-                                // AGS: image payload via wl-copy image/png + toast
-                                if (n.image && String(n.image).startsWith("/")) {
+                                // AGS: image payload via wl-copy + toast. Uses the
+                                // resolved file icon (screenshot arrives as
+                                // appIcon, not image) with its real MIME type.
+                                if (card.toast.iconFile !== "") {
+                                    const imgPath = card.toast.iconFile;
                                     const p = Qt.createQmlObject("import Quickshell.Io; Process {}", card);
-                                    p.command = ["bash", "-c", "wl-copy --type image/png < " + JSON.stringify(n.image)];
+                                    p.command = ["bash", "-c", "wl-copy --type \"$(file -b --mime-type " + JSON.stringify(imgPath) + ")\" < " + JSON.stringify(imgPath)];
                                     p.exited.connect(code => {
                                         Notifications.notify(code === 0 ? {
                                             summary: "Copied",
-                                            body: n.image
+                                            body: imgPath
                                         } : {
                                             summary: "Error",
                                             body: "Copy failed"
@@ -220,7 +451,7 @@ PanelWindow {
                                     p.running = true;
                                     return;
                                 }
-                                const t = n.body || n.summary;
+                                const t = card.toast.body || card.toast.summary;
                                 if (t)
                                     Quickshell.execDetached(["wl-copy", t]);
                             }
@@ -231,7 +462,7 @@ PanelWindow {
                             cornerRadius: 4
                             idleBg: Theme.surface
                             outlined: true
-                            visible: (card.notif && (card.notif.body || "")).length > 60
+                            visible: card.toast ? card.toast.longBody : false
                             onClicked: card.bodyExpanded = !card.bodyExpanded
                         }
                         AppButton {
@@ -240,24 +471,58 @@ PanelWindow {
                             cornerRadius: 4
                             idleBg: Theme.surface
                             outlined: true
-                            onClicked: Notifications.closePopup(card.modelData.id, true)
+                            onClicked: {
+                                if (card.toastId >= 0)
+                                    Notifications.discardToast(card.toastId);
+                            }
                         }
                     }
                 }
+            }
 
-                property bool isHovered: false
-                MouseArea {
-                    id: cardMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    acceptedButtons: Qt.LeftButton | Qt.RightButton
-                    onEntered: card.isHovered = true
-                    onExited: card.isHovered = false
-                    onClicked: mouse => {
-                        if (mouse.button === Qt.RightButton)
-                            Notifications.closePopup(card.modelData.id, true);   // AGS right-click dismiss
+            // Timeout bar: a single animation (end4 ReloadPopup pattern).
+            // Declaratively paused on hover; the service countdown is held
+            // alongside, so visuals and expiry can never drift. Firing is
+            // idempotent with the service timer.
+            Rectangle {
+                id: barTrack
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                height: 2
+                visible: card.toast ? card.toast.life > 0 : false
+                color: Qt.alpha(Theme.fg, 0.08)
+                Rectangle {
+                    id: barFill
+                    anchors.left: parent.left
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    width: barTrack.width
+                    color: card.critical ? Qt.alpha("white", 0.75) : Theme.accent
+                    // Transform-only: no layout pass per frame, GPU-composited.
+                    transform: Scale {
+                        id: barScale
+                        origin.x: 0
+                        xScale: 1
+                    }
+                    PropertyAnimation {
+                        id: barAnim
+                        target: barScale
+                        property: "xScale"
+                        from: 1
+                        to: 0
+                        duration: card.toast ? card.toast.life : 4000
+                        paused: card.isHovered
+                        onFinished: {
+                            if (card.toastId >= 0)
+                                Notifications.expireToast(card.toastId);
+                        }
                     }
                 }
+            }
+            Component.onCompleted: {
+                if (card.toast && card.toast.life > 0)
+                    barAnim.start();
             }
         }
     }

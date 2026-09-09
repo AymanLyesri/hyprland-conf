@@ -7,6 +7,7 @@ import qs.theme
 import qs.services
 import qs.widgets.bar
 import qs.widgets.rightPanel
+import qs.widgets.shared
 import qs.widgets.weather
 
 // Center section (ex-Information) is inlined here directly:
@@ -163,9 +164,11 @@ Row {
                 }
             }
 
-            ToolTip.visible: playerHover.hovered && root.playerTooltip !== ""
-            ToolTip.text: root.playerTooltip
-            ToolTip.delay: 500
+            AppTooltip {
+                visible: playerHover.hovered && root.playerTooltip !== ""
+                text: root.playerTooltip
+                delay: 500
+            }
 
             HoverHandler {
                 id: playerHover
