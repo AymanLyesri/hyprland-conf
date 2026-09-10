@@ -1,99 +1,140 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Quickshell
-import Quickshell.Hyprland
-import Quickshell.Wayland
 import qs.theme
 import qs.services
-import qs.widgets.bar
 import qs.widgets.shared
 import qs.widgets.media
+import qs.widgets.rightPanel
 
-// Port of widgets/rightPanel/RightPanel.tsx — data-driven side panel on the
-// right edge. Shows ALL enabled widgets simultaneously (like AGS), with a
-// toggle sidebar for selecting which widgets are visible. Anchored TOP | RIGHT | BOTTOM,
-// exclusive when locked, hidden by default. Opened via HotZone dwell,
-// SUPER+R keybind, or IPC togglePanel.
-PanelWindow {
+// RightIsland: the former RightPanel body (widget stack + toggle sidebar)
+// living INSIDE the bar pill as a Dynamic-Island state (BarState "right").
+//
+// Same spring-unfold pattern as Search/ControlIsland — the pill grows
+// (width via the pill spring, height snapped on the window) while this
+// body unfolds via the expand driver (clip + opacity + scale only, so no
+// expensive layout animates per-frame).
+//
+// Open: SUPER+R bind, right HotZone hover, IPC.
+// Close: bind toggle, Esc, close button, or 1s after the cursor leaves
+// (Settings.rightPanelLock pins it open; an active widget-selector drag
+// also holds it open, matching the old panel).
+Column {
     id: root
-    required property ShellScreen screen
-    readonly property string monitorName: {
-        const hmon = Hyprland.monitorFor(screen);
-        return hmon ? hmon.name : screen.name;
-    }
+    width: Settings.rightPanelWidth
+    // Explicit full height (NOT implicit): positioner implicit sizes freeze
+    // at completion-time values in this engine, so a height driven only by
+    // the expand animation would never reach the pill — the Loader measures
+    // this explicit height and the pill snaps to it, exactly like the
+    // static DefaultBar/PlayerIsland pages. The expand driver below still
+    // unfolds the content inside the snapped pill (clip + opacity + scale).
+    height: bodyHeight
+    spacing: 0
+
+    // Island owner passes the bar's monitor; body falls back to focused.
+    property string monitorName: ""
+
+    // Full monitor height, passed by the bar owner. Side islands stretch
+    // the whole vertical screen like the old edge panels did (the pill
+    // adds its 10px padding, leaving a 5px bottom margin).
+    property int screenHeight: 1080
+
+    // Fixed dropdown height (the old panel stretched full monitor height;
+    // the island is a floating card — the widget stack scrolls internally,
+    // same as the search island's fixed body height).
+    property int bodyHeight: Math.max(400, screenHeight - 15)
 
     // True while a widget selector is being drag-reordered (AGS
     // Window.isDragging: drag-begin/drag-end around the Gtk.DragSource).
     // The auto-hide timer skips hiding while this is set.
     property bool isDragging: false
 
-    // Window geometry / layer
-    anchors {
-        right: true
-        top: true
-        bottom: true
-    }
-    // Overlap the centered bar's top reservation so the panel spans the
-    // full height (bar pill is centered, so no visual clash at the edge).
-    // Only when exclusive: overlays already get the full
-    // monitor height, and the margin would push them off the top.
-    margins {
-        top: Settings.rightPanelExclusivity ? -32 : 0
-    }
-    implicitWidth: Settings.rightPanelWidth
-    color: "transparent"
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
-    WlrLayershell.exclusiveZone: Settings.rightPanelExclusivity ? Settings.rightPanelWidth : -1
-    WlrLayershell.layer: WlrLayer.Top
-
-    // Register with Registry for IPC togglePanel
+    // Spring driver: 0 -> 1 on creation unfolds the body.
+    property real expand: 0
     Component.onCompleted: {
-        Registry.register(`right-panel-${root.monitorName}`, root);
-        visible = false;
+        expand = 1;
+        Registry.register(root.registryKey(), root);
+        Registry.register("right-island", root);
+    }
+    onMonitorNameChanged: {
+        if (root.monitorName !== "")
+            Registry.register(root.registryKey(), root);
     }
     Component.onDestruction: {
-        Registry.unregister(`right-panel-${root.monitorName}`);
+        Registry.unregister(root.registryKey());
+        Registry.unregister("right-island");
+    }
+    function registryKey() {
+        return `right-island-${root.monitorName || Registry.monitorName}`;
     }
 
-    // Idle hide timer (when not locked) - AGS uses 0ms delay.
-    // Guarded on isDragging: AGS skips the leave-hide while a widget
-    // selector is being drag-reordered (Window.isDragging).
-    Timer {
-        id: hideTimer
-        interval: 0
-        onTriggered: {
-            if (!Settings.rightPanelLock && !root.isDragging)
-                root.visible = false;
+    Behavior on expand {
+        SpringAnimation {
+            spring: 3.5
+            damping: 0.32
+            mass: 1.0
         }
     }
 
-    // Hover handling — keep open while mouse is over panel
+    // Hover tracking lives here (stable container — content never swaps
+    // under the cursor while open). Leaving arms the close timer; the
+    // timer re-checks so a fast flick across still closes.
     HoverHandler {
-        id: panelHover
-        enabled: true
+        id: islandHover
         onHoveredChanged: {
-            if (hovered)
-                hideTimer.stop();
-            else if (!Settings.rightPanelLock && !root.isDragging)
-                hideTimer.restart();
+            if (islandHover.hovered) {
+                leaveTimer.stop();
+                // Pin hover-driven islands so a hold expiry can't close
+                // the panel while it is being used.
+                BarState.activate("right", 0);
+            } else {
+                root.requestAutoHide();
+            }
+        }
+    }
+    function requestAutoHide() {
+        if (Settings.rightPanelLock)
+            return;
+        if (islandHover.hovered)
+            return;
+        if (root.isDragging)
+            return;
+        leaveTimer.restart();
+    }
+    Timer {
+        id: leaveTimer
+        interval: 1000
+        onTriggered: {
+            if (!Settings.rightPanelLock && !islandHover.hovered && !root.isDragging)
+                BarState.deactivate("right");
         }
     }
 
-    // Main panel content (mirrors LeftPanel: 5px outer margins)
-    Rectangle {
-        anchors.fill: parent
-        anchors.rightMargin: 5
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
-        color: Theme.surface
-        radius: Theme.radius
+    // Esc dismiss once the surface has focus (click a control first).
+    Item {
+        id: escGrab
+        width: 1
+        height: 1
+        focus: true
+        Keys.onEscapePressed: BarState.deactivate("right")
+    }
+
+    Item {
+        id: bodyClip
+        width: parent.width
+        height: Math.max(0, root.expand * bodyRow.height)
+        clip: true
+        opacity: Math.max(0, Math.min(1, root.expand * 1.2))
+        scale: 0.96 + 0.04 * root.expand
+        transformOrigin: Item.Top
 
         Row {
-            anchors.fill: parent
+            id: bodyRow
+            width: parent.width
+            height: root.bodyHeight
             spacing: 0
             // AGS RightPanel puts <main-content/> first and <Actions/> last:
-            // the sidebar displays on the RIGHT (mirrors LeftPanel's left rail).
+            // the sidebar displays on the RIGHT (mirrors the left island's rail).
             layoutDirection: Qt.RightToLeft
 
             // ----- Sidebar with widget toggles (drag-reorderable) -----
@@ -187,7 +228,6 @@ PanelWindow {
                 }
 
                 // ----- Window Actions (AGS WindowActions, valign END) -----
-                // Shared plain-Button styling with LeftPanel's action cluster.
                 Column {
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
@@ -199,12 +239,12 @@ PanelWindow {
                     // Expand (+50 to max 1500)
                     AppButton {
                         width: parent.width
-                        icon: "\u{F067}"
+                        icon: ""
                         pixelSize: 14
                         cornerRadius: 6
                         hoverBg: Theme.surface
                         hoverFg: Theme.accent
-                        tooltipText: "Expand panel"
+                        tooltipText: "Expand island"
                         onClicked: {
                             const w = Settings.rightPanelWidth;
                             Settings.rightPanelWidth = w < 1500 ? w + 50 : 1500;
@@ -213,21 +253,24 @@ PanelWindow {
                     // Shrink (-50 to min 250)
                     AppButton {
                         width: parent.width
-                        icon: "\u{F068}"
+                        icon: ""
                         pixelSize: 14
                         cornerRadius: 6
                         hoverBg: Theme.surface
                         hoverFg: Theme.accent
-                        tooltipText: "Shrink panel"
+                        tooltipText: "Shrink island"
                         onClicked: {
                             const w = Settings.rightPanelWidth;
                             Settings.rightPanelWidth = w > 250 ? w - 50 : 250;
                         }
                     }
-                    // Exclusivity (AGS: active = non-exclusive, inverted)
+                    // Exclusivity (AGS: active = non-exclusive, inverted) —
+                    // reserves the island's width from the docked screen
+                    // edge while open (vertical zone; the bar's top strip
+                    // reservation is replaced, not added).
                     AppButton {
                         width: parent.width
-                        icon: "\u{F2D2}"
+                        icon: ""
                         pixelSize: 14
                         cornerRadius: 6
                         toggle: true
@@ -238,28 +281,28 @@ PanelWindow {
                         // back as-is toggles exclusivity.
                         onClicked: Settings.rightPanelExclusivity = checked
                     }
-                    // Lock
+                    // Lock — pins the island open across hover-leave.
                     AppButton {
                         width: parent.width
-                        icon: Settings.rightPanelLock ? "\u{F023}" : "\u{F2FC}"
+                        icon: Settings.rightPanelLock ? "" : ""
                         pixelSize: 14
                         cornerRadius: 6
                         toggle: true
                         checked: Settings.rightPanelLock
                         hoverBg: Theme.surface
-                        tooltipText: Settings.rightPanelLock ? "Unlock panel" : "Lock panel"
+                        tooltipText: Settings.rightPanelLock ? "Unlock island" : "Lock island"
                         onClicked: Settings.rightPanelLock = !checked
                     }
                     // Close
                     AppButton {
                         width: parent.width
-                        icon: "\u{F00D}"
+                        icon: ""
                         pixelSize: 14
                         cornerRadius: 6
                         hoverBg: Theme.surface
                         hoverFg: Theme.danger
-                        tooltipText: "Close panel"
-                        onClicked: root.visible = false
+                        tooltipText: "Close island"
+                        onClicked: BarState.deactivate("right")
                     }
                 }
             }
@@ -452,22 +495,5 @@ PanelWindow {
                 Layout.fillWidth: true
             }
         }
-    }
-
-    // Escape key closes panel (regrab focus when shown so it works even
-    // after interacting with a TextField inside a widget)
-    Item {
-        id: keyHandler
-        focus: true
-        Keys.onEscapePressed: {
-            if (root.visible) {
-                root.visible = false;
-                event.accepted = true;
-            }
-        }
-    }
-    onVisibleChanged: {
-        if (visible)
-            keyHandler.forceActiveFocus();
     }
 }

@@ -14,7 +14,7 @@ Item {
     property real barHeight: 4
     property real iconSize: 16
     property real btnSpacing: 4
-    property real hitHeight: 8
+    property real hitHeight: 6
     property real expandedHeight: 32
     property int peekDuration: 2000
 

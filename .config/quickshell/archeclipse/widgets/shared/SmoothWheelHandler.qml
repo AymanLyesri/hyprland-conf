@@ -22,7 +22,7 @@ WheelHandler {
     acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
     onWheel: event => {
         // Nested scrollers (e.g. NotificationHistory's inner list inside
-        // RightPanel's outer scroll): if this target has nothing to scroll
+        // the right island's outer scroll): if this target has nothing to scroll
         // or is already at the edge in the wheel direction, do NOT accept —
         // let the event bubble to the outer Flickable. Always accepting
         // traps the wheel: the inner list eats it while stationary and the

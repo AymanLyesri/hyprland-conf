@@ -91,10 +91,10 @@ Item {
     property real dialogTop: 0
     property real dialogH: 560
     // Hover handoff with the floating popup (separate window surface):
-    // the panel keeps itself open while this is true (see LeftPanel
+    // the island keeps itself open while this is true (see LeftIsland
     // requestAutoHide) and re-arms its hide when it clears.
     property bool popupHovered: false
-    // Back-reference injected by LeftPanel (booruView.hostPanel = panel).
+    // Back-reference injected by LeftIsland (booruView.hostPanel = island).
     property var hostPanel: null
     // Overlay entrance driver (0 = parked, 1 = in). Slide/opacity only —
     // the grid, toolbar, navigation and settings never relayout, so this
@@ -219,8 +219,8 @@ Item {
         root.dialogTop = Math.max(0, Math.min(maxTop, c - h / 2));
     }
 
-    // Leaving the popup for anywhere but the panel hides it (the panel's
-    // own leave path handles panel->desktop; this covers popup->desktop).
+    // Leaving the popup for anywhere but the island hides it (the island's
+    // own leave path handles island->desktop; this covers popup->desktop).
     function hidePanel() {
         const h = root.hostPanel;
         if (h && typeof h.requestAutoHide === "function")
@@ -232,7 +232,7 @@ Item {
             root.hidePanel();
     }
 
-    // Panel +/- resize with the popup open moves the edge the static
+    // Island +/- resize with the popup open moves the edge the static
     // anchor was computed from: re-push once the configure lands (a
     // single round-trip on a rare user action — never per-frame).
     onWidthChanged: {
@@ -1004,14 +1004,14 @@ Item {
 
     }
 
-    // Floating detail popup: separate window surface docked to the panel's
+    // Floating detail popup: separate window surface docked to the island's
     // right edge, spanning the full viewer height. The surface itself is
     // STATIC — positioned once at show time, never repositioned — and the
     // card glides inside it (y binding + Behavior below). That is the
     // whole smoothness audit: moving the window costs an xdg-popup
     // configure round-trip per tick (the old stutter); moving content
     // inside a static surface is a local vsync repaint. Overlaps the
-    // panel edge by 4px for an attached look (popups render above).
+    // overlaps the island edge by 4px for an attached look (popups render above).
     PopupWindow {
         id: detailPopup
         anchor.item: root

@@ -5,10 +5,8 @@ import Quickshell.Io
 import qs.services
 import qs.widgets.bar
 import qs.widgets.launcher
-import qs.widgets.leftPanel
 import qs.widgets.media
 import qs.widgets.notifications
-import qs.widgets.rightPanel
 import qs.widgets.userPanel
 
 // ArchEclipse shell — multi-monitor via Variants over Quickshell.screens.
@@ -83,28 +81,9 @@ ShellRoot {
 
     }
 
-    // Left panel (SUPER+L, hot-zone, IPC)
-    Variants {
-        model: Quickshell.screens
-
-        LeftPanel {
-            required property ShellScreen modelData
-
-            screen: modelData
-        }
-
-    }
-
-    // Right panel (SUPER+R, hot-zone, IPC)
-    Variants {
-        model: Quickshell.screens
-
-        RightPanel {
-            required property ShellScreen modelData
-
-            screen: modelData
-        }
-
-    }
+    // Left/right content lives in the main bar pill as LeftIsland /
+    // RightIsland (BarState "left"/"right", bodies in
+    // widgets/bar/islands). SUPER+L/R and the bar HotZones route to the
+    // islands — no separate side-panel windows.
 
 }

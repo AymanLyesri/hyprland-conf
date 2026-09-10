@@ -21,19 +21,50 @@ PanelWindow {
         // fallback: try to get monitor name from screen
         return screen?.name ?? "unknown";
     }
+    // Full monitor height for the side islands (they stretch the whole
+    // vertical screen, like the old edge panels did).
+    readonly property int screenHeight: {
+        const hmon = Hyprland.monitorFor(screen);
+        return (hmon && hmon.height > 0) ? hmon.height : 1080;
+    }
 
     // --- window geometry / layer ---
+    // Side-island vertical exclusivity ("horizontal becomes vertical"):
+    // while an island whose exclusivity setting is on is open, the window
+    // drops the far-side anchor and reserves the island's width from the
+    // docked edge (the same edge + both-perpendiculars anchor pattern the
+    // old edge panels used statically) instead of the top strip. Applied
+    // atomically with the state change — anchors, margins, zone and the
+    // offset zeroing below all commit in the same frame — so there is no
+    // staged switch to race the surface resize and glitch. The pill width
+    // spring then grows the edge-anchored surface in place (it expands
+    // from the docked edge instead of gliding across the screen).
+    readonly property bool leftVert: BarState.state === "left" && Settings.leftPanelExclusivity
+    readonly property bool rightVert: BarState.state === "right" && Settings.rightPanelExclusivity
+
     anchors {
-        left: true
-        right: true
-        top: Settings.barOrientation
-        bottom: !Settings.barOrientation
+        left: !root.rightVert
+        right: !root.leftVert
+        top: Settings.barOrientation || root.leftVert || root.rightVert
+        bottom: !Settings.barOrientation || root.leftVert || root.rightVert
+    }
+    margins {
+        top: 0
+        bottom: 0
+        left: root.leftVert ? 8 : 0
+        right: root.rightVert ? 8 : 0
     }
 
     // layer-shell keyboard grab while the search island is open
     // (the control island stays OnDemand so typing elsewhere keeps working)
     WlrLayershell.keyboardFocus: BarState.state === "search" ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.OnDemand
-    exclusiveZone: Settings.barLock ? barHeight : -1
+    WlrLayershell.exclusiveZone: {
+        if (root.leftVert || root.rightVert)
+            // Island width; the compositor adds the 10px edge margin on
+            // top, so the reservation lands exactly on the docked pill.
+            return Math.round(pill.targetWidth);
+        return Settings.barLock ? root.barHeight : -1;
+    }
     color: "transparent"
     aboveWindows: true
 
@@ -41,7 +72,12 @@ PanelWindow {
     // Snap the layer surface to content (no Behavior here — animating the
     // PanelWindow renegotiates with the compositor every frame and stutters).
     // Inner content (pill width spring + island expand spring) carries motion.
+    // NOTE: implicitWidth must track the pill too, not just height — once a
+    // side island drops the far-side anchor, the surface sizes to content
+    // and an unbound implicitWidth strands it at a stale width (clipped
+    // island). Stretched full-width mode ignores both, so this is safe.
     implicitHeight: pill.height
+    implicitWidth: pill.width
 
     // visibility: fullscreen focused client hides; search pins; override wins;
     // otherwise lock/smart-hide geometric room-check (matches AGS Bar.tsx).
@@ -66,7 +102,7 @@ PanelWindow {
     readonly property bool barVisible: {
         if (fullscreenActive)
             return false;
-        if (BarState.state === "search" || BarState.state === "control" || BarState.state === "wallpaper")
+        if (BarState.state === "search" || BarState.state === "control" || BarState.state === "wallpaper" || BarState.state === "left" || BarState.state === "right")
             return true;
         const override = (BarState.barShown || {})[monitorName];
         if (override !== undefined)
@@ -99,7 +135,7 @@ PanelWindow {
             // then conceal the bar when unlocked and search isn't pinning it.
             if (!root.hovered && BarState.popupCount <= 0 && !Settings.barDefault)
                 BarState.deactivate("default");
-            if (BarState.state !== "search" && BarState.state !== "control" && BarState.state !== "wallpaper" && !Settings.barLock && !root.hovered && BarState.popupCount <= 0)
+            if (BarState.state !== "search" && BarState.state !== "control" && BarState.state !== "wallpaper" && BarState.state !== "left" && BarState.state !== "right" && !Settings.barLock && !root.hovered && BarState.popupCount <= 0)
                 BarState.concealBar(root.monitorName);
         }
     }
@@ -121,7 +157,7 @@ PanelWindow {
         onTriggered: {
             if (Settings.barLock)
                 return;
-            if (BarState.state === "search" || BarState.state === "control" || BarState.state === "wallpaper") {
+            if (BarState.state === "search" || BarState.state === "control" || BarState.state === "wallpaper" || BarState.state === "left" || BarState.state === "right") {
                 idleTimer.restart();
                 return;
             }
@@ -215,7 +251,12 @@ PanelWindow {
             property bool widthAnimReady: false
             Component.onCompleted: widthAnimReady = true
             Behavior on width {
-                enabled: pill.widthAnimReady
+                // No width spring while a vertical-exclusive island is open:
+                // the surface tracks the pill size, so animating it would
+                // renegotiate every frame (clipping/tearing). Exclusive
+                // opens snap to final geometry instead; the content
+                // crossfade + island unfold below carry the motion.
+                enabled: pill.widthAnimReady && !root.leftVert && !root.rightVert
                 SpringAnimation {
                     spring: 15
                     damping: 0.5
@@ -226,6 +267,34 @@ PanelWindow {
             bottomRightRadius: Theme.radius
             bottomLeftRadius: Theme.radius
             color: Theme.surface
+
+            // Island docking: when a side island opens, the pill glides to
+            // that screen edge (10px margin, like the old edge panels) and
+            // hangs the island there — the bar anchors left/right instead
+            // of swapping centered, so bar + island travel as one
+            // continuous unit. Driven off BarState.state (not the lagged
+            // displayed state) so the glide starts on the same frame as
+            // the width spring, with the same spring constants for one
+            // coordinated motion.
+            property real shift: shiftTarget
+            property real shiftTarget: {
+                var s = BarState.state;
+                if (s !== "left" && s !== "right")
+                    return 0;
+                var maxShift = Math.max(0, (parent.width - pill.targetWidth) / 2);
+                var docked = Math.max(0, maxShift - 10);
+                return s === "left" ? -docked : docked;
+            }
+            Behavior on shift {
+                enabled: pill.widthAnimReady
+                SpringAnimation {
+                    spring: 15
+                    damping: 0.5
+                    mass: 1.0
+                    epsilon: 0.5
+                }
+            }
+            anchors.horizontalCenterOffset: (root.leftVert || root.rightVert) ? 0 : shift
 
             // Hover detection lives on the pill itself (stable container).
             // AGS parity: the motion controller is on the bar pill — hot-zone
@@ -278,6 +347,18 @@ PanelWindow {
                         if (s === stack.displayed) {
                             stack.pending = "";
                             swapTimer.stop();
+                            return;
+                        }
+                        // Exclusive island open: pin the width target straight
+                        // to final geometry through the 1-frame Loader gap
+                        // (the width spring is off while vert, and the target
+                        // would otherwise sit on the stale lastWidth, landing
+                        // the fresh surface at the wrong size for a frame).
+                        if ((s === "left" && root.leftVert) || (s === "right" && root.rightVert)) {
+                            stack.pending = "";
+                            swapTimer.stop();
+                            pill.widthOverride = (s === "left" ? Settings.leftPanelWidth : Settings.rightPanelWidth) + 10;
+                            stack.displayed = s;
                             return;
                         }
                         var cached = stack.widthCache[s];
@@ -355,6 +436,10 @@ PanelWindow {
                             return controlPage;
                         case "wallpaper":
                             return wallpaperPage;
+                        case "left":
+                            return leftPage;
+                        case "right":
+                            return rightPage;
                         default:
                             return defaultPage;
                         }
@@ -363,6 +448,12 @@ PanelWindow {
                     onLoaded: {
                         if (item && item["monitorName"] !== undefined)
                             item.monitorName = root.monitorName;
+                        if (item && item["screenHeight"] !== undefined)
+                            item.screenHeight = root.screenHeight;
+                        // Release an exclusive-open width pin (same value the
+                        // live measurement recomputes to — seamless).
+                        if (stack.displayed === "left" || stack.displayed === "right")
+                            pill.widthOverride = -1;
                         var mw = item ? Math.max(item.width || 0, item.implicitWidth || 0) : 0;
                         if (mw > 0) {
                             var c = Object.assign({}, stack.widthCache);
@@ -408,23 +499,29 @@ PanelWindow {
                     id: wallpaperPage
                     WallpaperIsland {}
                 }
+                Component {
+                    id: leftPage
+                    LeftIsland {}
+                }
+                Component {
+                    id: rightPage
+                    RightIsland {}
+                }
             }
         }
 
-        // ---- hot zones (left/right panel reveal strips) ----
+        // ---- hot zones (left/right island reveal strips) ----
         HotZone {
             side: "left"
             size: Settings.leftPanelHotZoneSize
             enabled: Settings.leftPanelHotZone
             panelLock: Settings.leftPanelLock
-            monitorName: root.monitorName
         }
         HotZone {
             side: "right"
             size: Settings.rightPanelHotZoneSize
             enabled: Settings.rightPanelHotZone
             panelLock: Settings.rightPanelLock
-            monitorName: root.monitorName
         }
     }
 

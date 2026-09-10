@@ -1,10 +1,12 @@
 pragma Singleton
 import QtQuick
 import Quickshell
+import qs.services
+import qs.theme
 
-// Registry — tracks panel windows by monitor name for IPC lookup.
-// Panels register themselves on Component.onCompleted with a key like
-// "left-panel-<monitorName>" so Ipc.togglePanel and HotZone can find them.
+// Registry — tracks island/window handles by monitor name for IPC lookup.
+// Side islands register themselves as "left-island-<monitorName>" (and the
+// bare "left-island" alias); other windows keep their own keys.
 QtObject {
     id: root
 
@@ -32,16 +34,10 @@ QtObject {
         if (w) w.visible = !w.visible
     }
 
-    // Show the left panel for a monitor and switch its active tab
-    // (mirrors AGS QuickApps "Keybinds": show left-panel + setGlobalSetting leftPanel.widget).
+    // Show the left island and switch its active tab
+    // (mirrors AGS QuickApps "Keybinds": show left panel + setGlobalSetting leftPanel.widget).
     function selectLeftTab(tabName) {
-        // find a registered left panel
-        let panel = null
-        for (const key in root._windows) {
-            if (key.startsWith("left-panel-")) { panel = root._windows[key]; break }
-        }
-        if (!panel) return
-        panel.visible = true
-        if (panel.selectTab) panel.selectTab(tabName)
+        Settings.leftPanelWidget = tabName;
+        BarState.activate("left", 0);
     }
 }

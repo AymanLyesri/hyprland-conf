@@ -14,6 +14,9 @@ Singleton {
     // Priority map (default base 0 < recording 40 < pulses 80 < search 100)
     // "compact"/"expanded" kept only for backward-compat with old persist files.
     // wallpaper (95) beats control (90) so SUPER+W opens over the control island.
+    // Side islands (93) sit above pulses/control so an open island isn't
+    // yanked away by transient states (no width-spring thrash), but yield to
+    // wallpaper/search — deactivating those returns to the still-open island.
     property var priority: {
         "default": 0,
         "recording": 40,
@@ -24,6 +27,8 @@ Singleton {
         "weather": 80,
         "system": 80,
         "control": 90,
+        "left": 93,
+        "right": 93,
         "wallpaper": 95,
         "search": 100
     }
@@ -426,6 +431,13 @@ Singleton {
         var priority = root.priority[name];
         if (priority === undefined)
             return;
+        // Side islands are mutually exclusive: opening one closes the
+        // other so left <-> right switches resolve cleanly (same
+        // priority would otherwise leave both active and the winner
+        // dependent on object iteration order).
+        var rival = name === "left" ? "right" : (name === "right" ? "left" : "");
+        if (rival !== "")
+            root.deactivate(rival);
         const timers = root.holdTimers || {};
         // Cancel existing timer for this state
         if (timers[name]) {

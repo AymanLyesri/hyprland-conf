@@ -161,28 +161,31 @@ Item {
         }
 
         function toggleLeftPanel(monitor: string): string {
-            const key = `left-panel-${monitor}`;
-            const w = Registry.get(key);
-            if (w) { w.visible = !w.visible; return key + " toggled"; }
-            return "window not found: " + key;
+            if (BarState.state === "left") {
+                BarState.deactivate("left");
+                return "left island closed";
+            }
+            BarState.activate("left", 0);
+            return "left island open";
         }
 
         function toggleRightPanel(monitor: string): string {
-            const key = `right-panel-${monitor}`;
-            const w = Registry.get(key);
-            if (w) { w.visible = !w.visible; return key + " toggled"; }
-            return "window not found: " + key;
+            if (BarState.state === "right") {
+                BarState.deactivate("right");
+                return "right island closed";
+            }
+            BarState.activate("right", 0);
+            return "right island open";
         }
 
         function showWidget(name: string, monitor: string): string {
             const valid = ["UserProfile", "BooruViewer", "ChatBot", "MangaViewer", "SettingsWidget", "CustomScripts", "KeyBinds", "Donations"];
             if (valid.indexOf(name) === -1) return "unknown widget: " + name;
-            const key = `left-panel-${monitor}`;
-            const w = Registry.get(key);
-            // Write through Settings so the panel binding (and persistence)
+            // Write through Settings so the island binding (and persistence)
             // stays intact — matches AGS setGlobalSetting("leftPanel.widget").
-            if (w) { Settings.leftPanelWidget = name; w.visible = true; return key + " showing " + name; }
-            return "window not found: " + key;
+            Settings.leftPanelWidget = name;
+            BarState.activate("left", 0);
+            return "left island showing " + name;
         }
 
         // AGS parity (app.tsx requestHandler): toggle stop/start.
@@ -219,6 +222,12 @@ Item {
             // SUPER+W binding (`togglePanel wallpaper-switcher <mon>`) working.
             if (name === "wallpaper-switcher")
                 return toggleWallpaper();
+            // Side panels are bar islands now — keep the SUPER+L/R
+            // (`togglePanel left-panel <mon>`) bindings working.
+            if (name === "left-panel" || name === "leftPanel")
+                return toggleLeftPanel(monitor);
+            if (name === "right-panel" || name === "rightPanel")
+                return toggleRightPanel(monitor);
             const key = `${name}-${monitor}`;
             const w = Registry.get(key);
             if (w) { w.visible = !w.visible; return key + " toggled"; }
@@ -235,8 +244,9 @@ Item {
         // Returns a stringified value or a result code.
         function widgetState(query: string, monitor: string): string {
             try {
-                const w = Registry.get(`left-panel-${monitor}`);
-                if (!w) return "no panel";
+                const w = Registry.get(`left-island-${monitor}`)
+                    ?? Registry.get("left-island");
+                if (!w) return "no island (left=" + (BarState.state === "left") + ")";
                 const item = w.activeWidget;
                 if (!item) return "no widget (selected=" + w.selectedWidget + ")";
                 // Debug echo so we can see exactly what the IPC layer delivered.

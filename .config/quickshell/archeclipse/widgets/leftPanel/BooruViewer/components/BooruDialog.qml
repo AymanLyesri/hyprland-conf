@@ -6,7 +6,7 @@ import qs.widgets.shared
 import qs.services
 import qs.widgets.media
 
-// Floating detail card shown in a PopupWindow docked to the panel edge.
+// Floating detail card shown in a PopupWindow docked to the island edge.
 // The popup sizes us (width/height); we report our natural height back so
 // the viewer can center/clamp on the anchor card. Entrance is slide/fade
 // on the inner wrapper only — never layout geometry.
@@ -28,8 +28,8 @@ Item {
     onDlgChanged: showAllTags = false
     clip: true
     visible: viewer && viewer.dialogImage !== null
-    // Hover handoff: the panel keeps itself open while the cursor is on
-    // this separate surface (LeftPanel.requestAutoHide via hostPanel).
+    // Hover handoff: the island keeps itself open while the cursor is on
+    // this separate surface (LeftIsland.requestAutoHide via hostPanel).
     HoverHandler {
         id: dialogHover
         onHoveredChanged: {

@@ -72,7 +72,7 @@ Item {
 
     property var stackedNotifications: stackNotifications(notifications, filterText)
 
-    // Natural height for embedders (RightPanel card): header + list
+    // Natural height for embedders (right island card): header + list
     // (capped — internal scroll takes over past the cap) + empty hint +
     // filter + spacing/margins. The list measures real delegate heights
     // instead of guessing per-notification pixels.

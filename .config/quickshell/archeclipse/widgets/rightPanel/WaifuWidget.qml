@@ -276,7 +276,7 @@ Item {
             AppButton {
                 text: "Open Booru Viewer"
                 onClicked: {
-                    // AGS Waifu.tsx: show left-panel + set leftPanel.widget
+                    // AGS Waifu.tsx: show the left island + set its widget
                     // to BooruViewer. Registry.selectLeftTab does both
                     // (never toggles it off when already visible).
                     Registry.selectLeftTab("BooruViewer");
