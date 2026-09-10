@@ -11,7 +11,11 @@ Rectangle {
     width: row.implicitWidth
     height: Theme.barContentHeight
     radius: Theme.radius
-    color: hover.hovered ? Theme.surfaceHover : "transparent"
+    // Hover fill — set to "transparent" when embedded on an already-filled
+    // surface (e.g. the DefaultBar center pill) so the revealed date never
+    // paints a mismatched block behind it.
+    property string hoverColor: Theme.surfaceHover
+    color: hover.hovered ? hoverColor : "transparent"
 
     property string timeText: Settings.fmt(new Date(), Settings.dateFormat)
     SystemClock {

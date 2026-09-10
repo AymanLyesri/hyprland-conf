@@ -10,7 +10,9 @@ import qs.widgets.shared
 import qs.widgets.weather
 
 // Center section (ex-Information) is inlined here directly:
-// player pill + clock + keyboard layout + bandwidth + weather (+ crypto favorite).
+// weather + resources on the left; center rectangle with
+// bandwidth | control panel | clock; player pill first on the right,
+// then battery/brightness/volume/tray.
 // Top row holds all content; the workspace strip sits at the very bottom,
 // stretched across the full bar width.
 Column {
@@ -84,22 +86,134 @@ Column {
         return (id !== "" ? id : "Player") + (track !== "" ? "\n" + track : "");
     }
 
+    // Fixed-width dynamic speed: always 4 chars (3-char numeric + 1-char
+    // unit that scales B/K/M/G), so the bandwidth cell never shifts width
+    // as speeds change. Monospace font keeps every string the same width.
+    function fmtSpeed(bps) {
+        if (bps < 1000)
+            return String(Math.round(bps)).padStart(3, " ") + "B";
+        const kb = bps / 1024;
+        if (kb < 10)
+            return kb.toFixed(1) + "K";
+        if (kb < 1000)
+            return String(Math.round(kb)).padStart(3, " ") + "K";
+        const mb = kb / 1024;
+        if (mb < 10)
+            return mb.toFixed(1) + "M";
+        if (mb < 1000)
+            return String(Math.round(mb)).padStart(3, " ") + "M";
+        const gb = mb / 1024;
+        if (gb < 10)
+            return gb.toFixed(1) + "G";
+        return String(Math.round(gb)).padStart(3, " ") + "G";
+    }
+
     Item {
         id: topRow
         // Both side sections count as wide as the wider one, so the
-        // centered clock always keeps at least Theme.spacing clearance
+        // centered pill always keeps at least Theme.spacing clearance
         // from either side instead of clipping into the wider section.
         // The weather button stretches to absorb any slack on the left.
-        readonly property real leftMinWidth: fixedRow.implicitWidth + Theme.spacing + weatherButton.implicitWidth + Theme.spacing + resourceMonitor.implicitWidth + Theme.spacing + bandwidthRow.implicitWidth
-        readonly property real sideWidth: Math.max(leftMinWidth, utilities.implicitWidth)
-        implicitWidth: 2 * sideWidth + clockItem.width + Theme.spacing * 2
+        readonly property real leftMinWidth: weatherButton.implicitWidth + Theme.spacing + resourceMonitor.implicitWidth
+        readonly property real rightMinWidth: utilities.implicitWidth
+        readonly property real sideWidth: Math.max(leftMinWidth, rightMinWidth)
+        implicitWidth: 2 * sideWidth + centerPill.width + Theme.spacing * 2
         width: implicitWidth
         height: Theme.barContentHeight
 
-        Clock {
-            id: clockItem
+        // Center rectangle — bandwidth on the left, control panel
+        // button dead-center, clock on the right.
+        Rectangle {
+            id: centerPill
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
+            width: centerRow.implicitWidth + 20
+            height: Theme.barContentHeight
+            radius: Theme.radius
+            color: Theme.surfaceActive
+            border.color: Theme.border
+            border.width: 1
+
+            Row {
+                id: centerRow
+                anchors.centerIn: parent
+                spacing: Theme.spacing
+                height: parent.height
+                // Equal-width side cells so the control button stays
+                // dead-center relative to the whole bar even when
+                // bandwidth and clock text widths differ.
+                readonly property real sideCellWidth: Math.max(bandwidthRow.implicitWidth, clockItem.width)
+
+                // bandwidth compact (up/down from SysInfo loop) — left
+                Item {
+                    width: centerRow.sideCellWidth
+                    height: parent.height
+                    Row {
+                        id: bandwidthRow
+                        spacing: 4
+                        anchors.centerIn: parent
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: root.fmtSpeed(SysInfo.bandwidth[0] * 1024)
+                            color: Theme.fg
+                            font.family: Theme.fontFamily
+                            font.pixelSize: Theme.fontSize
+                        }
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: ""
+                            color: Theme.muted
+                            font.family: Theme.fontFamily
+                            font.pixelSize: Theme.fontSize - 2
+                        }
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: root.fmtSpeed(SysInfo.bandwidth[1] * 1024)
+                            color: Theme.fg
+                            font.family: Theme.fontFamily
+                            font.pixelSize: Theme.fontSize
+                        }
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: ""
+                            color: Theme.muted
+                            font.family: Theme.fontFamily
+                            font.pixelSize: Theme.fontSize - 2
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: 1
+                    height: 12
+                    color: Theme.border
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                // control panel toggle — center
+                ControlPanelButton {
+                    id: centerButton
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Rectangle {
+                    width: 1
+                    height: 12
+                    color: Theme.border
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                // clock — right, same cell width as bandwidth side
+                Item {
+                    width: centerRow.sideCellWidth
+                    height: parent.height
+                    Clock {
+                        id: clockItem
+                        anchors.centerIn: parent
+                        hoverColor: "transparent"
+                    }
+                }
+            }
         }
 
         // left zone — fixed sideWidth; weather stretches into the slack
@@ -110,15 +224,39 @@ Column {
             width: topRow.sideWidth
             height: parent.height
 
+            WeatherButton {
+                id: weatherButton
+                anchors.left: parent.left
+                anchors.right: resourceMonitor.left
+                anchors.rightMargin: Theme.spacing
+                anchors.verticalCenter: parent.verticalCenter
+            }
+
+            ResourceMonitor {
+                id: resourceMonitor
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+            }
+        } // leftZone
+
+        // right zone — fixed sideWidth like the left, content right-aligned
+        // so the center pill keeps symmetric spacing on both sides
+        Item {
+            id: rightZone
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            width: topRow.sideWidth
+            height: parent.height
+
             Row {
-                id: fixedRow
+                id: utilities
                 spacing: Theme.spacing
                 height: parent.height
-                anchors.left: parent.left
+                anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
 
                 // media pill (AGS PlayerWidget parity: app icon + track title;
-                // hover/click pulses the full player island)
+                // hover/click pulses the full player island) — first on the right
                 Rectangle {
                     id: playerPill
                     visible: root.firstPlayable !== null
@@ -212,70 +350,12 @@ Column {
                         }
                     }
                 }
-            } // fixedRow
 
-            WeatherButton {
-                id: weatherButton
-                anchors.left: fixedRow.right
-                anchors.leftMargin: Theme.spacing
-                anchors.right: resourceMonitor.left
-                anchors.rightMargin: Theme.spacing
-                anchors.verticalCenter: parent.verticalCenter
+                Battery {}
+                Brightness {}
+                Volume {}
+                Tray {}
             }
-
-            ResourceMonitor {
-                id: resourceMonitor
-                anchors.right: bandwidthRow.left
-                anchors.rightMargin: Theme.spacing
-                anchors.verticalCenter: parent.verticalCenter
-            }
-
-            // bandwidth compact (up/down from SysInfo loop) — after weather
-            Row {
-                id: bandwidthRow
-                spacing: 4
-                height: parent.height
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                Text {
-                    text: Math.round(SysInfo.bandwidth[0]) + ""
-                    color: Theme.fg
-                    font.family: Theme.fontFamily
-                    font.pixelSize: Theme.fontSize
-                }
-                Text {
-                    text: ""
-                    color: Theme.muted
-                    font.family: Theme.fontFamily
-                    font.pixelSize: Theme.fontSize - 2
-                }
-                Text {
-                    text: Math.round(SysInfo.bandwidth[1]) + ""
-                    color: Theme.fg
-                    font.family: Theme.fontFamily
-                    font.pixelSize: Theme.fontSize
-                }
-                Text {
-                    text: ""
-                    color: Theme.muted
-                    font.family: Theme.fontFamily
-                    font.pixelSize: Theme.fontSize - 2
-                }
-            }
-        } // leftZone
-
-        Row {
-            id: utilities
-            spacing: Theme.spacing
-            height: parent.height
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-
-            ControlPanelButton {}
-            Battery {}
-            Brightness {}
-            Volume {}
-            Tray {}
         }
     } // topRow
 

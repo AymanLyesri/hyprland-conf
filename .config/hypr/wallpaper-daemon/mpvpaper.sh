@@ -15,7 +15,7 @@ fi
 
 # Stop any existing mpvpaper instance on this monitor
 for pid in $(pgrep -x mpvpaper); do
-    if tr '\0' ' ' < "/proc/$pid/cmdline" | grep -q "$monitor"; then
+    if tr '\0' ' ' < "/proc/$pid/cmdline" | grep -F -q "$monitor"; then
         kill "$pid" 2>/dev/null
     fi
 done
@@ -23,9 +23,9 @@ done
 # Start mpvpaper in background for animated/video wallpapers
 nohup mpvpaper -o "no-audio --loop --fs --panscan=1.0 --hwdec=auto-safe" "$monitor" "$wallpaper" >/dev/null 2>&1 &
 
-sleep 1 # Wait for wallpaper to be set (removes stuttering)
+sleep 0.3 # Brief settle to avoid stuttering (was 1s: dominated switch latency)
 
-"$hyprdir/theme/scripts/wal-theme.sh" "$wallpaper" >/dev/null 2>&1
+"$hyprdir/theme/scripts/wal-theme.sh" "$wallpaper" >/dev/null 2>&1 &
 
 exit 0
 

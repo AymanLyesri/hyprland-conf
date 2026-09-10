@@ -579,7 +579,7 @@ QtObject {
         return [mkResult("Note saved", "\u{F19DB}", content, null)];
     }
 
-    // ---- clipboard (same cache/launcher/clipboard-history.json AGS reads) ----
+    // ---- clipboard (cache/launcher/clipboard-history.json, written by clipboard-monitor.sh) ----
     property FileView _cbFile: FileView {
         path: root.clipboardPath
         watchChanges: false

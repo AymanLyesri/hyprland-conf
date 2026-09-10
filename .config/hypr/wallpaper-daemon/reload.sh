@@ -2,20 +2,27 @@
 BIN_DIR=/tmp
 SRC=$HOME/.config/hypr/scripts-c
 hyprDir=$HOME/.config/hypr # hypr directory
+BIN="$BIN_DIR/wallpaper-loop"
+SRC_FILE="$SRC/wallpaper-loop.c"
 
-# Kill existing hyprpaper and auto.sh to prevent memory leak
-killall hyprpaper 2>/dev/null
-pkill -f "wallpaper-loop" 2>/dev/null
+# Restart wallpaper-loop without killing hyprpaper (avoids flicker + full re-set).
+# Only recompile when the source is newer than the binary.
+if [ ! -x "$BIN" ] || [ "$SRC_FILE" -nt "$BIN" ]; then
+    echo "Compiling wallpaper-loop..."
+    if ! gcc "$SRC_FILE" -o "$BIN"; then
+        echo "Compile failed" >&2
+        exit 1
+    fi
+else
+    echo "Binary up to date, skipping compile."
+fi
 
-nohup hyprpaper > /dev/null 2>&1 &
+# Stop old daemon instances only (leave hyprpaper running).
+# NOTE: exact-name match (-x), never -f "wallpaper-loop": a full-cmdline
+# match would also kill the shell running this script when its own
+# command line contains the pattern (e.g. invoked via `bash -c ...`).
+pkill -x "wallpaper-loop" 2>/dev/null
+sleep 0.3
 
-sleep 1 # Give hyprpaper a moment to start
-
-rm "$BIN_DIR/wallpaper-loop" 2>/dev/null
-
-gcc "$SRC/wallpaper-loop.c"  -o "$BIN_DIR/wallpaper-loop"
-
-pkill -f "wallpaper-loop"
-
-nohup "$BIN_DIR/wallpaper-loop" > /dev/null 2>&1 &
+nohup "$BIN" > /dev/null 2>&1 &
 disown

@@ -8,7 +8,9 @@ readonly THEME_SCRIPT="${HYPR_DIR}/theme/scripts/system-theme.sh"
 readonly THEME_CONF_FILE="${HYPR_DIR}/theme/theme.conf"
 readonly THEME_CONFIG_SCRIPT="${HYPR_DIR}/theme/scripts/theme-config.sh"
 readonly CURRENT_WALLPAPER_FILE="${HYPR_DIR}/wallpaper-daemon/config/current.conf"
+readonly THUMB_CACHE_DIR="${XDG_CACHE_HOME:-${HOME}/.cache}/wall-thumbs"
 tmp_img=""
+cached_thumb=false
 
 source "${THEME_CONFIG_SCRIPT}"
 
@@ -44,22 +46,37 @@ wallpaper="${wallpaper/\$HOME/${HOME}}"
 # check if wallpaper is an animation/video (mp4, gif, etc.)
 if [[ "${wallpaper,,}" =~ \.(mp4|gif|webm|mkv|avi|flv|mpeg|mp3|ogg|wav)$ ]]; then
     echo "Detected animated wallpaper: ${wallpaper}"
-    
+
     if ! command -v ffmpeg >/dev/null 2>&1; then
         echo "Error: ffmpeg is required to extract a frame from animated wallpapers" >&2
         exit 1
     fi
-    
-    tmp_img="$(mktemp --suffix=.jpg)"
-    trap '[[ -n "${tmp_img}" && -f "${tmp_img}" ]] && rm -f "${tmp_img}"' EXIT
-    
-    # Extract a representative frame for pywal color generation.
-    if ! ffmpeg -y -ss 00:00:01 -i "$wallpaper" -frames:v 1 -q:v 2 "$tmp_img" >/dev/null 2>&1; then
-        echo "Error: Failed to extract frame from animated wallpaper: ${wallpaper}" >&2
-        exit 1
+
+    mkdir -p "${THUMB_CACHE_DIR}"
+    thumb_hash="$(printf '%s' "${wallpaper}" | sha1sum | cut -d' ' -f1)"
+    cached_img="${THUMB_CACHE_DIR}/${thumb_hash}.jpg"
+
+    # Reuse cached frame when still fresh (avoids ~450ms ffmpeg on every switch)
+    if [[ -f "${cached_img}" && "${cached_img}" -nt "${wallpaper}" ]]; then
+        echo "Using cached thumbnail: ${cached_img}"
+        wallpaper="${cached_img}"
+        cached_thumb=true
+    else
+        # mktemp keeps a .jpg suffix so ffmpeg can infer the output format
+        tmp_file="$(mktemp "${THUMB_CACHE_DIR}/.tmp.XXXXXX.jpg")"
+        trap 'rm -f "${tmp_file}"' EXIT
+
+        # Extract a representative frame for pywal color generation.
+        if ! ffmpeg -y -ss 00:00:01 -i "$wallpaper" -frames:v 1 -q:v 2 "$tmp_file" >/dev/null 2>&1; then
+            echo "Error: Failed to extract frame from animated wallpaper: ${wallpaper}" >&2
+            exit 1
+        fi
+
+        mv -f "$tmp_file" "$cached_img"
+        trap - EXIT
+        wallpaper="$cached_img"
+        cached_thumb=true
     fi
-    
-    wallpaper="$tmp_img"
 fi
 
 # Validate wallpaper file exists
@@ -99,7 +116,6 @@ if [[ "${target_theme}" != "${current_theme}" ]]; then
     fi
     "${SCRIPTS_DIR}/cursor-theme.sh" || true
     "${SCRIPTS_DIR}/gtk-theme.sh" || true
-    "${SCRIPTS_DIR}/qt-theme.sh" || true
     "${SCRIPTS_DIR}/icon-theme.sh" || true
 fi
 

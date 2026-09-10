@@ -7,8 +7,8 @@ hl.config({
             inactive_border = "rgb(000000)",
         },
         resize_on_border = true,
-        gaps_in = 6,
-        gaps_out = 8,
+        gaps_in = 4,
+        gaps_out = 12,
         snap = {
             enabled = true,
         },

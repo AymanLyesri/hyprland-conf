@@ -8,13 +8,14 @@ import qs.theme
 Rectangle {
     id: root
 
-    width: 24; height: Theme.barContentHeight
+    width: 24
+    height: Theme.barContentHeight
     radius: Theme.radius
     color: mouse.containsMouse ? Theme.surfaceHover : "transparent"
 
     Text {
         anchors.centerIn: parent
-        text: "\u{F15FC}"
+        text: "\uf303"
         color: Theme.fg
         font.family: Theme.fontFamily
         font.pixelSize: Theme.fontSize + 1
@@ -29,8 +30,12 @@ Rectangle {
             // Toggle the control island in the bar pill. Wallpaper sits
             // above control (priority), so yield it first — otherwise
             // opening control while the wallpaper island is up looks dead.
-            if (BarState.state === "control") BarState.deactivate("control");
-            else { BarState.deactivate("wallpaper"); BarState.activate("control", 0); }
+            if (BarState.state === "control")
+                BarState.deactivate("control");
+            else {
+                BarState.deactivate("wallpaper");
+                BarState.activate("control", 0);
+            }
         }
     }
 }

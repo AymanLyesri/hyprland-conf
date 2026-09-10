@@ -5,8 +5,13 @@ import qs.services
 
 // Bottom workspace strip: 10 bars, 5px tall, stretched across the bar width.
 // Empty = greyed out (muted, low opacity), occupied = full opacity.
-// On workspace switch (or strip hover) the strip expands in height and
-// reveals each workspace's app icon, then collapses back after peekDuration.
+// On genuine workspace switch, strip hover, or special-open the strip
+// expands in height and reveals each workspace's app icon, then collapses
+// back after peekDuration. Auto-expands are settle-gated so bar-island
+// switches (which recreate this widget) never pop it open by themselves.
+//
+// The special workspace sits in the middle (between 5 and 6): narrower
+// than a normal slot and always accent-tinted so it stands out.
 Item {
     id: root
 
@@ -17,9 +22,34 @@ Item {
     property real hitHeight: 6
     property real expandedHeight: 32
     property int peekDuration: 2000
+    // Width of the special slot relative to a normal one.
+    property real specialRatio: 0.55
 
     property bool expanded: false
-    readonly property bool showIcons: root.expanded || stripHover.hovered
+    // Edge-latched hover peek: a HoverHandler fires hoveredChanged when a
+    // fresh item appears under a stationary cursor — and every bar-island
+    // switch recreates this widget — which would pop the strip open with
+    // no real hover. Latching only genuine enter edges while settled
+    // avoids that.
+    property bool hoverPeek: false
+    // Settle gate: ignore all auto-expand triggers for a beat after
+    // creation so recreation/refresh transients can't pop the strip.
+    property bool _ready: false
+    readonly property bool showIcons: root.expanded || root.hoverPeek
+
+    Timer {
+        id: readyTimer
+        interval: 400
+        onTriggered: root._ready = true
+    }
+    Component.onCompleted: readyTimer.start()
+
+    function requestExpand() {
+        if (!root._ready)
+            return;
+        root.expanded = true;
+        peekTimer.restart();
+    }
 
     implicitHeight: showIcons ? expandedHeight : hitHeight
     Behavior on implicitHeight {
@@ -31,13 +61,20 @@ Item {
 
     HoverHandler {
         id: stripHover
+        onHoveredChanged: {
+            // Latch genuine enter edges only — a fresh item materializing
+            // under a stationary cursor (bar island switch) must not peek.
+            if (stripHover.hovered) {
+                if (root._ready)
+                    root.hoverPeek = true;
+            } else {
+                root.hoverPeek = false;
+            }
+        }
     }
 
     readonly property int focusedId: Hyprland.focusedWorkspace?.id ?? 1
-    onFocusedIdChanged: {
-        root.expanded = true;
-        peekTimer.restart();
-    }
+    onFocusedIdChanged: root.requestExpand()
     Timer {
         id: peekTimer
         interval: root.peekDuration
@@ -60,92 +97,212 @@ Item {
         return out;
     }
 
-    Row {
-        id: strip
-        anchors.fill: parent
-        spacing: root.btnSpacing
+    // --- special workspace (reactive) ---
+    readonly property var specialTops: {
+        Hyprland.toplevels.values;
+        Hyprland.workspaces.values;
+        return Hyprland.toplevels.values.filter(t => ((t.workspace?.name ?? "") + "").startsWith("special"));
+    }
+    readonly property var specialWs: {
+        Hyprland.workspaces.values;
+        const found = Hyprland.workspaces.values.find(w => ((w.name ?? "") + "").startsWith("special"));
+        return found ?? null;
+    }
+    readonly property bool specialOccupied: root.specialTops.length > 0
+    readonly property bool specialActive: root.specialWs?.active ?? false
+    // "Opened" = visible on screen. Focus moves into the special workspace
+    // when it is toggled open, so the focused workspace (and the active
+    // toplevel's workspace) is the most reliable reactive signal — the
+    // workspace object itself can be missing while empty.
+    readonly property bool specialFocusedHere: ((Hyprland.focusedWorkspace?.name ?? "") + "").startsWith("special")
+    readonly property bool specialHasFocus: ((Hyprland.activeToplevel?.workspace?.name ?? "") + "").startsWith("special")
+    readonly property bool specialOpen: root.specialActive || root.specialFocusedHere || root.specialHasFocus
+    onSpecialOpenChanged: {
+        // Peek the strip so the highlight + icon are actually seen.
+        if (root.specialOpen)
+            root.requestExpand();
+    }
+    readonly property string specialIconText: root.specialOccupied ? WorkspaceIcons.forClientClass(root.specialTops[0].lastIpcObject?.class ?? "") : WorkspaceIcons.specialIcon
 
-        Repeater {
-            model: root.wsData
+    // Shared normal-slot delegate so left (1-5) and right (6-10) halves
+    // stay identical.
+    Component {
+        id: wsSlot
+        Item {
+            id: slot
+            required property var modelData
+            readonly property int wid: modelData
+            readonly property bool focused: root.focusedId === wid
+            readonly property bool occupied: {
+                const d = root.wsData[wid - 1];
+                return d ? d.occupied : false;
+            }
+            readonly property string iconText: {
+                const d = root.wsData[wid - 1];
+                return d ? d.icon : WorkspaceIcons.emptyIcon;
+            }
 
-            Item {
-                id: slot
-                required property var modelData
-                readonly property int wid: modelData.id
-                readonly property bool focused: root.focusedId === wid
-                readonly property bool occupied: modelData.occupied
+            width: strip.normalW
+            height: strip.height
 
-                width: Math.max(0, (strip.width - root.btnSpacing * (root.count - 1)) / root.count)
-                height: strip.height
+            Column {
+                anchors.centerIn: parent
+                spacing: 2
 
-                Column {
-                    anchors.centerIn: parent
-                    spacing: 2
+                // icon holder — grows/collapses with the peek state
+                Item {
+                    width: slot.width
+                    height: root.showIcons ? root.iconSize + 2 : 0
+                    clip: true
 
-                    // icon holder — grows/collapses with the peek state
-                    Item {
-                        width: slot.width
-                        height: root.showIcons ? root.iconSize + 2 : 0
-                        clip: true
-
-                        Behavior on height {
-                            NumberAnimation {
-                                duration: 250
-                                easing.type: Easing.OutCubic
-                            }
-                        }
-
-                        Text {
-                            anchors.centerIn: parent
-                            text: slot.modelData.icon
-                            color: slot.focused ? Theme.accent : slot.occupied ? Theme.fg : Theme.muted
-                            opacity: root.showIcons ? ((slot.focused || slot.occupied) ? 1.0 : 0.35) : 0
-                            font.family: Theme.fontFamily
-                            font.pixelSize: root.iconSize
-
-                            Behavior on opacity {
-                                NumberAnimation {
-                                    duration: 200
-                                }
-                            }
+                    Behavior on height {
+                        NumberAnimation {
+                            duration: 250
+                            easing.type: Easing.OutCubic
                         }
                     }
 
-                    Rectangle {
-                        id: bar
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        width: slot.width
-                        height: root.barHeight
-                        radius: root.barHeight / 2
+                    Text {
+                        anchors.centerIn: parent
+                        text: slot.iconText
                         color: slot.focused ? Theme.accent : slot.occupied ? Theme.fg : Theme.muted
-                        opacity: (slot.focused || slot.occupied) ? 1.0 : 0.35
+                        opacity: root.showIcons ? ((slot.focused || slot.occupied) ? 1.0 : 0.35) : 0
+                        font.family: Theme.fontFamily
+                        font.pixelSize: root.iconSize
 
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 200
-                            }
-                        }
                         Behavior on opacity {
                             NumberAnimation {
                                 duration: 200
                             }
                         }
-                        Behavior on width {
+                    }
+                }
+
+                Rectangle {
+                    id: bar
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: slot.width
+                    height: root.barHeight
+                    radius: root.barHeight / 2
+                    color: slot.focused ? Theme.accent : slot.occupied ? Theme.fg : Theme.muted
+                    opacity: (slot.focused || slot.occupied) ? 1.0 : 0.35
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 200
+                        }
+                    }
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 200
+                        }
+                    }
+                    Behavior on width {
+                        NumberAnimation {
+                            duration: 200
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: Hyprland.dispatch(`hl.dsp.focus({workspace=${slot.wid}})`)
+            }
+        }
+    }
+
+    Row {
+        id: strip
+        anchors.fill: parent
+        spacing: root.btnSpacing
+        // 10 normal slots + 1 narrow special slot, 10 gaps total.
+        readonly property real normalW: Math.max(0, (strip.width - root.btnSpacing * root.count) / (root.count + root.specialRatio))
+        readonly property real specialW: strip.normalW * root.specialRatio
+
+        Repeater {
+            model: [1, 2, 3, 4, 5]
+            delegate: wsSlot
+        }
+
+        // --- special workspace slot: middle, narrower, standout ---
+        Item {
+            id: specialSlot
+            width: strip.specialW
+            height: strip.height
+
+            Column {
+                anchors.centerIn: parent
+                spacing: 2
+
+                Item {
+                    width: specialSlot.width
+                    height: root.showIcons ? root.iconSize + 2 : 0
+                    clip: true
+
+                    Behavior on height {
+                        NumberAnimation {
+                            duration: 250
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: root.specialIconText
+                        color: Theme.accent
+                        opacity: root.showIcons ? (root.specialOpen ? 1.0 : root.specialOccupied ? 0.9 : 0.55) : 0
+                        font.family: Theme.fontFamily
+                        font.pixelSize: root.iconSize
+
+                        Behavior on opacity {
                             NumberAnimation {
                                 duration: 200
-                                easing.type: Easing.OutCubic
                             }
                         }
                     }
                 }
 
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: Hyprland.dispatch(`hl.dsp.focus({workspace=${slot.wid}})`)
+                Rectangle {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: specialSlot.width
+                    // Slightly taller bar + accent border so it pops
+                    // against the grey normal slots.
+                    height: root.barHeight + 1
+                    radius: (root.barHeight + 1) / 2
+                    color: Theme.accent
+                    opacity: root.specialOpen ? 1.0 : root.specialOccupied ? 0.8 : 0.45
+                    border.color: Theme.accent
+                    border.width: root.specialOpen ? 1 : 0
+
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 200
+                        }
+                    }
+                    Behavior on width {
+                        NumberAnimation {
+                            duration: 200
+                            easing.type: Easing.OutCubic
+                        }
+                    }
                 }
             }
+
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: Hyprland.dispatch("togglespecialworkspace")
+            }
+        }
+
+        Repeater {
+            model: [6, 7, 8, 9, 10]
+            delegate: wsSlot
         }
     }
 }

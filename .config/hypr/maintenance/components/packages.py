@@ -18,9 +18,7 @@ else:
 # ---------------------------------------------------------------------------
 PACKAGES: list[str] = [
     # General utilities
-    "aylurs-gtk-shell-git",
     "gst-libav",
-    "libastal-meta",
     "bat",
     "bc",
     "figlet",
@@ -33,12 +31,9 @@ PACKAGES: list[str] = [
     # Development tools
     "socat",
     "btop",
-    "dart-sass",
-    "sassc",
     "fd",
     "jq",
     "translate-shell",
-    "python2-bin",
     "python-requests",
     "python-pillow",
     "zsh",
@@ -82,7 +77,6 @@ PACKAGES: list[str] = [
     "starship",
     "gtk4",
     "libadwaita",
-    "gnome-themes-extra",
     "gvfs",
     "hyprlock",
     "hyprpaper",
@@ -92,18 +86,13 @@ PACKAGES: list[str] = [
     "phinger-cursors",
     "whitesur-gtk-theme",
     "whitesur-icon-theme",
-    "kvantum",
-    "kvantum-theme-whitesur-git",
-    "qt5ct",
-    "qt6ct-kde",
+    "quickshell",
     "c-lolcat",
 
     # Extra build tools
-    "cmake",
     "meson",
     "cpio",
     "pkg-config",
-    "gcc",
     "libwebp-utils",
 ]
 

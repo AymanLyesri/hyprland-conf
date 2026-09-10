@@ -68,6 +68,21 @@ PanelWindow {
     color: "transparent"
     aboveWindows: true
 
+    // Click-through everywhere except the pill + edge hot-zones. With
+    // exclusivity OFF the window is a full-width, full-height transparent
+    // surface (the pill snaps tall for the island) — without a mask it
+    // eats every click outside the island. With exclusivity ON the window
+    // already hugs the island, so the mask is a no-op there.
+    mask: Region {
+        item: pill
+        Region {
+            item: leftHot
+        }
+        Region {
+            item: rightHot
+        }
+    }
+
     readonly property int barHeight: 32
     // Snap the layer surface to content (no Behavior here — animating the
     // PanelWindow renegotiates with the compositor every frame and stutters).
@@ -512,12 +527,14 @@ PanelWindow {
 
         // ---- hot zones (left/right island reveal strips) ----
         HotZone {
+            id: leftHot
             side: "left"
             size: Settings.leftPanelHotZoneSize
             enabled: Settings.leftPanelHotZone
             panelLock: Settings.leftPanelLock
         }
         HotZone {
+            id: rightHot
             side: "right"
             size: Settings.rightPanelHotZoneSize
             enabled: Settings.rightPanelHotZone

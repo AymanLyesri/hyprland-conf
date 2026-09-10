@@ -12,7 +12,7 @@ local monitor = "$(hyprctl monitors -j | jq -r '.[] | select(.focused == true) |
 local resizeAmount = 25
 local changeBrightness = scriptsDir .. "/change-brightness.sh"
 
--- Quickshell bar (migration from AGS): IPC calls target the QS config
+-- Quickshell bar: IPC calls target the QS config
 local qsCfg = home .. "/.config/quickshell/archeclipse"
 local qsIpc = "qs -p " .. qsCfg .. " ipc call bar "
 

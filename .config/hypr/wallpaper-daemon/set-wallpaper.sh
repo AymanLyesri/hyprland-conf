@@ -11,7 +11,17 @@ if [ -z "$workspace_id" ] || [ -z "$monitor" ]; then
 fi
 
 if [ -z "$wallpaper" ]; then
-    wallpaper="$(find "$HOME/.config/wallpapers/defaults" -type f | shuf -n 1)"
+    # Cached file list: full `find` rescan on every pick scales linearly.
+    # Refresh cache when older than 5 min or missing.
+    wall_dir="$HOME/.config/wallpapers/defaults"
+    cache_list="${XDG_CACHE_HOME:-$HOME/.cache}/wallpaper-list.txt"
+    if [ ! -f "$cache_list" ] || [ "$wall_dir" -nt "$cache_list" ] || \
+       [ $(( $(date +%s) - $(stat -c %Y "$cache_list" 2>/dev/null || echo 0) )) -gt 300 ]; then
+        mkdir -p "$(dirname "$cache_list")"
+        find "$wall_dir" -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.gif' -o -iname '*.mp4' -o -iname '*.webm' \) -print > "$cache_list.tmp.$$" 2>/dev/null \
+            && mv -f "$cache_list.tmp.$$" "$cache_list"
+    fi
+    wallpaper="$(shuf -n 1 "$cache_list" 2>/dev/null)"
     if [ -z "$wallpaper" ]; then
         echo "Failed to pick a random wallpaper"
         exit 1

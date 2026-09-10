@@ -102,13 +102,77 @@ Item {
     property string _lastSessionText: ""
     property int _netAttempts: 0
 
+    // Shell-lifetime cache: LeftIsland is destroyed/recreated on every
+    // open/close (Bar Loader swap). Restore instantly from UserProfileState
+    // and skip the net gate + REST fetch — a single cheap local `cat` of
+    // session.json refetches only if the session actually changed elsewhere.
+    function saveToCache() {
+        UserProfileState.profile = root.profile;
+        UserProfileState.cachedSession = root._cachedSession;
+        UserProfileState.cachedUid = root._cachedUid;
+        UserProfileState.cachedEmail = root._cachedEmail;
+        UserProfileState.lastSessionText = root._lastSessionText;
+        UserProfileState.lastSyncAt = root.lastSyncAt;
+        UserProfileState.lastSyncResult = root.lastSyncResult;
+        UserProfileState.lastRemoteUpdatedAt = root.lastRemoteUpdatedAt;
+        UserProfileState.initialized = true;
+    }
+    function restoreFromCache() {
+        root.profile = UserProfileState.profile;
+        root._cachedSession = UserProfileState.cachedSession;
+        root._cachedUid = UserProfileState.cachedUid;
+        root._cachedEmail = UserProfileState.cachedEmail;
+        root._lastSessionText = UserProfileState.lastSessionText;
+        root.lastSyncAt = UserProfileState.lastSyncAt;
+        root.lastSyncResult = UserProfileState.lastSyncResult;
+        root.lastRemoteUpdatedAt = UserProfileState.lastRemoteUpdatedAt;
+        if (!root.profile) {
+            root.progressStatus = "idle";
+            root.progressText = "Not signed in";
+        } else {
+            // Don't leave the initial "Not signed in" idle text under a
+            // restored profile — mirror what a fresh fetch would show.
+            root.progressStatus = "idle";
+            const un = root.profile.username;
+            root.progressText = un ? un + " \u2022 " + (root.profile.is_supporter ? "Supporter" : "Member") : "Signed in, but profile not found";
+        }
+    }
+
     Component.onCompleted: {
+        if (UserProfileState.initialized) {
+            restoreFromCache();
+            // No usable profile cached (first load failed or was still in
+            // flight, or signed state changed): retry with one load.
+            // Signed-out this is local-only (cat → idle, no network).
+            if (!root.profile) {
+                root.loadProfile();
+                pollTimer.restart();
+                return;
+            }
+            // Local avatar file only — no network.
+            root.reloadAvatar();
+            pollTimer.restart();
+            // One-shot local session check: onPollSession refetches only
+            // when the file text differs from the cached one.
+            const p = pollSessionComp.createObject(root);
+            p.command = ["cat", root.authSessionPath];
+            p.running = true;
+            return;
+        }
         applySettingsSyncMeta();
         // On-demand auth server: NOT started here. sendMagicLink() starts
         // the Quickshell-managed listener, and it stops itself once
         // session.json appears (or after a timeout). This avoids a stale
         // detached server dying across reboots and leaving /callback dead.
         _netTimer.restart();
+    }
+    Component.onDestruction: {
+        // Never clobber a good cached profile with a transient failure:
+        // if this instance never got a profile but the cache has one and
+        // the session didn't change, keep the cache.
+        if (!root.profile && UserProfileState.profile && root._lastSessionText === UserProfileState.lastSessionText)
+            return;
+        root.saveToCache();
     }
 
     // Network gate (AGS waitForNetwork up to 30s): check the Supabase
@@ -149,6 +213,7 @@ Item {
     function onPollSession(text) {
         if (text !== root._lastSessionText) {
             root._lastSessionText = text;
+            root.saveToCache();
             root.loadProfile();
         }
     }
@@ -255,6 +320,7 @@ Item {
         sp.running = true;
         const reason = root._retryAfterRefresh;
         root._retryAfterRefresh = "";
+        root.saveToCache();
         if (reason === "download" || reason === "upload") {
             root.isSyncing = false;
             root.syncSettings(reason);
@@ -281,6 +347,7 @@ Item {
             root.progressStatus = "idle";
             root.progressText = "Not signed in";
             root.isRefreshing = false;
+            root.saveToCache();
             return;
         }
         // Session arrived (via /save POST or manual paste) — the on-demand
@@ -300,6 +367,7 @@ Item {
         if (embeddedId) {
             root._cachedUid = embeddedId;
             root._cachedEmail = session?.user?.email ?? session?.email ?? "";
+            root.saveToCache();
             root.fetchUserProfile(embeddedId);
             return;
         }
@@ -334,6 +402,7 @@ Item {
         }
         root._cachedUid = user.id;
         root._cachedEmail = user.email ?? "";
+        root.saveToCache();
         root.fetchUserProfile(user.id);
     }
 
@@ -485,6 +554,7 @@ Item {
         root._lastSessionText = "";
         root.progressStatus = "idle";
         root.progressText = "Signed out";
+        root.saveToCache();
         Notifications.notify({
             summary: "Signed out",
             body: "Your session has been cleared."
@@ -1249,6 +1319,7 @@ Item {
                                 avatar: prof[0].avatar,
                                 is_supporter: prof[0].is_supporter ?? null
                             };
+                            root.saveToCache();
                             root.progressStatus = "idle";
                             root.progressText = (prof[0].username ?? "No username") + " \u2022 " + (prof[0].is_supporter ? "Supporter" : "Member");
                             // AGS syncAvatarToFaceIcon on every load:
@@ -1266,12 +1337,14 @@ Item {
                                     avatar: null,
                                     is_supporter: null
                                 };
+                                root.saveToCache();
                                 root.progressStatus = "idle";
                                 root.progressText = "Signed in, but profile not found";
                             } else {
                                 root.profile = null;
                                 root.progressStatus = "error";
                                 root.progressText = "Profile not found";
+                                root.saveToCache();
                             }
                         }
                     } catch (e) {
@@ -1444,6 +1517,7 @@ Item {
                         const d = m?.lastDirection;
                         root.lastSyncResult = !d ? "-" : d === "noop" ? "Up to date" : d === "download" ? "Downloaded" : "Uploaded";
                         root.lastRemoteUpdatedAt = m?.lastRemoteUpdatedAt ? root.formatTs(m.lastRemoteUpdatedAt) : "Never";
+                        root.saveToCache();
                     } catch (e) {
                         root.lastSyncAt = "Never";
                         root.lastSyncResult = "-";

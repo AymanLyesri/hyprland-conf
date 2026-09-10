@@ -1,19 +1,8 @@
 #!/bin/bash
 
-# ArchEclipse status bar launcher.
-# Currently migrating: AGS (astal/gjs) -> Quickshell (QtQuick).
-# During migration BOTH bars run side by side; comment/uncomment to compare.
+# ArchEclipse status bar launcher (Quickshell/QtQuick).
 
-AGS_TMP="/tmp/ags-${USER}"
 QS_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/archeclipse"
-
-run_ags() {
-    mkdir -p "$AGS_TMP"
-    ags quit
-    killall gjs >/dev/null 2>&1
-    ags bundle "$HOME/.config/ags/app.tsx" "$AGS_TMP/ags-bin"
-    nohup "$AGS_TMP/ags-bin" > "$AGS_TMP/ags-bin.log" 2>&1 &
-}
 
 run_quickshell() {
     pkill -f "qs -p ${QS_CONF}"
@@ -26,8 +15,5 @@ run_quickshell() {
 
 # ---- active implementation ----
 run_quickshell
-
-# To test the AGS bar instead, comment the line above and uncomment:
-# run_ags
 
 exit 0

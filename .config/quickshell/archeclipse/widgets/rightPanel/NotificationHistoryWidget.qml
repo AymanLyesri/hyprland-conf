@@ -6,6 +6,10 @@ import qs.theme
 import qs.widgets.shared
 
 // Notification History widget ported from widgets/rightPanel/components/NotificationHistory.tsx
+// Flat newest-first list where every row is the same card as the
+// NotificationPopups popups (see ../notifications/NotificationPopups.qml
+// and NotificationItem.qml): left-click a card copies its content,
+// right-click dismisses (removes) it.
 Item {
     id: root
     property int widgetWidth: parent.width
@@ -16,7 +20,6 @@ Item {
     // Entry shape: {id, time (epoch s), notif (live NotificationObject)}.
     property var notifications: Notifications.history
     property string filterText: ""
-    property var expandedStacks: {}
 
     Connections {
         target: Notifications
@@ -35,50 +38,32 @@ Item {
         }
     }
 
-    function stackNotifications(notifications, filter) {
+    // Newest-first, capped, filtered across app name + summary + body
+    // (description), case-insensitive. The daemon already caps history at
+    // maxHistory (dismissing overflow), so this only slices for display.
+    function filteredList(notifications, filter) {
         const MAX_NOTIFICATIONS = 50;
-        const stacks = new Map();
-
         const sorted = [...notifications].sort((a, b) => b.time - a.time);
-
-        sorted.forEach(n => {
-            const summary = (n.notif && n.notif.summary) || "";
-            const appName = (n.notif && n.notif.appName) || "";
-            if (filter && !summary.includes(filter) && !appName.includes(filter))
-                return;
-
-            const key = summary || "Unknown";
-            if (!stacks.has(key))
-                stacks.set(key, []);
-            stacks.get(key).push(n);
-        });
-
-        const result = [...stacks.entries()].map(([title, notifications]) => ({
-                    title,
-                    notifications
-                }));
-
-        // Flatten manually since flatMap might not be available
-        const flat = [];
-        result.forEach(s => s.notifications.forEach(n => flat.push(n)));
-        flat.slice(MAX_NOTIFICATIONS).forEach(n => {
-            try {
-                n.notif.dismiss();
-            } catch (e) {}
-        });
-
-        return result;
+        const q = (filter || "").toLowerCase();
+        if (q === "")
+            return sorted.slice(0, MAX_NOTIFICATIONS);
+        return sorted.filter(n => {
+            const appName = ((n.notif && n.notif.appName) || "").toString().toLowerCase();
+            const summary = ((n.notif && n.notif.summary) || "").toString().toLowerCase();
+            const body = ((n.notif && n.notif.body) || "").toString().toLowerCase();
+            return appName.includes(q) || summary.includes(q) || body.includes(q);
+        }).slice(0, MAX_NOTIFICATIONS);
     }
 
-    property var stackedNotifications: stackNotifications(notifications, filterText)
+    property var visibleNotifications: filteredList(notifications, filterText)
 
-    // Natural height for embedders (right island card): header + list
-    // (capped — internal scroll takes over past the cap) + empty hint +
-    // filter + spacing/margins. The list measures real delegate heights
-    // instead of guessing per-notification pixels.
+    // Natural height for embedders (right island card): header + filter +
+    // list (capped — internal scroll takes over past the cap) + empty hint
+    // + spacing/margins. The list measures real delegate heights instead
+    // of guessing per-notification pixels.
     readonly property real maxListH: 380
-    readonly property real listH: stackedNotifications.length === 0 ? 0 : Math.min(listColumn.height, maxListH)
-    implicitHeight: headerLabel.implicitHeight + listH + emptyHint.height + filterField.implicitHeight + mainCol.spacing * 3 + 16
+    readonly property real listH: visibleNotifications.length === 0 ? 0 : Math.min(listColumn.height, maxListH)
+    implicitHeight: headerRow.implicitHeight + filterField.implicitHeight + listH + emptyHint.height + mainCol.spacing * 3 + 16
 
     Column {
         id: mainCol
@@ -86,28 +71,59 @@ Item {
         anchors.margins: 8
         spacing: 8
 
-        // Header title only — filter lives at the bottom.
-        Label {
-            id: headerLabel
-            text: "Notification History"
-            font.pixelSize: Theme.fontSize + 4
-            font.bold: true
-            color: Theme.fg
+        // Header: title + match count + clear-all.
+        RowLayout {
+            id: headerRow
             width: parent.width
-            elide: Text.ElideRight
+            spacing: 6
+
+            Label {
+                text: "Notification History"
+                font.pixelSize: Theme.fontSize + 4
+                font.bold: true
+                color: Theme.fg
+                Layout.fillWidth: true
+                elide: Text.ElideRight
+            }
+
+            Text {
+                text: "(" + visibleNotifications.length + ")"
+                font.pixelSize: Theme.fontSize - 1
+                color: Theme.fgDim
+                visible: visibleNotifications.length > 0
+            }
+
+            AppButton {
+                icon: ""
+                pixelSize: Theme.fontSize - 2
+                cornerRadius: 4
+                tooltipText: "Clear all"
+                visible: notifications.length > 0
+                onClicked: Notifications.clearHistory()
+            }
+        }
+
+        // Filter lives at the top so it reads before the list it filters.
+        // Matches the app name, the summary title, and the body text.
+        AppTextField {
+            id: filterField
+            width: parent.width
+            placeholderText: "Filter by name or text..."
+            text: root.filterText
+            onTextChanged: root.filterText = text
         }
 
         // Notification List — fills the leftover card space (same pattern
         // as Crypto/ScriptTimer: height from parent remainder, NOT from the
         // measured content). Sizing the viewport from content height while
         // the outer card sizes itself from our implicitHeight clipped the
-        // first delegate and could push the filter field out of the card.
+        // first delegate and could push content out of the card.
         SmoothFlickable {
             id: nScroll
             width: parent.width
             // Guarded: a negative height sends Flickable into a silent polish loop
-            height: stackedNotifications.length === 0 ? 0 : Math.max(0, parent.height - y - 8)
-            visible: stackedNotifications.length > 0
+            height: visibleNotifications.length === 0 ? 0 : Math.max(0, parent.height - y - 8)
+            visible: visibleNotifications.length > 0
             clip: true
             flickableDirection: Flickable.VerticalFlick
             contentWidth: width
@@ -136,19 +152,10 @@ Item {
                 spacing: 8
 
                 Repeater {
-                    model: stackedNotifications
-                    delegate: StackItem {
+                    model: visibleNotifications
+                    delegate: NotificationItem {
                         width: parent.width
-                        stack: modelData
-                        expandedStacks: root.expandedStacks
-                        onToggleExpanded: {
-                            const newStacks = Object.assign({}, root.expandedStacks);
-                            newStacks[modelData.title] = !newStacks[modelData.title];
-                            root.expandedStacks = newStacks;
-                        }
-                        onClearStack: {
-                            modelData.notifications.forEach(n => n.notif.dismiss());
-                        }
+                        entry: modelData
                     }
                 }
             }
@@ -158,21 +165,13 @@ Item {
         Text {
             id: emptyHint
             width: parent.width
-            visible: stackedNotifications.length === 0
+            visible: visibleNotifications.length === 0
             height: visible ? implicitHeight : 0
             text: filterText !== "" ? "No matching notifications" : "No notifications"
             font.pixelSize: Theme.fontSize
             color: Theme.fgDim
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.WordWrap
-        }
-
-        AppTextField {
-            id: filterField
-            width: parent.width
-            placeholderText: "Filter..."
-            text: root.filterText
-            onTextChanged: root.filterText = text
         }
     }
 }

@@ -7,7 +7,7 @@ set -euo pipefail
 TMP_DIR="/tmp"
 PREVIEW_CMD="swayimg --class preview-image"
 EDIT_CMD="gimp"
-HISTORY_FILE="$HOME/.config/ags/cache/launcher/clipboard-history.json"
+HISTORY_FILE="$HOME/.cache/quickshell/launcher/clipboard-history.json"
 HISTORY_LOCK="/tmp/clipboard-history.lock"
 
 # =========================
