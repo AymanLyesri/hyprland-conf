@@ -439,7 +439,7 @@ Item {
                     // Bookmark toggle
                     AppButton {
                         property bool bookmarked: BooruActions.isBookmarked(root.wd)
-                        text: bookmarked ? "" : ""
+                        text: bookmarked ? "\uf02e" : "\uf097"
                         Layout.fillWidth: true
                         Layout.preferredHeight: 28
                         toggle: true

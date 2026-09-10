@@ -24,9 +24,6 @@ Item {
     readonly property string windUnit: cu.wind_speed_10m || "km/h"
     readonly property string codeBg: hasData ? Weather.background(cur.weather_code) : Theme.surface
 
-    property string savedCity: ""
-    property bool _entryDirty: false
-
     implicitWidth: islandWidth + islandMargins * 2
     implicitHeight: content.height + islandMargins * 2
     width: implicitWidth
@@ -89,19 +86,25 @@ Item {
     }
     function applyCity() {
         const text = cityEntry.text;
-        if (text && text.trim() === "") {
+        if (!text || text.trim() === "") {
             root.clearCity();
             return;
         }
         Weather.setCity(text);
-        root.savedCity = cityEntry.text;
-        root._entryDirty = false;
     }
     function clearCity() {
         Weather.setCity("");
-        root.savedCity = "";
-        root._entryDirty = false;
         cityEntry.text = "";
+    }
+
+    // City entry mirrors the persisted override: external changes fill
+    // the field unless the user is actively editing it.
+    Connections {
+        target: Weather
+        function on_CityOverrideChanged() {
+            if (!cityEntry.activeFocus && cityEntry.text !== Weather._cityOverride)
+                cityEntry.text = Weather._cityOverride;
+        }
     }
 
     Column {
@@ -318,14 +321,13 @@ Item {
                     AppTextField {
                         id: cityEntry
                         placeholderText: (root.wx && root.wx.city ? "Search..." : "Not " + ((root.wx && root.wx.city) || "IP") + "?...")
-                        text: root.savedCity
-                        onTextChanged: root._entryDirty = true
                         onAccepted: root.applyCity()
                         width: parent.width - 72
                         height: 30
                         color: "white"
                         fillColor: "#33000000"
                         placeholderTextColor: "#CCFFFFFF"
+                        Component.onCompleted: text = Weather._cityOverride
                     }
                     AppButton {
                         width: 30

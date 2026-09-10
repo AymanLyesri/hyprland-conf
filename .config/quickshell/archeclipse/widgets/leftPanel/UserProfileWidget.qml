@@ -18,15 +18,16 @@ Item {
     property string className: ""
     property bool minimal: false
 
-    // --- Config (single source of truth mirroring supabase.constants.ts) ---
-    readonly property string supabaseUrl: "https://skekmjmsgcbfhbwgpzkp.supabase.co"
-    readonly property string supabaseKey: "sb_publishable_PLXFIwBsb79Gfu3YkW5B-w_rHozkZ1y"
-    readonly property string homeDir: Quickshell.env("HOME")
+    // --- Config (values live in the Supabase singleton; keep these aliases
+    // so the rest of the widget is untouched) ---
+    readonly property string supabaseUrl: Supabase.url
+    readonly property string supabaseKey: Supabase.anonKey
+    readonly property string homeDir: Supabase.homeDir
     // scripts/auth-server-callback.py owns session.json (SESSION_PATH in the
     // script) — quickshell-native, no AGS paths. shell.qml ensures the auth
     // cache dir exists at startup.
     readonly property string authServerScript: homeDir + "/.config/quickshell/archeclipse/scripts/auth-server-callback.py"
-    readonly property string authSessionPath: homeDir + "/.cache/quickshell/auth/session.json"
+    readonly property string authSessionPath: Supabase.authSessionPath
     readonly property string authLogPath: "/tmp/qs-auth-server.log"
     readonly property string settingsPath: homeDir + "/.cache/quickshell/settings/settings.json"
     readonly property string settingsMetaPath: homeDir + "/.cache/quickshell/settings/settings-sync.json"
@@ -134,7 +135,7 @@ Item {
             // restored profile — mirror what a fresh fetch would show.
             root.progressStatus = "idle";
             const un = root.profile.username;
-            root.progressText = un ? un + " \u2022 " + (root.profile.is_supporter ? "Supporter" : "Member") : "Signed in, but profile not found";
+            root.progressText = un ? root.supporterLabel() : "Signed in, but profile not found";
         }
     }
 
@@ -413,8 +414,61 @@ Item {
         if (!session?.access_token)
             return;
         const p = fetchProfileComp.createObject(root);
+        // NOTE: user_profiles has no is_supporter column — entitlement is the
+        // presence of a `supporters` row (see checkSupporter below).
         p.command = ["bash", "-c", "curl -sS -H 'apikey: " + supabaseKey + "' -H 'Authorization: Bearer " + session.access_token + "' '" + supabaseUrl + "/rest/v1/user_profiles?select=id,username,avatar&id=eq." + encodeURIComponent(uid) + "'"];
         p.running = true;
+    }
+
+    // ===== SUPPORTER STATE =====
+    // Authoritative state lives in Supabase: a row in `supporters` means the
+    // user is a supporter. That row is written only by the verified-payment
+    // DB trigger — this query is read-only and can never grant status.
+    function supporterLabel() {
+        if (!root.profile)
+            return "Not signed in";
+        const name = root.profile.username ?? "No username";
+        if (root.profile.is_supporter === true)
+            return name + " \u2022 Supporter";
+        if (root.profile.is_supporter === false)
+            return name + " \u2022 Member";
+        return name + " \u2022 \u2026";
+    }
+    function checkSupporter() {
+        const session = root._cachedSession;
+        const uid = lookupUserId();
+        if (!session?.access_token || !uid)
+            return;
+        const p = supporterCheckComp.createObject(root);
+        p.command = ["bash", "-c", "curl -sS -H 'apikey: " + supabaseKey + "' -H 'Authorization: Bearer " + session.access_token + "' '" + supabaseUrl + "/rest/v1/supporters?select=id&id=eq." + encodeURIComponent(uid) + "'"];
+        p.running = true;
+    }
+    function onSupporterChecked(text) {
+        if (!root._refreshing && root.isAuthErrorText(text)) {
+            root.doRefresh("profile");
+            return;
+        }
+        let rows = null;
+        try {
+            rows = text ? JSON.parse(text) : null;
+        } catch (e) {
+            rows = null;
+        }
+        if (!Array.isArray(rows) || !root.profile)
+            return;
+        const supported = rows.length > 0;
+        if (root.profile.is_supporter === supported)
+            return;
+        root.profile = {
+            id: root.profile.id,
+            email: root.profile.email,
+            username: root.profile.username,
+            avatar: root.profile.avatar,
+            is_supporter: supported
+        };
+        root.saveToCache();
+        root.progressStatus = "idle";
+        root.progressText = root.supporterLabel();
     }
 
     // ===== MAGIC LINK =====
@@ -978,7 +1032,7 @@ Item {
                                         color: Theme.fgDim
                                     }
                                     Label {
-                                        text: "Supporter: " + (root.profile?.is_supporter ? "Yes" : "No")
+                                        text: "Supporter: " + (root.profile?.is_supporter === true ? "Yes" : root.profile?.is_supporter === false ? "No" : "…")
                                         font.pixelSize: Theme.fontSize - 1
                                         color: Theme.fgDim
                                     }
@@ -1317,15 +1371,18 @@ Item {
                                 email: root._cachedEmail,
                                 username: prof[0].username,
                                 avatar: prof[0].avatar,
-                                is_supporter: prof[0].is_supporter ?? null
+                                // Resolved by checkSupporter() below — never
+                                // trust a profile-column value here.
+                                is_supporter: null
                             };
                             root.saveToCache();
                             root.progressStatus = "idle";
-                            root.progressText = (prof[0].username ?? "No username") + " \u2022 " + (prof[0].is_supporter ? "Supporter" : "Member");
+                            root.progressText = root.supporterLabel();
                             // AGS syncAvatarToFaceIcon on every load:
                             // silent download, notify only on failure.
                             if (prof[0].avatar)
                                 root.syncAvatarSilent(prof[0].avatar);
+                            root.checkSupporter();
                         } else {
                             // AGS falls back to a user-only profile when the
                             // user_profiles row is missing — stay signed in.
@@ -1340,6 +1397,7 @@ Item {
                                 root.saveToCache();
                                 root.progressStatus = "idle";
                                 root.progressText = "Signed in, but profile not found";
+                                root.checkSupporter();
                             } else {
                                 root.profile = null;
                                 root.progressStatus = "error";
@@ -1360,6 +1418,18 @@ Item {
                     root.progressStatus = "error";
                     root.progressText = root.profile ? "Refresh failed" : "Profile fetch failed";
                 }
+            }
+        }
+    }
+    Component {
+        id: supporterCheckComp
+        Process {
+            stdout: StdioCollector {
+                onStreamFinished: root.onSupporterChecked(text)
+            }
+            onExited: code => {
+                if (code !== 0)
+                    console.log("[auth] supporter check failed code=" + code);
             }
         }
     }

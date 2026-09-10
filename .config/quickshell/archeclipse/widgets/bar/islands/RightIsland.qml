@@ -101,6 +101,14 @@ Column {
             return;
         leaveTimer.restart();
     }
+    // Called by the bar owner on every (re)open: the island now survives
+    // closes, so a leaveTimer armed before the last close must not fire
+    // into the fresh session. Also clears a mid-drag close leftover that
+    // would otherwise pin the island open (autohide skips while dragging).
+    function cancelPendingHide() {
+        leaveTimer.stop();
+        root.isDragging = false;
+    }
     Timer {
         id: leaveTimer
         interval: 1000

@@ -11,8 +11,9 @@ import qs.widgets.leftPanel
 // Same spring-unfold pattern as Search/ControlIsland — the pill grows
 // (width via the pill spring, height snapped on the window) while this
 // body unfolds via the expand driver (clip + opacity + scale only, so no
-// expensive layout animates per-frame). The StackLayout keeps all widgets
-// alive across tab switches, exactly like the old panel.
+// expensive layout animates per-frame). Each tab is a Loader that builds
+// on first select and stays alive, so switches preserve state exactly
+// like the old panel while opening builds only one widget.
 //
 // Open: SUPER+L bind, left HotZone hover, launcher quick-app, IPC.
 // Close: bind toggle, Esc, close button, or 1s after the cursor leaves
@@ -50,9 +51,11 @@ Column {
         expand = 1;
         Registry.register(root.registryKey(), root);
         Registry.register("left-island", root);
-        // Back-reference so the booru viewer can route its popup-unhover
-        // hide requests here (the popup is a separate window surface).
-        booruView.hostPanel = root;
+        // Prime the initially-selected tab so its Loader activates below.
+        // (The booru hostPanel back-reference is wired in its onLoaded.)
+        var v = Object.assign({}, root._visited);
+        v[root.selectedWidget] = true;
+        root._visited = v;
     }
     onMonitorNameChanged: {
         if (root.monitorName !== "")
@@ -77,9 +80,20 @@ Column {
     // Selected widget — initialized from persisted Settings and written
     // back on change (same contract the panel had).
     property string selectedWidget: Settings.leftPanelWidget
+    // Tabs visited this session — a tab's Loader activates on first select
+    // and stays active (object replaced, never mutated, for change notify).
+    property var _visited: ({})
+    function tabPrimed(name) {
+        return root.selectedWidget === name || root._visited[name] === true;
+    }
     onSelectedWidgetChanged: {
         if (Settings.leftPanelWidget !== selectedWidget)
             Settings.leftPanelWidget = selectedWidget;
+        if (root._visited[selectedWidget] !== true) {
+            var v = Object.assign({}, root._visited);
+            v[selectedWidget] = true;
+            root._visited = v;
+        }
         switchAnim.restart();
     }
     Connections {
@@ -89,9 +103,33 @@ Column {
                 root.selectedWidget = Settings.leftPanelWidget;
         }
     }
-    // Expose the StackLayout's current child so IPC can poke into the live
+    // Expose the active tab's widget so IPC can poke into the live
     // widget (loadBookmarks/pagedSlice/etc) without traversing the tree.
-    readonly property var activeWidget: widgetStack.itemAt(widgetStack.currentIndex)
+    // Each branch reads that tab Loader's item, so the binding tracks
+    // loads and switches. Unvisited tabs have no item (lazy) — callers
+    // already null-check (requestAutoHide/leaveTimer/widgetState).
+    readonly property var activeWidget: {
+        switch (widgetStack.currentIndex) {
+        case 0:
+            return userProfileLoader.item;
+        case 1:
+            return booruLoader.item;
+        case 2:
+            return chatBotLoader.item;
+        case 3:
+            return mangaLoader.item;
+        case 4:
+            return settingsLoader.item;
+        case 5:
+            return scriptsLoader.item;
+        case 6:
+            return keybindsLoader.item;
+        case 7:
+            return donationsLoader.item;
+        default:
+            return null;
+        }
+    }
 
     // Map a tab name (matching the launcher's quick-app selectors) to a widget.
     function selectTab(name) {
@@ -122,6 +160,12 @@ Column {
         if (root.activeWidget && root.activeWidget.popupHovered)
             return;
         leaveTimer.restart();
+    }
+    // Called by the bar owner on every (re)open: the island now survives
+    // closes, so a leaveTimer armed before the last close must not fire
+    // into the fresh session and shut it after 1s with no hover-leave.
+    function cancelPendingHide() {
+        leaveTimer.stop();
     }
     Timer {
         id: leaveTimer
@@ -327,11 +371,13 @@ Column {
                 width: parent.width - sidebar.width
                 height: parent.height
 
-                // Widget stack — StackLayout keeps all instantiated widgets alive
-                // (AGS Gtk.Stack equivalent) so tab switches preserve scroll/page/
-                // chat/booru state. Only the current one is visible; the others
-                // exist in memory but don't paint, saving cost vs Loader recreate.
-                // Order mirrors AGS leftPanelWidgetSelectors.
+                // Widget stack — each tab is a Loader that activates on first
+                // select and stays alive (AGS Gtk.Stack equivalent), so tab
+                // switches preserve scroll/page/chat/booru state. Only the
+                // selected tab instantiates: opening the island builds one
+                // widget instead of all eight. Only the current one is
+                // visible; loaded hidden tabs exist in memory but don't
+                // paint. Order mirrors AGS leftPanelWidgetSelectors.
                 // Fade-in on switch mirrors AGS `.main-content > *` opacity-in 0.6s.
                 OpacityAnimator on opacity {
                     id: switchAnim
@@ -366,15 +412,84 @@ Column {
                             return 0;
                         }
                     }
-                    UserProfileWidget {}
-                    BooruViewer {
-                        id: booruView
+                    Loader {
+                        id: userProfileLoader
+                        active: root.tabPrimed("UserProfile")
+                        sourceComponent: userProfileComp
                     }
+                    Loader {
+                        id: booruLoader
+                        active: root.tabPrimed("BooruViewer")
+                        sourceComponent: booruComp
+                        onLoaded: {
+                            // Back-reference so the booru viewer can route
+                            // its popup-unhover hide requests here (the
+                            // popup is a separate window surface).
+                            if (item)
+                                item.hostPanel = root;
+                        }
+                    }
+                    Loader {
+                        id: chatBotLoader
+                        active: root.tabPrimed("ChatBot")
+                        sourceComponent: chatBotComp
+                    }
+                    Loader {
+                        id: mangaLoader
+                        active: root.tabPrimed("MangaViewer")
+                        sourceComponent: mangaComp
+                    }
+                    Loader {
+                        id: settingsLoader
+                        active: root.tabPrimed("SettingsWidget")
+                        sourceComponent: settingsComp
+                    }
+                    Loader {
+                        id: scriptsLoader
+                        active: root.tabPrimed("CustomScripts")
+                        sourceComponent: scriptsComp
+                    }
+                    Loader {
+                        id: keybindsLoader
+                        active: root.tabPrimed("KeyBinds")
+                        sourceComponent: keybindsComp
+                    }
+                    Loader {
+                        id: donationsLoader
+                        active: root.tabPrimed("Donations")
+                        sourceComponent: donationsComp
+                    }
+                }
+                Component {
+                    id: userProfileComp
+                    UserProfileWidget {}
+                }
+                Component {
+                    id: booruComp
+                    BooruViewer {}
+                }
+                Component {
+                    id: chatBotComp
                     ChatBotWidget {}
+                }
+                Component {
+                    id: mangaComp
                     MangaViewerWidget {}
+                }
+                Component {
+                    id: settingsComp
                     SettingsWidget {}
+                }
+                Component {
+                    id: scriptsComp
                     CustomScriptsWidget {}
+                }
+                Component {
+                    id: keybindsComp
                     KeyBindsWidget {}
+                }
+                Component {
+                    id: donationsComp
                     DonationsWidget {}
                 }
             }

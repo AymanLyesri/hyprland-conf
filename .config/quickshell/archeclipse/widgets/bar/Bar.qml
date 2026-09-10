@@ -303,10 +303,10 @@ PanelWindow {
             Behavior on shift {
                 enabled: pill.widthAnimReady
                 SpringAnimation {
-                    spring: 15
+                    spring: 8
                     damping: 0.5
                     mass: 1.0
-                    epsilon: 0.5
+                    epsilon: 1
                 }
             }
             anchors.horizontalCenterOffset: (root.leftVert || root.rightVert) ? 0 : shift
@@ -338,16 +338,59 @@ PanelWindow {
                 // implicitWidth fallback covers Row-based pages (DefaultBar)
                 // whose width stays 0 while content lays out past its bounds.
                 property real lastWidth: 0
+                property real lastHeight: 0
+                // Latch: once a side island has opened, its Loader stays
+                // active forever — the island is created once (lazily, on
+                // first open so startup stays fast) and then kept alive
+                // across closes. Reopens only toggle visibility: no
+                // rebuild, no refetch, tab/scroll/chat/booru state survives.
+                property bool leftPrimed: false
+                property bool rightPrimed: false
                 width: {
+                    if (stack.current === "left" && leftCacheLoader.item) {
+                        var lw = Math.max(leftCacheLoader.item.width || 0, leftCacheLoader.item.implicitWidth || 0);
+                        return lw > 0 ? lw : lastWidth;
+                    }
+                    if (stack.current === "right" && rightCacheLoader.item) {
+                        var rw = Math.max(rightCacheLoader.item.width || 0, rightCacheLoader.item.implicitWidth || 0);
+                        return rw > 0 ? rw : lastWidth;
+                    }
                     var it = currentPageLoader.item;
                     if (!it)
                         return lastWidth;
                     var w = Math.max(it.width || 0, it.implicitWidth || 0);
                     return w > 0 ? w : lastWidth;
                 }
-                onWidthChanged: if (width > 0)
-                    lastWidth = width
-                height: childrenRect.height
+                onWidthChanged: {
+                    if (width > 0)
+                        lastWidth = width;
+                    // Keep the grow-first width registry fresh for cached
+                    // islands too (user expand/shrink writes Settings widths).
+                    if (width > 0 && (stack.current === "left" || stack.current === "right")) {
+                        var c = Object.assign({}, stack.widthCache);
+                        if (c[stack.current] !== width) {
+                            c[stack.current] = width;
+                            stack.widthCache = c;
+                        }
+                    }
+                }
+                height: {
+                    if (stack.current === "left" && leftCacheLoader.item) {
+                        var lh = Math.max(leftCacheLoader.item.height || 0, leftCacheLoader.item.implicitHeight || 0);
+                        return lh > 0 ? lh : lastHeight;
+                    }
+                    if (stack.current === "right" && rightCacheLoader.item) {
+                        var rh = Math.max(rightCacheLoader.item.height || 0, rightCacheLoader.item.implicitHeight || 0);
+                        return rh > 0 ? rh : lastHeight;
+                    }
+                    var hit = currentPageLoader.item;
+                    if (!hit)
+                        return lastHeight;
+                    var hh = Math.max(hit.height || 0, hit.implicitHeight || 0, hit.childrenRect ? hit.childrenRect.height : 0);
+                    return hh > 0 ? hh : lastHeight;
+                }
+                onHeightChanged: if (height > 0)
+                    lastHeight = height
 
                 // The state actually shown (lags BarState.state by 100ms on grow)
                 property string displayed: BarState.state
@@ -365,14 +408,18 @@ PanelWindow {
                             return;
                         }
                         // Exclusive island open: pin the width target straight
-                        // to final geometry through the 1-frame Loader gap
-                        // (the width spring is off while vert, and the target
-                        // would otherwise sit on the stale lastWidth, landing
-                        // the fresh surface at the wrong size for a frame).
+                        // to final geometry through the Loader gap (the width
+                        // spring is off while vert, and the target would
+                        // otherwise sit on the stale lastWidth, landing the
+                        // fresh surface at the wrong size for a frame).
+                        // Cached (already-instantiated) islands measure
+                        // instantly, so they skip the pin entirely.
                         if ((s === "left" && root.leftVert) || (s === "right" && root.rightVert)) {
                             stack.pending = "";
                             swapTimer.stop();
-                            pill.widthOverride = (s === "left" ? Settings.leftPanelWidth : Settings.rightPanelWidth) + 10;
+                            var cached = (s === "left" && leftCacheLoader.item) || (s === "right" && rightCacheLoader.item);
+                            if (!cached)
+                                pill.widthOverride = (s === "left" ? Settings.leftPanelWidth : Settings.rightPanelWidth) + 10;
                             stack.displayed = s;
                             return;
                         }
@@ -405,7 +452,41 @@ PanelWindow {
                 }
 
                 property string current: stack.displayed
-                onCurrentChanged: fade.restart()
+                onCurrentChanged: {
+                    fade.restart();
+                    // Prime the side-island cache on first open; the Loader
+                    // stays active from then on (created once, kept alive).
+                    // Synchronous load, so the item exists right after.
+                    var firstLoad = false;
+                    if (current === "left" && !stack.leftPrimed) {
+                        stack.leftPrimed = true;
+                        firstLoad = true;
+                    } else if (current === "right" && !stack.rightPrimed) {
+                        stack.rightPrimed = true;
+                        firstLoad = true;
+                    }
+                    var isl = current === "left" ? leftCacheLoader.item : (current === "right" ? rightCacheLoader.item : null);
+                    if (isl) {
+                        // Kill a hide timer armed before the last close —
+                        // it must not fire into this fresh session.
+                        if (isl["cancelPendingHide"] !== undefined)
+                            isl.cancelPendingHide();
+                        // Reopen unfold: the cached island's expand spring
+                        // stays at 1 while hidden, so replay 0 -> 1 for the
+                        // same unfold motion a fresh creation had (deferred
+                        // a frame so the 0 commits before the 1 animates).
+                        // Fresh creation animates itself — don't restart it.
+                        if (!firstLoad && isl["expand"] !== undefined) {
+                            isl.expand = 0;
+                            (function (target) {
+                                Qt.callLater(function () {
+                                    if (target)
+                                        target.expand = 1;
+                                });
+                            })(isl);
+                        }
+                    }
+                }
                 readonly property string previous: ""
 
                 SequentialAnimation {
@@ -425,8 +506,59 @@ PanelWindow {
                     }
                 }
 
+                // Side islands live here permanently (lazy-cached): the main
+                // Loader below only handles the small transient states, so
+                // opening left/right never destroys them. Synchronous load
+                // (like before) so the first open is instant; visible
+                // toggles the already-built subtree (no paint cost hidden).
+                Loader {
+                    id: leftCacheLoader
+                    active: stack.leftPrimed
+                    visible: stack.current === "left"
+                    asynchronous: false
+                    sourceComponent: leftPage
+                    onLoaded: {
+                        if (item && item["monitorName"] !== undefined)
+                            item.monitorName = root.monitorName;
+                        if (item && item["screenHeight"] !== undefined)
+                            item.screenHeight = root.screenHeight;
+                        if (stack.displayed === "left")
+                            pill.widthOverride = -1;
+                        var mw = item ? Math.max(item.width || 0, item.implicitWidth || 0) : 0;
+                        if (mw > 0) {
+                            var c = Object.assign({}, stack.widthCache);
+                            c["left"] = mw;
+                            stack.widthCache = c;
+                        }
+                    }
+                }
+                Loader {
+                    id: rightCacheLoader
+                    active: stack.rightPrimed
+                    visible: stack.current === "right"
+                    asynchronous: false
+                    sourceComponent: rightPage
+                    onLoaded: {
+                        if (item && item["monitorName"] !== undefined)
+                            item.monitorName = root.monitorName;
+                        if (item && item["screenHeight"] !== undefined)
+                            item.screenHeight = root.screenHeight;
+                        if (stack.displayed === "right")
+                            pill.widthOverride = -1;
+                        var mw = item ? Math.max(item.width || 0, item.implicitWidth || 0) : 0;
+                        if (mw > 0) {
+                            var c = Object.assign({}, stack.widthCache);
+                            c["right"] = mw;
+                            stack.widthCache = c;
+                        }
+                    }
+                }
+
                 Loader {
                     id: currentPageLoader
+                    // Left/right are served by the cached Loaders above —
+                    // show an empty page here so the transient Loader never
+                    // instantiates (and destroys) them on open/close.
                     sourceComponent: {
                         switch (stack.current) {
                         case "default":
@@ -452,23 +584,24 @@ PanelWindow {
                         case "wallpaper":
                             return wallpaperPage;
                         case "left":
-                            return leftPage;
+                            return emptyPage;
                         case "right":
-                            return rightPage;
+                            return emptyPage;
                         default:
                             return defaultPage;
                         }
                     }
-                    // Feed the per-state width registry (AGS barWidths)
+                    // Feed the per-state width registry (AGS barWidths).
+                    // Left/right are served by the cached Loaders (which
+                    // release their own pin onLoaded), so this must NOT
+                    // touch widthOverride — the empty page loads instantly
+                    // and would clear the exclusive-open pin before the
+                    // async island arrives.
                     onLoaded: {
                         if (item && item["monitorName"] !== undefined)
                             item.monitorName = root.monitorName;
                         if (item && item["screenHeight"] !== undefined)
                             item.screenHeight = root.screenHeight;
-                        // Release an exclusive-open width pin (same value the
-                        // live measurement recomputes to — seamless).
-                        if (stack.displayed === "left" || stack.displayed === "right")
-                            pill.widthOverride = -1;
                         var mw = item ? Math.max(item.width || 0, item.implicitWidth || 0) : 0;
                         if (mw > 0) {
                             var c = Object.assign({}, stack.widthCache);
@@ -513,6 +646,10 @@ PanelWindow {
                 Component {
                     id: wallpaperPage
                     WallpaperIsland {}
+                }
+                Component {
+                    id: emptyPage
+                    Item {}
                 }
                 Component {
                     id: leftPage

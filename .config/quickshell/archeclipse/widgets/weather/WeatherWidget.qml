@@ -267,14 +267,13 @@ Item {
                         AppTextField {
                             id: cityEntry
                             placeholderText: (root.wx?.city ? "Search..." : "Not " + (root.wx?.city || "IP") + "?...")
-                            text: root.savedCity
-                            onTextChanged: root._entryDirty = true
                             onAccepted: root.applyCity()
                             width: parent.width - 76
                             height: 30
                             color: "white"
                             fillColor: "#33000000"
                             placeholderTextColor: "#CCFFFFFF"
+                            Component.onCompleted: text = Weather._cityOverride
                         }
                         AppButton {
                             width: 32
@@ -464,23 +463,27 @@ Item {
         return items;
     }
 
-    property string savedCity: ""
-    property bool _entryDirty: false
+    // City entry mirrors the persisted override: typing never writes
+    // through until apply/clear, external changes fill the field unless
+    // the user is actively editing it.
+    Connections {
+        target: Weather
+        function on_CityOverrideChanged() {
+            if (!cityEntry.activeFocus && cityEntry.text !== Weather._cityOverride)
+                cityEntry.text = Weather._cityOverride;
+        }
+    }
 
     function applyCity() {
         const text = cityEntry.text;
-        if (text && text.trim() === "") {
+        if (!text || text.trim() === "") {
             root.clearCity();
             return;
         }
         Weather.setCity(text);
-        root.savedCity = cityEntry.text;
-        root._entryDirty = false;
     }
     function clearCity() {
         Weather.setCity("");
-        root.savedCity = "";
-        root._entryDirty = false;
         cityEntry.text = "";
     }
 }

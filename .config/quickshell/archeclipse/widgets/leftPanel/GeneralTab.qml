@@ -167,7 +167,7 @@ Item {
                     color: Theme.fg
                 }
                 Text {
-                    text: root.starsCount > 0 ? "\u{F02D9} " + root.starsCount : ""
+                    text: root.starsCount > 0 ? "\uf005  " + root.starsCount : ""
                     font.pixelSize: Theme.fontSize
                     color: Theme.accent
                 }
@@ -180,17 +180,17 @@ Item {
                 Repeater {
                     model: [
                         {
-                            icon: "\u{F09B}",
+                            icon: "\uf09b",
                             url: "https://github.com/AymanLyesri/ArchEclipse",
                             tip: "GitHub Repository"
                         },
                         {
-                            icon: "\u{F188}",
+                            icon: "\uf188",
                             url: "https://github.com/AymanLyesri/ArchEclipse/issues",
                             tip: "Issues Tracker"
                         },
                         {
-                            icon: "\u{F392}",
+                            icon: "\uf1ff",
                             url: "https://discord.gg/fMGt4vH6s5",
                             tip: "Discord Community"
                         }
@@ -201,7 +201,6 @@ Item {
                         cornerRadius: 8
                         outlined: true
                         icon: modelData.icon
-                        fontFamily: "Font Awesome 6 Free"
                         pixelSize: 18
                         tooltipText: modelData.tip
                         onClicked: Quickshell.execDetached(["xdg-open", modelData.url])

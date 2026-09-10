@@ -296,7 +296,7 @@ Item {
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
-                onClicked: Hyprland.dispatch("togglespecialworkspace")
+                onClicked: Hyprland.dispatch("hl.dsp.workspace.toggle_special()")
             }
         }
 

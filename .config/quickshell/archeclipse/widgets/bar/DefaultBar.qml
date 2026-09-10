@@ -183,23 +183,9 @@ Column {
                     }
                 }
 
-                Rectangle {
-                    width: 1
-                    height: 12
-                    color: Theme.border
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-
                 // control panel toggle — center
                 ControlPanelButton {
                     id: centerButton
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-
-                Rectangle {
-                    width: 1
-                    height: 12
-                    color: Theme.border
                     anchors.verticalCenter: parent.verticalCenter
                 }
 

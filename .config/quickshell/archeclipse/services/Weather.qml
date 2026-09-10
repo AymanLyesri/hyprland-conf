@@ -2,6 +2,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import qs.theme
 
 // Port of variables.ts weather pipeline: IP geolocation -> open-meteo,
 // refreshed every 10 minutes, with optional city override (setWeatherCity
@@ -10,12 +11,38 @@ QtObject {
     id: root
 
     property var data: null          // {city, current:{...}, daily:{...}, hourly:{...}} (raw open-meteo shape)
-    property string _cityOverride: ""  // persisted city override name
+    property string _cityOverride: ""  // persisted city override name (mirrors Settings.weatherCity)
     property string _lat: ""
     property string _lon: ""
+    property bool _booted: false
+
+    // Boot once Settings are ready so a saved city wins over IP geo.
+    // The refresh timer below no longer triggers on start — boot() owns
+    // the first fetch.
+    function boot() {
+        if (root._booted)
+            return;
+        if (!Settings.ready)
+            return;
+        root._booted = true;
+        _bootTimer.stop();
+        const saved = (Settings.weatherCity || "").trim();
+        if (saved !== "" && saved !== (root._cityOverride || "").trim())
+            root.setCity(saved);
+        else if (!root._lat || !root._lon)
+            root.fetch();
+    }
 
     // Re-check coordinates each fetch: if an override is set, skip IP geo.
     function fetch() {
+        // Saved city raced ahead of boot (e.g. timer): resolve it first.
+        if (!root._lat && !root._lon && !root._cityOverride) {
+            const saved = (Settings.weatherCity || "").trim();
+            if (saved !== "") {
+                root.setCity(saved);
+                return;
+            }
+        }
         if (root._lat && root._lon) { wxProc.running = true; return; }
         root.geoProc.running = true;
     }
@@ -81,9 +108,13 @@ QtObject {
 
     property string _pendingCity: ""
     // setWeatherCity equivalent: "" clears override (Auto/IP), else geocodes.
+    // Writes through to Settings.weatherCity so the choice survives restarts.
     function setCity(cityName) {
         if (!cityName || cityName.trim() === "") {
             root._cityOverride = "";
+            root._pendingCity = "";
+            if (Settings.weatherCity !== "")
+                Settings.updateSetting("weather.city", "");
             root._lat = "";
             root._lon = "";
             root.fetch();
@@ -105,6 +136,8 @@ QtObject {
                         root._cityOverride = r.name;
                         root._lat = String(r.latitude);
                         root._lon = String(r.longitude);
+                        if (Settings.weatherCity !== r.name)
+                            Settings.updateSetting("weather.city", r.name);
                         root.fetch();
                     } else {
                         Notifications.notify({ summary: "Weather", body: "City '" + root._pendingCity + "' not found" });
@@ -181,5 +214,33 @@ QtObject {
         return root.windDirNames[idx];
     }
 
-    property Timer _refreshTimer: Timer { interval: 600000; running: true; repeat: true; triggeredOnStart: true; onTriggered: root.fetch() }
+    property Timer _refreshTimer: Timer { interval: 600000; running: true; repeat: true; triggeredOnStart: false; onTriggered: root.fetch() }
+    property Timer _bootTimer: Timer { interval: 200; repeat: true; onTriggered: root.boot() }
+
+    // Follow external Settings edits (settings UI / file reload) without
+    // looping back on our own writes.
+    property Connections _settingsConn: Connections {
+        target: Settings
+        function onWeatherCityChanged() {
+            if (!root._booted || !Settings.ready)
+                return;
+            const saved = (Settings.weatherCity || "").trim();
+            const cur = (root._cityOverride || "").trim();
+            const pend = (root._pendingCity || "").trim();
+            if (saved === cur || saved === pend)
+                return;
+            root.setCity(saved);
+        }
+        function onReadyChanged() {
+            if (Settings.ready)
+                root.boot();
+        }
+    }
+
+    Component.onCompleted: {
+        if (Settings.ready)
+            root.boot();
+        else
+            _bootTimer.start();
+    }
 }
