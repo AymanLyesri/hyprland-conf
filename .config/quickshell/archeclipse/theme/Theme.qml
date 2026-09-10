@@ -62,6 +62,10 @@ QtObject {
     readonly property int radius: 10
     readonly property int spacing: 8          // bar element spacing (AGS look)
     readonly property int sectionSpacing: 20  // between compact sections / expanded groups
+    // Single source of truth for bar content height — every bar widget
+    // (Clock, Battery, Volume, ...) binds to this instead of hardcoding
+    // its own height, so all bar content stays the same height.
+    readonly property int barContentHeight: 18
 
     // Danger colors for destructive actions
     readonly property string danger: "#ff4444"

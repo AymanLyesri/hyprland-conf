@@ -140,6 +140,27 @@ QtObject {
         root._initialLayoutProc.running = true;
     }
 
+    // Switch process — cycles to the next keymap on the current keyboard.
+    // (AGS hyprctlCommand injects -i $HYPRLAND_INSTANCE_SIGNATURE — plain
+    // hyprctl breaks with multiple Hyprland instances.)
+    property Process _switchLayoutProc: Process {
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (text.trim())
+                    console.warn("[KeyboardLayout] Failed to switch layout: " + text);
+            }
+        }
+    }
+
+    function nextLayout() {
+        const cmd = ["hyprctl", "switchxkblayout", "current", "next"];
+        const signature = Quickshell.env("HYPRLAND_INSTANCE_SIGNATURE");
+        if (signature)
+            cmd.splice(1, 0, "-i", signature);
+        root._switchLayoutProc.command = cmd;
+        root._switchLayoutProc.running = true;
+    }
+
     function flagEmoji(code) {
         const upper = code.toUpperCase();
         if (upper.length !== 2) return "";

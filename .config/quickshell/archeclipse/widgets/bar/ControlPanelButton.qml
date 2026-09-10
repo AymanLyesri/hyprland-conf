@@ -8,7 +8,7 @@ import qs.theme
 Rectangle {
     id: root
 
-    width: 24; height: 20
+    width: 24; height: Theme.barContentHeight
     radius: Theme.radius
     color: mouse.containsMouse ? Theme.surfaceHover : "transparent"
 

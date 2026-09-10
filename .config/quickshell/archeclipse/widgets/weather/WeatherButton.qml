@@ -6,8 +6,10 @@ import qs.services
 // Hover/click pulses the full weather island (BarState "weather").
 Rectangle {
     id: root
-    height: 22
-    width: content.implicitWidth + 14
+    height: Theme.barContentHeight
+    // implicitWidth (not width) so the button keeps its natural size in
+    // Row layouts but can stretch via anchors when there is empty space.
+    implicitWidth: content.implicitWidth + 14
     radius: Theme.radius
     // color set by weatherBg binding below
 
@@ -30,6 +32,7 @@ Rectangle {
 
         // Weather icon
         Text {
+            id: iconText
             visible: root.hasData
             anchors.verticalCenter: parent.verticalCenter
             text: Weather.icon(root.cur.weather_code)
@@ -38,8 +41,9 @@ Rectangle {
             font.pixelSize: Theme.fontSize + 1
         }
 
-        // Temp + description (ellided, capped so it can't stretch the bar)
+        // Temp + description (ellided only if it overflows the stretched button)
         Text {
+            id: descText
             visible: root.hasData
             anchors.verticalCenter: parent.verticalCenter
             text: {
@@ -50,7 +54,13 @@ Rectangle {
                 return `${t}${unit} ${desc}`;
             }
             elide: Text.ElideRight
-            width: Math.min(implicitWidth, 120)
+            width: {
+                const avail = root.width - 14 - content.spacing - (iconText.visible ? iconText.implicitWidth : 0);
+                // root.width is 0 before anchors resolve — fall back to natural size
+                if (root.width <= 0 || avail < 0)
+                    return Math.min(implicitWidth, 120);
+                return Math.min(implicitWidth, avail);
+            }
             color: "white"
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontSize

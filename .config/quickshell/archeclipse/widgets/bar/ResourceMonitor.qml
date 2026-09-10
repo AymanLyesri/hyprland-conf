@@ -1,19 +1,28 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 import Quickshell.Hyprland
 import qs.theme
 import qs.services
 import qs.widgets.shared
 
-// Port of Utilities.tsx ResourceMonitor — CPU / RAM / GPU circular rings.
+// Port of Utilities.tsx ResourceMonitor — CPU / RAM / GPU horizontal bars,
+// stacked vertically (one on top of the other).
 // Hover/click pulses the system-monitor island (BarState "system").
 // Middle-click keeps the legacy AGS behavior (dispatch to workspace 5).
-Row {
+Item {
     id: root
-    spacing: 10
+    // Fixed footprint in the bar, but bars stretch to full widget width —
+    // if the parent gives us more room the tracks expand with it.
+    width: 70
+    implicitWidth: 70
+    Layout.fillWidth: true
+    Layout.preferredWidth: 70
+    height: Theme.barContentHeight
+    implicitHeight: Theme.barContentHeight
 
     readonly property var res: SysInfo.systemResources
-    // AGS maxGpuLoad returns 0-100; the ring expects 0-1, so normalize here.
+    // AGS maxGpuLoad returns 0-100; normalize to 0-1 here.
     readonly property real cpuFrac: (res?.cpuLoad ?? null) !== null ? Math.max(0, Math.min(1, res.cpuLoad / 100)) : -1
     readonly property real ramFrac: (res?.ramUsedGB ?? null) !== null && (res?.ramTotalGB ?? null) ? Math.max(0, Math.min(1, res.ramUsedGB / res.ramTotalGB)) : -1
     readonly property real gpuFrac: {
@@ -29,107 +38,98 @@ Row {
         return gpus.map(g => `${g.driver}: ${g.load ?? "N/A"}%`).join(" | ");
     }
 
+    // (18px bar height - 2 * 3px spacing) / 3 = 4px per bar
+    readonly property int barHeight: 4
+
     function pulseIsland(holdMs) {
         BarState.activate("system", holdMs);
     }
 
-    Repeater {
-        model: [
-            {
-                icon: "",
-                frac: root.cpuFrac,
-                tip: root.res ? `CPU Usage ${Number(root.res.cpuLoad).toFixed(1)}%` : "CPU: N/A"
-            },
-            {
-                icon: "",
-                frac: root.ramFrac,
-                tip: root.res ? `RAM Usage ${Math.round(root.ramFrac * 100)}% (${Number(root.res.ramUsedGB).toFixed(2)}/${Number(root.res.ramTotalGB).toFixed(2)} GB)` : "RAM: N/A"
-            },
-            {
-                icon: "󱤟",
-                frac: root.gpuFrac,
-                tip: root.gpuTip
+    // Click layer underneath — bar Items are mouse-transparent so clicks
+    // fall through to here from anywhere on the stack.
+    MouseArea {
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+        onClicked: mouse => {
+            if (mouse.button === Qt.MiddleButton) {
+                // Legacy AGS behavior: jump to the monitor workspace.
+                Hyprland.dispatch("workspace 5");
+                return;
             }
-        ]
+            // Left-click pins the island; clicking again dismisses it.
+            if (BarState.state === "system")
+                BarState.deactivate("system");
+            else
+                BarState.activate("system", 0);
+        }
+    }
 
-        Item {
-            id: ringItem
-            required property var modelData
-            // -1 = no data -> hide ring (AGS visible={...} parity)
-            readonly property real frac: modelData.frac
-            visible: frac >= 0
+    Column {
+        id: stack
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        spacing: 3
 
-            width: 18
-            height: 18
-            anchors.verticalCenter: parent.verticalCenter
+        Repeater {
+            model: [
+                {
+                    frac: root.cpuFrac,
+                    color: "#ff9f1c",
+                    tip: root.res ? `CPU Usage ${Number(root.res.cpuLoad).toFixed(1)}%` : "CPU: N/A"
+                },
+                {
+                    frac: root.ramFrac,
+                    color: "#4aa8ff",
+                    tip: root.res ? `RAM Usage ${Math.round(root.ramFrac * 100)}% (${Number(root.res.ramUsedGB).toFixed(2)}/${Number(root.res.ramTotalGB).toFixed(2)} GB)` : "RAM: N/A"
+                },
+                {
+                    frac: root.gpuFrac,
+                    color: "#ff5d5d",
+                    tip: root.gpuTip
+                }
+            ]
 
-            Canvas {
-                id: canvas
-                anchors.fill: parent
-                onPaint: {
-                    const ctx = getContext("2d");
-                    ctx.reset();
-                    const cx = width / 2, cy = height / 2, r = width / 2 - 1.5;
-                    ctx.lineWidth = 2;
-                    ctx.strokeStyle = Qt.rgba(1, 1, 1, 0.15);
-                    ctx.beginPath();
-                    ctx.arc(cx, cy, r, 0, Math.PI * 2);
-                    ctx.stroke();
-                    if (ringItem.frac > 0) {
-                        ctx.strokeStyle = Theme.muted;
-                        ctx.beginPath();
-                        ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + ringItem.frac * Math.PI * 2);
-                        ctx.stroke();
+            Item {
+                id: barItem
+                required property var modelData
+                // -1 = no data -> hide bar (AGS visible={...} parity)
+                readonly property real frac: modelData.frac
+                visible: frac >= 0
+
+                // Expand if there is place.
+                width: stack.width
+                height: root.barHeight
+
+                Rectangle {
+                    id: track
+                    anchors.fill: parent
+                    radius: height / 2
+                    color: Qt.rgba(1, 1, 1, 0.15)
+
+                    Rectangle {
+                        width: parent.width * Math.max(0, Math.min(1, barItem.frac))
+                        height: parent.height
+                        radius: parent.radius
+                        color: barItem.modelData.color
+                        Behavior on width { NumberAnimation { duration: 150 } }
                     }
                 }
-            }
-            // Canvas only repaints on request — re-fire when the fraction
-            // (or theme) changes, otherwise the ring freezes at its first
-            // paint (which is why it looked stuck at max).
-            onFracChanged: canvas.requestPaint()
-            Connections {
-                target: Theme
-                function onMutedChanged() { canvas.requestPaint(); }
-            }
-            Component.onCompleted: canvas.requestPaint()
 
-            Text {
-                anchors.centerIn: parent
-                text: ringItem.modelData.icon
-                color: Theme.fg
-                font.family: Theme.fontFamily
-                font.pixelSize: 9
-            }
-
-            AppTooltip {
-                visible: ringHover.hovered
-                text: ringItem.modelData.tip
-                delay: 500
-            }
-
-            HoverHandler {
-                id: ringHover
-                onHoveredChanged: {
-                    if (ringHover.hovered)
-                        root.pulseIsland(3000);
+                AppTooltip {
+                    visible: barHover.hovered
+                    text: barItem.modelData.tip
+                    delay: 500
                 }
-            }
-            MouseArea {
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                acceptedButtons: Qt.LeftButton | Qt.MiddleButton
-                onClicked: mouse => {
-                    if (mouse.button === Qt.MiddleButton) {
-                        // Legacy AGS behavior: jump to the monitor workspace.
-                        Hyprland.dispatch("workspace 5");
-                        return;
+
+                HoverHandler {
+                    id: barHover
+                    onHoveredChanged: {
+                        if (barHover.hovered)
+                            root.pulseIsland(3000);
                     }
-                    // Left-click pins the island; clicking again dismisses it.
-                    if (BarState.state === "system")
-                        BarState.deactivate("system");
-                    else
-                        BarState.activate("system", 0);
                 }
             }
         }

@@ -1,6 +1,4 @@
 import QtQuick
-import Quickshell
-import Quickshell.Io
 import qs.theme
 import qs.services
 import qs.widgets.shared
@@ -8,7 +6,10 @@ import qs.widgets.shared
 Rectangle {
     id: root
 
-    property real level: 1.0
+    // Initialize from the service (not a hardcoded 1.0): DefaultBar is
+    // recreated on every return to the default state, and a hardcoded
+    // default would show a stale 100% until the next brightness change.
+    property real level: Brightness.screen
     property bool pulse: false
     readonly property int fixedWidth: 220
 
@@ -20,39 +21,34 @@ Rectangle {
     readonly property bool hasBacklight: Brightness.hasBacklight
 
     width: pulse ? fixedWidth : content.width
-    height: 22
+    height: Theme.barContentHeight
     radius: Theme.radius
     color: pulse ? Theme.surface : "transparent"
     visible: root.hasBacklight
 
-    Process {
-        id: getBri
-        command: ["sh", "-c", "brightnessctl -m info"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const m = text.split(",");
-                if (m.length > 3) {
-                    const newLevel = parseFloat(m[3].replace('%', '')) / 100;
-                    if (Math.abs(newLevel - root.level) > 0.005) {
-                        root.level = newLevel;
-                        // AGS: reveal slider on external change, then auto-hide after 2s
-                        root.showSliderTemp();
-                    }
-                }
+    // Live sync from the Brightness service (inotify file events, zero
+    // polling): external changes update + reveal the slider, the first
+    // sync is silent (mount / DefaultBar recreation on every return to
+    // the default bar state) — Volume._firstVol parity.
+    Connections {
+        target: Brightness
+        function onScreenChanged() {
+            const newLevel = Brightness.screen;
+            const first = root._firstLevel;
+            root._firstLevel = false;
+            if (Math.abs(newLevel - root.level) > 0.005) {
+                root.level = newLevel;
+                // AGS: reveal slider on external change, then auto-hide after 2s
+                if (!first)
+                    root.showSliderTemp();
             }
         }
-    }
-    Timer {
-        interval: 15000
-        running: true
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: getBri.running = true
     }
 
     // AGS change → reveal + 2s hide timeout
     property bool sliderRevealed: false
     property bool keepOpen: false
+    property bool _firstLevel: true
     function showSliderTemp() {
         root.sliderRevealed = true;
         hideTimer.restart();
@@ -97,7 +93,7 @@ Rectangle {
             value: root.level
             onMoved: {
                 root.level = briSlider.value;
-                Quickshell.execDetached(["brightnessctl", "set", Math.round(briSlider.value * 100) + "%"]);
+                Brightness.setScreen(briSlider.value);
             }
         }
     }

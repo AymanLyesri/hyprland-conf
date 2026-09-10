@@ -10,7 +10,7 @@ import qs.widgets.launcher
 // body unfolds with a spring.
 Column {
     id: root
-    width: 1100
+    width: 516
     spacing: 8
 
     signal queryChanged(string query)
@@ -30,7 +30,7 @@ Column {
     Rectangle {
         id: searchInput
         anchors.horizontalCenter: parent.horizontalCenter
-        width: 460
+        width: 484
         height: 30
         radius: Theme.radius
         color: Theme.surface

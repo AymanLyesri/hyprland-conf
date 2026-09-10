@@ -16,7 +16,7 @@ Rectangle {
     readonly property int fixedWidth: 220
 
     width: pulse ? fixedWidth : content.width
-    height: 22
+    height: Theme.barContentHeight
     radius: Theme.radius
     color: pulse ? Theme.surface : "transparent"
 

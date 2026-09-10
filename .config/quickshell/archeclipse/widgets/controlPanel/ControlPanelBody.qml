@@ -183,6 +183,18 @@ Item {
                         BarState.activate("wallpaper", 0);
                 }
             }
+            // Keyboard layout — shows the current layout code, click cycles
+            AppButton {
+                width: 46
+                height: 46
+                cornerRadius: Theme.radius
+                idleBg: Theme.surface
+                text: KeyboardLayout.layout
+                visible: KeyboardLayout.layout !== ""
+                pixelSize: Theme.fontSize + 2
+                tooltipText: (KeyboardLayout.layoutName || "Keyboard Layout") + "\nClick to switch layout"
+                onClicked: KeyboardLayout.nextLayout()
+            }
         }
     }
 }

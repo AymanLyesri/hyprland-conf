@@ -9,7 +9,7 @@ Rectangle {
     id: root
 
     width: row.implicitWidth
-    height: 22
+    height: Theme.barContentHeight
     radius: Theme.radius
     color: hover.hovered ? Theme.surfaceHover : "transparent"
 

@@ -1,151 +1,149 @@
 import QtQuick
-import QtQuick.Controls
-import QtQuick.Window
 import Quickshell.Hyprland
 import qs.theme
 import qs.services
-import qs.widgets.bar
 
-// Workspaces (full, grouped): workspaces 1..max(existing,10); occupied ones
-// are grouped into a pill ("workspace-group active"), empties stand alone.
-// Focused = highlighted, inactive = 0.4 opacity. Click dispatches focus.
-// Special-workspace toggle on the left.
-Row {
+// Bottom workspace strip: 10 bars, 5px tall, stretched across the bar width.
+// Empty = greyed out (muted, low opacity), occupied = full opacity.
+// On workspace switch (or strip hover) the strip expands in height and
+// reveals each workspace's app icon, then collapses back after peekDuration.
+Item {
     id: root
 
-    spacing: Theme.spacing
+    property int count: 10
+    property real barHeight: 4
+    property real iconSize: 16
+    property real btnSpacing: 4
+    property real hitHeight: 8
+    property real expandedHeight: 32
+    property int peekDuration: 2000
 
-    // snapshot of workspace state: [{id, exists, icon}]
-    readonly property var wsModel: {
-        Hyprland.workspaces.values;      // reactive dep
-        const focused = Hyprland.focusedWorkspace?.id;
-        const map = new Map();
-        for (const w of Hyprland.workspaces.values) {
-            let icon = WorkspaceIcons.extraIcon;
-            const tops = Hyprland.toplevels.values.filter(t => t.workspace?.id === w.id);
-            if (tops.length > 0)
-                icon = WorkspaceIcons.forClientClass(tops[0].lastIpcObject?.class ?? "");
-            map.set(w.id, {
-                id: w.id,
-                exists: true,
-                icon
-            });
+    property bool expanded: false
+    readonly property bool showIcons: root.expanded || stripHover.hovered
+
+    implicitHeight: showIcons ? expandedHeight : hitHeight
+    Behavior on implicitHeight {
+        NumberAnimation {
+            duration: 250
+            easing.type: Easing.OutCubic
         }
-        const maxId = Math.max(10, ...map.keys());
-        const out = [];
-        for (let i = 1; i <= maxId; i++) {
-            out.push(map.get(i) ?? {
-                id: i,
-                exists: false,
-                icon: WorkspaceIcons.emptyIcon
-            });
-        }
-        return out.slice(0, maxId);
     }
 
-    // AGS parity (variables.ts): specialWorkspace = focusedClient.workspace.id < 0.
-    // Quickshell: Hyprland.activeToplevel is the focused client (HyprlandToplevel).
-    // focusedWorkspace stays on the normal workspace while special is open
-    // (activeworkspace=1, activewindow on -99), so checking focusedWorkspace
-    // alone never toggles. Also consider an open-but-unfocused special via
-    // workspaces active flag.
-    readonly property bool specialActive: {
-        Hyprland.activeToplevel?.workspace?.id;
-        Hyprland.focusedWorkspace?.id;
+    HoverHandler {
+        id: stripHover
+    }
+
+    readonly property int focusedId: Hyprland.focusedWorkspace?.id ?? 1
+    onFocusedIdChanged: {
+        root.expanded = true;
+        peekTimer.restart();
+    }
+    Timer {
+        id: peekTimer
+        interval: root.peekDuration
+        onTriggered: root.expanded = false
+    }
+
+    // per-workspace snapshot (reactive): [{id, occupied, icon}]
+    readonly property var wsData: {
+        Hyprland.toplevels.values;
         Hyprland.workspaces.values;
-        const activeWsId = Hyprland.activeToplevel?.workspace?.id;
-        if ((activeWsId ?? 1) < 0)
-            return true;
-        if ((Hyprland.focusedWorkspace?.id ?? 1) < 0)
-            return true;
-        for (const w of Hyprland.workspaces.values) {
-            if ((w.id ?? 1) < 0 && w.active)
-                return true;
+        const out = [];
+        for (let i = 1; i <= root.count; i++) {
+            const tops = Hyprland.toplevels.values.filter(t => (t.workspace?.id ?? -1) === i);
+            out.push({
+                id: i,
+                occupied: tops.length > 0,
+                icon: tops.length > 0 ? WorkspaceIcons.forClientClass(tops[0].lastIpcObject?.class ?? "") : WorkspaceIcons.emptyIcon
+            });
         }
-        return false;
+        return out;
     }
 
-    // ---- special workspace button ----
-    Rectangle {
-        radius: Theme.radius
-        color: root.specialActive ? Theme.surfaceActive : "transparent"
-        width: specialLabel.implicitWidth + 12
-        height: parent.height - 6
-        anchors.verticalCenter: parent.verticalCenter
-
-        Behavior on color {
-            ColorAnimation {
-                duration: 200
-            }
-        }
-
-        Text {
-            id: specialLabel
-            anchors.centerIn: parent
-            text: WorkspaceIcons.specialIcon
-            color: Theme.fg
-            font.family: Theme.fontFamily
-            font.pixelSize: Theme.fontSize
-        }
-        MouseArea {
-            anchors.fill: parent
-            cursorShape: Qt.PointingHandCursor
-            onClicked: Hyprland.dispatch("hl.dsp.workspace.toggle_special()")
-        }
-    }
-
-    // ---- grouped workspaces ----
     Row {
-        spacing: 0
+        id: strip
+        anchors.fill: parent
+        spacing: root.btnSpacing
 
         Repeater {
-            model: root.wsModel
+            model: root.wsData
 
-            Rectangle {
-                id: btn
+            Item {
+                id: slot
                 required property var modelData
                 readonly property int wid: modelData.id
-                readonly property bool exists: modelData.exists
-                readonly property bool focused: (Hyprland.focusedWorkspace?.id ?? 1) === wid
+                readonly property bool focused: root.focusedId === wid
+                readonly property bool occupied: modelData.occupied
 
-                radius: Theme.radius
-                color: focused ? Theme.surfaceActive : "transparent"
-                opacity: !exists ? 0.4 : 1.0
-                implicitWidth: label.implicitWidth + (focused ? 32 : 8)
-                implicitHeight: 24
+                width: Math.max(0, (strip.width - root.btnSpacing * (root.count - 1)) / root.count)
+                height: strip.height
 
-                Behavior on color {
-                    ColorAnimation {
-                        duration: 300
-                    }
-                }
-                Behavior on implicitWidth {
-                    NumberAnimation {
-                        duration: 300
-                        easing.type: Easing.OutCubic
-                    }
-                }
-                Behavior on opacity {
-                    NumberAnimation {
-                        duration: 300
-                    }
-                }
-
-                Text {
-                    id: label
+                Column {
                     anchors.centerIn: parent
-                    textFormat: Text.RichText
-                    text: Settings.workspaceNumbers ? modelData.icon + WorkspaceIcons.numberBadge(btn.wid) : modelData.icon
-                    color: Theme.fg
-                    font.family: Theme.fontFamily
-                    font.pixelSize: Theme.fontSize
+                    spacing: 2
+
+                    // icon holder — grows/collapses with the peek state
+                    Item {
+                        width: slot.width
+                        height: root.showIcons ? root.iconSize + 2 : 0
+                        clip: true
+
+                        Behavior on height {
+                            NumberAnimation {
+                                duration: 250
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: slot.modelData.icon
+                            color: slot.focused ? Theme.accent : slot.occupied ? Theme.fg : Theme.muted
+                            opacity: root.showIcons ? ((slot.focused || slot.occupied) ? 1.0 : 0.35) : 0
+                            font.family: Theme.fontFamily
+                            font.pixelSize: root.iconSize
+
+                            Behavior on opacity {
+                                NumberAnimation {
+                                    duration: 200
+                                }
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        id: bar
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        width: slot.width
+                        height: root.barHeight
+                        radius: root.barHeight / 2
+                        color: slot.focused ? Theme.accent : slot.occupied ? Theme.fg : Theme.muted
+                        opacity: (slot.focused || slot.occupied) ? 1.0 : 0.35
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 200
+                            }
+                        }
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: 200
+                            }
+                        }
+                        Behavior on width {
+                            NumberAnimation {
+                                duration: 200
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+                    }
                 }
 
                 MouseArea {
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: Hyprland.dispatch(`hl.dsp.focus({workspace=${btn.wid}})`)
+                    onClicked: Hyprland.dispatch(`hl.dsp.focus({workspace=${slot.wid}})`)
                 }
             }
         }

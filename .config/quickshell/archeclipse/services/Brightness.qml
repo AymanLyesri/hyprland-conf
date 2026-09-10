@@ -12,22 +12,22 @@ QtObject {
     property bool hasBacklight: false
     property var _devices: []
     property int _primaryMax: 1
+    property bool _maxKnown: false
     property string _primaryDevice: ""
 
-    // Process for reading current brightness
-    property Process _readCurrentProc: Process {
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const val = Number(text.trim()) || 0;
-                root.screen = val / root._primaryMax;
-                root.hasBacklight = root._devices.length > 0;
-            }
-        }
-    }
-
-    function _updateReadCurrentCommand() {
-        if (root._primaryDevice) {
-            root._readCurrentProc.command = ["brightnessctl", "--device=" + root._primaryDevice, "get"];
+    // Live brightness tracking — the kernel emits inotify MODIFY events on
+    // /sys/class/backlight/*/brightness for every change (verified), so
+    // FileView delivers instant, zero-poll updates for our own writes and
+    // external ones (e.g. Hyprland-bound brightness keys) alike.
+    property FileView _brightnessView: FileView {
+        watchChanges: true
+        onFileChanged: reload()
+        onLoaded: {
+            if (!root._maxKnown || root._primaryMax <= 0)
+                return;
+            const v = Number(text().trim());
+            if (!isNaN(v))
+                root.screen = v / root._primaryMax;
         }
     }
 
@@ -39,7 +39,8 @@ QtObject {
                 root._devices = text.trim().split("\n").filter(d => d.length > 0);
                 if (root._devices.length > 0) {
                     root._primaryDevice = root._devices[0];
-                    _updateReadCurrentCommand();
+                    root.hasBacklight = true;
+                    root._brightnessView.path = "/sys/class/backlight/" + root._primaryDevice + "/brightness";
                     root._maxProc.command = ["brightnessctl", "--device=" + root._primaryDevice, "max"];
                     root._maxProc.running = true;
                 }
@@ -52,7 +53,9 @@ QtObject {
         stdout: StdioCollector {
             onStreamFinished: {
                 root._primaryMax = Number(text.trim()) || 1;
-                root._readCurrentProc.running = true;
+                root._maxKnown = true;
+                // Max may arrive after the first file load — re-parse now.
+                root._brightnessView.reload();
             }
         }
     }
@@ -80,20 +83,8 @@ QtObject {
         root._setBrightnessProc.running = true;
     }
 
-    // Poll brightness every 2 seconds (like AGS)
-    property Timer _pollTimer: Timer {
-        interval: 2000
-        running: true
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: {
-            if (root._devices.length > 0) {
-                root._readCurrentProc.running = true;
-            }
-        }
-    }
-
-    // Initialize - run detection on startup
+    // Initialize - run detection on startup (live file events take over
+    // from there — no polling anywhere).
     Component.onCompleted: {
         root._detectProc.running = true;
     }

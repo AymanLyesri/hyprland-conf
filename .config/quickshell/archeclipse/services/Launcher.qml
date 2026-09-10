@@ -265,6 +265,65 @@ QtObject {
         return [mkResult("Light Theme", "\u{F1042}", "Switch to light theme", () => Quickshell.execDetached(["bash", "-c", `${Quickshell.env("HOME")}/.config/hypr/theme/scripts/system-theme.sh switch light`])), mkResult("Dark Theme", "\u{F1046}", "Switch to dark theme", () => Quickshell.execDetached(["bash", "-c", `${Quickshell.env("HOME")}/.config/hypr/theme/scripts/system-theme.sh switch dark`])), mkResult("System Sleep", "\u{F1046}", "Suspend system", () => Quickshell.execDetached(["bash", "-c", `${Quickshell.env("HOME")}/.config/hypr/scripts/hyprlock.sh suspend`])), mkResult("System Restart", "\u{F1781}", "Reboot system", () => Quickshell.execDetached(["reboot"])), mkResult("System Shutdown", "\u{F1741}", "Power off system", () => Quickshell.execDetached(["shutdown", "now"]))];
     }
 
+    // ---- ">" command palette (quickapps / recent / commands as results) ----
+    function paletteHelp() {
+        return [mkHeader("Commands"), mkResult(">quickapps", ">", "favorite apps - e.g. >quickapps term", () => runQuery(">quickapps")), mkResult(">recent", ">", "recently launched apps - e.g. >recent fire", () => runQuery(">recent")), mkResult(">commands", ">", "system commands - e.g. >commands shut", () => runQuery(">commands"))];
+    }
+    function filterRows(rows, needle) {
+        const q = (needle || "").toLowerCase().trim();
+        if (!q)
+            return rows;
+        return rows.filter(r => `${r.name || ""} ${r.description || ""}`.toLowerCase().includes(q));
+    }
+    function paletteResults(t) {
+        // t starts with ">": strip it, split "<cmd> <filter>"
+        const body = t.slice(1).replace(/^\s+/, "");
+        const sp = body.search(/\s/);
+        const cmd = (sp < 0 ? body : body.slice(0, sp)).toLowerCase();
+        const arg = sp < 0 ? "" : body.slice(sp + 1);
+        // bare ">" / ">help" -> list available palette commands
+        if (!cmd || cmd === "help" || cmd === "h" || cmd === "?")
+            return paletteHelp();
+        if (cmd === "quickapps" || cmd === "qa" || cmd === "fav" || cmd === "favorites") {
+            const src = quickAppOrder.length > 0 ? quickAppOrder : quickAppsList();
+            const wrapped = src.map(a => mkResult(a.name, a.glyph || a.icon, a.description, () => {
+                touchQuickApp(a.name);
+                if (a.launch)
+                    a.launch();
+            }));
+            const out = filterRows(wrapped, arg);
+            if (out.length === 0)
+                return [mkResult("No quick app match", ">", `Nothing matching "${arg}"`, null)];
+            return [mkHeader("Quick Apps"), ...out.slice(0, maxItems)];
+        }
+        if (cmd === "recent" || cmd === "recents" || cmd === "history") {
+            const out = filterRows(recentApps(), arg);
+            if (out.length === 0)
+                return [mkResult("Empty History", ">", "Launch an app to build history", null)];
+            return [mkHeader("Recent Apps"), ...out.slice(0, maxItems)];
+        }
+        if (cmd === "commands" || cmd === "cmd" || cmd === "cmds" || cmd === "actions") {
+            const out = filterRows(customCommandsList(), arg);
+            if (out.length === 0)
+                return [mkResult("No command match", ">", `Nothing matching "${arg}"`, null)];
+            return [mkHeader("Commands"), ...out.slice(0, maxItems)];
+        }
+        // unknown ">foo" -> match against palette names, else hint
+        const all = paletteHelp();
+        const hit = all.filter(r => !r.isHeader && `${r.name}`.toLowerCase().includes(cmd));
+        if (hit.length > 0)
+            return [mkHeader("Commands"), ...hit];
+        return [mkResult(`Unknown command ">${cmd}"`, "?", "Try >quickapps - >recent - >commands", null)];
+    }
+    function setResults(rows) {
+        results = rows;
+        // reset selection to first non-header row (skip headers like AGS)
+        let i = 0;
+        while (i < rows.length && rows[i] && rows[i].isHeader)
+            i++;
+        selectedIndex = Math.min(i, Math.max(0, rows.length - 1));
+    }
+
     // ---- unit conversion (full table — mirrors AGS utils/convert.ts) ----
     function tryConversion(text) {
         const m = text.match(/^(?:convert\s+)?(\d+(?:\.\d+)?)\s*([a-zA-Z°/%]+(?:\s+[a-zA-Z]+)?)(?:\s+(?:to|in|as|=>)\s+([a-zA-Z°/%]+(?:\s+[a-zA-Z]+)?))?$/i);
@@ -585,38 +644,37 @@ QtObject {
         const t = String(text || "").replace(/^\s+/, "");
 
         if (!t || t.trim() === "") {
-            results = [];
+            setResults([]);
+            return;
+        }
+
+        // ">" command palette (quickapps / recent / commands)
+        if (t.charAt(0) === ">") {
+            setResults(paletteResults(t));
             return;
         }
 
         // prefixed modes (in AGS dispatch order)
         if (t.startsWith("cb ")) {
-            results = clipboardResults(t.slice(3));
+            setResults(clipboardResults(t.slice(3)));
             return;
         }
         if (t.startsWith("note ")) {
-            results = noteResults(t.slice(5));
+            setResults(noteResults(t.slice(5)));
             return;
         }
         if (t.startsWith("apps")) {
-            results = appResults(t.slice(4).trim() || "");
+            setResults(appResults(t.slice(4).trim() || ""));
             return;
         }
 
         const conv = tryConversion(t);
         if (conv) {
-            results = conv;
+            setResults(conv);
             return;
         }
 
         const parts = t.trim().split(/\s+/);
-
-        // custom command filter: "light >"
-        if (parts[0].includes(">")) {
-            const needle = t.replace(">", "").trim().toLowerCase();
-            results = customCommandsList().filter(c => c.name.toLowerCase().includes(needle));
-            return;
-        }
 
         // translate "hello > es"
         const trMatch = t.match(/^(.+?)\s*>\s*(\w{2})$/);
@@ -630,19 +688,19 @@ QtObject {
 
         // emoji "emoji <query>"
         if (t.startsWith("emoji ")) {
-            results = emojiResults(t.slice(6));
+            setResults(emojiResults(t.slice(6)));
             return;
         }
 
         // math / url
         const arith = tryArithmetic(t);
         if (arith) {
-            results = arith;
+            setResults(arith);
             return;
         }
         const url = tryUrl(t);
         if (url) {
-            results = url;
+            setResults(url);
             return;
         }
 
@@ -653,8 +711,6 @@ QtObject {
         if (r.length === 0 && rest.length === 0) {
             r = [mkResult(`Try ${t} in terminal`, "\u{F15BB}", "Run as shell command", () => Quickshell.execDetached(["kitty", "-e", "bash", "-c", t]))];
         }
-        results = r;
-        if (selectedIndex >= results.length)
-            selectedIndex = 0;
+        setResults(r);
     }
 }

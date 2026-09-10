@@ -12,7 +12,7 @@ import qs.widgets.shared
 // popover (Upload/Download, Packets + today's Data).
 Item {
     id: root
-    height: 24
+    height: Theme.barContentHeight
 
     property string timestamp: ""
     property string uploadSpeed: "0"      // b[0] KB/s (speed_tx/-1024)

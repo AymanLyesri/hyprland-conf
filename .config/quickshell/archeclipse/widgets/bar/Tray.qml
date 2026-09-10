@@ -22,7 +22,7 @@ Row {
             id: entry
             required property var modelData
             width: 20
-            height: 20
+            height: Theme.barContentHeight
 
             IconImage {
                 anchors.centerIn: parent
@@ -61,7 +61,7 @@ Row {
         id: overflow
         visible: SystemTray.items.values.length > root.maxVisible
         width: 20
-        height: 20
+        height: Theme.barContentHeight
 
         IconImage {
             anchors.centerIn: parent

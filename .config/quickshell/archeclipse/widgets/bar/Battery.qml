@@ -12,7 +12,7 @@ import qs.theme
 Rectangle {
     id: root
     width: visible ? content.width + 8 : 0
-    height: 22
+    height: Theme.barContentHeight
     radius: Theme.radius
     color: hover.hovered || batteryPop.visible ? Theme.surfaceHover : "transparent"
 

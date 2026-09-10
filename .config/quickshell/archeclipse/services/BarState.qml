@@ -117,8 +117,6 @@ Singleton {
 
         // Setup volume watcher (pipewire sink)
         setupVolumeWatcher();
-        // Setup brightness watcher
-        setupBrightnessWatcher();
         // Setup MPRIS player watcher
         setupPlayerWatcher();
         // Setup network watcher
@@ -278,37 +276,28 @@ Singleton {
         });
     }
 
-    // ===== Brightness watcher =====
-    function setupBrightnessWatcher() {
-        // Use a timer to poll brightness directly via brightnessctl (same as Brightness service)
-        const timer = Qt.createQmlObject('import QtQuick; Timer { interval: 2000; running: true; repeat: true }', root);
-        timer.onTriggered.connect(function () {
-            const proc = Qt.createQmlObject('import Quickshell.Io; Process { command: ["brightnessctl", "-m", "info"] }', root);
-            proc.running = true;
-            proc.stdout = Qt.createQmlObject('import Quickshell.Io; StdioCollector {}', root);
-            proc.stdout.onStreamFinished.connect(function () {
-                const text = proc.stdout.text;
-                const lines = text.trim().split("\n");
-                if (lines.length > 0) {
-                    // brightnessctl -m: device,class,current,PERCENT,max
-                    const fields = lines[0].split(",");
-                    if (fields.length >= 5) {
-                        const current = parseInt(fields[2]) || 0;
-                        const max = parseInt(fields[4]) || 1;
-                        const val = current / max;
-                        if (root._brightnessFirstRender) {
-                            root._brightnessFirstRender = false;
-                            root._lastBrightness = val;
-                            return;
-                        }
-                        if (val !== root._lastBrightness) {
-                            root._lastBrightness = val;
-                            root.activate("brightness", 2000);
-                        }
-                    }
-                }
-            });
-        });
+    // ===== Brightness watcher (event-driven, like volume) =====
+    // The Brightness service watches the kernel backlight file with inotify,
+    // so any change — our own sliders or external brightness keys — updates
+    // Brightness.screen instantly with zero polling. Pulse on change, exactly
+    // like the Pipewire volumesChanged hookup below.
+    property Connections _brightnessConn: Connections {
+        target: Brightness
+        function onScreenChanged() {
+            const val = Brightness.screen;
+            // Skip the initial notification on mount (AGS isFirst guard)
+            if (root._brightnessFirstRender) {
+                root._brightnessFirstRender = false;
+                root._lastBrightness = val;
+                return;
+            }
+            // Ignore spurious notifications where the value didn't change
+            if (val === root._lastBrightness)
+                return;
+            root._lastBrightness = val;
+
+            root.activate("brightness", 2000);
+        }
     }
 
     // ===== MPRIS player watcher =====
