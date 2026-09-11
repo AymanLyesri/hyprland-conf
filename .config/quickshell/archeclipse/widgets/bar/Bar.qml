@@ -522,6 +522,8 @@ PanelWindow {
                             item.monitorName = root.monitorName;
                         if (item && item["screenHeight"] !== undefined)
                             item.screenHeight = root.screenHeight;
+                        if (item && item["screen"] !== undefined)
+                            item.screen = root.screen;
                         if (stack.displayed === "left")
                             pill.widthOverride = -1;
                         var mw = item ? Math.max(item.width || 0, item.implicitWidth || 0) : 0;

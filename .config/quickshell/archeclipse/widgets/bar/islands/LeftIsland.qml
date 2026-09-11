@@ -34,6 +34,9 @@ Column {
 
     // Island owner passes the bar's monitor; body falls back to focused.
     property string monitorName: ""
+    // Monitor screen object (ShellScreen) passed by the bar owner — handed
+    // to the booru viewer for its full-screen float panel.
+    property var screen: null
 
     // Full monitor height, passed by the bar owner. Side islands stretch
     // the whole vertical screen like the old edge panels did (the pill
@@ -134,6 +137,19 @@ Column {
     // Map a tab name (matching the launcher's quick-app selectors) to a widget.
     function selectTab(name) {
         root.selectedWidget = name;
+    }
+
+    // Direct access to the booru viewer instance (null until primed).
+    readonly property var booruView: booruLoader.item
+
+    // Build a tab's Loader without switching to it or opening the island
+    // (primes on demand, e.g. floating a dialog from another widget).
+    function primeTab(name) {
+        if (root._visited[name] !== true) {
+            var v = Object.assign({}, root._visited);
+            v[name] = true;
+            root._visited = v;
+        }
     }
 
     // Hover tracking lives here (stable container — content never swaps
@@ -424,7 +440,11 @@ Column {
                         onLoaded: {
                             // Back-reference so the booru viewer can route
                             // its popup-unhover hide requests here (the
-                            // popup is a separate window surface).
+                            // popup is a separate window surface). The
+                            // viewer binds hostScreen reactively off
+                            // hostPanel.screen — no one-shot assign here
+                            // (nested onLoaded can run before the bar sets
+                            // the island's screen).
                             if (item)
                                 item.hostPanel = root;
                         }

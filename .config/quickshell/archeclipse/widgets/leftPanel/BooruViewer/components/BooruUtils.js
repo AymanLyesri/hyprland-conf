@@ -38,6 +38,10 @@ function dialogSource(booruPath, downloadedIds, fullIds, img) {
     // The originals path below is legacy compat only.
     if (img && fullIds[String(img.id)])
         return "file://" + getIconPath(booruPath, img, "images")
+    // Local files (e.g. custom waifu uploads) play directly — nothing
+    // to fetch, so hand the path to Qt instead of spinning forever.
+    if (img && img.url && !/^https?:\/\//.test(img.url))
+        return img.url.indexOf("file://") === 0 ? img.url : "file://" + img.url
     return ""
 }
 

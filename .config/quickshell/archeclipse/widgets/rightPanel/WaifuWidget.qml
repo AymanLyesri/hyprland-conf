@@ -253,6 +253,27 @@ Item {
         pick.running = true;
     }
 
+    // Open the current waifu as a floating Booru dialog window (same
+    // card as the BooruViewer detail, detached). Resolves the viewer on
+    // this monitor's left island, priming its tab if needed — the island
+    // itself never opens. Falls back to the external viewer when the
+    // viewer instance is unreachable.
+    function openAsDialog() {
+        const wd = root.wd;
+        if (!wd || !wd.id)
+            return;
+        const isl = Registry.get(`left-island-${Registry.monitorName}`) || Registry.get("left-island");
+        if (isl && typeof isl.primeTab === "function")
+            isl.primeTab("BooruViewer");
+        const v = isl ? isl.booruView : null;
+        if (v && typeof v.openDialog === "function" && typeof v.detachDialog === "function") {
+            v.openDialog(wd, null);
+            v.detachDialog();
+        } else {
+            BooruActions.openInViewer(wd);
+        }
+    }
+
     // ---- placeholder: no image selected ----
     Item {
         anchors.fill: parent
@@ -468,13 +489,13 @@ Item {
                     height: 28
                     spacing: 8
 
-                    // Open in viewer (AGS open button: swayimg/mpv via openInViewer)
+                    // Open as floating Booru dialog window
                     AppButton {
                         text: ""
                         Layout.fillWidth: true
                         Layout.preferredHeight: 28
-                        tooltipText: "Open image in viewer"
-                        onClicked: BooruActions.openInViewer(root.wd)
+                        tooltipText: "Open as dialog"
+                        onClicked: root.openAsDialog()
                     }
 
                     // Open in browser

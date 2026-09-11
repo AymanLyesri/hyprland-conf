@@ -36,7 +36,7 @@ hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 --- kill active window
 hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.window.kill())
 --- float for active window
-hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.float({ action = "toggle" }))
+hl.bind(mainMod .. " + SPACE", hl.dsp.window.float({ action = "toggle" }))
 --- pin active window
 hl.bind(mainMod .. " + CTRL + Space", hl.dsp.window.pin())
 

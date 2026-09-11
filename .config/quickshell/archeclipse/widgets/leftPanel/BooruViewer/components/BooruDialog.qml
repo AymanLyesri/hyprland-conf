@@ -6,18 +6,25 @@ import qs.widgets.shared
 import qs.services
 import qs.widgets.media
 
-// Floating detail card shown in a PopupWindow docked to the island edge.
-// The popup sizes us (width/height); we report our natural height back so
-// the viewer can center/clamp on the anchor card. Entrance is slide/fade
-// on the inner wrapper only — never layout geometry.
-// viewer: entry root (dialogImage, download/bookmark/pin actions...).
+// Detail card: the image is the parent — it fills the card and every
+// info + action lives in overlays (WaifuWidget parity). A persistent top
+// bar (drag grip, type badge, title, close) and a hover-reveal bottom
+// sheet (meta, tags, all actions, resize cell). The entrance is
+// slide/fade on the inner wrapper only — never layout geometry.
+// viewer: entry root (dialogImage, download/bookmark/pin actions,
+// detach + free-geometry for the float window).
+//
+// The viewer hosts us twice: docked in the island-edge PopupWindow, and
+// detached in a normal FloatingWindow (own window, draggable /
+// aspect-locked resizable; float behavior via a Hyprland rule). No
+// dock-back: close is sufficient.
 //
 // Design refs:
 // - NotificationItem: surface card + radius, top RowLayout (icon, bold
 //   title fillWidth, dim meta, 24px outlined icon buttons).
-// - MangaViewer cards: inner Column margins 10, spacing 6, Theme fonts.
-// - WaifuWidget: RowLayout action sections (fillWidth, 28px, tooltips,
-//   toggle/checked), pill containers on Theme.bg.
+// - MangaViewer cards: Theme fonts, radii, borders.
+// - WaifuWidget: media-fill container, hover bottom sheet (slide + fade),
+//   peek handle, pill sections on Theme.bg.
 Item {
     id: dialogRoot
     property var viewer
@@ -37,9 +44,18 @@ Item {
                 viewer.popupHovered = hovered;
         }
     }
-    // Natural content height (width is fixed by the viewer, so wrapping
-    // here is stable and never feeds back into the layout).
-    implicitHeight: contentCol.implicitHeight + 20
+    // Card height in the docked popup follows the image ratio, clamped so
+    // panoramas/portraits stay sane. Reported back so the viewer can
+    // center/clamp on the anchor card. (In the float window the viewer
+    // sets an explicit aspect-locked size instead.)
+    readonly property real cardH: {
+        if (!dlg || !dlg.width || !dlg.height)
+            return 260;
+        const w = Math.max(1, dialogRoot.width || 220);
+        const h = w * dlg.height / dlg.width;
+        return Math.min(Math.max(h, 200), 560);
+    }
+    implicitHeight: dialogRoot.cardH
     onImplicitHeightChanged: {
         if (viewer && implicitHeight > 0)
             viewer.adoptDialogHeight(implicitHeight);
@@ -60,17 +76,14 @@ Item {
     readonly property bool dlgLoading: viewer ? (viewer.progressStatus === "loading" || (dlg && !dlgIsVideo && viewer.dialogSource(dlg) === "")) : false
     readonly property bool dlgVideoPlayable: dlg ? (dlgIsVideo && dlgDownloaded && !dlgIsZip) : false
     readonly property bool dlgVideoPlaceholder: dlg ? (dlgIsVideo && !dlgDownloaded) : false
-    // Aspect-aware media height (MangaViewer parity): follow the image
-    // ratio, clamped so panoramas/portraits stay sane in the card.
-    readonly property real dlgMediaH: {
-        if (!dlg || !dlg.width || !dlg.height)
-            return 220;
-        const w = Math.max(1, contentCol.width || 220);
-        const h = w * dlg.height / dlg.width;
-        return Math.min(Math.max(h, 160), 390);
-    }
     readonly property string dlgTypeIcon: dlgIsZip ? "" : (dlgIsVideo ? "" : "")
     readonly property int dlgVisibleTagCount: showAllTags ? dlgTags.length : Math.min(dlgTags.length, 12)
+    // Bottom sheet reveal (WaifuWidget parity): hovering anywhere on the
+    // card (media, top bar, or the sheet itself — all children of slider)
+    // slides the sheet up. The handler must live on the container, not on
+    // the media: a handler inside dialogMedia goes false the moment the
+    // cursor moves onto the sibling sheet, hiding it under the cursor.
+    readonly property bool sheetRevealed: sliderHover.hovered
 
     Item {
         id: slider
@@ -79,9 +92,10 @@ Item {
         x: (1 - (viewer ? viewer.detailSlide : 1)) * -24
         opacity: viewer ? viewer.detailSlide : 1
 
-        // Card surface: floats over grid content, so it carries its own
-        // backdrop with a subtle outline (NotificationItem parity:
-        // Theme.surface + Theme.radius + Theme.border).
+        // Card surface: floats over grid content (or the desktop, once
+        // floated), so it carries its own backdrop with a subtle outline
+        // (NotificationItem parity: Theme.surface + Theme.radius +
+        // Theme.border).
         Rectangle {
             anchors.fill: parent
             color: Theme.surface
@@ -90,323 +104,416 @@ Item {
             border.width: 1
         }
 
-        SmoothFlickable {
-            id: contentScroll
+        // Card-wide hover (sheet reveal + island keep-alive input); the
+        // sheet is a sibling of the media, so this lives on the container.
+        HoverHandler {
+            id: sliderHover
+        }
+
+        // ---- media fills the card (AppImage crops to fill) ----
+        Rectangle {
+            id: dialogMedia
             anchors.fill: parent
-            anchors.margins: 10
-            contentWidth: width
-            contentHeight: contentCol.implicitHeight
+            radius: Theme.radius
+            color: Theme.bg
+            border.color: Theme.border
+            border.width: 1
             clip: true
-            boundsBehavior: Flickable.StopAtBounds
 
+            // video downloaded → playable via QtMultimedia (AGS Video.tsx)
+            MediaVideo {
+                anchors.fill: parent
+                anchors.margins: 4
+                source: dlg ? viewer.imageFileUrl(dlg).replace(/^file:\/\//, "") : ""
+                autoplay: true
+                loop: true
+                fill: true
+                visible: dialogRoot.dlgVideoPlayable
+            }
+            // video not downloaded → placeholder
             Column {
-                id: contentCol
-                width: parent.width
-                spacing: 8
-                visible: viewer && viewer.dialogImage !== null
-
-                // Header: type badge + title block + icon actions
-                // (NotificationItem top-bar parity).
-                RowLayout {
-                    id: dialogHeader
-                    width: parent.width
-                    spacing: 6
-
-                    Rectangle {
-                        width: 26
-                        height: 26
-                        radius: 6
-                        color: Theme.surfaceActive
-                        Text {
-                            anchors.centerIn: parent
-                            text: dialogRoot.dlgTypeIcon
-                            font.pixelSize: 12
-                            font.family: Theme.fontFamily
-                            color: Theme.accent
-                        }
-                    }
-
-                    Column {
-                        Layout.fillWidth: true
-                        spacing: 0
-                        Text {
-                            text: dlg ? `#${dlg.id}` : ""
-                            color: Theme.fg
-                            font.pixelSize: Theme.fontSize
-                            font.bold: true
-                            font.family: Theme.fontFamily
-                            elide: Text.ElideRight
-                            width: parent.width
-                        }
-                        Text {
-                            text: dlg ? `${dialogRoot.dlgApiName} • ${dialogRoot.dlgDims}` : ""
-                            color: Theme.fgDim
-                            font.pixelSize: Theme.fontSize - 2
-                            font.family: Theme.fontFamily
-                            elide: Text.ElideRight
-                            width: parent.width
-                        }
-                    }
-
-                    AppButton {
-                        icon: ""
-                        width: 26
-                        height: 26
-                        pixelSize: 11
-                        cornerRadius: 6
-                        outlined: true
-                        tooltipText: "Open in browser"
-                        onClicked: {
-                            if (viewer && dlg)
-                                viewer.openInBrowser(dlg);
-                        }
-                    }
-                    AppButton {
-                        icon: ""
-                        width: 26
-                        height: 26
-                        pixelSize: 11
-                        cornerRadius: 6
-                        outlined: true
-                        hoverFg: Theme.danger
-                        tooltipText: "Close (Esc)"
-                        onClicked: {
-                            if (viewer)
-                                viewer.requestClose();
-                        }
-                    }
+                anchors.centerIn: parent
+                spacing: 6
+                visible: dialogRoot.dlgVideoPlaceholder || dialogRoot.dlgIsZip
+                Text {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: dialogRoot.dlgIsZip ? "" : ""
+                    font.pixelSize: 32
+                    font.family: Theme.fontFamily
+                    color: Theme.fgDim
                 }
+                Text {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: dialogRoot.dlgIsZip ? "Cannot be played." : "Video — downloading…"
+                    color: Theme.fgDim
+                    font.pixelSize: Theme.fontSize - 1
+                    font.family: Theme.fontFamily
+                }
+            }
+            AppImage {
+                anchors.fill: parent
+                source: dlg ? viewer.dialogSource(dlg) : ""
+                sourceWidth: parent.width
+                visible: !!dlg
+                badges: {
+                    const b = [];
+                    if (dialogRoot.dlgDownloaded)
+                        b.push("\uf019");
+                    if (dialogRoot.dlgBookmarked)
+                        b.push("\uf02e");
+                    if (dialogRoot.dlgPinned)
+                        b.push("\uf08d");
+                    if (dialogRoot.dlgIsWaifu)
+                        b.push("\uf004");
+                    return b;
+                }
+            }
+            AppProgress {
+                anchors.centerIn: parent
+                width: 20
+                height: 20
+                status: dialogRoot.dlgLoading ? "loading" : "idle"
+                variant: "spinner"
+            }
+        } // dialogMedia
 
-                // Media (image / video / zip-placeholder) with unified
-                // AppImage top-right badges and a loading spinner.
-                Rectangle {
-                    id: dialogMedia
-                    width: parent.width
-                    height: dialogRoot.dlgMediaH
-                    radius: 8
-                    color: Theme.bg
-                    border.color: Theme.border
-                    border.width: 1
-                    clip: true
+        // ---- top info bar: always visible (grip + badge + title + close) ----
+        Rectangle {
+            id: topBar
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.margins: 8
+            height: 40
+            radius: Theme.radius
+            color: Theme.surface
+            opacity: 0.94
 
-                    // video downloaded → playable via QtMultimedia (AGS Video.tsx)
-                    MediaVideo {
-                        anchors.fill: parent
-                        anchors.margins: 4
-                        source: dlg ? viewer.imageFileUrl(dlg).replace(/^file:\/\//, "") : ""
-                        autoplay: true
-                        loop: true
-                        fill: true
-                        visible: dialogRoot.dlgVideoPlayable
-                    }
-                    // video not downloaded → placeholder
-                    Column {
+            RowLayout {
+                anchors.fill: parent
+                anchors.margins: 4
+                spacing: 6
+
+                // Drag grip: floats the card into its own window on first
+                // move, then moves it anywhere on screen (local deltas —
+                // no compositor handshake, no gesture race).
+                // Pure-QML dots (no font dependency).
+                Item {
+                    id: dragGrip
+                    width: 14
+                    height: 26
+                    Layout.alignment: Qt.AlignVCenter
+                    Row {
                         anchors.centerIn: parent
-                        spacing: 6
-                        visible: dialogRoot.dlgVideoPlaceholder || dialogRoot.dlgIsZip
-                        Text {
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            text: dialogRoot.dlgIsZip ? "" : ""
-                            font.pixelSize: 32
-                            font.family: Theme.fontFamily
-                            color: Theme.fgDim
-                        }
-                        Text {
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            text: dialogRoot.dlgIsZip ? "Cannot be played." : "Video — downloading…"
-                            color: Theme.fgDim
-                            font.pixelSize: Theme.fontSize - 1
-                            font.family: Theme.fontFamily
-                        }
-                    }
-                    AppImage {
-                        anchors.fill: parent
-                        anchors.margins: 2
-                        source: dlg ? viewer.dialogSource(dlg) : ""
-                        sourceWidth: parent.width
-                        visible: !!dlg
-                        badges: {
-                            const b = [];
-                            if (dialogRoot.dlgDownloaded)
-                                b.push("\uf019");
-                            if (dialogRoot.dlgBookmarked)
-                                b.push("\uf02e");
-                            if (dialogRoot.dlgPinned)
-                                b.push("\uf08d");
-                            if (dialogRoot.dlgIsWaifu)
-                                b.push("\uf004");
-                            return b;
-                        }
-                    }
-                    AppProgress {
-                        anchors.centerIn: parent
-                        width: 20
-                        height: 20
-                        status: dialogRoot.dlgLoading ? "loading" : "idle"
-                        variant: "spinner"
-                    }
-                    // zoom-to-full on click
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        hoverEnabled: true
-                        AppTooltip {
-                            visible: parent.containsMouse
-                            text: "Open post in browser"
-                        }
-                        onClicked: {
-                            if (viewer && dlg)
-                                viewer.openInBrowser(dlg);
-                        }
-                    }
-                }
-
-                // Meta strip: dims • ext • status (WallpaperPanel pill parity).
-                Rectangle {
-                    width: parent.width
-                    implicitHeight: metaRow.implicitHeight + 12
-                    radius: 6
-                    color: Theme.bg
-                    RowLayout {
-                        id: metaRow
-                        anchors.fill: parent
-                        anchors.margins: 6
-                        spacing: 6
-                        Text {
-                            text: dialogRoot.dlgDims
-                            color: Theme.fg
-                            font.pixelSize: Theme.fontSize - 2
-                            font.family: Theme.fontFamily
-                        }
-                        Text {
-                            text: "•"
-                            color: Theme.fgDim
-                            font.pixelSize: Theme.fontSize - 2
-                        }
-                        Text {
-                            text: dialogRoot.dlgExt
-                            color: Theme.accent
-                            font.pixelSize: Theme.fontSize - 2
-                            font.bold: true
-                            font.family: Theme.fontFamily
-                        }
-                        Item {
-                            Layout.fillWidth: true
-                            height: 1
-                        }
-                        Text {
-                            text: dialogRoot.dlgDownloaded ? "● Saved" : (dialogRoot.dlgLoading ? "○ Downloading…" : "○ Preview")
-                            color: dialogRoot.dlgDownloaded ? "lightgreen" : Theme.fgDim
-                            font.pixelSize: Theme.fontSize - 2
-                            font.family: Theme.fontFamily
-                        }
-                    }
-                }
-
-                // Tags section (BooruSettingsPanel chip parity + expand).
-                Column {
-                    width: parent.width
-                    spacing: 4
-                    RowLayout {
-                        width: parent.width
-                        spacing: 6
-                        Text {
-                            text: `TAGS (${dialogRoot.dlgTags.length})`
-                            color: Theme.fgDim
-                            font.pixelSize: Theme.fontSize - 2
-                            font.bold: true
-                            font.family: Theme.fontFamily
-                            Layout.fillWidth: true
-                            elide: Text.ElideRight
-                        }
-                        AppButton {
-                            icon: dialogRoot.showAllTags ? "" : ""
-                            width: 24
-                            height: 22
-                            pixelSize: 10
-                            cornerRadius: 4
-                            outlined: true
-                            tooltipText: dialogRoot.showAllTags ? "Show fewer" : "Show all tags"
-                            visible: dialogRoot.dlgTags.length > 12
-                            onClicked: dialogRoot.showAllTags = !dialogRoot.showAllTags
-                        }
-                    }
-                    Rectangle {
-                        width: parent.width
-                        implicitHeight: tagFlow.implicitHeight + 12
-                        radius: 6
-                        color: Theme.bg
-                        Flow {
-                            id: tagFlow
-                            anchors.fill: parent
-                            anchors.margins: 6
-                            spacing: 4
-                            Repeater {
-                                model: dlg ? dialogRoot.dlgTags.slice(0, dialogRoot.dlgVisibleTagCount) : []
-                                delegate: Rectangle {
-                                    width: tagDetail.implicitWidth + 14
-                                    height: 22
-                                    radius: 11
-                                    color: tagDetailMa.containsMouse ? Theme.surfaceActive : Theme.surface
-                                    border.color: Theme.border
-                                    border.width: 1
-                                    Text {
-                                        id: tagDetail
-                                        anchors.centerIn: parent
-                                        text: modelData
+                        spacing: 2
+                        Repeater {
+                            model: 2
+                            Column {
+                                spacing: 2
+                                Repeater {
+                                    model: 3
+                                    Rectangle {
+                                        width: 3
+                                        height: 3
+                                        radius: 1.5
                                         color: Theme.fgDim
-                                        font.pixelSize: Theme.fontSize - 2
-                                        font.family: Theme.fontFamily
-                                        elide: Text.ElideRight
-                                    }
-                                    AppTooltip {
-                                        visible: tagDetailMa.containsMouse
-                                        text: "Click: copy • Hold: add to search"
-                                    }
-                                    MouseArea {
-                                        id: tagDetailMa
-                                        anchors.fill: parent
-                                        hoverEnabled: true
-                                        cursorShape: Qt.PointingHandCursor
-                                        onClicked: {
-                                            if (viewer)
-                                                viewer.copyTag(modelData);
-                                        }
-                                        onPressAndHold: {
-                                            if (viewer)
-                                                viewer.openTags(modelData);
-                                        }
                                     }
                                 }
                             }
                         }
-                        Text {
-                            anchors.centerIn: parent
-                            text: "No tags"
-                            color: Theme.fgDim
-                            font.pixelSize: Theme.fontSize - 2
-                            font.family: Theme.fontFamily
-                            font.italic: true
-                            visible: dialogRoot.dlgTags.length === 0
-                        }
                     }
-                    Text {
-                        width: parent.width
-                        text: `+${dialogRoot.dlgTags.length - dialogRoot.dlgVisibleTagCount} more — click the expand icon`
-                        color: Theme.fgDim
-                        font.pixelSize: Theme.fontSize - 3
-                        font.family: Theme.fontFamily
-                        elide: Text.ElideRight
-                        visible: !dialogRoot.showAllTags && dialogRoot.dlgTags.length > dialogRoot.dlgVisibleTagCount
+                    MouseArea {
+                        id: dragMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.SizeAllCursor
+                        property bool moveStarted: false
+                        AppTooltip {
+                            visible: parent.containsMouse
+                            text: "Drag to float as window"
+                        }
+                        // Detach on press so the window exists, then
+                        // start the system move on first motion: a
+                        // press-time request can predate the new
+                        // window's mapping and be ignored.
+                        onPressed: {
+                            if (viewer)
+                                viewer.detachDialog();
+                            dragMouse.moveStarted = false;
+                        }
+                        onPositionChanged: {
+                            if (!dragMouse.pressed || dragMouse.moveStarted)
+                                return;
+                            dragMouse.moveStarted = true;
+                            if (viewer)
+                                viewer.moveFloat();
+                        }
+                        onReleased: dragMouse.moveStarted = false
+                        onCanceled: dragMouse.moveStarted = false
                     }
                 }
 
-                // Actions (WaifuWidget section parity: 2-col grids of
-                // fillWidth buttons + one subtle full-width dismiss).
+                Rectangle {
+                    width: 26
+                    height: 26
+                    radius: 6
+                    color: Theme.surfaceActive
+                    Layout.alignment: Qt.AlignVCenter
+                    Text {
+                        anchors.centerIn: parent
+                        text: dialogRoot.dlgTypeIcon
+                        font.pixelSize: 12
+                        font.family: Theme.fontFamily
+                        color: Theme.accent
+                    }
+                }
+
                 Column {
-                    id: dialogBottom
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignVCenter
+                    spacing: 0
+                    Text {
+                        text: dlg ? `#${dlg.id}` : ""
+                        color: Theme.fg
+                        font.pixelSize: Theme.fontSize
+                        font.bold: true
+                        font.family: Theme.fontFamily
+                        elide: Text.ElideRight
+                        width: parent.width
+                    }
+                    Text {
+                        text: dlg ? `${dialogRoot.dlgApiName} • ${dialogRoot.dlgDims}` : ""
+                        color: Theme.fgDim
+                        font.pixelSize: Theme.fontSize - 2
+                        font.family: Theme.fontFamily
+                        elide: Text.ElideRight
+                        width: parent.width
+                    }
+                }
+
+                AppButton {
+                    icon: ""
+                    width: 26
+                    height: 26
+                    pixelSize: 11
+                    cornerRadius: 6
+                    outlined: true
+                    hoverFg: Theme.danger
+                    tooltipText: "Close (Esc)"
+                    Layout.alignment: Qt.AlignVCenter
+                    onClicked: {
+                        if (viewer)
+                            viewer.requestClose();
+                    }
+                }
+            }
+        } // topBar
+
+        // Peek handle — affordance hint shown while the sheet is hidden.
+        Rectangle {
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 8
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: 40
+            height: 5
+            radius: 3
+            color: Theme.fg
+            opacity: dialogRoot.sheetRevealed ? 0 : 0.65
+            visible: opacity > 0
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 180
+                }
+            }
+        }
+
+        // ---- bottom sheet: meta + tags + all actions, slides up on hover ----
+        Rectangle {
+            id: bottomSheet
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.leftMargin: 8
+            anchors.rightMargin: 8
+            // Hidden state parks the sheet below the card edge; the clip
+            // on dialogRoot keeps it out of sight during the slide.
+            anchors.bottomMargin: dialogRoot.sheetRevealed ? 8 : -(height + 16)
+            Behavior on anchors.bottomMargin {
+                NumberAnimation {
+                    duration: 280
+                    easing.type: Easing.OutCubic
+                }
+            }
+            // Cap at the free space below the top bar; overflow scrolls.
+            height: Math.min(sheetContent.height + 16, Math.max(120, dialogRoot.height - topBar.height - 32))
+            radius: Theme.radius
+            color: Theme.surfaceHover
+            border.color: Theme.border
+            border.width: 1
+            opacity: dialogRoot.sheetRevealed ? 1 : 0
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 200
+                }
+            }
+            // Ignore pointer input while hidden so media hovers pass through.
+            enabled: dialogRoot.sheetRevealed
+
+            SmoothFlickable {
+                anchors.fill: parent
+                anchors.margins: 8
+                contentWidth: width
+                contentHeight: sheetContent.height
+                clip: true
+                boundsBehavior: Flickable.StopAtBounds
+
+                Column {
+                    id: sheetContent
                     width: parent.width
                     spacing: 6
+
+                    // Meta strip: dims • ext • status (WallpaperPanel pill parity).
+                    Rectangle {
+                        width: parent.width
+                        implicitHeight: metaRow.implicitHeight + 12
+                        radius: 6
+                        color: Theme.bg
+                        RowLayout {
+                            id: metaRow
+                            anchors.fill: parent
+                            anchors.margins: 6
+                            spacing: 6
+                            Text {
+                                text: dialogRoot.dlgDims
+                                color: Theme.fg
+                                font.pixelSize: Theme.fontSize - 2
+                                font.family: Theme.fontFamily
+                            }
+                            Text {
+                                text: "•"
+                                color: Theme.fgDim
+                                font.pixelSize: Theme.fontSize - 2
+                            }
+                            Text {
+                                text: dialogRoot.dlgExt
+                                color: Theme.accent
+                                font.pixelSize: Theme.fontSize - 2
+                                font.bold: true
+                                font.family: Theme.fontFamily
+                            }
+                            Item {
+                                Layout.fillWidth: true
+                                height: 1
+                            }
+                            Text {
+                                text: dialogRoot.dlgDownloaded ? "● Saved" : (dialogRoot.dlgLoading ? "○ Downloading…" : "○ Preview")
+                                color: dialogRoot.dlgDownloaded ? "lightgreen" : Theme.fgDim
+                                font.pixelSize: Theme.fontSize - 2
+                                font.family: Theme.fontFamily
+                            }
+                        }
+                    }
+
+                    // Tags section (BooruSettingsPanel chip parity + expand).
+                    Column {
+                        width: parent.width
+                        spacing: 4
+                        RowLayout {
+                            width: parent.width
+                            spacing: 6
+                            Text {
+                                text: `TAGS (${dialogRoot.dlgTags.length})`
+                                color: Theme.fgDim
+                                font.pixelSize: Theme.fontSize - 2
+                                font.bold: true
+                                font.family: Theme.fontFamily
+                                Layout.fillWidth: true
+                                elide: Text.ElideRight
+                            }
+                            AppButton {
+                                icon: dialogRoot.showAllTags ? "" : ""
+                                width: 24
+                                height: 22
+                                pixelSize: 10
+                                cornerRadius: 4
+                                outlined: true
+                                tooltipText: dialogRoot.showAllTags ? "Show fewer" : "Show all tags"
+                                visible: dialogRoot.dlgTags.length > 12
+                                onClicked: dialogRoot.showAllTags = !dialogRoot.showAllTags
+                            }
+                        }
+                        Rectangle {
+                            width: parent.width
+                            implicitHeight: tagFlow.implicitHeight + 12
+                            radius: 6
+                            color: Theme.bg
+                            Flow {
+                                id: tagFlow
+                                anchors.fill: parent
+                                anchors.margins: 6
+                                spacing: 4
+                                Repeater {
+                                    model: dlg ? dialogRoot.dlgTags.slice(0, dialogRoot.dlgVisibleTagCount) : []
+                                    delegate: Rectangle {
+                                        width: tagDetail.implicitWidth + 14
+                                        height: 22
+                                        radius: 11
+                                        color: tagDetailMa.containsMouse ? Theme.surfaceActive : Theme.surface
+                                        border.color: Theme.border
+                                        border.width: 1
+                                        Text {
+                                            id: tagDetail
+                                            anchors.centerIn: parent
+                                            text: modelData
+                                            color: Theme.fgDim
+                                            font.pixelSize: Theme.fontSize - 2
+                                            font.family: Theme.fontFamily
+                                            elide: Text.ElideRight
+                                        }
+                                        AppTooltip {
+                                            visible: tagDetailMa.containsMouse
+                                            text: "Click: copy • Hold: add to search"
+                                        }
+                                        MouseArea {
+                                            id: tagDetailMa
+                                            anchors.fill: parent
+                                            hoverEnabled: true
+                                            cursorShape: Qt.PointingHandCursor
+                                            onClicked: {
+                                                if (viewer)
+                                                    viewer.copyTag(modelData);
+                                            }
+                                            onPressAndHold: {
+                                                if (viewer)
+                                                    viewer.openTags(modelData);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            Text {
+                                anchors.centerIn: parent
+                                text: "No tags"
+                                color: Theme.fgDim
+                                font.pixelSize: Theme.fontSize - 2
+                                font.family: Theme.fontFamily
+                                font.italic: true
+                                visible: dialogRoot.dlgTags.length === 0
+                            }
+                        }
+                        Text {
+                            width: parent.width
+                            text: `+${dialogRoot.dlgTags.length - dialogRoot.dlgVisibleTagCount} more — click the expand icon`
+                            color: Theme.fgDim
+                            font.pixelSize: Theme.fontSize - 3
+                            font.family: Theme.fontFamily
+                            elide: Text.ElideRight
+                            visible: !dialogRoot.showAllTags && dialogRoot.dlgTags.length > dialogRoot.dlgVisibleTagCount
+                        }
+                    }
+
+                    // Actions (WaifuWidget section parity: 2-col grids of
+                    // fillWidth buttons).
                     RowLayout {
                         width: parent.width
                         spacing: 6
@@ -466,20 +573,6 @@ Item {
                         AppButton {
                             Layout.fillWidth: true
                             height: 28
-                            icon: ""
-                            text: "Viewer"
-                            outlined: true
-                            pixelSize: Theme.fontSize - 2
-                            enabled: dialogRoot.dlgDownloaded && !dialogRoot.dlgIsZip
-                            tooltipText: !dialogRoot.dlgDownloaded ? "Downloading full image…" : dialogRoot.dlgIsZip ? "Cannot preview this file type" : "Open image in viewer"
-                            onClicked: {
-                                if (viewer && dlg)
-                                    viewer.openInViewer(dlg);
-                            }
-                        }
-                        AppButton {
-                            Layout.fillWidth: true
-                            height: 28
                             icon: ""
                             text: "Open"
                             outlined: true
@@ -504,22 +597,66 @@ Item {
                             }
                         }
                     }
-                    AppButton {
+                    // Dismiss row + window-resize cell at the sheet's
+                    // bottom-right corner (aspect-locked via the viewer).
+                    RowLayout {
                         width: parent.width
-                        height: 28
-                        icon: ""
-                        text: "Close"
-                        pixelSize: Theme.fontSize - 2
-                        idleFg: Theme.fgDim
-                        tooltipText: "Close (Esc)"
-                        onClicked: {
-                            if (viewer)
-                                viewer.requestClose();
+                        spacing: 6
+                        AppButton {
+                            Layout.fillWidth: true
+                            height: 28
+                            icon: ""
+                            text: "Close"
+                            pixelSize: Theme.fontSize - 2
+                            idleFg: Theme.fgDim
+                            tooltipText: "Close (Esc)"
+                            onClicked: {
+                                if (viewer)
+                                    viewer.requestClose();
+                            }
+                        }
+                        Item {
+                            width: 16
+                            height: 28
+                            Repeater {
+                                model: 3
+                                Rectangle {
+                                    width: 3
+                                    height: 3
+                                    radius: 1.5
+                                    color: Theme.fgDim
+                                    x: 12 - index * 4
+                                    y: 16 - index * 4
+                                }
+                            }
+                            MouseArea {
+                                id: resizeMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.SizeFDiagCursor
+                                property point last
+                                AppTooltip {
+                                    visible: parent.containsMouse
+                                    text: "Drag to resize (keeps ratio)"
+                                }
+                                onPressed: mouse => {
+                                    resizeMouse.last = Qt.point(mouse.x, mouse.y);
+                                }
+                                onPositionChanged: mouse => {
+                                    if (!resizeMouse.pressed)
+                                        return;
+                                    const dx = mouse.x - resizeMouse.last.x;
+                                    const dy = mouse.y - resizeMouse.last.y;
+                                    resizeMouse.last = Qt.point(mouse.x, mouse.y);
+                                    if (viewer)
+                                        viewer.resizeFloat(dx, dy);
+                                }
+                            }
                         }
                     }
-                }
-            }
-        } // contentScroll
+                } // sheetContent
+            } // sheet flickable
+        } // bottomSheet
     } // slider
 
     Keys.onEscapePressed: {

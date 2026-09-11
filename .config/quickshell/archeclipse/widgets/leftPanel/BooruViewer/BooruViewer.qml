@@ -90,12 +90,54 @@ Item {
     property real dialogAnchorH: 100
     property real dialogTop: 0
     property real dialogH: 560
+    // Detached dialog: dragging the header grip (or the resize cell)
+    // moves the card into a normal FloatingWindow — a top-level OS
+    // window. Float behavior itself is the compositor's job (Hyprland
+    // float rule, e.g. on this window's title). It stays open across
+    // island close / tab switch / new results until explicitly closed;
+    // clicking another post swaps the content in place. Closing fully
+    // resets to docked.
+    property bool dialogDetached: false
+    // Whether the float window was aspect-fit for the current dialog
+    // session (keeps the user's resize across post swaps; reset on close).
+    property bool floatSized: false
     // Hover handoff with the floating popup (separate window surface):
     // the island keeps itself open while this is true (see LeftIsland
     // requestAutoHide) and re-arms its hide when it clears.
     property bool popupHovered: false
     // Back-reference injected by LeftIsland (booruView.hostPanel = island).
     property var hostPanel: null
+    // Monitor screen for float-window size clamps. Reactive binding (not
+    // a one-shot onLoaded assign): the nested booru Loader can finish
+    // before the island's own screen prop arrives from the bar, which
+    // left this permanently null and the float surface never visible.
+    property var hostScreen: root.hostPanel && root.hostPanel.screen ? root.hostPanel.screen : null
+
+    // Screen size for the float panel (ShellScreen logical pixels, with
+    // fallbacks so clamping never divides by zero).
+    function screenW() {
+        try {
+            const w = root.hostScreen && root.hostScreen.width;
+            if (w > 0)
+                return w;
+        } catch (e) {}
+        return 1920;
+    }
+    function screenH() {
+        try {
+            const h = root.hostScreen && root.hostScreen.height;
+            if (h > 0)
+                return h;
+        } catch (e) {}
+        return 1080;
+    }
+    // Post aspect for the size lock (width / height, sane fallback).
+    function dialogAspect() {
+        const d = root.dialogImage;
+        if (d && d.width > 0 && d.height > 0)
+            return d.width / d.height;
+        return 3 / 4;
+    }
     // Overlay entrance driver (0 = parked, 1 = in). Slide/opacity only —
     // the grid, toolbar, navigation and settings never relayout, so this
     // cannot feed back into the layout the way a width animation did.
@@ -164,6 +206,105 @@ Item {
         _closeTimer.restart();
     }
 
+    // Immediate teardown: the detail PopupWindow is a separate surface
+    // whose visibility is driven only by dialogImage, so it outlives the
+    // viewer (island close / tab switch keeps this instance alive in the
+    // cached Loader). Drop the content at once — no slide-out, the host
+    // is already gone.
+    function closeDialogNow() {
+        if (root.dialogImage === null)
+            return;
+
+        _closeTimer.stop();
+        root.detailSlide = 0;
+        // Reset to docked so the next open starts at its anchor card.
+        root.dialogDetached = false;
+        root.floatSized = false;
+        root.dialogImage = null;
+    }
+
+    // Detach into the FloatingWindow below and aspect-fit it for the
+    // post (bounded by the screen). Runs once per dialog session — the
+    // user's own resize after that is left alone across post swaps.
+    function detachDialog() {
+        if (root.dialogDetached || root.dialogImage === null)
+            return;
+        root.dialogDetached = true;
+        if (!root.floatSized) {
+            const sw = root.screenW(), sh = root.screenH(), a = root.dialogAspect();
+            let w = Math.min(380, sw - 40);
+            let h = w / a;
+            if (h > sh - 40) {
+                h = sh - 40;
+                w = h * a;
+            }
+            detailFloat.width = Math.max(240, Math.min(sw, w));
+            detailFloat.height = Math.max(200, Math.min(sh, h));
+            root.floatSized = true;
+        }
+    }
+
+    // System move for the float window (called on first drag motion so
+    // the window is mapped when the compositor checks the gesture).
+    function moveFloat() {
+        try {
+            if (typeof detailFloat.startSystemMove === "function")
+                detailFloat.startSystemMove();
+        } catch (e) {}
+    }
+
+    // Corner resize on the float window, aspect-locked to the post:
+    // SE drag drives width, height follows the ratio inside the
+    // requested rect, clamped to minimums and the screen. Client-set
+    // size (honored once floated via the Hyprland rule); detaches first
+    // when starting from the docked card.
+    function resizeFloat(dx, dy) {
+        if (root.dialogImage === null)
+            return;
+        if (!root.dialogDetached)
+            root.detachDialog();
+        if (!root.dialogDetached)
+            return;
+        root.floatSized = true;
+        const sw = root.screenW(), sh = root.screenH(), a = root.dialogAspect();
+        const reqW = Math.max(240, Math.min(sw, detailFloat.width + dx));
+        const reqH = Math.max(200, Math.min(sh, detailFloat.height + dy));
+        detailFloat.width = Math.max(240, Math.min(reqW, reqH * a));
+        detailFloat.height = Math.max(200, Math.min(reqH, detailFloat.width / a));
+    }
+
+    // Viewer hidden directly (e.g. Loader deactivated) → drop a docked
+    // dialog. A detached card is its own window and stays open.
+    onVisibleChanged: {
+        if (!root.visible && !root.dialogDetached)
+            root.closeDialogNow();
+    }
+
+    Component.onDestruction: {
+        _closeTimer.stop();
+    }
+
+    // Island closed (BarState leaves "left") → a docked card's popup
+    // surface would stay on screen orphaned, so drop it. A detached
+    // card is its own window and stays open until explicitly closed.
+    Connections {
+        target: BarState
+        function onStateChanged() {
+            if (BarState.state !== "left" && !root.dialogDetached)
+                root.closeDialogNow();
+        }
+    }
+
+    // Tab switched away inside the island → same orphan-popup problem
+    // for docked cards; detached cards survive.
+    Connections {
+        target: root.hostPanel
+        function onSelectedWidgetChanged() {
+            if (root.hostPanel && root.hostPanel.selectedWidget !== "BooruViewer" && !root.dialogDetached)
+                root.closeDialogNow();
+        }
+    }
+
     // Open the overlay at the clicked card: capture the card's viewport
     // center (+ scroll offset + height), then set the image. Re-clicking
     // the same image just re-anchors (no unmount churn).
@@ -183,6 +324,8 @@ Item {
         }
         if (root.dialogImage !== img) {
             _closeTimer.stop();
+            // A detached card stays floating: the new post swaps into it
+            // in place (independent-window semantics) keeping position/size.
             root.dialogImage = img;
             root.fetchOriginal(img);
         }
@@ -207,7 +350,7 @@ Item {
     // so zero compositor round-trips happen here (that was the stutter).
     function refreshDialogTop(dh) {
         root.adoptDialogHeight(dh);
-        if (root.dialogImage === null)
+        if (root.dialogImage === null || root.dialogDetached)
             return;
         const c = root.anchorCardCenter();
         if (c < -root.dialogAnchorH / 2 || c > grid.height + root.dialogAnchorH / 2) {
@@ -297,6 +440,10 @@ Item {
     // Legacy <api>/originals/ files are promoted into <api>/images/.
     function fetchOriginal(img) {
         if (!img || !img.url || !img.api || !img.api.value)
+            return;
+        // Local files (custom waifu uploads) need no download — the
+        // dialog plays the path directly (see dialogSource).
+        if (!/^https?:\/\//.test(img.url))
             return;
         if (BooruActions.isZip(img))
             return;
@@ -875,7 +1022,10 @@ Item {
     // New results invalidate the anchor card → drop the dialog at once
     // (the scroll reset below would auto-close it a frame later anyway).
     onImagesChanged: {
-        root.requestClose();
+        // A detached card is its own window: new grid results must not
+        // pull it away. Docked cards drop at once (anchor invalidated).
+        if (!root.dialogDetached)
+            root.requestClose();
         grid.resetScroll();
         // New result set: restart the staggered pop-in from scratch, then
         // reveal anything already cached (bookmarks/pins revisits).
@@ -923,7 +1073,10 @@ Item {
         interval: 190
         repeat: false
         onTriggered: {
-            // Slide-out finished: drop the content (hides the popup).
+            // Slide-out finished: drop the content (hides the popup) and
+            // reset to docked so the next open starts at its anchor card.
+            root.dialogDetached = false;
+            root.floatSized = false;
             root.dialogImage = null;
         }
     }
@@ -1025,7 +1178,12 @@ Item {
         // action grids + meta/tag pills that need the breathing room.
         width: 288
         height: Math.max(48, Math.round(root.height))
-        visible: root.dialogImage !== null
+        // Gated on the host being actually shown: dialogImage alone
+        // outlives island close / tab switch (cached Loader), which left
+        // an orphan popup on screen. closeDialogNow() clears the image
+        // right after; this guard covers the debounce gap. Hidden while
+        // detached — the card lives in the FloatingWindow below instead.
+        visible: root.dialogImage !== null && !root.dialogDetached && BarState.state === "left" && (!root.hostPanel || root.hostPanel.selectedWidget === "BooruViewer")
         color: "transparent"
         // Clickthrough everywhere except the card: the surface is
         // viewer-tall, so without this the transparent strip would eat
@@ -1056,6 +1214,43 @@ Item {
                     easing.type: Easing.OutCubic
                 }
             }
+        }
+    }
+
+    // Detached card window: a normal top-level OS window. Float behavior
+    // is the compositor's job — add a Hyprland rule on this title, e.g.
+    // `windowrule = float, match:title ^(Booru)`. Same card component as
+    // the docked popup, bound to the same viewer state; content fills the
+    // window. Independent lifetime: island close / tab switch / new
+    // results never touch it — only explicit close does.
+    FloatingWindow {
+        id: detailFloat
+        title: root.dialogImage ? `Booru #${root.dialogImage.id}` : "Booru"
+        visible: root.dialogImage !== null && root.dialogDetached
+        width: 340
+        height: 480
+        minimumSize: Qt.size(240, 200)
+        color: "transparent"
+
+        // If the window dies behind our back (WM close button / keybind
+        // kill), quickshell flips visible without touching our state, and
+        // the true-valued binding above never re-pushes — every later
+        // open would no-op onto a dead surface. Resync to closed so the
+        // next open starts clean. Programmatic closes set detached=false
+        // first, so they never trip this guard.
+        onVisibleChanged: {
+            if (!visible && root.dialogDetached && root.dialogImage !== null) {
+                _closeTimer.stop();
+                root.detailSlide = 0;
+                root.dialogDetached = false;
+                root.floatSized = false;
+                root.dialogImage = null;
+            }
+        }
+
+        Booru.BooruDialog {
+            anchors.fill: parent
+            viewer: root
         }
     }
     // --- keyboard navigation ---
