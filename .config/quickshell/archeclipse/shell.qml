@@ -5,9 +5,9 @@ import Quickshell.Io
 import qs.services
 import qs.widgets.bar
 import qs.widgets.launcher
+import qs.widgets.lock
 import qs.widgets.media
 import qs.widgets.notifications
-import qs.widgets.userPanel
 
 // ArchEclipse shell — multi-monitor via Variants over Quickshell.screens.
 // Each window is instantiated once per monitor (matching AGS perMonitorDisplay).
@@ -69,16 +69,9 @@ ShellRoot {
     // (BarState "wallpaper", body in widgets/wallpaperPanel).
     // SUPER+W routes to the island via Ipc.togglePanel.
 
-    // per-monitor user panel (full-screen power grid overlay)
-    Variants {
-        model: Quickshell.screens
-
-        UserPanel {
-            required property ShellScreen modelData
-
-            screen: modelData
-        }
-
+    // Secure lockscreen (replaces the UserPanel overlay): single scope,
+    // the compositor instantiates one WlSessionLockSurface per screen.
+    LockScreen {
     }
 
     // Left/right content lives in the main bar pill as LeftIsland /

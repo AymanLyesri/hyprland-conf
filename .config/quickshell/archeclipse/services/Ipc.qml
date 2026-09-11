@@ -228,6 +228,16 @@ Item {
                 return toggleLeftPanel(monitor);
             if (name === "right-panel" || name === "rightPanel")
                 return toggleRightPanel(monitor);
+            // UserPanel was replaced by the secure lock — keep old
+            // SUPER+bindings (`togglePanel user-panel <mon>`) locking.
+            if (name === "user-panel" || name === "userPanel") {
+                const l = Registry.get("lock-screen");
+                if (l) {
+                    l.lock();
+                    return "lock activated (user-panel compat)";
+                }
+                return "lock-screen not ready";
+            }
             const key = `${name}-${monitor}`;
             const w = Registry.get(key);
             if (w) { w.visible = !w.visible; return key + " toggled"; }

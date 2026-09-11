@@ -1,0 +1,237 @@
+import QtQuick
+import QtQuick.Effects
+import Quickshell
+import Quickshell.Hyprland
+import qs.theme
+import qs.widgets.shared
+
+// Per-screen lock UI, hosted inside a transparent WlSessionLockSurface.
+// Fullscreen MouseArea keeps the password focused (click/hover refocus,
+// Esc clears); fullscreen dim lets the Hyprland compositor blur show through.
+MouseArea {
+    id: root
+    required property var context
+    required property string monitorName
+
+    hoverEnabled: true
+    acceptedButtons: Qt.LeftButton
+    onPressed: passwordField.forceActiveFocus()
+    onPositionChanged: passwordField.forceActiveFocus()
+
+    function forceFieldFocus() {
+        passwordField.forceActiveFocus();
+    }
+    Connections {
+        target: root.context
+        function onShouldReFocus() {
+            root.forceFieldFocus();
+        }
+        // Close beat: fold the island away before screenLocked drops.
+        function onClosingChanged() {
+            if (root.context.closing)
+                root.expand = 0;
+        }
+    }
+    Component.onCompleted: {
+        root.forceFieldFocus();
+        root.expand = 1;
+    }
+
+    // Island-unfold driver (same spring as the bar islands): the card grows
+    // down from the top edge like a dynamic island opening.
+    property real expand: 0
+    // Grace-period hint state, polled so it clears exactly at expiry.
+    property bool graceActive: false
+    Timer {
+        id: graceTimer
+        interval: 1000
+        repeat: true
+        running: root.context.screenLocked
+        triggeredOnStart: true
+        onTriggered: root.graceActive = root.context.inGracePeriod()
+    }
+    Behavior on expand {
+        SpringAnimation { spring: 3.5; damping: 0.32; mass: 1.0 }
+    }
+
+    Keys.onPressed: event => {
+        root.context.resetClearTimer();
+        if (event.key === Qt.Key_Escape)
+            root.context.handleEscape();
+        root.forceFieldFocus();
+    }
+
+    // Session background: a grim screenshot captured just before locking,
+    // shown blurred (hyprlock-style). The plain dim underneath is the
+    // fallback when no screenshot exists for this monitor.
+    Rectangle {
+        anchors.fill: parent
+        color: Qt.rgba(0, 0, 0, 0.45)
+    }
+    Item {
+        id: bgShot
+        anchors.fill: parent
+        visible: false
+        Image {
+            id: bgImage
+            anchors.fill: parent
+            fillMode: Image.PreserveAspectCrop
+            // cache:false (same path is reused every lock) but synchronous:
+            // the file is local and grim already exited, so decode costs one
+            // short hitch while the first painted frame is already blurred
+            // instead of flashing the dark base dim for several frames.
+            cache: false
+            asynchronous: false
+            source: {
+                var p = root.context.bgPaths[root.monitorName];
+                return p ? ("file://" + p) : "";
+            }
+        }
+    }
+    MultiEffect {
+        id: bgBlur
+        anchors.fill: parent
+        source: bgShot
+        blurEnabled: true
+        blur: 0.85
+        visible: bgImage.status === Image.Ready
+        opacity: bgImage.status === Image.Ready ? 1 : 0
+        Behavior on opacity {
+            NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
+        }
+    }
+    Rectangle {
+        anchors.fill: parent
+        color: Qt.rgba(0, 0, 0, 0.2)
+        visible: bgBlur.visible
+        opacity: bgBlur.opacity
+    }
+
+    // Top-center island: lock icon + password + 4 direct actions.
+    // Frosted island fill (translucent Theme.surface, like the bar pill):
+    // Hyprland blurs whatever is behind it; without compositor blur it
+    // degrades to clean translucency over the dim.
+    Rectangle {
+        id: card
+        anchors.top: parent.top
+        anchors.topMargin: 12
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: 340
+        height: cardCol.implicitHeight + 40
+        radius: 24
+        color: Theme.surface
+        border.color: Theme.border
+        border.width: 1
+        // Unfold with the expand driver (origin Top: grows downward).
+        scale: 0.96 + 0.04 * root.expand
+        opacity: Math.max(0, Math.min(1, root.expand * 1.2))
+        transformOrigin: Item.Top
+
+        Column {
+            id: cardCol
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: 20
+            spacing: 12
+
+            Text {
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
+                text: ""
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontSize * 4
+                color: Theme.fg
+            }
+            Text {
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
+                text: "Locked"
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontSize + 4
+                font.bold: true
+                color: Theme.fg
+            }
+            AppTextField {
+                id: passwordField
+                width: parent.width
+                cornerRadius: 12
+                placeholderText: root.context.screenUnlockFailed ? "Incorrect password" : "Enter password"
+                echoMode: TextInput.Password
+                inputMethodHints: Qt.ImhSensitiveData
+                enabled: !root.context.unlockInProgress
+                text: root.context.currentText
+                onTextChanged: root.context.currentText = text
+                onAccepted: root.context.tryUnlock()
+                Keys.onPressed: event => root.context.resetClearTimer()
+                Keys.onEscapePressed: root.context.handleEscape()
+                Component.onCompleted: forceActiveFocus()
+            }
+            // Grace hint: live while locked so it disappears at expiry.
+            Text {
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
+                visible: root.graceActive && !root.context.showFailure
+                text: "Esc dismisses for the first 30s"
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontSize - 1
+                color: Theme.fgDim
+            }
+            Text {
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
+                visible: root.context.showFailure
+                text: "Incorrect password — try again"
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontSize - 1
+                color: Theme.danger
+            }
+            Row {
+                width: parent.width
+                spacing: 8
+                AppButton {
+                    width: (parent.width - 24) / 4
+                    icon: ""
+                    tooltipText: "Logout from Hyprland"
+                    onClicked: Hyprland.dispatch("hl.dsp.exit()")
+                }
+                AppButton {
+                    width: (parent.width - 24) / 4
+                    icon: ""
+                    tooltipText: "Shutdown immediately"
+                    onClicked: Quickshell.execDetached(["shutdown", "now"])
+                }
+                AppButton {
+                    width: (parent.width - 24) / 4
+                    icon: ""
+                    tooltipText: "Put system to sleep"
+                    onClicked: Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/hypr/scripts/hyprlock.sh suspend"])
+                }
+                AppButton {
+                    width: (parent.width - 24) / 4
+                    icon: ""
+                    tooltipText: "Reboot immediately"
+                    onClicked: Quickshell.execDetached(["reboot"])
+                }
+            }
+        }
+
+        // Shake on wrong password (via horizontalCenterOffset: card uses
+        // anchors.centerIn so x is anchor-owned and must not be animated).
+        SequentialAnimation {
+            id: shakeAnim
+            NumberAnimation { target: card; property: "anchors.horizontalCenterOffset"; to: -14; duration: 50 }
+            NumberAnimation { target: card; property: "anchors.horizontalCenterOffset"; to: 14; duration: 50 }
+            NumberAnimation { target: card; property: "anchors.horizontalCenterOffset"; to: -8; duration: 40 }
+            NumberAnimation { target: card; property: "anchors.horizontalCenterOffset"; to: 8; duration: 40 }
+            NumberAnimation { target: card; property: "anchors.horizontalCenterOffset"; to: 0; duration: 40 }
+        }
+        Connections {
+            target: root.context
+            function onShowFailureChanged() {
+                if (root.context.showFailure)
+                    shakeAnim.restart();
+            }
+        }
+    }
+}

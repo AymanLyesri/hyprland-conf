@@ -11,7 +11,7 @@ import qs.services
 // Auth via magic link -> local Python callback server writes session.json ->
 // profile fetched from Supabase REST. Settings sync upload/download to
 // ~/.cache/quickshell/settings/settings.json (quickshell-local).
-// minimal mode (for UserPanel overlay): shows only avatar + username
+// minimal mode (for the lockscreen overlay): shows only avatar + username
 Item {
     id: root
     property int widgetWidth: parent.width
