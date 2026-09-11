@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Services.Pam
+import qs.theme
 
 // Shared auth state for all per-screen lock surfaces (end-4 LockContext pattern).
 // Security notes: default `login` PAM stack (no custom configDirectory), respond
@@ -16,7 +17,8 @@ Scope {
     property bool screenLocked: false
     // Grace period: Esc dismisses without a password within this window
     // after locking (set at engage time); afterwards PAM is required.
-    property int gracePeriodMs: 30000
+    // Settings-driven (seconds) so it follows the lockscreen category live.
+    readonly property int gracePeriodMs: Settings.lockGraceSeconds * 1000
     property double lockedAt: 0
     function inGracePeriod() {
         return root.screenLocked && root.lockedAt > 0 && (Date.now() - root.lockedAt) < root.gracePeriodMs;

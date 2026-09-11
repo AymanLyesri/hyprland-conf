@@ -18,6 +18,9 @@ Item {
     property date selectedDate: new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate())
     property var cells: []
 
+    // Dynamic nav button size: scales with widget width, clamped to stay usable.
+    readonly property real navButtonSize: Math.max(22, Math.min(34, root.width / 12))
+
     Timer {
         interval: 30000
         running: true
@@ -126,8 +129,8 @@ Item {
             spacing: 4
 
             AppButton {
-                width: 26
-                height: 26
+                Layout.preferredWidth: root.navButtonSize
+                Layout.preferredHeight: root.navButtonSize
                 cornerRadius: 6
                 idleBg: Theme.surface
                 hoverFg: Theme.accent
@@ -137,8 +140,8 @@ Item {
                 onClicked: root.moveYear(-1)
             }
             AppButton {
-                width: 26
-                height: 26
+                Layout.preferredWidth: root.navButtonSize
+                Layout.preferredHeight: root.navButtonSize
                 cornerRadius: 6
                 idleBg: Theme.surface
                 hoverFg: Theme.accent
@@ -149,9 +152,15 @@ Item {
             }
             Item {
                 Layout.fillWidth: true
-                height: 26
+                Layout.preferredHeight: root.navButtonSize
+                clip: true
                 Text {
-                    anchors.centerIn: parent
+                    width: parent.width
+                    height: parent.height
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
+                    elide: Text.ElideRight
+                    maximumLineCount: 1
                     text: root.monthTitle
                     color: Theme.fg
                     font.family: Theme.fontFamily
@@ -171,8 +180,8 @@ Item {
                 }
             }
             AppButton {
-                width: 26
-                height: 26
+                Layout.preferredWidth: root.navButtonSize
+                Layout.preferredHeight: root.navButtonSize
                 cornerRadius: 6
                 idleBg: Theme.surface
                 hoverFg: Theme.accent
@@ -182,8 +191,8 @@ Item {
                 onClicked: root.moveMonth(1)
             }
             AppButton {
-                width: 26
-                height: 26
+                Layout.preferredWidth: root.navButtonSize
+                Layout.preferredHeight: root.navButtonSize
                 cornerRadius: 6
                 idleBg: Theme.surface
                 hoverFg: Theme.accent

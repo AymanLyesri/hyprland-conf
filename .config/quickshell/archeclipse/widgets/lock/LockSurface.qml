@@ -35,6 +35,7 @@ MouseArea {
     Component.onCompleted: {
         root.forceFieldFocus();
         root.expand = 1;
+        graceAnim.start();
     }
 
     // Island-unfold driver (same spring as the bar islands): the card grows
@@ -42,16 +43,27 @@ MouseArea {
     property real expand: 0
     // Grace-period hint state, polled so it clears exactly at expiry.
     property bool graceActive: false
+    property int graceSeconds: Settings.lockGraceSeconds
     Timer {
         id: graceTimer
         interval: 1000
         repeat: true
         running: root.context.screenLocked
         triggeredOnStart: true
-        onTriggered: root.graceActive = root.context.inGracePeriod()
+        onTriggered: {
+            var g = root.context.inGracePeriod();
+            if (root.graceActive && !g)
+                passwordField.forceActiveFocus();
+            root.graceActive = g;
+            root.graceSeconds = Math.max(0, Math.ceil((root.context.gracePeriodMs - (Date.now() - root.context.lockedAt)) / 1000));
+        }
     }
     Behavior on expand {
-        SpringAnimation { spring: 3.5; damping: 0.32; mass: 1.0 }
+        SpringAnimation {
+            spring: 3.5
+            damping: 0.32
+            mass: 1.0
+        }
     }
 
     Keys.onPressed: event => {
@@ -62,7 +74,7 @@ MouseArea {
     }
 
     // Session background: a grim screenshot captured just before locking,
-    // shown blurred (hyprlock-style). The plain dim underneath is the
+    // shown blurred (screenshot-style). The plain dim underneath is the
     // fallback when no screenshot exists for this monitor.
     Rectangle {
         anchors.fill: parent
@@ -97,7 +109,10 @@ MouseArea {
         visible: bgImage.status === Image.Ready
         opacity: bgImage.status === Image.Ready ? 1 : 0
         Behavior on opacity {
-            NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
+            NumberAnimation {
+                duration: 300
+                easing.type: Easing.OutCubic
+            }
         }
     }
     Rectangle {
@@ -118,6 +133,12 @@ MouseArea {
         anchors.horizontalCenter: parent.horizontalCenter
         width: 340
         height: cardCol.implicitHeight + 40
+        Behavior on height {
+            NumberAnimation {
+                duration: 250
+                easing.type: Easing.OutCubic
+            }
+        }
         radius: 24
         color: Theme.surface
         border.color: Theme.border
@@ -152,9 +173,31 @@ MouseArea {
                 font.bold: true
                 color: Theme.fg
             }
+            // Grace countdown: visible timer while dismissal is free.
+            Text {
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
+                visible: root.graceActive
+                text: root.graceSeconds + "s"
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontSize * 2
+                font.bold: true
+                color: Theme.fg
+            }
+            Text {
+                width: parent.width
+                horizontalAlignment: Text.AlignHCenter
+                visible: root.graceActive
+                text: "Esc to dismiss"
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontSize - 1
+                color: Theme.fgDim
+            }
+            // Password appears only once the grace window is up.
             AppTextField {
                 id: passwordField
                 width: parent.width
+                visible: !root.graceActive
                 cornerRadius: 12
                 placeholderText: root.context.screenUnlockFailed ? "Incorrect password" : "Enter password"
                 echoMode: TextInput.Password
@@ -167,20 +210,10 @@ MouseArea {
                 Keys.onEscapePressed: root.context.handleEscape()
                 Component.onCompleted: forceActiveFocus()
             }
-            // Grace hint: live while locked so it disappears at expiry.
             Text {
                 width: parent.width
                 horizontalAlignment: Text.AlignHCenter
-                visible: root.graceActive && !root.context.showFailure
-                text: "Esc dismisses for the first 30s"
-                font.family: Theme.fontFamily
-                font.pixelSize: Theme.fontSize - 1
-                color: Theme.fgDim
-            }
-            Text {
-                width: parent.width
-                horizontalAlignment: Text.AlignHCenter
-                visible: root.context.showFailure
+                visible: !root.graceActive && root.context.showFailure
                 text: "Incorrect password — try again"
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontSize - 1
@@ -191,27 +224,65 @@ MouseArea {
                 spacing: 8
                 AppButton {
                     width: (parent.width - 24) / 4
-                    icon: ""
+                    icon: "\uf08b"
                     tooltipText: "Logout from Hyprland"
                     onClicked: Hyprland.dispatch("hl.dsp.exit()")
                 }
                 AppButton {
                     width: (parent.width - 24) / 4
-                    icon: ""
+                    icon: "\uf011"
                     tooltipText: "Shutdown immediately"
                     onClicked: Quickshell.execDetached(["shutdown", "now"])
                 }
                 AppButton {
                     width: (parent.width - 24) / 4
-                    icon: ""
+                    icon: "\uf186"
                     tooltipText: "Put system to sleep"
-                    onClicked: Quickshell.execDetached(["bash", "-c", Quickshell.env("HOME") + "/.config/hypr/scripts/hyprlock.sh suspend"])
+                    onClicked: Quickshell.execDetached(["systemctl", "suspend"])
                 }
                 AppButton {
                     width: (parent.width - 24) / 4
-                    icon: ""
+                    icon: "\uf021"
                     tooltipText: "Reboot immediately"
                     onClicked: Quickshell.execDetached(["reboot"])
+                }
+            }
+        }
+
+        // Grace timeout bar (notification toast pattern): transform-only
+        // shrink, GPU-composited, no layout pass per frame. Gone with the
+        // countdown once the password is required.
+        Rectangle {
+            id: graceTrack
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.leftMargin: 24
+            anchors.rightMargin: 24
+            anchors.bottomMargin: 13
+            height: 3
+            radius: 2
+            visible: root.graceActive
+            color: Qt.alpha(Theme.fg, 0.12)
+            Rectangle {
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                width: parent.width
+                radius: 2
+                color: Theme.accent
+                transform: Scale {
+                    id: graceScale
+                    origin.x: 0
+                    xScale: 1
+                }
+                PropertyAnimation {
+                    id: graceAnim
+                    target: graceScale
+                    property: "xScale"
+                    from: 1
+                    to: 0
+                    duration: root.context.gracePeriodMs
                 }
             }
         }
@@ -220,11 +291,36 @@ MouseArea {
         // anchors.centerIn so x is anchor-owned and must not be animated).
         SequentialAnimation {
             id: shakeAnim
-            NumberAnimation { target: card; property: "anchors.horizontalCenterOffset"; to: -14; duration: 50 }
-            NumberAnimation { target: card; property: "anchors.horizontalCenterOffset"; to: 14; duration: 50 }
-            NumberAnimation { target: card; property: "anchors.horizontalCenterOffset"; to: -8; duration: 40 }
-            NumberAnimation { target: card; property: "anchors.horizontalCenterOffset"; to: 8; duration: 40 }
-            NumberAnimation { target: card; property: "anchors.horizontalCenterOffset"; to: 0; duration: 40 }
+            NumberAnimation {
+                target: card
+                property: "anchors.horizontalCenterOffset"
+                to: -14
+                duration: 50
+            }
+            NumberAnimation {
+                target: card
+                property: "anchors.horizontalCenterOffset"
+                to: 14
+                duration: 50
+            }
+            NumberAnimation {
+                target: card
+                property: "anchors.horizontalCenterOffset"
+                to: -8
+                duration: 40
+            }
+            NumberAnimation {
+                target: card
+                property: "anchors.horizontalCenterOffset"
+                to: 8
+                duration: 40
+            }
+            NumberAnimation {
+                target: card
+                property: "anchors.horizontalCenterOffset"
+                to: 0
+                duration: 40
+            }
         }
         Connections {
             target: root.context

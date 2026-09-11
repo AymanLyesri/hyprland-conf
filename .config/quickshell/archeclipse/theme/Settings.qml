@@ -45,6 +45,9 @@ Singleton {
     property bool rightPanelExclusivity: true
     property int leftPanelWidth: 400
     property int rightPanelWidth: 250
+    // Lockscreen grace period in seconds (Esc dismisses the lock without a
+    // password within this window after locking), persisted, default 10.
+    property int lockGraceSeconds: 10
     // Selected left-panel tab (AGS leftPanel.widget.name, persisted)
     property string leftPanelWidget: "UserProfile"
     // Wallpaper switcher category (AGS wallpaperSwitcher.category, persisted)
@@ -360,6 +363,7 @@ Singleton {
             "rightPanel.widgets": "rightPanelWidgets",
             "crypto.favorite": "cryptoFavorite",
             "notifications.dnd": "notifDnd",
+            "lockscreen.graceSeconds": "lockGraceSeconds",
             "autoWorkspaceSwitching": "autoWorkspaceSwitching",
             "dynamicThemeColors": "dynamicThemeColors",
             "dynamicThemeVariants": "dynamicThemeVariants",
@@ -502,6 +506,9 @@ Singleton {
                 },
                 notifications: {
                     dnd: root.notifDnd
+                },
+                lockscreen: {
+                    graceSeconds: root.lockGraceSeconds
                 },
                 wallpaperSwitcher: {
                     category: root.wallpaperCategory
@@ -835,6 +842,9 @@ Singleton {
                 root.barBlurPasses = s.bar?.blurPasses?.value ?? 3;
                 root.barBlurSize = s.bar?.blurSize?.value ?? 4;
 
+                // Lockscreen grace period (seconds of free Esc dismiss)
+                root.lockGraceSeconds = s.lockscreen?.graceSeconds ?? 10;
+
                 const _dtc = s.dynamicThemeColors;
                 root.dynamicThemeColors = (typeof _dtc === "object" && _dtc !== null ? _dtc.value : _dtc) ?? true;
                 const _dtv = s.dynamicThemeVariants;
@@ -972,6 +982,9 @@ Singleton {
             root.schedulePersist();
         }
         function onNotifDndChanged() {
+            root.schedulePersist();
+        }
+        function onLockGraceSecondsChanged() {
             root.schedulePersist();
         }
         function onLeftPanelLockChanged() {

@@ -14,7 +14,7 @@ Column {
     spacing: 8
 
     signal queryChanged(string query)
-    signal activateRequested()
+    signal activateRequested
     signal navigateRequested(int direction)
 
     // Spring driver: 0 -> 1 on creation unfolds the results body.
@@ -22,15 +22,18 @@ Column {
     property int bodyFullHeight: 448
     Component.onCompleted: expand = 1
     Behavior on expand {
-        SpringAnimation { spring: 3.5; damping: 0.32; mass: 1.0 }
+        SpringAnimation {
+            spring: 3.5
+            damping: 0.32
+            mass: 1.0
+        }
     }
 
     // Search input pill (was SearchBar — merged here, its only consumer).
     // Typing, Enter (activate hook), Up/Down (navigate hook), Esc (close).
     Rectangle {
         id: searchInput
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: 484
+        width: parent.width
         height: 30
         radius: Theme.radius
         color: Theme.surface
@@ -47,16 +50,33 @@ Column {
             clip: true
             focus: true
 
-            onTextEdited: { root.queryChanged(text); Launcher.runQueryDebounced(text) }
-            onAccepted: { root.activateRequested(); Launcher.activateSelected(); BarState.deactivate("search") }
+            onTextEdited: {
+                root.queryChanged(text);
+                Launcher.runQueryDebounced(text);
+            }
+            onAccepted: {
+                root.activateRequested();
+                Launcher.activateSelected();
+                BarState.deactivate("search");
+            }
 
             Keys.onEscapePressed: BarState.deactivate("search")
-            Keys.onDownPressed: { root.navigateRequested(1); Launcher.selectNext(1) }
-            Keys.onUpPressed: { root.navigateRequested(-1); Launcher.selectNext(-1) }
+            Keys.onDownPressed: {
+                root.navigateRequested(1);
+                Launcher.selectNext(1);
+            }
+            Keys.onUpPressed: {
+                root.navigateRequested(-1);
+                Launcher.selectNext(-1);
+            }
 
             // focus grab must wait one event-loop turn — the loader creates this
             // page before the layer surface gets keyboard interactivity
-            Timer { interval: 50; running: true; onTriggered: input.forceActiveFocus() }
+            Timer {
+                interval: 50
+                running: true
+                onTriggered: input.forceActiveFocus()
+            }
         }
 
         // keep focus while the search island is open (clicks elsewhere shouldn't

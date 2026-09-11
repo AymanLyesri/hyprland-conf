@@ -23,15 +23,30 @@ Item {
     // Persistent daemon — Spawns on load and restarts if it exits/crashes.
     // NOTE: never hardcode /tmp/ags-<user> (breaks multi-user); SysInfo.qml
     // builds /tmp/ags-$USER the same way.
+    // NOTE: SysInfo.qml owns compiling the binary; this only restarts with
+    // backoff so a missing binary (fresh /tmp, compile not done yet) doesn't
+    // spin at 100% CPU or die permanently.
+    property Timer _bwRestart: Timer {
+        interval: 2000
+        repeat: false
+        onTriggered: {
+            if (!_bandwidthProc.running)
+                _bandwidthProc.running = true;
+        }
+    }
     property Process _bandwidthProc: Process {
         command: [`/tmp/ags-${Quickshell.env("USER")}/bandwidth-loop-ags`]
         stdout: SplitParser {
             splitMarker: "\n"
             onRead: data => root.parse(data)
         }
+        stderr: SplitParser {
+            splitMarker: "\n"
+            onRead: data => console.warn("[Bandwidth] loop stderr: " + data)
+        }
         onExited: (code, status) => {
-            if (root.active)
-                Qt.callLater(() => running = true);
+            console.warn("[Bandwidth] loop exited code=" + code + " — restarting in 2s");
+            _bwRestart.start();
         }
     }
 

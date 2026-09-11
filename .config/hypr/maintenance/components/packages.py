@@ -78,7 +78,6 @@ PACKAGES: list[str] = [
     "gtk4",
     "libadwaita",
     "gvfs",
-    "hyprlock",
     "hyprpaper",
     "hyprpolkitagent",
     "ttf-jetbrains-mono-nerd",

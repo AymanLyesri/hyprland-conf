@@ -24,7 +24,7 @@ Item {
     // each time this tab becomes visible and sections key their opacity
     // off their index.
     property int revealCount: 0
-    property int sectionCount: 9
+    property int sectionCount: 10
     Timer {
         id: revealTimer
         interval: 60
@@ -1238,6 +1238,67 @@ Item {
                                     text: "Reset to Default"
                                     onClicked: root.resetToDefaults()
                                 }
+                            }
+                        }
+                    }
+                }
+
+                // ============ LOCKSCREEN ============
+                Rectangle {
+                    width: parent.width
+                    implicitHeight: lockSec.implicitHeight + 20
+                    opacity: root.revealCount > 9 ? 1 : 0
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 250
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    radius: Theme.radius
+                    color: Theme.surface
+                    border.color: Theme.border
+                    border.width: 1
+
+                    Column {
+                        id: lockSec
+                        anchors.fill: parent
+                        anchors.margins: 10
+                        spacing: 8
+                        Label {
+                            text: "Lockscreen"
+                            font.pixelSize: Theme.fontSize + 2
+                            font.bold: true
+                            color: Theme.accent
+                        }
+                        Column {
+                            width: parent.width
+                            spacing: 4
+                            RowLayout {
+                                width: parent.width
+                                spacing: 8
+                                Label {
+                                    text: "Grace Period (seconds)"
+                                    color: Theme.fg
+                                    Layout.fillWidth: true
+                                }
+                                AppSpinBox {
+                                    from: 0
+                                    to: 120
+                                    value: Settings.lockGraceSeconds
+                                    Layout.preferredWidth: 160
+                                    onValueChanged: {
+                                        if (value === Settings.lockGraceSeconds)
+                                            return;
+                                        Settings.lockGraceSeconds = value;
+                                    }
+                                }
+                            }
+                            Label {
+                                width: parent.width
+                                wrapMode: Text.WordWrap
+                                text: "Esc dismisses the lock without a password within this window after locking."
+                                color: Theme.fgDim
+                                font.pixelSize: Theme.fontSize - 1
                             }
                         }
                     }

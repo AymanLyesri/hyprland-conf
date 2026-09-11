@@ -5,8 +5,10 @@ local screenshot = scriptsDir .. "/screenshot.sh"
 local screenshotAll = scriptsDir .. "/screenshot_all.sh"
 local terminal = "kitty"
 local menu = scriptsDir .. "/menu"
-local lock = scriptsDir .. "/hyprlock.sh"
-local suspend = scriptsDir .. "/hyprlock.sh suspend"
+-- Quickshell secure lock (qs ipc) + suspend chain (sleep 1 lets grim
+-- capture and the session lock engage before the machine sleeps).
+local lock = "qs -p " .. home .. "/.config/quickshell/archeclipse ipc call lock activate"
+local suspend = "qs -p " .. home .. "/.config/quickshell/archeclipse ipc call lock activate && sleep 1 && systemctl suspend"
 local statusBar = scriptsDir .. "/bar.sh"
 local monitor = "$(hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .name')"
 local resizeAmount = 25

@@ -22,21 +22,33 @@ QtObject {
     property var bwProcObj: null
 
     // Compile both loop binaries. gcc is fast; unconditional compile is fine.
-    // On success, start the loop processes.
+    // mkdir -p first: /tmp is wiped on every reboot, without it `ld` fails with
+    // "cannot open output file" and the loops never start (retry would loop forever).
     property Process compileProc: Process {
         command: [
             "bash", "-c",
-            "gcc -o " + root.tmpDir + "/system-resources-loop-ags " + root.scriptsDir + "/system-resources-loop-ags.c -lm"
+            "mkdir -p " + root.tmpDir
+            + " && gcc -o " + root.tmpDir + "/system-resources-loop-ags " + root.scriptsDir + "/system-resources-loop-ags.c -lm"
             + " && gcc -o " + root.tmpDir + "/bandwidth-loop-ags " + root.scriptsDir + "/bandwidth-loop-ags.c -lm"
         ]
+        stdout: SplitParser {
+            splitMarker: "\n"
+            onRead: data => console.log("[SysInfo] compile: " + data)
+        }
+        stderr: SplitParser {
+            splitMarker: "\n"
+            onRead: data => console.warn("[SysInfo] compile stderr: " + data)
+        }
         onExited: (exitCode, exitStatus) => {
             if (exitCode === 0) {
                 console.log("[SysInfo] loop binaries compiled");
+                retryTimer.stop();
                 startLoops();
             } else {
-                console.warn("[SysInfo] compilation failed, exitCode=" + exitCode);
+                console.warn("[SysInfo] compilation failed, exitCode=" + exitCode + " — retrying");
                 // Retry after a delay (handles source missing, gcc missing, etc.)
-                retryTimer.start();
+                if (!retryTimer.running)
+                    retryTimer.start();
             }
         }
     }
@@ -44,10 +56,39 @@ QtObject {
     property Timer retryTimer: Timer {
         interval: 10000
         repeat: true
-        onTriggered: compileProc.running = true;
+        triggeredOnStart: false
+        onTriggered: {
+            if (!compileProc.running)
+                compileProc.running = true;
+        }
+    }
+
+    // Backoff restarts for the loops: an immediate `running = true` on exit
+    // spin-loops at 100% CPU when the binary is missing/crashing (e.g.
+    // bandwidth-loop exits(1) with no default route). 2s delay + running
+    // guard keeps one instance alive without hammering.
+    property Timer resRestartTimer: Timer {
+        interval: 2000
+        repeat: false
+        onTriggered: {
+            if (root.resProcObj && !root.resProcObj.running)
+                root.resProcObj.running = true;
+        }
+    }
+    property Timer bwRestartTimer: Timer {
+        interval: 2000
+        repeat: false
+        onTriggered: {
+            if (root.bwProcObj && !root.bwProcObj.running)
+                root.bwProcObj.running = true;
+        }
     }
 
     function startLoops() {
+        // Tear down previous instances + pending restarts so recompile
+        // (or a manual retry) never leaves duplicate loop processes.
+        resRestartTimer.stop();
+        bwRestartTimer.stop();
         // system resources loop
         if (root.resProcObj) root.resProcObj.destroy();
         root.resProcObj = Qt.createQmlObject(`
@@ -61,7 +102,14 @@ QtObject {
                         catch (e) { root.systemResources = null; }
                     }
                 }
-                onExited: Qt.callLater(() => running = true)
+                stderr: SplitParser {
+                    splitMarker: "\\n"
+                    onRead: data => console.warn("[SysInfo] res-loop stderr: " + data)
+                }
+                onExited: (code, status) => {
+                    console.warn("[SysInfo] res-loop exited code=" + code + " — restarting in 2s");
+                    root.resRestartTimer.start();
+                }
                 Component.onCompleted: running = true
             }`, root);
 
@@ -72,6 +120,7 @@ QtObject {
             Process {
                 command: ["${root.tmpDir}/bandwidth-loop-ags"]
                 stdout: SplitParser {
+                    splitMarker: "\\n"
                     onRead: data => {
                         try {
                             const p = JSON.parse(data);
@@ -80,7 +129,14 @@ QtObject {
                         } catch (e) { root.bandwidth = [0, 0, 0, 0]; }
                     }
                 }
-                onExited: Qt.callLater(() => running = true)
+                stderr: SplitParser {
+                    splitMarker: "\\n"
+                    onRead: data => console.warn("[SysInfo] bw-loop stderr: " + data)
+                }
+                onExited: (code, status) => {
+                    console.warn("[SysInfo] bw-loop exited code=" + code + " — restarting in 2s");
+                    root.bwRestartTimer.start();
+                }
                 Component.onCompleted: running = true
             }`, root);
     }

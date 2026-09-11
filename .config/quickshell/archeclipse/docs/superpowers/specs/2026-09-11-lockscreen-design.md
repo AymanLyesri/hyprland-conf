@@ -21,7 +21,7 @@ from `Quickshell.Services.Pam` (`PamContext`), focus resilience from a
 
 - Real secure lock (WlSessionLock + PAM), not a visual reskin.
 - Four actions run DIRECTLY (no password gate): logout, shutdown,
-  sleep (`hyprlock.sh suspend`), reboot — same handlers as UserPanel.
+  sleep (`systemctl suspend`, lock stays engaged), reboot.
 - Full replace: remove `UserPanel` Variants from `shell.qml`, single
   `LockScreen` scope; keep `togglePanel user-panel <mon>` compat routing to
   lock.
@@ -92,10 +92,8 @@ clears failure, restarts 10s timer. Enter/confirm → `tryUnlock()` →
 `PamContext.start()` → `respond(currentText)` → success: clear text,
 `screenLocked=false`; failure: clear text, show error + shake, stay locked.
 Power buttons execute directly (`Hyprland.dispatch("hl.dsp.exit")`,
-`shutdown now`, `hyprlock.sh suspend`, `reboot`) without touching lock state,
-with one exception: sleep keeps `screenLocked=true` while launching the
-suspend script, so wake shows hyprlock first, then this lock underneath —
-unlock each in turn (accepted v1 double-lock).
+`shutdown now`, `systemctl suspend`, `reboot`) without touching lock state:
+sleep keeps `screenLocked=true`, so wake shows this lock directly.
 
 ## Error handling
 

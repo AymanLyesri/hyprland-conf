@@ -21,7 +21,7 @@ Item {
         },
         {
             label: "🔒 Lock Screen",
-            command: "hyprlock"
+            command: "qs -p $HOME/.config/quickshell/archeclipse ipc call lock activate"
         },
         {
             label: "💤 Suspend",

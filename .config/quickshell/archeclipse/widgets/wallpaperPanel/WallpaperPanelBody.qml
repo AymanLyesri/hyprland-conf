@@ -8,8 +8,8 @@ import qs.theme
 import qs.services
 import qs.widgets.shared
 
-// WallpaperPanelBody — pick a wallpaper per workspace, or set the sddm /
-// lockscreen background, browse a category, add a new wallpaper (with
+// WallpaperPanelBody — pick a wallpaper per workspace, or set the sddm
+// background, browse a category, add a new wallpaper (with
 // automatic thumbnail generation), or delete one.
 //
 // Lives in its own widgets/wallpaperPanel folder (same pattern as
@@ -46,7 +46,7 @@ Item {
 
     // ---------------------------------------------------------------- state
 
-    readonly property var targetTypes: ["workspace", "sddm", "lockscreen"]
+    readonly property var targetTypes: ["workspace", "sddm"]
     property string targetType: "workspace"
     property int selectedWorkspaceId: 1
 
@@ -211,8 +211,6 @@ Item {
         switch (target) {
         case "sddm":
             return ["pkexec", "bash", "-c", `sed -i "s|^background=.*|background=${path}|" /usr/share/sddm/themes/where_is_my_sddm_theme/theme.conf`];
-        case "lockscreen":
-            return ["bash", "-c", `mkdir -p ${JSON.stringify(root.home + "/.config/wallpapers/lockscreen")} && ` + `cp ${JSON.stringify(path)} ${JSON.stringify(root.home + "/.config/wallpapers/lockscreen/wallpaper")}`];
         default:
             // workspace
             return [root.setScript, String(root.selectedWorkspaceId), root.effectiveMonitor, path];

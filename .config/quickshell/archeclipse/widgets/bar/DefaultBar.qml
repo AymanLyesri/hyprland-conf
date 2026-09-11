@@ -131,8 +131,6 @@ Column {
             height: Theme.barContentHeight
             radius: Theme.radius
             color: Theme.surfaceActive
-            border.color: Theme.border
-            border.width: 1
 
             Row {
                 id: centerRow
