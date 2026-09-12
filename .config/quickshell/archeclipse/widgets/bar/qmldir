@@ -1,0 +1,17 @@
+module qs.widgets.bar
+
+Bandwidth 1.0 Bandwidth.qml
+Bar 1.0 Bar.qml
+BarHoverWindow 1.0 BarHoverWindow.qml
+Battery 1.0 Battery.qml
+Brightness 1.0 Brightness.qml
+Clock 1.0 Clock.qml
+ControlPanelButton 1.0 ControlPanelButton.qml
+DefaultBar 1.0 DefaultBar.qml
+HotZone 1.0 HotZone.qml
+KeyboardLayoutWidget 1.0 KeyboardLayoutWidget.qml
+NetworkWidget 1.0 NetworkWidget.qml
+ResourceMonitor 1.0 ResourceMonitor.qml
+Tray 1.0 Tray.qml
+Volume 1.0 Volume.qml
+Workspaces 1.0 Workspaces.qml

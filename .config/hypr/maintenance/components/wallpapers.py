@@ -154,6 +154,7 @@ urls_animated_nsfw = [
     "https://cdn.donmai.us/sample/e7/2b/sample-e72b9cc52491048bc676f86653ea313e.webm",
     "https://cdn.donmai.us/original/44/6f/446f5828a683141696dccaedb777803a.mp4",
     "https://cdn.donmai.us/original/d7/f2/d7f2dc6cb4be818b67c35e2366f4cd69.mp4",
+    "https://cdn.donmai.us/original/33/28/3328518dc5859617c18c4bd8f564e374.mp4",
 ]
 
 

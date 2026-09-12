@@ -5,13 +5,18 @@ local screenshot = scriptsDir .. "/screenshot.sh"
 local screenshotAll = scriptsDir .. "/screenshot_all.sh"
 local terminal = "kitty"
 local menu = scriptsDir .. "/menu"
-local lock = scriptsDir .. "/hyprlock.sh"
-local suspend = scriptsDir .. "/hyprlock.sh suspend"
-local keyboardLayout = scriptsDir .. "/dvorak-qwerty.sh"
+-- Quickshell secure lock (qs ipc) + suspend chain (sleep 1 lets grim
+-- capture and the session lock engage before the machine sleeps).
+local lock = "qs -p " .. home .. "/.config/quickshell/archeclipse ipc call lock activate"
+local suspend = "qs -p " .. home .. "/.config/quickshell/archeclipse ipc call lock activate && sleep 1 && systemctl suspend"
 local statusBar = scriptsDir .. "/bar.sh"
 local monitor = "$(hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .name')"
 local resizeAmount = 25
 local changeBrightness = scriptsDir .. "/change-brightness.sh"
+
+-- Quickshell bar: IPC calls target the QS config
+local qsCfg = home .. "/.config/quickshell/archeclipse"
+local qsIpc = "qs -p " .. qsCfg .. " ipc call bar "
 
 hl.config({
     binds = {
@@ -31,7 +36,7 @@ hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 --- kill active window
 hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.window.kill())
 --- float for active window
-hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.float({ action = "toggle" }))
+hl.bind(mainMod .. " + SPACE", hl.dsp.window.float({ action = "toggle" }))
 --- pin active window
 hl.bind(mainMod .. " + CTRL + Space", hl.dsp.window.pin())
 
@@ -47,27 +52,27 @@ hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("[workspace 5] " .. terminal .. " bto
 --- restart status bar
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(statusBar))
 --- toggle status bar visibility
-hl.bind(mainMod .. " + ALT_L", hl.dsp.exec_cmd("ags request bar " .. monitor))
+hl.bind(mainMod .. " + ALT_L", hl.dsp.exec_cmd(qsIpc .. "toggleBar " .. monitor))
 --- toggle app launcher
-hl.bind(mainMod .. " + SUPER_L", hl.dsp.exec_cmd("ags request search " .. monitor))
+hl.bind(mainMod .. " + SUPER_L", hl.dsp.exec_cmd(qsIpc .. "toggleSearch"))
 --- toggle media panel
-hl.bind(mainMod .. " + m", hl.dsp.exec_cmd("ags toggle media-" .. monitor))
---- toggle right panel
-hl.bind(mainMod .. " + r", hl.dsp.exec_cmd("ags toggle right-panel-" .. monitor))
---- toggle left panel
-hl.bind(mainMod .. " + l", hl.dsp.exec_cmd("ags toggle left-panel-" .. monitor))
+hl.bind(mainMod .. " + m", hl.dsp.exec_cmd(qsIpc .. "togglePanel media-panel " .. monitor))
+--- toggle right panel (SUPER+R)
+hl.bind(mainMod .. " + r", hl.dsp.exec_cmd(qsIpc .. "toggleRightPanel " .. monitor))
+--- toggle left panel (SUPER+L)
+hl.bind(mainMod .. " + l", hl.dsp.exec_cmd(qsIpc .. "toggleLeftPanel " .. monitor))
 --- toggle wallpaper switcher
-hl.bind(mainMod .. " + w", hl.dsp.exec_cmd("ags toggle wallpaper-switcher-" .. monitor))
+hl.bind(mainMod .. " + w", hl.dsp.exec_cmd(qsIpc .. "togglePanel wallpaper-switcher " .. monitor))
 --- toggle user panel
-hl.bind(mainMod .. " + Escape", hl.dsp.exec_cmd("ags toggle user-panel-" .. monitor))
+hl.bind(mainMod .. " + Escape", hl.dsp.exec_cmd(qsIpc .. "togglePanel user-panel " .. monitor))
 --- open clipboard manager
-hl.bind(mainMod .. " + SHIFT + v", hl.dsp.exec_cmd("ags request clipboard " .. monitor))
+hl.bind(mainMod .. " + SHIFT + v", hl.dsp.exec_cmd(qsIpc .. "clipboard"))
 --- open emoji picker
-hl.bind(mainMod .. " + period", hl.dsp.exec_cmd("ags request emojis " .. monitor))
+hl.bind(mainMod .. " + period", hl.dsp.exec_cmd(qsIpc .. "emojis"))
 --- open notes app
-hl.bind(mainMod .. " + SHIFT + n", hl.dsp.exec_cmd("ags request notes " .. monitor))
+hl.bind(mainMod .. " + SHIFT + n", hl.dsp.exec_cmd(qsIpc .. "notes"))
 --- open all apps
-hl.bind(mainMod .. " + A", hl.dsp.exec_cmd("ags request apps " .. monitor))
+hl.bind(mainMod .. " + A", hl.dsp.exec_cmd(qsIpc .. "apps"))
 
 -- Screenshot and Screen Record Keybinds
 --- screenshot workspace
@@ -75,17 +80,15 @@ hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd(screenshot .. " --now"))
 --- screenshot area
 hl.bind(mainMod .. " + CTRL + SHIFT + S", hl.dsp.exec_cmd(screenshot .. " --area"))
 --- screen record workspace
-hl.bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd("ags request screenrecord now"))
+hl.bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd(qsIpc .. "screenrecord now"))
 --- screen record area
-hl.bind(mainMod .. " + CTRL + SHIFT + R", hl.dsp.exec_cmd("ags request screenrecord area"))
+hl.bind(mainMod .. " + CTRL + SHIFT + R", hl.dsp.exec_cmd(qsIpc .. "screenrecord area"))
 
 -- Special Workspace Keybinds
 --- move to special workspace
 hl.bind(mainMod .. " + CTRL + S", hl.dsp.window.move({ workspace = "special" }))
 --- toggle special workspace
 hl.bind(mainMod .. " + S", hl.dsp.workspace.toggle_special())
---- toggle Dvorak keyboard layout
-hl.bind("ALT + F10", hl.dsp.exec_cmd(keyboardLayout))
 
 -- Media, Brightness and Volume Controls
 --- volume up

@@ -68,7 +68,7 @@ This is the Hyprland configuration from the **Arch Eclipse** project by **AymanL
 **Features include:**
 
 - Dynamic wallpapers and color schemes
-- Advanced GTK4 widgets (Ags)
+- Advanced Quickshell (QtQuick/QML) widgets
 - Application launcher with clipboard history
 - Right and left panels with customizable widgets
 - Wallpaper switcher

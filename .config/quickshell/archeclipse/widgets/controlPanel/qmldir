@@ -1,0 +1,3 @@
+module qs.widgets.controlPanel
+
+ControlPanelBody 1.0 ControlPanelBody.qml

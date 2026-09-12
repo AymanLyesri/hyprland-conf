@@ -11,10 +11,10 @@ from typing import Callable, Optional
 if __package__ in (None, ""):
     sys.path.append(str(Path(__file__).resolve().parent.parent))
     from components.essentials import Colors, continue_prompt, prompt_yes_no
-    from components.utils import read_json_output, run_shell
+    from components.utils import run_shell
 else:
     from .essentials import Colors, continue_prompt, prompt_yes_no
-    from .utils import read_json_output, run_shell
+    from .utils import run_shell
 
 BOLD = "\033[1m"
 CYAN = "\033[0;36m"
@@ -171,22 +171,7 @@ def run_section_step(
 
 
 def prompt_for_donation() -> None:
-    monitor_name = ""
-    try:
-        monitors = read_json_output(["hyprctl", "monitors", "-j"])
-        for monitor in monitors:
-            if monitor.get("focused"):
-                monitor_name = str(monitor.get("name", ""))
-                break
-    except Exception:
-        monitor_name = ""
-
     print("")
     print("Support the project if it helped your setup.")
     print("Thank you for being part of the ArchEclipse community.")
     print("")
-
-    continue_prompt(
-        "Would you like to support the project?",
-        f"ags request donations {monitor_name}",
-    )

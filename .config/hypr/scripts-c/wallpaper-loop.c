@@ -16,12 +16,16 @@
 #include <stdbool.h>
 #include <errno.h>
 #include <time.h>
+#include <signal.h>
+#include <fcntl.h>
+#include <sys/wait.h>
 
 #define MAX_MONITORS 16
 #define MAX_LINE_LEN 1024
-#define MAX_PATH_LEN 512
+#define MAX_PATH_LEN 1024
 #define MAX_MONITOR_NAME 64
 #define LOG_FILE "/tmp/wallpaper-daemon.log"
+#define DEBOUNCE_MS 100
 
 /* Monitor state tracking structure */
 typedef struct {
@@ -38,6 +42,7 @@ static char hypr_dir[MAX_PATH_LEN];
 
 /* Forward declarations */
 void notify_error(const char* where, const char* message);
+void log_info(const char* where, const char* message);
 char* exec_command(const char* cmd);
 
 /*
@@ -122,10 +127,12 @@ static void create_config_structure() {
 
     if (!ensure_dir(base_dir)) {
         notify_error("create_config_structure", "Failed to ensure base config directory");
+        free(output);
         return;
     }
 
-    char* line = strtok(output, "\n");
+    char* saveptr = NULL;
+    char* line = strtok_r(output, "\n", &saveptr);
     while (line) {
         char monitor_dir[MAX_PATH_LEN];
         char monitor_conf[MAX_PATH_LEN];
@@ -137,7 +144,7 @@ static void create_config_structure() {
             char error_msg[512];
             snprintf(error_msg, sizeof(error_msg), "Failed to create dir for %s", line);
             notify_error("create_config_structure", error_msg);
-            line = strtok(NULL, "\n");
+            line = strtok_r(NULL, "\n", &saveptr);
             continue;
         }
 
@@ -151,24 +158,99 @@ static void create_config_structure() {
             }
         }
 
-        line = strtok(NULL, "\n");
+        line = strtok_r(NULL, "\n", &saveptr);
+    }
+    free(output);
+}
+
+/*
+ * Process helpers — no system(), no SIGCHLD games.
+ * (system() is broken when SIGCHLD is SIG_IGN: its internal waitpid fails
+ * with ECHILD, so it returns -1 and status checks like `== 0` never pass.)
+ */
+
+/* Run argv synchronously, return exit code (or -1 on fork/wait error).
+ * When null_io is true, child stdout/stderr go to /dev/null (for pgrep/pkill). */
+static int run_wait_io(char* const argv[], bool null_io) {
+    pid_t pid = fork();
+    if (pid < 0) {
+        return -1;
+    }
+    if (pid == 0) {
+        if (null_io) {
+            int devnull = open("/dev/null", O_WRONLY);
+            if (devnull >= 0) {
+                dup2(devnull, STDOUT_FILENO);
+                dup2(devnull, STDERR_FILENO);
+                if (devnull > STDERR_FILENO) {
+                    close(devnull);
+                }
+            }
+        }
+        execvp(argv[0], argv);
+        _exit(127);
+    }
+    int status = 0;
+    while (waitpid(pid, &status, 0) < 0) {
+        if (errno != EINTR) {
+            return -1;
+        }
+    }
+    if (WIFEXITED(status)) {
+        return WEXITSTATUS(status);
+    }
+    return -1;
+}
+
+static int run_wait(char* const argv[]) {
+    return run_wait_io(argv, false);
+}
+
+static int run_quiet(char* const argv[]) {
+    return run_wait_io(argv, true);
+}
+
+/* Double-fork detach: grandchild is reparented to init, so no zombie
+ * and no SIGCHLD handling required. Parent reaps the intermediate child. */
+static void spawn_detached(char* const argv[]) {
+    pid_t pid = fork();
+    if (pid < 0) {
+        fprintf(stderr, "spawn_detached: fork failed: %s\n", strerror(errno));
+        return;
+    }
+    if (pid == 0) {
+        if (fork() == 0) {
+            execvp(argv[0], argv);
+            _exit(127);
+        }
+        _exit(0);
+    }
+    int status = 0;
+    while (waitpid(pid, &status, 0) < 0) {
+        if (errno != EINTR) {
+            break;
+        }
     }
 }
 
 /*
  * Error notification system
  * Sends desktop notifications, logs to file, and prints to stderr
+ * Rate-limited to avoid fork storms on hot paths (max 1 notify per 5s)
  */
 void notify_error(const char* where, const char* message) {
-    char cmd[1024];
+    static struct timespec last_notify = {0, 0};
+    struct timespec now_ts;
+    clock_gettime(CLOCK_MONOTONIC, &now_ts);
+    long elapsed_ms = (now_ts.tv_sec - last_notify.tv_sec) * 1000
+        + (now_ts.tv_nsec - last_notify.tv_nsec) / 1000000;
+
     time_t now = time(NULL);
     struct tm* tm_info = localtime(&now);
     char timestamp[64];
     strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", tm_info);
 
-    snprintf(cmd, sizeof(cmd), "notify-send -u critical 'Wallpaper Daemon Error' '%s: %s'", where, message);
-    system(cmd);
-
+    // Always log; rate-limit only the expensive notify-send fork.
     FILE* log = fopen(LOG_FILE, "a");
     if (log) {
         fprintf(log, "[%s] %s: %s\n", timestamp, where, message);
@@ -176,6 +258,36 @@ void notify_error(const char* where, const char* message) {
     }
 
     fprintf(stderr, "[%s] ERROR in %s: %s\n", timestamp, where, message);
+
+    if (elapsed_ms < 5000) {
+        return;
+    }
+    last_notify = now_ts;
+
+    char* const argv[] = {
+        "notify-send", "-u", "critical",
+        "Wallpaper Daemon Error", (char*)message, NULL
+    };
+    spawn_detached(argv);
+}
+
+/*
+ * Info-level log without desktop notification.
+ * Use for expected hot-path misses (empty workspace slots).
+ */
+void log_info(const char* where, const char* message) {
+    time_t now = time(NULL);
+    struct tm* tm_info = localtime(&now);
+    char timestamp[64];
+    strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", tm_info);
+
+    FILE* log = fopen(LOG_FILE, "a");
+    if (log) {
+        fprintf(log, "[%s] %s: %s\n", timestamp, where, message);
+        fclose(log);
+    }
+
+    fprintf(stderr, "[%s] INFO in %s: %s\n", timestamp, where, message);
 }
 
 /*
@@ -202,7 +314,7 @@ MonitorState* get_monitor_state(const char* monitor_name) {
 
 /*
  * Execute shell command and capture output
- * Uses static buffer - not thread-safe
+ * Returns malloc'd buffer (caller must free). Grows dynamically.
  */
 char* exec_command(const char* cmd) {
     FILE* fp = popen(cmd, "r");
@@ -212,12 +324,28 @@ char* exec_command(const char* cmd) {
         notify_error("exec_command", error_msg);
         return NULL;
     }
-    
-    static char buffer[4096];
-    size_t total = 0, n;
-    
-    while ((n = fread(buffer + total, 1, sizeof(buffer) - total - 1, fp)) > 0) {
+
+    size_t cap = 8192, total = 0;
+    char* buffer = malloc(cap);
+    if (!buffer) {
+        pclose(fp);
+        return NULL;
+    }
+
+    size_t n;
+    while ((n = fread(buffer + total, 1, cap - total - 1, fp)) > 0) {
         total += n;
+        if (total + 1 >= cap) {
+            size_t new_cap = cap * 2;
+            char* grown = realloc(buffer, new_cap);
+            if (!grown) {
+                free(buffer);
+                pclose(fp);
+                return NULL;
+            }
+            buffer = grown;
+            cap = new_cap;
+        }
     }
     buffer[total] = '\0';
     pclose(fp);
@@ -280,154 +408,68 @@ bool get_wallpaper_for_workspace(const char* monitor, int workspace_id, char* wa
 }
 
 /*
- * Get active workspace ID for a monitor
- * Parses JSON output from hyprctl monitors
- * Searches for monitor by name, then extracts activeWorkspace.id
+ * Single-snapshot monitor query: ONE hyprctl+jq invocation per wallpaper event.
+ * Replaces the old N+1 pattern (get_monitors + get_active_workspace per monitor).
+ * Output lines: "<monitor_name> <active_workspace_id>"
  */
-int get_active_workspace(const char* monitor_name) {
-    char* output = exec_command("hyprctl monitors -j");
+int get_monitor_snapshot(char monitors_list[][MAX_MONITOR_NAME], int workspace_ids[]) {
+    char* output = exec_command("hyprctl monitors -j | jq -r '.[] | \"\\(.name) \\(.activeWorkspace.id)\"'");
     if (!output) {
-        char error_msg[512];
-        snprintf(error_msg, sizeof(error_msg), "hyprctl command failed for monitor '%s'", monitor_name);
-        notify_error("get_active_workspace", error_msg);
-        return -1;
-    }
-    
-    char search[128];
-    snprintf(search, sizeof(search), "\"name\": \"%s\"", monitor_name);
-    char* monitor_pos = strstr(output, search);
-    if (!monitor_pos) {
-        snprintf(search, sizeof(search), "\"name\":\"%s\"", monitor_name);
-        monitor_pos = strstr(output, search);
-    }
-    
-    if (!monitor_pos) {
-        char error_msg[512];
-        snprintf(error_msg, sizeof(error_msg), "Monitor '%s' not found in JSON", monitor_name);
-        notify_error("get_active_workspace", error_msg);
-        return -1;
-    }
-    
-    char* workspace_pos = strstr(monitor_pos, "\"activeWorkspace\"");
-    if (!workspace_pos) {
-        char error_msg[512];
-        snprintf(error_msg, sizeof(error_msg), "activeWorkspace not found for '%s'", monitor_name);
-        notify_error("get_active_workspace", error_msg);
-        return -1;
-    }
-    
-    char* id_pos = strstr(workspace_pos, "\"id\"");
-    if (!id_pos) {
-        char error_msg[512];
-        snprintf(error_msg, sizeof(error_msg), "Workspace ID not found for '%s'", monitor_name);
-        notify_error("get_active_workspace", error_msg);
-        return -1;
-    }
-    
-    id_pos += 4;
-    while (*id_pos && (*id_pos == ' ' || *id_pos == ':')) id_pos++;
-    
-    int workspace_id;
-    if (sscanf(id_pos, "%d", &workspace_id) == 1) {
-        return workspace_id;
-    }
-    
-    char error_msg[512];
-    snprintf(error_msg, sizeof(error_msg), "Failed to parse workspace ID for '%s'", monitor_name);
-    notify_error("get_active_workspace", error_msg);
-    return -1;
-}
-
-/*
- * Get list of all physical monitors
- * Parses hyprctl monitors JSON and extracts monitor names
- * Filters out special workspaces and numeric IDs (workspace names)
- */
-int get_monitors(char monitors_list[][MAX_MONITOR_NAME]) {
-    char* output = exec_command("hyprctl monitors -j");
-    if (!output) {
-        notify_error("get_monitors", "hyprctl command failed");
+        notify_error("get_monitor_snapshot", "hyprctl command failed");
         return 0;
     }
-    
+
     int count = 0;
-    char* pos = output;
-    
-    /* Parse JSON structure looking for monitor objects
-     * Pattern: { "id": <num>, "name": "<monitor_name>", ...
-     * Avoids workspace names by checking context */
-    while (count < MAX_MONITORS) {
-        pos = strstr(pos, "\"id\"");
-        if (!pos) break;
-        
-        char* after_id = pos + 4;
-        while (*after_id && (*after_id == ' ' || *after_id == ':')) after_id++;
-        
-        char* comma_pos = strchr(after_id, ',');
-        if (!comma_pos) {
-            pos++;
+    char* saveptr = NULL;
+    char* line = strtok_r(output, "\n", &saveptr);
+    while (line && count < MAX_MONITORS) {
+        // Skip blanks
+        while (*line == ' ' || *line == '\t') line++;
+        if (*line == '\0') {
+            line = strtok_r(NULL, "\n", &saveptr);
             continue;
         }
-        
-        char* name_pos = strstr(comma_pos, "\"name\"");
-        if (!name_pos || name_pos - comma_pos > 200) {
-            pos++;
+
+        char* space = strrchr(line, ' ');
+        if (!space) {
+            line = strtok_r(NULL, "\n", &saveptr);
             continue;
         }
-        
-        /* Skip if inside a workspace object (activeWorkspace/specialWorkspace) */
-        char* workspace_check = strstr(comma_pos, "Workspace\"");
-        if (workspace_check && workspace_check < name_pos) {
-            pos = name_pos + 6;
+        *space = '\0';
+
+        if (strlen(line) == 0 || strlen(line) >= MAX_MONITOR_NAME) {
+            line = strtok_r(NULL, "\n", &saveptr);
             continue;
         }
-        
-        name_pos += 6;
-        while (*name_pos && (*name_pos == ' ' || *name_pos == ':')) name_pos++;
-        
-        if (*name_pos != '"') {
-            pos++;
+        // Defensive: skip special workspaces / numeric names if jq ever emits them
+        if (strstr(line, "special")) {
+            line = strtok_r(NULL, "\n", &saveptr);
             continue;
         }
-        name_pos++;
-        
-        char* end = strchr(name_pos, '"');
-        if (!end) break;
-        
-        size_t len = end - name_pos;
-        if (len == 0 || len >= MAX_MONITOR_NAME) {
-            pos = end + 1;
+
+        char* endptr = NULL;
+        long ws = strtol(space + 1, &endptr, 10);
+        if (endptr == space + 1) {
+            line = strtok_r(NULL, "\n", &saveptr);
             continue;
         }
-        
-        char temp_name[MAX_MONITOR_NAME];
-        strncpy(temp_name, name_pos, len);
-        temp_name[len] = '\0';
-        
-        /* Filter out special workspaces and pure numeric names */
-        bool is_numeric = true;
-        for (size_t i = 0; i < len; i++) {
-            if (temp_name[i] < '0' || temp_name[i] > '9') {
-                is_numeric = false;
-                break;
-            }
-        }
-        
-        if (strstr(temp_name, "special") || is_numeric) {
-            pos = end + 1;
-            continue;
-        }
-        
-        strcpy(monitors_list[count++], temp_name);
-        pos = end + 1;
+
+        strncpy(monitors_list[count], line, MAX_MONITOR_NAME - 1);
+        monitors_list[count][MAX_MONITOR_NAME - 1] = '\0';
+        workspace_ids[count] = (int)ws;
+        count++;
+
+        line = strtok_r(NULL, "\n", &saveptr);
     }
-    
+
+    free(output);
     return count;
 }
 
-/* Check if hyprpaper process is running */
+/* Check if hyprpaper process is running (fork+waitpid, never system()) */
 bool is_hyprpaper_running() {
-    return system("pgrep -x hyprpaper >/dev/null 2>&1") == 0;
+    char* const argv[] = {"pgrep", "-x", "hyprpaper", NULL};
+    return run_quiet(argv) == 0;
 }
 
 /* Check if wallpaper should be rendered via mpvpaper */
@@ -445,27 +487,60 @@ bool is_media_wallpaper(const char* wallpaper) {
     return strcasecmp(ext, "gif") == 0 || strcasecmp(ext, "mp4") == 0 || strcasecmp(ext, "webm") == 0;
 }
 
-/* Kill any running wallpaper script instances */
+/* Kill stale wallpaper helper scripts (pkill matches full cmdline; killall did not) */
 void kill_wallpaper_script() {
-    char cmd[MAX_PATH_LEN];
-    snprintf(cmd, sizeof(cmd), "pgrep -f '%s/wallpaper-daemon/hyprpaper.sh' >/dev/null 2>&1", hypr_dir);
-    if (system(cmd) == 0) {
-        system("killall hyprpaper.sh 2>/dev/null");
+    // Best-effort; pkill exits nonzero when nothing matches, which is fine.
+    char* const argv1[] = {"pkill", "-f", "wallpaper-daemon/hyprpaper.sh", NULL};
+    char* const argv2[] = {"pkill", "-f", "wallpaper-daemon/mpvpaper.sh", NULL};
+    run_quiet(argv1);
+    run_quiet(argv2);
+}
+
+/*
+ * Spawn wallpaper helper without shell quoting hazards.
+ * No system() string building: double-fork + exec avoids injection via
+ * single-quotes/newlines in wallpaper paths and long-path truncation.
+ * Grandchild is reparented to init, so no zombie and no SIGCHLD handling.
+ */
+static void spawn_wallpaper_script(const char* monitor, const char* wallpaper_path) {
+    char script[MAX_PATH_LEN];
+    int n = snprintf(script, sizeof(script), "%s/wallpaper-daemon/%s",
+                     hypr_dir, is_media_wallpaper(wallpaper_path) ? "mpvpaper.sh" : "hyprpaper.sh");
+    if (n < 0 || (size_t)n >= sizeof(script)) {
+        notify_error("spawn_wallpaper_script", "Script path truncated");
+        return;
     }
+
+    char* const argv[] = {script, (char*)monitor, (char*)wallpaper_path, NULL};
+    spawn_detached(argv);
 }
 
 /*
  * Main wallpaper change handler
- * Iterates through all monitors, checks workspace changes, and updates wallpapers
- * Only changes wallpaper when workspace or wallpaper path differs from previous state
+ * Single hyprctl snapshot per event; throttled to DEBOUNCE_MS.
+ * Only changes wallpaper when workspace or wallpaper path differs.
  */
 void change_wallpaper() {
+    // Throttle to at most one snapshot per DEBOUNCE_MS (rapid workspace flapping)
+    static struct timespec last_run = {0, 0};
+    struct timespec now_ts;
+    clock_gettime(CLOCK_MONOTONIC, &now_ts);
+    long elapsed_ms = (now_ts.tv_sec - last_run.tv_sec) * 1000
+        + (now_ts.tv_nsec - last_run.tv_nsec) / 1000000;
+    if (last_run.tv_sec != 0 && elapsed_ms < DEBOUNCE_MS) {
+        usleep((useconds_t)((DEBOUNCE_MS - elapsed_ms) * 1000));
+        clock_gettime(CLOCK_MONOTONIC, &now_ts);
+    }
+    last_run = now_ts;
+
     char monitors_list[MAX_MONITORS][MAX_MONITOR_NAME];
-    int num_monitors = get_monitors(monitors_list);
-    
+    int workspace_ids[MAX_MONITORS];
+    int num_monitors = get_monitor_snapshot(monitors_list, workspace_ids);
+
     for (int i = 0; i < num_monitors; i++) {
         const char* monitor = monitors_list[i];
-        
+        int workspace_id = workspace_ids[i];
+
         MonitorState* state = get_monitor_state(monitor);
         if (!state) {
             char error_msg[512];
@@ -473,34 +548,37 @@ void change_wallpaper() {
             notify_error("change_wallpaper", error_msg);
             continue;
         }
-        
-        int workspace_id = get_active_workspace(monitor);
-        if (workspace_id == -1) {
-            char error_msg[512];
-            snprintf(error_msg, sizeof(error_msg), "Failed to get workspace ID for '%s'", monitor);
-            notify_error("change_wallpaper", error_msg);
-            continue;
-        }
-        
+
         /* Skip if workspace unchanged since last check */
         if (state->initialized && state->previous_workspace_id == workspace_id) {
             continue;
         }
-        
+
         char wallpaper[MAX_PATH_LEN];
         if (!get_wallpaper_for_workspace(monitor, workspace_id, wallpaper, sizeof(wallpaper))) {
-            char error_msg[512];
-            snprintf(error_msg, sizeof(error_msg), "No wallpaper config for '%s' workspace %d", monitor, workspace_id);
-            notify_error("change_wallpaper", error_msg);
+            char info_msg[512];
+            snprintf(info_msg, sizeof(info_msg), "No wallpaper config for '%s' workspace %d (skipping)",
+                     monitor, workspace_id);
+            log_info("change_wallpaper", info_msg);
+            // Remember workspace so we don't re-log on every duplicate event
+            state->previous_workspace_id = workspace_id;
+            state->initialized = true;
             continue;
         }
-        
+
+        // Empty slot (e.g. "w-5="): expected state, not an error. Skip quietly.
+        if (wallpaper[0] == '\0') {
+            state->previous_workspace_id = workspace_id;
+            state->initialized = true;
+            continue;
+        }
+
         /* Skip if wallpaper path unchanged (workspace switch but same wallpaper) */
         if (state->initialized && strcmp(wallpaper, state->current_wallpaper) == 0) {
             state->previous_workspace_id = workspace_id;
             continue;
         }
-        
+
         char expanded_wallpaper[MAX_PATH_LEN];
         expand_path(wallpaper, expanded_wallpaper, sizeof(expanded_wallpaper));
         
@@ -518,15 +596,9 @@ void change_wallpaper() {
         }
         
         kill_wallpaper_script();
-        
-        /* Execute wallpaper change script */
-        char cmd[MAX_PATH_LEN * 2];
-        if (is_media_wallpaper(expanded_wallpaper)) {
-            snprintf(cmd, sizeof(cmd), "%s/wallpaper-daemon/mpvpaper.sh '%s' '%s' &", hypr_dir, monitor, expanded_wallpaper);
-        } else {
-            snprintf(cmd, sizeof(cmd), "%s/wallpaper-daemon/hyprpaper.sh '%s' '%s' &", hypr_dir, monitor, expanded_wallpaper);
-        }
-        system(cmd);
+
+        /* Execute wallpaper change script (fork+exec, no shell) */
+        spawn_wallpaper_script(monitor, expanded_wallpaper);
         
         /* Update monitor state */
         strncpy(state->current_wallpaper, wallpaper, MAX_PATH_LEN - 1);
@@ -590,16 +662,28 @@ int main() {
         notify_error("main", "HOME environment variable not set");
         return 1;
     }
-    
+
     snprintf(hypr_dir, sizeof(hypr_dir), "%s/.config/hypr", home);
-    
+
+    // Unbuffered stdout so /tmp/wallpaper-loop.out shows progress live
+    setvbuf(stdout, NULL, _IONBF, 0);
+
+    // Wait for hyprpaper, but self-heal: if it never appears, start it
+    // ourselves instead of blocking forever (hyprpaper has crashed before).
     printf("Waiting for hyprpaper to start...\n");
+    int waited = 0;
     while (!is_hyprpaper_running()) {
+        if (waited == 10) {
+            printf("hyprpaper not found after 10s, starting it...\n");
+            char* const argv[] = {"hyprpaper", NULL};
+            spawn_detached(argv);
+        }
         sleep(1);
+        waited++;
     }
     printf("hyprpaper detected, proceeding...\n");
-    
-    sleep(1);
+
+    usleep(300 * 1000);
 
     create_config_structure();
 
@@ -627,8 +711,10 @@ int main() {
     char buffer[MAX_LINE_LEN];
     while (fgets(buffer, sizeof(buffer), sock_file)) {
         buffer[strcspn(buffer, "\n")] = 0;
-        
-        if (strstr(buffer, "workspace>>") || strstr(buffer, "focusedmon>>")) {
+
+        // "workspace>>" also matches "moveworkspace>>" as substring;
+        // workspacev2 is a distinct event name and needs its own match.
+        if (strstr(buffer, "workspace") || strstr(buffer, "focusedmon>>")) {
             printf("Workspace/Monitor change detected, updating wallpaper...\n");
             change_wallpaper();
         }

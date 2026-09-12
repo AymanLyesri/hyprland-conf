@@ -18,8 +18,6 @@
 !.config/kitty/
 # include pipwire config
 !.config/pipewire/
-# include ags
-!.config/ags/
 # include fastfetch config
 !.config/fastfetch/
 # wallpapers
@@ -28,6 +26,8 @@
 !.config/starship.toml
 # include btop config
 !.config/btop/
+# Include quickshell
+!.config/quickshell
 
 # include icons (cursort theme)
 !.icons/

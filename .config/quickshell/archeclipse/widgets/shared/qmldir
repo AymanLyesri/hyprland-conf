@@ -1,0 +1,19 @@
+module qs.widgets.shared
+
+AppButton 1.0 AppButton.qml
+AppKeybind 1.0 AppKeybind.qml
+AppSlider 1.0 AppSlider.qml
+AppImage 1.0 AppImage.qml
+AppCheckBox 1.0 AppCheckBox.qml
+AppSpinBox 1.0 AppSpinBox.qml
+AppComboBox 1.0 AppComboBox.qml
+AppTextField 1.0 AppTextField.qml
+AppTextArea 1.0 AppTextArea.qml
+SmoothFlickable 1.0 SmoothFlickable.qml
+SmoothListView 1.0 SmoothListView.qml
+SmoothWheelHandler 1.0 SmoothWheelHandler.qml
+AppMasonry 1.0 AppMasonry.qml
+AppSegmentedControl 1.0 AppSegmentedControl.qml
+AppProgress 1.0 AppProgress.qml
+AppTooltip 1.0 AppTooltip.qml
+SystemResourcesContent 1.0 SystemResourcesContent.qml

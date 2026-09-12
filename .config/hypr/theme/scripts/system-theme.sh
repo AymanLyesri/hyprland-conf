@@ -32,14 +32,13 @@ get_current_theme() {
     fi
 }
 
-# Apply all theme components (cursor, wal, gtk, qt)
+# Apply all theme components (cursor, wal, gtk, icon)
 apply_theme_components() {
     # Apply all theme components in parallel for faster execution
     {
         "${SCRIPTS_DIR}/cursor-theme.sh" &
         "${SCRIPTS_DIR}/gtk-theme.sh" &
         "${SCRIPTS_DIR}/wal-theme.sh" &
-        "${SCRIPTS_DIR}/qt-theme.sh" &
         "${SCRIPTS_DIR}/icon-theme.sh" &
         wait
     } 2>/dev/null
@@ -86,7 +85,7 @@ switch_theme() {
     
     echo "Theme switched to: $target_theme"
     
-    # Apply all theme components (cursor, wal, gtk, qt)
+    # Apply all theme components (cursor, wal, gtk, icon)
     apply_theme_components
     
     # Send notification if notify-send is available
@@ -113,7 +112,7 @@ main() {
             echo "  switch       - Toggle theme (dark <-> light)" >&2
             echo "  switch dark  - Switch to dark theme" >&2
             echo "  switch light - Switch to light theme" >&2
-            echo "  apply        - Apply current theme components (cursor, wal, gtk, qt)" >&2
+            echo "  apply        - Apply current theme components (cursor, wal, gtk, icon)" >&2
             exit 1
         ;;
     esac

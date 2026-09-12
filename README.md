@@ -12,7 +12,8 @@
 
 [![Arch Linux](https://img.shields.io/badge/Arch_Linux-1793D1?style=flat-square&logo=arch-linux&logoColor=white)](https://archlinux.org/)
 [![Hyprland](https://img.shields.io/badge/Hyprland-blue?style=flat-square)](https://hyprland.org/)
-[![GTK4](https://img.shields.io/badge/GTK4-4A86CF?style=flat-square&logo=gtk&logoColor=white)](https://gtk.org/)
+[![Quickshell](https://img.shields.io/badge/Quickshell-4A86CF?style=flat-square)](https://quickshell.org/)
+[![QtQuick](https://img.shields.io/badge/QtQuick_QML-41CD52?style=flat-square&logo=qt&logoColor=white)](https://doc.qt.io/qt-6/qtquick-index.html)
 [![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org/)
 [![Stars](https://img.shields.io/github/stars/AymanLyesri/archeclipse?style=social)](https://github.com/AymanLyesri/ArchEclipse/stargazers)
 [![Issues](https://img.shields.io/github/issues/AymanLyesri/ArchEclipse?style=flat-square)](https://github.com/AymanLyesri/ArchEclipse/issues)
@@ -31,7 +32,7 @@ The project spans multiple languages and layers of the stack:
 
 | Layer                              | Technologies                          |
 | ---------------------------------- | ------------------------------------- |
-| **UI / Widgets**                   | GTK4, TypeScript, TSX (Ags framework) |
+| **UI / Widgets**                   | QtQuick, QML, JavaScript (Quickshell framework) |
 | **Automation & Tooling**           | Python 3, Bash                        |
 | **Performance-Critical Utilities** | C                                     |
 | **Compositor**                     | Hyprland (Wayland)                    |
@@ -58,31 +59,27 @@ graph TB
         Evremap["evremap<br/>key remapping service"]
     end
 
-    subgraph AGS["AGS / Astal shell (GTK4 + TypeScript)"]
-        App["app.tsx<br/>shell bootstrap"]
+    subgraph QS["Quickshell shell (QtQuick + QML)"]
+        Shell["shell.qml<br/>ShellRoot bootstrap"]
 
         subgraph BarSys["Bar system"]
-            Bar["Bar.tsx<br/>state machine:<br/>compact/expanded/search/<br/>volume/brightness/recording"]
-            CompactBar["CompactBar.tsx"]
-            ExpandedBar["ExpandedBar.tsx"]
-            SearchBar["SearchBar.tsx"]
-            BarSub["sub-components<br/>Battery, Volume, Bandwidth,<br/>Brightness, Player, Recording"]
+            Bar["Bar.qml<br/>state machine:<br/>default/search/control/<br/>volume/brightness/recording"]
+            BarIslands["islands/<br/>SearchIsland, ControlIsland,<br/>PlayerIsland, WallpaperIsland,<br/>WeatherIsland, RightIsland"]
+            BarSub["bar widgets<br/>Battery, Volume, Bandwidth,<br/>Brightness, Player, Recording"]
         end
 
-        AppLauncher["AppLauncher.tsx<br/>Gtk.Popover launcher +<br/>QuickApps + AppHistory"]
+        AppLauncher["LauncherPanel.qml<br/>quickshell launcher +<br/>clipboard + emoji + notes"]
 
         subgraph Panels["Side panels"]
-            LeftPanel["LeftPanel.tsx<br/>Settings, ChatBot,<br/>BooruViewer, MangaViewer,<br/>KeyBinds, UserProfile"]
-            RightPanel["RightPanel.tsx<br/>Calendar, Notifications,<br/>SystemResources, Crypto, Waifu"]
+            LeftPanel["leftPanel/<br/>Settings, ChatBot,<br/>BooruViewer, MangaViewer,<br/>KeyBinds, UserProfile"]
+            RightPanel["rightPanel/<br/>Calendar, Notifications,<br/>SystemResources, Crypto, Waifu"]
         end
 
         subgraph Core["Core layers"]
-            Widgets["widgets/<br/>reusable TSX components"]
-            Services["services/<br/>brightness, record,<br/>autoSwitchWorkspace"]
-            Utils["utils/<br/>settings-sync, auth-session,<br/>color, icon, notification"]
-            Classes["class/<br/>Supabase.class.tsx<br/>BooruImage.class.tsx"]
-            Constants["constants/ + interfaces/<br/>typed config & API contracts"]
-            SCSS["scss/<br/>bar, panel, widgets themes"]
+            Widgets["widgets/shared/<br/>reusable QML components"]
+            Services["services/<br/>BarState, Brightness,<br/>ScreenRecorder, Ipc,<br/>Supabase, Weather"]
+            Utils["utils/<br/>SettingsUtils, MonitorUtils,<br/>TimeUtils, WindowManager"]
+            Theme["theme/<br/>Theme.qml + GlobalTheme<br/>typed config & styling"]
         end
 
         subgraph NativeScripts["Native/companion scripts"]
@@ -105,18 +102,16 @@ graph TB
     HyprConfig --> HyprScripts
     HyprConfig --> WallpaperDaemon
     HyprConfig --> Evremap
-    HyprMain -- "spawns/execs" --> App
+    HyprMain -- "spawns/execs" --> Shell
 
-    App --> BarSys
-    App --> AppLauncher
-    App --> Panels
-    App --> Core
+    Shell --> BarSys
+    Shell --> AppLauncher
+    Shell --> Panels
+    Shell --> Core
 
-    Bar --> CompactBar
-    Bar --> ExpandedBar
-    Bar --> SearchBar
+    Bar --> BarIslands
     Bar --> BarSub
-    SearchBar -.->|opens| AppLauncher
+    BarIslands -.->|opens| AppLauncher
 
     Widgets --> Core
     LeftPanel --> Widgets
@@ -124,36 +119,36 @@ graph TB
     BarSys --> Widgets
 
     Core --> NativeScripts
-    Utils --> Classes
-    Classes -->|"auth, settings sync"| Supabase
+    Utils --> Services
+    Services -->|"auth, settings sync"| Supabase
     NativeScripts -->|"HTTP calls"| APIs
 
-    SCSS -.->|styles| App
+    Theme -.->|styles| Shell
 
     classDef install fill:#EEEDFE,stroke:#534AB7,color:#26215C
     classDef hypr fill:#E1F5EE,stroke:#0F6E56,color:#04342C
-    classDef ags fill:#FAECE7,stroke:#993C1D,color:#4A1B0C
+    classDef qs fill:#FAECE7,stroke:#993C1D,color:#4A1B0C
     classDef core fill:#E6F1FB,stroke:#185FA5,color:#042C53
     classDef ext fill:#FAEEDA,stroke:#854F0B,color:#412402
 
     class Installer,Pacman,Archeclipse install
     class HyprMain,HyprConfig,HyprScripts,WallpaperDaemon,Evremap hypr
-    class App,Bar,CompactBar,ExpandedBar,SearchBar,BarSub,AppLauncher,LeftPanel,RightPanel ags
-    class Widgets,Services,Utils,Classes,Constants,SCSS,CLoops,PyScripts,ShScripts core
+    class Shell,Bar,BarIslands,BarSub,AppLauncher,LeftPanel,RightPanel qs
+    class Widgets,Services,Utils,Theme,CLoops,PyScripts,ShScripts core
     class Supabase,APIs ext
 ```
 
 ### Dynamic Theming Engine
 
-A custom pipeline generates a full system color scheme from the active wallpaper at runtime using [Cwal](https://github.com/nitinbhat972/cwal) a custom C implementation of PyWal (10-50x faster, zero Python overhead) that generates a full color scheme at runtime. Colors propagate automatically to GTK4 widgets, terminal, and all UI components. No manual color editing required — ever.
+A custom pipeline generates a full system color scheme from the active wallpaper at runtime using [Cwal](https://github.com/nitinbhat972/cwal) a custom C implementation of PyWal (10-50x faster, zero Python overhead) that generates a full color scheme at runtime. Colors propagate automatically to Quickshell / QtQuick widgets, terminal, and all UI components. No manual color editing required — ever.
 
 - Per-workspace wallpaper assignment with both static and animated (video) support
 - Global light/dark mode toggle with instant application across the entire environment
 - Color changes hot-reload without restarting any component
 
-### GTK4 Widget System (TypeScript/TSX)
+### Quickshell Widget System (QML / QtQuick)
 
-All shell UI is built with the **Ags GTK4 v3** framework — replacing prior Eww and Ags GTK3 implementations. Widgets are written in TypeScript with TSX, enabling type-safe, component-based UI development that mirrors modern web frontend workflows.
+All shell UI is built with the **Quickshell** framework — which replaced the prior Eww and AGS (GTK) implementations (migration completed 2026-09-12; the legacy AGS tree has been removed). Widgets are written in QML with JavaScript, enabling declarative, reactive UI development with per-monitor windows driven by `shell.qml` and singleton services (`BarState`, `GlobalTheme`, `Supabase`, `Weather`).
 
 The bar is fully modular — widgets are swappable at runtime. Current slots include:
 
@@ -167,7 +162,7 @@ The bar is fully modular — widgets are swappable at runtime. Current slots inc
 
 ### Application Launcher (Rofi Replacement)
 
-A custom-built launcher written in GTK4/TS replacing Rofi entirely, with built-in support for:
+A custom-built launcher written in QML/QtQuick replacing Rofi entirely, with built-in support for:
 
 - App launching with fuzzy search
 - Clipboard history browser
@@ -180,7 +175,7 @@ A custom-built launcher written in GTK4/TS replacing Rofi entirely, with built-i
 
 **Right Panel** — Configurable layout with swappable widgets: media player, notification history, calendar, script runner, crypto portfolio viewer, and an anime image viewer powered by the [Danbooru](https://danbooru.donmai.us) and [Gelbooru](https://gelbooru.com) APIs.
 
-**Left Panel** — Power-user tools: an integrated chatbot (multi-API), a booru image browser, a manga reader ([MangaDex](https://mangadex.org/) API, WIP), live keybinds reference, and a Hyprland/Ags settings panel.
+**Left Panel** — Power-user tools: an integrated chatbot (multi-API), a booru image browser, a manga reader ([MangaDex](https://mangadex.org/) API, WIP), live keybinds reference, and a Hyprland/Quickshell settings panel.
 
 ### Installer & Updater
 

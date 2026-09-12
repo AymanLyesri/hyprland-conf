@@ -1,25 +1,19 @@
 #!/bin/bash
 
 TMP=/tmp
-AGS_TMP="$TMP/ags-${USER}"
 SRC=$HOME/.config/hypr/scripts-c
-CONFIG_DIR=$HOME/.config
 USER=$(whoami)
 
 mkdir -p "$TMP"
-mkdir -p "$AGS_TMP"
 
 gcc "$SRC/battery-check.c"   -o "$TMP/battery-check"
 gcc "$SRC/updates-check.c"   -o "$TMP/updates-check"
 gcc "$SRC/wallpaper-loop.c"  -o "$TMP/wallpaper-loop"
 
-ags bundle "$CONFIG_DIR/ags/app.tsx" "$AGS_TMP/ags-bin"
-
 # Run in background after kill any existing loop
 pkill -f "wallpaper-loop" 2>/dev/null
 
 "$TMP/wallpaper-loop" &
-"$AGS_TMP/ags-bin" > "$AGS_TMP/ags-bin.log" 2>&1 &
 
 # Run immediately once
 "$TMP/battery-check" &

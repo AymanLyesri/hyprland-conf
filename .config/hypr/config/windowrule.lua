@@ -14,7 +14,7 @@ hl.window_rule({
 })
 
 hl.window_rule({
-    match = { class = "^(nwg-look|qt5ct|mpv|zoom|Rofi|feh)$" },
+    match = { class = "^(nwg-look|mpv|zoom|Rofi|feh)$" },
     float = true,
 })
 
