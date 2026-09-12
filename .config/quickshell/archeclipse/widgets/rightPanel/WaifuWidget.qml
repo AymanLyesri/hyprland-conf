@@ -31,8 +31,8 @@ Item {
     readonly property int wd_width: root.wd ? (root.wd.width || 0) : 0
     readonly property int wd_height: root.wd ? (root.wd.height || 0) : 0
 
-    // AGS WaifuDisplay shows the widget for any truthy id (custom uploads
-    // use id -1) — only a missing/empty id means "no image selected".
+    // The widget shows for any truthy id (custom uploads use id -1) —
+    // only a missing/empty id means "no image selected".
     readonly property bool hasWaifu: !!(root.wd && root.wd.id)
     readonly property string imagePath: root.hasWaifu ? `${root.booruPath}/${root.wd_apiValue}/images/${root.wd_id}.${root.wd_extension || "jpg"}` : ""
     readonly property string previewPath: root.hasWaifu ? `${root.booruPath}/${root.wd_apiValue}/previews/${root.wd_id}.${root.wd_extension || "jpg"}` : ""
@@ -61,7 +61,7 @@ Item {
     property string loadingState: "idle"   // "loading" | "error" | "success" | "idle"
     property int selectedApiIndex: 0
 
-    // AGS BooruImage.ensureFilesExist("both"): a viewer-set waifu whose full
+    // ensureFilesExist("both"): a viewer-set waifu whose full
     // image / preview was never downloaded renders blank, so fetch what's
     // missing (Referer headers: Qt gets 403 without them, same as the
     // viewer's downloadPreviews/fetchOriginal). Files already on disk skip
@@ -290,7 +290,7 @@ Item {
         }
     }
 
-    // Upload a custom local image as the current waifu (AGS upload button:
+    // Upload a custom local image as the current waifu (zenity
     // zenity file-selection → identify dims → copy to custom/images/-1.<ext>).
     function uploadCustomImage() {
         pickProc.running = true;
@@ -340,7 +340,7 @@ Item {
             AppButton {
                 text: "Open Booru Viewer"
                 onClicked: {
-                    // AGS Waifu.tsx: show the left island + set its widget
+                    // Show the left island + set its widget
                     // to BooruViewer. Registry.selectLeftTab does both
                     // (never toggles it off when already visible).
                     Registry.selectLeftTab("BooruViewer");
@@ -383,7 +383,7 @@ Item {
             visible: !root.isVideo
         }
 
-        // Video fallback — playable via QtMultimedia (AGS Video.tsx Gtk.Video)
+        // Video fallback — playable via QtMultimedia
         MediaVideo {
             id: mediaVideo
             anchors.fill: parent
@@ -394,7 +394,7 @@ Item {
             visible: root.isVideo && root.wd_extension.toLowerCase() !== "zip"
         }
 
-        // Zip/ugoira placeholder (AGS MediaDisplay isZip branch)
+        // Zip/ugoira placeholder
         Column {
             anchors.centerIn: parent
             spacing: 8
@@ -421,7 +421,7 @@ Item {
             }
         }
 
-        // Progress indicator (AGS Progress bound to _loadingState)
+        // Progress indicator (bound to _loadingState)
         AppProgress {
             id: progressBadge
             z: 3
@@ -597,7 +597,7 @@ Item {
                                     });
                                     return;
                                 }
-                                img.input_history = query; // persist last ID (AGS waifuWidget.input_history)
+                                img.input_history = query; // persist last ID
                                 Settings.waifu = img;
                                 Settings.schedulePersist();
                                 root.loadingState = "success";
@@ -605,7 +605,7 @@ Item {
                         }
                     }
 
-                    // Upload custom image (AGS upload button: zenity select → identify dims
+                    // Upload custom image (zenity select → identify dims
                     // → copy to custom/images/-1.<ext> → set as current waifu)
                     AppButton {
                         text: "\u{f093}"

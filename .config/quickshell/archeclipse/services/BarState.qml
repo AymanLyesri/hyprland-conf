@@ -43,17 +43,17 @@ Singleton {
     property int hyprlandTick: 0
     property var _tickTimer: null
 
-    // Geometric room-check results per monitor name (matches AGS barBlocked).
+    // Geometric room-check results per monitor name.
     // Populated by _roomProc from `hyprctl j/clients` + `hyprctl j/monitors`.
     property var blockedMonitors: {}
-    // Current bar height used for the band check (matches AGS currentBarHeight)
+    // Current bar height used for the band check
     property int barHeight: 34
 
     // Current resolved state (default is the permanent base, no compact)
     property string state: "default"
 
     // Open in-bar popovers (tray overflow/menu popups). Guards the
-    // hover-leave collapse (AGS Window.popupIsOpen()).
+    // hover-leave collapse (while a popup is open).
     property int popupCount: 0
     function holdPopup() {
         root.popupCount++;
@@ -130,7 +130,7 @@ Singleton {
         // Hyprland event tick — re-evaluates the geometric smart-hide room
         // check when clients move/resize (client moves don't re-emit a
         // change to the static toplevel list, so we tick on the raw event
-        // stream, debounced, exactly like AGS Bar.tsx).
+        // stream, debounced).
         Hyprland.rawEvent.connect(event => {
             if (!root._tickTimer) {
                 root._tickTimer = Qt.createQmlObject('import QtQuick; Timer { repeat: false; interval: 100 }', root);
@@ -146,18 +146,18 @@ Singleton {
         // Initial room check
         root.updateRoomCheck();
 
-        // Sync persistent recording state at startup (AGS subscribes
+        // Sync persistent recording state at startup (subscribe
         // isRecording from mount; a recording already in progress must show)
         if (ScreenRecorder.isRecording)
             root.activate("recording");
     }
 
     // -----------------------------------------------------------------
-    // Geometric smart-hide room check (AGS barBlocked).
+    // Geometric smart-hide room check.
     // A client "blocks" the bar band if it overlaps the top/bottom barHeight
     // pixels of a monitor on the monitor's active workspace. Queried from
     // hyprctl so geometry is always current (client .at/.size in the cached
-    // toplevel list lags behind moves/resizes, exactly as AGS notes).
+    // toplevel list lags behind moves/resizes).
     // -----------------------------------------------------------------
     property var _roomClientText: ""
     property var _roomMonitorText: ""
@@ -226,7 +226,7 @@ Singleton {
         root.blockedMonitors = blocked;
     }
 
-    // AGS barAutoVisible core, minus the removed smart-hide setting:
+    // Bar auto-visibility core:
     // lock => always visible; unlocked => hidden until the screen-edge
     // hover strip (BarHoverWindow) sets an explicit override. The override
     // wins over this in Bar.barVisible.
@@ -236,7 +236,7 @@ Singleton {
         return false;
     }
 
-    // ===== Volume watcher (AGS watchTransient on notify::volume) =====
+    // ===== Volume watcher =====
     // NOTE: the signal must be CONNECTED first; the first-render guard lives
     // inside the callback. Returning early before connect (as before) meant
     // the pulse never fired at all.
@@ -266,7 +266,7 @@ Singleton {
             if (vol === undefined || isNaN(vol) || vol < 0 || vol > 1)
                 return;
 
-            // Skip the initial notification on mount (AGS isFirst guard)
+            // Skip the initial notification on mount (first-render guard)
             if (root._volumeFirstRender) {
                 root._volumeFirstRender = false;
                 root._lastVolume = vol;
@@ -290,7 +290,7 @@ Singleton {
         target: Brightness
         function onScreenChanged() {
             const val = Brightness.screen;
-            // Skip the initial notification on mount (AGS isFirst guard)
+            // Skip the initial notification on mount (first-render guard)
             if (root._brightnessFirstRender) {
                 root._brightnessFirstRender = false;
                 root._lastBrightness = val;
@@ -349,7 +349,7 @@ Singleton {
     }
 
     // ===== Network watcher =====
-    // Mirrors AGS NetworkWidget.tsx: pulses the bar-wide "network" state for
+    // Pulses the bar-wide "network" state for
     // ~3s whenever the active network connection changes (wifi connect,
     // disconnect, ssid change, signal re-association).
     function setupNetworkWatcher() {
@@ -512,7 +512,7 @@ Singleton {
         root.debounceTimer = t;
     }
 
-    // Reveal bar for a monitor (AGS revealBar: explicit override wins over
+    // Reveal bar for a monitor (explicit override wins over
     // the settings-driven auto visibility; conceal deletes the key).
     function revealBar(monitorName) {
         var next = Object.assign({}, root.barShown || {});
@@ -537,7 +537,7 @@ Singleton {
     function setBarState(name) {
         root.activate(name);
     }
-    // AGS toggleBarShown: current = override ?? barAutoVisible, then set !current
+    // current = override ?? barAutoVisible, then set !current
     function toggleBarShown(monitorName) {
         var shown = root.barShown || {};
         var current = shown[monitorName];
@@ -551,7 +551,7 @@ Singleton {
         root.toggleBarShown(monitorName);
     }
 
-    // Recording watcher (AGS: isRecording.subscribe -> activate/deactivate
+    // Recording watcher (isRecording changes -> activate/deactivate
     // "recording" persistently). ScreenRecorder is a sibling singleton.
     Connections {
         target: ScreenRecorder
@@ -563,8 +563,7 @@ Singleton {
         }
     }
 
-    // Live mirror of the lock/orientation/expanded settings (AGS
-    // globalSettings.subscribe in Bar.tsx). Without this the toggles only
+    // Live mirror of the lock/orientation/expanded settings. Without this
     // took effect after a shell restart. Re-locking clears stale
     // per-monitor overrides — otherwise a bar hidden while unlocked stays
     // hidden with no hover strip left to reveal it.

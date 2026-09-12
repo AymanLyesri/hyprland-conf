@@ -7,9 +7,6 @@ Supabase ``emailRedirectTo``. The access token arrives in the URL *fragment*
 ``/callback`` page's JS forwards the fragment to ``/save`` via POST, and the
 session is persisted to ``~/.cache/quickshell/auth/session.json`` for
 ``UserProfileWidget.qml`` to poll.
-
-Quickshell-native port of the old AGS ``auth-server-callback.py`` — no AGS
-paths are used anywhere.
 """
 
 from http.server import HTTPServer, BaseHTTPRequestHandler

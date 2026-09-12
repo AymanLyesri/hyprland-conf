@@ -19,7 +19,7 @@ Rectangle {
     readonly property var cu: wx ? (wx.current_units ?? {}) : ({})
     readonly property bool hasData: wx !== null
 
-    // Dynamic background color based on weather code (matches AGS CSS)
+    // Dynamic background color based on weather code
     readonly property string weatherBg: hasData ? Weather.background(cur.weather_code) : "transparent"
     color: hover.hovered ? (hasData ? root.weatherBg : Theme.surfaceHover) : (hasData ? root.weatherBg : "transparent")
 

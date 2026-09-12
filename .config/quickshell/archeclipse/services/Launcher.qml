@@ -7,21 +7,19 @@ import qs.services
 
 // Port of widgets/applauncher + utilities: query parsing pipeline and results.
 //
-// Query grammar (mirrors AGS handleEntryChanged / parse*Query):
+// Query grammar:
 //   cb ...            clipboard history  (search cache/launcher/clipboard-history.json)
 //   note ...          notes CRUD          (list/add/edit <n>/del <n> over cache/launcher/notes.json)
 //   apps ...          list all apps
 //   emoji ...         emoji search        (search assets/emojis/emojis.json)
-//   translate <t> > <lang>  translate via AGS scripts/translate.sh
+//   translate <t> > <lang>  translate via scripts/translate.sh
 //   N unit in/unit M  unit conversion     (full table incl. speed/digital/temp)
 //   arithmetic        ..*/+-..
 //   URL               open link
 //   "name > args"     custom commands filtered
 //   fallback          fuzzy app search (DesktopEntries), then terminal hint
 //
-// Data files live in the quickshell cache (single source of truth). The old
-// AGS cache dirs are symlinked here, so anything still referencing them
-// follows along.
+// Data files live in the quickshell cache (single source of truth).
 
 QtObject {
     id: root
@@ -30,7 +28,7 @@ QtObject {
     readonly property string historyPath: `${Quickshell.env("HOME")}/.cache/quickshell/launcher/app-history.json`
     readonly property string notesPath: `${Quickshell.env("HOME")}/.cache/quickshell/launcher/notes.json`
     readonly property string clipboardPath: `${Quickshell.env("HOME")}/.cache/quickshell/launcher/clipboard-history.json`
-    readonly property string emojisPath: `${Quickshell.env("HOME")}/.config/ags/assets/emojis/emojis.json`
+    readonly property string emojisPath: `${Quickshell.env("HOME")}/.config/quickshell/archeclipse/assets/emojis/emojis.json`
     readonly property string quickAppHistoryPath: `${Quickshell.env("HOME")}/.cache/quickshell/launcher/quick-app-history.json`
 
     property var results: []
@@ -77,9 +75,9 @@ QtObject {
         return entries;
     }
 
-    // ---- QuickApps (favorites — mirrors AGS constants/app.constants.ts quickApps) ----
+    // ---- QuickApps (favorites) ----
     function openLeftIslandTab(selector) {
-        // Mirror AGS QuickApps "Keybinds": open the left island and switch tab.
+        // "Keybinds" quickapp: open the left island and switch tab.
         if (typeof Registry !== "undefined" && Registry.selectLeftTab) {
             Registry.selectLeftTab(selector);
         }
@@ -141,7 +139,7 @@ QtObject {
     function selectNext(dir) {
         if (!results.length)
             return;
-        // AGS skips header rows when navigating (while list[next].app_type === "header")
+        // Skip header rows when navigating (while list[next].app_type === "header")
         const start = selectedIndex;
         let next = start;
         do {
@@ -190,7 +188,7 @@ QtObject {
             argText: argText || ""
         };
     }
-    // header row factory (AGS app_type === "header")
+    // header row factory (app_type === "header")
     function mkHeader(name) {
         return {
             name,
@@ -198,7 +196,7 @@ QtObject {
         };
     }
 
-    // ---- app search over DesktopEntries (tiered like AGS rankApps) ----
+    // ---- app search over DesktopEntries (tiered ranking) ----
     function isSubseq(q, target) {
         let i = 0;
         for (const ch of target) {
@@ -232,7 +230,7 @@ QtObject {
         const entries = DesktopEntries.applications.values.filter(e => !e.noDisplay);
         const scored = [];
         for (const e of entries) {
-            // AGS parity: bare "apps" lists everything (history-first);
+            // Bare "apps" lists everything (history-first);
             // scored search otherwise.
             const s = q ? scoreEntry(e, q) : 1;
             if (s > 0)
@@ -261,7 +259,7 @@ QtObject {
         });
     }
 
-    // ---- custom commands (mirrors AGS constants/app.constants.ts customApps) ----
+    // ---- custom commands ----
     function customCommandsList() {
         return [mkResult("Light Theme", "\u{F1042}", "Switch to light theme", () => Quickshell.execDetached(["bash", "-c", `${Quickshell.env("HOME")}/.config/hypr/theme/scripts/system-theme.sh switch light`])), mkResult("Dark Theme", "\u{F1046}", "Switch to dark theme", () => Quickshell.execDetached(["bash", "-c", `${Quickshell.env("HOME")}/.config/hypr/theme/scripts/system-theme.sh switch dark`])), mkResult("System Sleep", "\u{F1046}", "Suspend system", () => Quickshell.execDetached(["bash", "-c", `qs -p ${Quickshell.env("HOME")}/.config/quickshell/archeclipse ipc call lock activate && sleep 1 && systemctl suspend`])), mkResult("System Restart", "\u{F1781}", "Reboot system", () => Quickshell.execDetached(["reboot"])), mkResult("System Shutdown", "\u{F1741}", "Power off system", () => Quickshell.execDetached(["shutdown", "now"]))];
     }
@@ -318,14 +316,14 @@ QtObject {
     }
     function setResults(rows) {
         results = rows;
-        // reset selection to first non-header row (skip headers like AGS)
+        // reset selection to first non-header row (skip headers)
         let i = 0;
         while (i < rows.length && rows[i] && rows[i].isHeader)
             i++;
         selectedIndex = Math.min(i, Math.max(0, rows.length - 1));
     }
 
-    // ---- unit conversion (full table — mirrors AGS utils/convert.ts) ----
+    // ---- unit conversion (full table) ----
     function tryConversion(text) {
         const m = text.match(/^(?:convert\s+)?(\d+(?:\.\d+)?)\s*([a-zA-Z°/%]+(?:\s+[a-zA-Z]+)?)(?:\s+(?:to|in|as|=>)\s+([a-zA-Z°/%]+(?:\s+[a-zA-Z]+)?))?$/i);
         if (!m)
@@ -487,7 +485,7 @@ QtObject {
         return null;
     }
 
-    // ---- emoji (same assets/emojis/emojis.json index AGS uses) ----
+    // ---- emoji (bundled assets/emojis/emojis.json index) ----
     property FileView _emojiFile: FileView {
         path: root.emojisPath
         printErrors: false
@@ -513,7 +511,7 @@ QtObject {
         return out;
     }
 
-    // ---- notes (same cache/launcher/notes.json AGS uses; full CRUD) ----
+    // ---- notes (cache/launcher/notes.json; full CRUD) ----
     property FileView _notesFile: FileView {
         path: root.notesPath
         watchChanges: false
@@ -611,7 +609,7 @@ QtObject {
         return out;
     }
 
-    // ---- translate (AGS scripts/translate.sh like translate.tsx) ----
+    // ---- translate (scripts/translate.sh) ----
     property Process _trProc: Process {
         property string mode: ""
         command: ["true"]
@@ -623,7 +621,7 @@ QtObject {
         }
     }
 
-    // ---- main entry — mirrors handleEntryChanged() (debounced 100ms like AGS) ----
+    // ---- main entry (debounced 100ms) ----
     // NOTE: QML has no setTimeout/clearTimeout — use a restartable Timer.
     // QtObject singletons cannot host bare Timer children, so property form.
     property Timer _debounceTimer: Timer {
@@ -638,7 +636,7 @@ QtObject {
     }
     function runQuery(text) {
         lastQuery = text;
-        // AGS parity: prefix dispatch on leading-trim only. (Qt's JS engine
+        // Prefix dispatch on leading-trim only. (Qt's JS engine
         // has no String.trimStart, so strip leading whitespace by regex.)
         // A full trim would eat the trailing space of bare modes like
         // "cb " / "note " / "emoji " and misroute them to app search.
@@ -655,7 +653,7 @@ QtObject {
             return;
         }
 
-        // prefixed modes (in AGS dispatch order)
+        // prefixed modes (in dispatch order)
         if (t.startsWith("cb ")) {
             setResults(clipboardResults(t.slice(3)));
             return;
@@ -681,7 +679,7 @@ QtObject {
         const trMatch = t.match(/^(.+?)\s*>\s*(\w{2})$/);
         if (trMatch) {
             _trProc.mode = "translate";
-            _trProc.command = ["bash", `${Quickshell.env("HOME")}/.config/ags/scripts/translate.sh`, trMatch[1].trim(), trMatch[2]];
+            _trProc.command = ["bash", `${Quickshell.env("HOME")}/.config/quickshell/archeclipse/scripts/translate.sh`, trMatch[1].trim(), trMatch[2]];
             _trProc.running = true;
             results = [mkResult("Translating…", "\u{F10CC}", "", null)];
             return;

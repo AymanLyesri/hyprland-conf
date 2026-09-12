@@ -13,9 +13,8 @@ Rectangle {
     property bool pulse: false
     readonly property int fixedWidth: 220
 
-    // AGS: visible only when a backlight exists (no /sys/class/backlight/*
-    // on desktops → hidden). Single source of truth is the Brightness
-    // service; the old local `backlightCheck.outputLines` read a
+    // Visible only when a backlight exists (no /sys/class/backlight/* on
+    // desktops → hidden). Single source of truth is the Brightness service; the old local `backlightCheck.outputLines` read a
     // non-existent StdioCollector property, threw, and the catch{}
     // returned true — so the icon showed on desktops.
     readonly property bool hasBacklight: Brightness.hasBacklight
@@ -38,14 +37,14 @@ Rectangle {
             root._firstLevel = false;
             if (Math.abs(newLevel - root.level) > 0.005) {
                 root.level = newLevel;
-                // AGS: reveal slider on external change, then auto-hide after 2s
+                // reveal slider on external change, then auto-hide after 2s
                 if (!first)
                     root.showSliderTemp();
             }
         }
     }
 
-    // AGS change → reveal + 2s hide timeout
+    // external change → reveal + 2s hide timeout
     property bool sliderRevealed: false
     property bool keepOpen: false
     property bool _firstLevel: true
@@ -98,7 +97,7 @@ Rectangle {
         }
     }
 
-    // AGS EventControllerMotion: hover keeps reveal open, cancel+restart 2s on leave
+    // Hover keeps the reveal open; cancel + restart the 2s timer on leave
     HoverHandler {
         id: briHover
         onHoveredChanged: {

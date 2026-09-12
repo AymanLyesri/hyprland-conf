@@ -16,7 +16,7 @@ Item {
     property string className: ""
 
     // Retained history (NOT the ephemeral toasts): entries survive popup
-    // expiry exactly like AGS binding the daemon's notification list.
+    // expiry exactly like binding the daemon's notification list.
     // Entry shape: {id, time (epoch s), notif (live NotificationObject)}.
     property var notifications: Notifications.history
     property string filterText: ""
@@ -133,7 +133,7 @@ Item {
             }
 
             // Scroll position save/restore across notification changes
-            // (AGS NotificationHistory savedScrollPosition + idle_add).
+            // (saved scroll position, restored on idle).
             property real savedPosition: 0
             onContentYChanged: {
                 nScroll.savedPosition = contentY;

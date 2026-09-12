@@ -56,7 +56,7 @@ Row {
         }
     }
 
-    // Overflow button (AGS tray-overflow) — shows when items > maxVisible
+    // Overflow button — shows when items > maxVisible
     Item {
         id: overflow
         visible: SystemTray.items.values.length > root.maxVisible
@@ -78,7 +78,7 @@ Row {
             cursorShape: Qt.PointingHandCursor
         }
 
-        // Popup with hidden items (AGS tray-popover)
+        // Popup with hidden items
         Popup {
             id: overflowPopup
             parent: root
@@ -91,7 +91,7 @@ Row {
                 radius: 8
                 border.color: Theme.border
             }
-            // AGS Window.popupIsOpen parity: hold the bar expanded while open
+            // Hold the bar expanded while open
             onOpened: BarState.holdPopup()
             onClosed: BarState.releasePopup()
 

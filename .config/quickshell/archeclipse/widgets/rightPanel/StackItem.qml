@@ -52,7 +52,7 @@ Item {
             Row {
                 spacing: 5
                 // Expand chevron only for multi-item stacks; the clear button
-                // ALWAYS renders (AGS ClearNotifications, no length guard).
+                // ALWAYS renders (no length guard).
                 AppButton {
                     visible: stack.notifications.length > 1
                     icon: isExpanded ? "\u{f106}" : "\u{f107}"

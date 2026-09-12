@@ -20,8 +20,7 @@ Item {
     // --- State ---
     property var messages: []
     property string activeSessionId: "default"
-    // AGS persists the provider in globalSettings chatBot.api and restores
-    // it on launch (ChatBot.tsx:775,1448) — same here via Settings.
+    // The provider persists across launches via Settings.chatBotApi.
     property string currentApiModel: Settings.chatBotApi
     property string progressStatus: "idle" // idle | loading | error | success
     property var sessions: []
@@ -29,11 +28,11 @@ Item {
     property int _sendTime: 0
     property bool _shouldScroll: true
     property var sessionFirsts: ({})
-    // chatbot.py owns its files under ~/.config/ags/cache/chatbot
+    // chatbot.py owns its files under ~/.cache/quickshell/chatbot
     // (CACHE_DIR hardcoded in the script) — read the same dir it writes,
-    // or sessions/history silently fork between the shells.
-    property string cacheDir: Quickshell.env("HOME") + "/.config/ags/cache/chatbot"
-    property string pythonScript: Quickshell.env("HOME") + "/.config/ags/scripts/chatbot.py"
+    // or sessions/history silently fork.
+    property string cacheDir: Quickshell.env("HOME") + "/.cache/quickshell/chatbot"
+    property string pythonScript: Quickshell.env("HOME") + "/.config/quickshell/archeclipse/scripts/chatbot.py"
 
     // Provider list (from api.constants.ts)
     property var providers: [
@@ -104,8 +103,8 @@ Item {
         p.running = true;
     }
 
-    // Fetch first message content for a session (AGS getFirstMessageContent) —
-    // used for the session tab tooltip context preview. Cached in sessionFirsts.
+    // Fetch first message content for a session — used for the session tab
+    // tooltip context preview. Cached in sessionFirsts.
     function fetchFirstMessage(sid) {
         if (root.sessionFirsts[sid] !== undefined)
             return;
@@ -419,7 +418,7 @@ Item {
     }
 
     // --- UI ---
-    // Auto-focus input on hover (AGS EventControllerMotion enter)
+    // Auto-focus input on hover
     HoverHandler {
         target: root
         onHoveredChanged: {
@@ -435,7 +434,7 @@ Item {
         anchors.fill: parent
         spacing: 6
 
-        // [1] Info: provider name + description (always visible, AGS Info component)
+        // [1] Info: provider name + description (always visible)
         Column {
             Layout.fillWidth: true
             spacing: 2
@@ -610,7 +609,7 @@ Item {
                                 }
                             }
 
-                            // Assistant-generated image (AGS message.image, scaled down)
+                            // Assistant-generated image (scaled down)
                             // NOTE: Column positioners do NOT collapse
                             // visible:false children — a fixed height:200
                             // reserves ~200px in every text-only bubble.
@@ -638,8 +637,8 @@ Item {
                 }
             }
 
-            // Auto-scroll to bottom on new messages (AGS Messages auto-scroll w/ 100ms
-            // delay after DOM update). Stops auto-scrolling once the user scrolls up.
+            // Auto-scroll to bottom on new messages (100ms delay after content
+            // update). Stops auto-scrolling once the user scrolls up.
             onContentHeightChanged: {
                 if (root._shouldScroll) {
                     var target = Math.max(0, contentHeight - height);
@@ -659,8 +658,8 @@ Item {
             RowLayout {
                 width: parent.width
                 spacing: 6
-                // AGS uses Gtk.TextView (multiline, WORD_CHAR wrap): Enter
-                // sends, Shift+Enter inserts a newline.
+                // Multiline input (word wrap): Enter sends, Shift+Enter inserts
+                // a newline.
                 AppTextArea {
                     id: inputField
                     placeholderText: "Ask anything... (Enter send, Shift+Enter newline)"
@@ -697,7 +696,7 @@ Item {
                 //     id: imageGenBtn
                 //     implicitWidth: 36
                 //     implicitHeight: 40
-                //     // AGS ImageGenerationSwitch label is the image glyph (F03E)
+                //     // Image-generation toggle shows the image glyph (F03E)
                 //     text: "\u{F03E}"
                 //     toggle: true
                 //     checked: root.imageGeneration
@@ -725,7 +724,7 @@ Item {
                             toggle: true
                             checked: modelData.id === root.activeSessionId
                             implicitHeight: 26
-                            // AGS session tab label is the session name
+                            // Session tab label is the session name
                             text: modelData.name
                             onClicked: {
                                 root.activeSessionId = modelData.id;
@@ -737,8 +736,8 @@ Item {
                                 acceptedButtons: Qt.RightButton
                                 onClicked: root.deleteSession(modelData.id)
                             }
-                            // Tooltip with first-message context (AGS session tooltip
-                            // shows "Right-click to delete\nContext: {first message}")
+                            // Tooltip with first-message context (shows
+                            // "Right-click to delete\nContext: {first message}")
                             HoverHandler {
                                 onHoveredChanged: if (hovered)
                                     root.fetchFirstMessage(modelData.id)
@@ -756,7 +755,7 @@ Item {
                 }
             }
 
-            // API provider tabs (AgList, stretched like AGS hexpand)
+            // API provider tabs (stretched row)
             RowLayout {
                 width: parent.width
                 spacing: 4

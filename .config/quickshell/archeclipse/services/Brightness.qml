@@ -60,8 +60,8 @@ QtObject {
         }
     }
 
-    // Process for setting brightness — driven by a serial queue (AGS
-    // brightness.ts:61-64 fans out to ALL devices; a single reused Process
+    // Process for setting brightness — driven by a serial queue (fans out
+    // to ALL devices; a single reused Process
     // cannot run N commands from a loop — running=true while running is a
     // no-op — so chain one device per exit).
     property var _setQueue: []

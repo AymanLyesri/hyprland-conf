@@ -6,8 +6,8 @@ import Quickshell.Services.Pipewire
 import qs.services
 import qs.theme
 
-// Port of app.tsx requestHandler — Hyprland keybinds talk to the bar through
-// `qs ipc` instead of `ags request`.
+// Hyprland keybinds talk to the bar through
+// `qs ipc`.
 //
 //   super+super_l -> qs -p <cfg> ipc call bar toggleSearch
 //   super+alt_l   -> qs -p <cfg> ipc call bar toggleBar <monitor>
@@ -233,13 +233,13 @@ Item {
             const valid = ["UserProfile", "BooruViewer", "ChatBot", "MangaViewer", "SettingsWidget", "CustomScripts", "KeyBinds", "Donations"];
             if (valid.indexOf(name) === -1) return "unknown widget: " + name;
             // Write through Settings so the island binding (and persistence)
-            // stays intact — matches AGS setGlobalSetting("leftPanel.widget").
+            // stays intact — matches setSetting("leftPanel.widget").
             Settings.leftPanelWidget = name;
             BarState.activate("left", 0);
             return "left island showing " + name;
         }
 
-        // AGS parity (app.tsx requestHandler): toggle stop/start.
+        // Toggle stop/start.
         function screenrecord(mode: string): string {
             return ScreenRecorder.toggleRecording(mode);
         }

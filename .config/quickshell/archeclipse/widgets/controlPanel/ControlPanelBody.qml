@@ -25,7 +25,7 @@ Item {
         objects: [controlSink]
     }
 
-    // ---- dynamic brightness icon (matches AGS 3-level thresholds) ----
+    // ---- dynamic brightness icon (3-level thresholds) ----
     readonly property string brightnessIcon: {
         const bri = Brightness.screen;
         if (bri > 0.75)
@@ -35,7 +35,7 @@ Item {
         return "\u{F00DE}";                        // low (󰃞)
     }
 
-    // AGS DndToggle ping state: highlight the DND button ~600ms when a
+    // DND ping state: highlight the DND button ~600ms when a
     // notification arrives while DND is active (AppButton `checked` drives
     // the highlight, so the flag lives here instead of on a Rectangle).
     property bool dndPing: false

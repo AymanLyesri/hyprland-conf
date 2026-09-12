@@ -7,17 +7,17 @@ import qs.theme
 import qs.widgets.shared
 import qs.services
 
-// Manga Viewer widget — full port of MangaViewer.tsx
-// Backend: ~/.config/ags/scripts/manga.py (mangadex CLI provider, JSON output)
+// Manga Viewer widget.
+// Backend: scripts/manga.py (mangadex CLI provider, JSON output)
 // Tabs: Manga (list/search) -> Chapters -> Pages (reader with prev/next)
 Item {
     id: root
     property int widgetWidth: parent.width
     property string className: ""
 
-    readonly property string scriptPath: Quickshell.env("HOME") + "/.config/ags/scripts/manga.py"
+    readonly property string scriptPath: Quickshell.env("HOME") + "/.config/quickshell/archeclipse/scripts/manga.py"
 
-    // Provider state — AGS supports MangaDex + MangaLib
+    // Provider state — supported backends: MangaDex + MangaLib
     property string provider: "mangadex"
     readonly property var providers: [
         {
@@ -134,7 +134,7 @@ Item {
             root.mainFlickable.contentY = 0;   // scroll to top on page change
     }
 
-    // AGS goToChapter: move to adjacent chapter in the sorted list
+    // Move to the adjacent chapter in the sorted list
     function goToChapter(dir) {
         const current = root.selectedChapter;
         if (!current)
@@ -151,7 +151,7 @@ Item {
         root.fetchPages(target.id);
     }
 
-    // Switch provider — reset all selection state and reload popular (AGS Tabs)
+    // Switch provider — reset all selection state and reload popular
     function switchProvider(id) {
         if (root.provider === id)
             return;
@@ -166,7 +166,7 @@ Item {
         root.fetchPopular();
     }
 
-    // AGS buildUrl: build a real browser URL for the current manga/chapter
+    // Build a real browser URL for the current manga/chapter
     function buildUrl(api, manga, chapter) {
         if (api === "mangadex") {
             if (chapter)
@@ -359,7 +359,7 @@ Item {
 
                                 AppImage {
                                     width: parent.width
-                                    // AGS aspect-aware height: (h/w) * panelWidth, fallback panelWidth
+                                    // Aspect-aware height: (h/w) * panelWidth, fallback panelWidth
                                     height: (modelData.cover_width && modelData.cover_height) ? (modelData.cover_height / modelData.cover_width) * width : Settings.leftPanelWidth
                                     source: modelData.cover_path
 
@@ -506,7 +506,7 @@ Item {
             }
         }
 
-        // ===== Bottom action bar (AGS Actions/PageNavigation/ChapterNavigation/UrlBar/Sections/Tabs) =====
+        // ===== Bottom action bar (actions / page + chapter navigation / URL bar / sections / tabs) =====
 
         // Reveal button
         RowLayout {
@@ -519,7 +519,7 @@ Item {
             }
         }
 
-        // Revealable search actions (AGS Actions revealer)
+        // Revealable search actions
         Column {
             Layout.fillWidth: true
             spacing: 8
@@ -554,7 +554,7 @@ Item {
             }
         }
 
-        // Chapter navigation (AGS ChapterNavigation) — always visible
+        // Chapter navigation — always visible
         RowLayout {
             Layout.fillWidth: true
             spacing: 10
@@ -573,7 +573,7 @@ Item {
         }
         Label {
             Layout.fillWidth: true
-            // AGS shows "No chapter selected" (grayed) when nothing is chosen
+            // Show "No chapter selected" (grayed) when nothing is chosen
             opacity: (root.selectedChapter !== null && root.selectedChapter !== undefined) ? 1 : 0.4
             text: {
                 const ch = root.selectedChapter;
@@ -592,7 +592,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
         }
 
-        // URL bar (AGS UrlBar) — visible complexity low, always rendered
+        // URL bar — visible complexity low, always rendered
         RowLayout {
             Layout.fillWidth: true
             spacing: 6
@@ -651,7 +651,7 @@ Item {
             }
         }
 
-        // Provider tabs (AGS Tabs)
+        // Provider tabs
         RowLayout {
             anchors.horizontalCenter: parent.horizontalCenter
             Layout.fillWidth: true
@@ -667,7 +667,7 @@ Item {
             }
         }
 
-        // Keyboard navigation (AGS key controller: Left/Right page, Up/Down reveal)
+        // Keyboard navigation (Left/Right page, Up/Down reveal)
         // NOTE: Item lives OUTSIDE the ColumnLayout above (positioners ignore
         // anchors, which would collapse it to 0x0) — anchored to root instead.
     }

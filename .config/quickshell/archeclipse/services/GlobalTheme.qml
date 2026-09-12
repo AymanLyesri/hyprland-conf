@@ -3,7 +3,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Port of AGS globalTheme (variables.ts):
+// Global light/dark theme state:
 //   - reads current theme from `system-theme.sh get` on startup
 //   - setGlobalTheme(light|dark) runs `system-theme.sh switch` then updates state
 // This drives the ControlPanel Theme toggle and any themed widgets.

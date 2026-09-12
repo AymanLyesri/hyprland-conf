@@ -19,7 +19,7 @@ Singleton {
     property bool barOrientation: true        // true = top
     property bool workspaceNumbers: false
 
-    // bar layout toggles (AGS: bar.layout = [{name:"workspaces",enabled:true}, ...])
+    // bar layout toggles (workspaces / information / utilities sections)
     // barLayoutOrder preserves the drag-reorder sequence for persist().
     property var barLayout: ({
             workspaces: true,
@@ -48,15 +48,14 @@ Singleton {
     // Lockscreen grace period in seconds (Esc dismisses the lock without a
     // password within this window after locking), persisted, default 10.
     property int lockGraceSeconds: 10
-    // Selected left-panel tab (AGS leftPanel.widget.name, persisted)
+    // Selected left-panel tab (persisted)
     property string leftPanelWidget: "UserProfile"
-    // Wallpaper switcher category (AGS wallpaperSwitcher.category, persisted)
+    // Wallpaper switcher category (persisted)
     property string wallpaperCategory: "defaults/sfw"
     // Weather city override (empty = Auto/IP), persisted
     property string weatherCity: ""
 
-    // Right panel widgets — mirrors AGS rightPanel.widgets (datalist with enabled flag).
-    // Icons copied from AGS constants/widget.constants.ts rightPanelWidgetSelectors.
+    // Right panel widgets — datalist with enabled flag.
     // CODE IS SOURCE OF TRUTH FOR ICONS: persist()/reload() only save/restore
     // {name, enabled} + order. Edit icons here (defaultRightPanelWidgets) and
     // they will not be clobbered by settings.json.
@@ -125,7 +124,7 @@ Singleton {
     }
     property bool autoWorkspaceSwitching: true
 
-    // Bar-pinned crypto favorite (Information center), mirrors AGS crypto.favorite
+    // Bar-pinned crypto favorite (Information center)
     property var cryptoFavorite: ({
             symbol: "",
             timeframe: ""
@@ -148,7 +147,7 @@ Singleton {
         })
     // Initialized with shipped defaults (not {}) so early fetchers (Booru
     // onCompleted) have credentials even before the settings file load
-    // merges saved values over them. AGS deepMergeAuto behaves the same.
+    // merges saved values over them.
     property var apiKeys: ({
             openrouter: {
                 user: {
@@ -184,10 +183,9 @@ Singleton {
             }
         })
 
-    // AGS default API credentials (settings.constants.ts apiKeys). Used as
-    // fallback when the settings file has none saved — AGS deepMergeAuto
-    // keeps these defaults in memory; QS must do the same or booru.py
-    // hard-rejects danbooru/gelbooru with MISSING_CREDENTIALS.
+    // Default API credentials (shipped fallback). Used when the settings
+    // file has none saved — the defaults stay in memory; QS must do the
+    // same or booru.py hard-rejects danbooru/gelbooru with MISSING_CREDENTIALS.
     function defaultApiKeys() {
         return {
             openrouter: {
@@ -226,7 +224,7 @@ Singleton {
     }
 
     // Merge saved apiKeys over the defaults (per api, per field), accepting
-    // both the AGS nested shape {user:{value}} and flat strings.
+    // both the nested shape {user:{value}} and flat strings.
     function mergeApiKeys(saved) {
         const d = root.defaultApiKeys();
         if (!saved)
@@ -257,15 +255,14 @@ Singleton {
         return String((typeof v === "object" ? (v.value ?? "") : v)).replace(/\n/g, "").trim();
     }
 
-    // Waifu widget (AGS: waifuWidget setting group)
+    // Waifu widget setting group
     property var waifu: null
 
-    // ChatBot provider + image-gen toggle (AGS settings.constants
-    // chatBot: { api: chatBotApis[0], imageGeneration: false }).
+    // ChatBot provider + image-gen toggle (default: first provider, off).
     property string chatBotApi: "openai/gpt-4o-mini"
     property bool chatBotImageGeneration: false
 
-    // Blur settings (AGS: bar.blur.size, bar.blur.passes, bar.blur.enabled)
+    // Blur settings (size / passes / enabled)
     property bool barBlur: true
     property int barBlurPasses: 3
     property int barBlurSize: 4
@@ -288,9 +285,8 @@ Singleton {
     // Profile picture
     property string profilePicturePath: ""
 
-    // Hyprland settings (AGS settings.constants.ts hyprland schema, plain
-    // values internally; persist() writes the AGS {name,value,min,max,type}
-    // leaf shape so the shared settings.json stays AGS-compatible).
+    // Hyprland settings (plain values internally; persist() writes the
+    // {name,value,min,max,type} leaf shape the settings panel renders).
     property var hyprland: ({
             general: {
                 border_size: 0,
@@ -330,7 +326,7 @@ Singleton {
 
     // Update a setting by dotted path and persist to settings.json
     function updateSetting(path, value) {
-        // AGS dotted paths that map to flat QS properties (Singleton cannot
+        // Dotted paths that map to flat QS properties (Singleton cannot
         // gain new properties at runtime, so root["rightPanel"] = {} throws).
         const aliases = {
             "bar.lock": "barLock",
@@ -409,10 +405,9 @@ Singleton {
     }
 
     // Persist current settings back to the JSON file.
-    // Shape is nested (bar.lock, leftPanel.width, ...) exactly like AGS
-    // setGlobalSetting/writeJSONFile produce — reload() reads the same
-    // shape, and AGS deepMergeAuto keeps unknown/missing keys safe.
-    // Leaf settings AGS models as {name,value,...} are written as {value};
+    // Shape is nested (bar.lock, leftPanel.width, ...) — reload() reads the
+    // same shape and tolerates unknown/missing keys.
+    // Leaf settings are written as {value}; plain-value settings (locks,
     // plain-value settings (locks, widths, dnd, fileManager) stay plain.
     function persist() {
         if (!root.ready)
@@ -519,9 +514,9 @@ Singleton {
                 autoWorkspaceSwitching: {
                     value: root.autoWorkspaceSwitching
                 },
-                // AGS leaf shape {name,value,min,max,type} — shared file must
-                // stay readable by AGS createHyprlandSettings (plain numbers
-                // would be mistaken for nested groups and render nothing).
+                // Hyprland leaf shape {name,value,min,max,type} — the settings
+                // panel renders from it (plain numbers would be mistaken for
+                // nested groups and render nothing).
                 "hyprland": {
                     general: {
                         border_size: {
@@ -715,8 +710,8 @@ Singleton {
     // until the on-disk values have been adopted.
     property bool ready: false
 
-    // AGS readLocalSettings (settings-sync.ts): fresh on-disk settings for
-    // upload sync — never an empty stub (uploading {} would wipe remote).
+    // Fresh on-disk settings for upload sync — never an empty stub
+    // (uploading {} would wipe remote).
     function readLocalSettingsJson() {
         try {
             const text = _file.text();
@@ -784,8 +779,8 @@ Singleton {
                 root.leftPanelExclusivity = s.leftPanel?.exclusivity ?? true;
                 root.rightPanelExclusivity = s.rightPanel?.exclusivity ?? true;
                 root.leftPanelWidth = (typeof s.leftPanel?.width === "object" && s.leftPanel?.width !== null ? s.leftPanel.width.value : s.leftPanel?.width) ?? 400;
-                // AGS stores the selector object {name, icon}; QS persists only
-                // {name} and restores only the name — left icons live in code
+                // The file may store the selector object {name, icon}; QS persists
+                // only {name} and restores only the name — left icons live in
                 // (LeftIsland) and are never clobbered by the file.
                 // legacy QS files used the flat "leftPanel.widget" key.
                 const _lpw = s["leftPanel.widget"] ?? s.leftPanel?.widget;
@@ -803,10 +798,10 @@ Singleton {
                 }
                 root.autoWorkspaceSwitching = s.autoWorkspaceSwitching?.value ?? true;
 
-                // AGS ensureRatingTagFirst parity: rating tag leads, defaulting
-                // to -rating:explicit. Done here (not viewer boot) so the
-                // file's tags are normalized the moment they are adopted —
-                // viewer boot may run before or after this either way.
+                // Rating tag leads, defaulting to -rating:explicit. Done here
+                // (not viewer boot) so the file's tags are normalized the
+                // moment they are adopted — viewer boot may run before or
+                // after this either way.
                 let _tags = (s.booru?.tags ?? ["-rating:explicit"]).slice();
                 const _rt = _tags.find(t => t.match(/[-]rating:explicit|rating:explicit/));
                 _tags = _tags.filter(t => !t.match(/[-]rating:explicit|rating:explicit/));
@@ -831,8 +826,8 @@ Singleton {
                 // Waifu widget
                 root.waifu = s.waifuWidget?.current ?? null;
 
-                // ChatBot provider (AGS restores globalSettings chatBot.api
-                // on launch; stored as the model value string here).
+                // ChatBot provider (restored on launch; stored as the model
+                // value string here).
                 const cbApi = s.chatBot?.api;
                 root.chatBotApi = (cbApi && typeof cbApi === "object" ? cbApi.value : cbApi) ?? "openai/gpt-4o-mini";
                 root.chatBotImageGeneration = s.chatBot?.imageGeneration ?? false;
@@ -864,7 +859,7 @@ Singleton {
                 // Profile picture path
                 root.profilePicturePath = s.profilePicturePath ?? "";
 
-                // Hyprland settings (full AGS schema incl. blur passes 4,
+                // Hyprland settings (full schema incl. blur passes 4, xray,
                 // xray, gaps, opacities — previously partial, which reset
                 // missing keys to 0/false on every reload)
                 root.hyprland = {

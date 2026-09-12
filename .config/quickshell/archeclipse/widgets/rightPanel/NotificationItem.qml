@@ -27,7 +27,7 @@ Item {
     property bool isHovered: false
 
     // Snapshot receipt time (QS NotificationObject has no .time; popups use
-    // toast.stamp the same way). Shown 24h %H:%M like AGS utils/time.ts.
+    // toast.stamp the same way). Shown 24h %H:%M.
     readonly property double stamp: entry && entry.time ? entry.time : 0
 
     // ---- icon chain (Notifications service): appIcon path → appIcon theme
@@ -220,7 +220,7 @@ Item {
                         }
                         spacing: 3
 
-                        // ---- top bar: title + time (24h %H:%M, AGS) ----
+                        // ---- top bar: title + time (24h %H:%M) ----
                         RowLayout {
                             spacing: 6
                             width: parent.width
@@ -246,7 +246,7 @@ Item {
                             }
                         }
 
-                        // ---- body (expandable, AGS markup handling) ----
+                        // ---- body (expandable, markup handling) ----
                         // Hidden when it's just the image path — the
                         // image beside it already shows it.
                         Text {
@@ -275,7 +275,7 @@ Item {
                     }
                 }
 
-                // ---- action buttons (AGS: all actions, invoke, NO dismiss) ----
+                // ---- action buttons (all actions, invoke, NO dismiss) ----
                 Row {
                     id: actionsRow
                     visible: root.notification ? Notifications.liveActions(root.notification).length > 0 : false

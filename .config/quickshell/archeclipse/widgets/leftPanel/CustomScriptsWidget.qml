@@ -7,27 +7,25 @@ import qs.theme
 import qs.widgets.shared
 import qs.services
 
-// Custom Scripts widget — port of CustomScripts.tsx + customScript.constant.ts.
-// Scrollable list of utility scripts. Record entries route through the
-// ScreenRecorder service (AGS toggleRecording), the file manager entry uses
-// Settings.fileManager (AGS globalSettings), reset shows a Yes/No
-// confirmation (AGS Reset AGS Settings), everything else spawns via
-// Quickshell.execDetached. Scripts requiring an installed binary show an install
-// button when the app is missing (yay/paru/pacman via kitty).
+// Custom Scripts widget — scrollable list of utility scripts. Record
+// entries route through the ScreenRecorder service, the file manager entry
+// uses Settings.fileManager, reset shows a Yes/No confirmation, everything
+// else spawns via Quickshell.execDetached. Scripts requiring an installed
+// binary show an install button when the app is missing (yay/paru/pacman
+// via kitty).
 Item {
     id: root
     property int widgetWidth: parent.width
     property string className: ""
 
-    // Port of customScript.constant.ts — icons are the exact Nerd Font
-    // codepoints from AGS. kind marks entries whose AGS script() callback
-    // does more than a plain exec (record toggle, dynamic file manager,
-    // reset confirmation).
+    // Utility script definitions — icons are Nerd Font codepoints. kind
+    // marks entries whose callback does more than a plain exec (record
+    // toggle, dynamic file manager, reset confirmation).
     property var scriptDefs: [
         {
             name: "Restart Bar",
             icon: "󰜉",
-            description: "Restart the AGS bar",
+            description: "Restart the shell bar",
             keybind: ["SUPER", "B"],
             command: "bash -c \"$HOME/.config/hypr/scripts/bar.sh\""
         },
@@ -186,9 +184,9 @@ Item {
             command: "kitty -e bash -c \"pacgraph -c; read -n 1 -s -r -p 'Press any key to continue...'\""
         },
         {
-            name: "Reset AGS Settings",
+            name: "Reset Settings",
             icon: "󰜉",
-            description: "Reset all AGS settings to default",
+            description: "Reset all shell settings to default",
             kind: "reset-settings"
         }
     ]
@@ -260,7 +258,7 @@ Item {
     }
 
     property Component installProcComp: Component {
-        // AGS spawns the install through `kitty -e` so that sudo pacman can
+        // Spawn the install through `kitty -e` so that sudo pacman can
         // prompt for the password interactively in a terminal. Headless
         // pacman will hang on the password prompt and lock up forever.
         // We exec kitty with the bash branch inline so the user sees the
@@ -308,7 +306,7 @@ Item {
     }
 
     function runScript(def) {
-        // AGS script() callbacks that are more than a plain exec
+        // Special-kind callbacks that are more than a plain exec
         if (def.kind === "record-now") {
             ScreenRecorder.toggleRecording("now");
             return;
@@ -397,8 +395,8 @@ Item {
                             }
                         }
 
-                        // AGS: the whole row is the script button — click runs it.
-                        // Reset shows a Yes/No confirmation instead (AGS Reset AGS Settings).
+                        // The whole row is the script button — click runs it.
+                        // Reset shows a Yes/No confirmation instead.
                         MouseArea {
                             id: rowMouse
                             anchors.fill: parent
@@ -479,7 +477,7 @@ Item {
                                 }
                             }
 
-                            // Reset confirmation (AGS Yes/No buttons)
+                            // Reset confirmation (Yes/No buttons)
                             RowLayout {
                                 visible: modelData.kind === "reset-settings" && confirming
                                 spacing: 10

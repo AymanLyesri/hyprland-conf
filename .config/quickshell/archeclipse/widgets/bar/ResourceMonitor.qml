@@ -9,7 +9,7 @@ import qs.widgets.shared
 // Port of Utilities.tsx ResourceMonitor — CPU / RAM / GPU horizontal bars,
 // stacked vertically (one on top of the other).
 // Hover/click pulses the system-monitor island (BarState "system").
-// Middle-click keeps the legacy AGS behavior (dispatch to workspace 5).
+// Middle-click dispatches to workspace 5 (monitor workspace).
 Item {
     id: root
     // Fixed footprint in the bar, but bars stretch to full widget width —
@@ -22,7 +22,7 @@ Item {
     implicitHeight: Theme.barContentHeight
 
     readonly property var res: SysInfo.systemResources
-    // AGS maxGpuLoad returns 0-100; normalize to 0-1 here.
+    // GPU load arrives as 0-100; normalize to 0-1 here.
     readonly property real cpuFrac: (res?.cpuLoad ?? null) !== null ? Math.max(0, Math.min(1, res.cpuLoad / 100)) : -1
     readonly property real ramFrac: (res?.ramUsedGB ?? null) !== null && (res?.ramTotalGB ?? null) ? Math.max(0, Math.min(1, res.ramUsedGB / res.ramTotalGB)) : -1
     readonly property real gpuFrac: {
@@ -54,7 +54,7 @@ Item {
         acceptedButtons: Qt.LeftButton | Qt.MiddleButton
         onClicked: mouse => {
             if (mouse.button === Qt.MiddleButton) {
-                // Legacy AGS behavior: jump to the monitor workspace.
+                // Jump to the monitor workspace.
                 Hyprland.dispatch("workspace 5");
                 return;
             }
@@ -95,7 +95,7 @@ Item {
             Item {
                 id: barItem
                 required property var modelData
-                // -1 = no data -> hide bar (AGS visible={...} parity)
+                // -1 = no data -> hide bar
                 readonly property real frac: modelData.frac
                 visible: frac >= 0
 

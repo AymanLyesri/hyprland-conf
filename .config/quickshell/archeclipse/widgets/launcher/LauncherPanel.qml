@@ -138,7 +138,7 @@ Rectangle {
             radius: Theme.radius - 2
             color: (modelData.isHeader === true || resultsList.currentIndex !== index) ? "transparent" : Theme.surfaceActive
 
-            // Header row (AGS AppButton app_type === "header").
+            // Header row (app_type === "header").
             // NOTE: strict `=== true` — a bare `modelData.isHeader`
             // is undefined for normal rows, and assigning undefined
             // to bool keeps the default (true), painting the header
@@ -180,7 +180,7 @@ Rectangle {
                 rightReserve: (modelData.actions !== undefined && modelData.actions.length > 0) ? 102 : 10
             }
 
-            // Inline action buttons (AGS AppButton app_actions)
+            // Inline action buttons (app_actions)
             Row {
                 visible: modelData.isHeader !== true && modelData.actions !== undefined && modelData.actions.length > 0
                 anchors.right: parent.right

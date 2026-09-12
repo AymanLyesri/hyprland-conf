@@ -23,8 +23,8 @@ Item {
     implicitWidth: 400
     implicitHeight: 170
 
-    // Pick active player: the PLAYING one, else the first (matches AGS
-    // MediaWidget / AppLauncher left pane logic). Mpris.players is an
+    // Pick active player: the PLAYING one, else the first.
+    // Mpris.players is an
     // UntypedObjectModel — access via .values for iteration.
     readonly property var playersList: Mpris.players.values ?? (Array.from ? Array.from(Mpris.players.values() ?? []) : [])
     readonly property var player: {
@@ -37,7 +37,7 @@ Item {
 
     readonly property bool playing: root.player?.isPlaying ?? false
 
-    // Hysteresis: hold last valid cover to prevent flicker (AGS lastValidCover)
+    // Hysteresis: hold last valid cover to prevent flicker
     property string _lastCover: ""
     onArtUrlChanged: {
         if (artUrl && artUrl.trim() !== "")
@@ -125,7 +125,7 @@ Item {
         border.color: Theme.border
         visible: root.player !== null
 
-        // Blurred background cover (AGS Picture "img" blurred layer)
+        // Blurred background cover ("img" blurred layer)
         AppImage {
             anchors.fill: parent
             source: root._lastCover || ""
@@ -144,7 +144,7 @@ Item {
                 Layout.fillWidth: true
                 spacing: 10
 
-                // Spinning cover art thumbnail (AGS cover-art-spinner)
+                // Spinning cover art thumbnail
                 Rectangle {
                     id: coverBox
                     width: 64
@@ -212,7 +212,7 @@ Item {
                     }
                 }
 
-                // Title / artist with slide transition (AGS textStack).
+                // Title / artist with slide transition.
                 // Explicit width (cover + icon + spacing): the dead
                 // Layout.fillWidth left this at 0 and no text showed.
                 Item {
@@ -371,7 +371,7 @@ Item {
                 }
             }
 
-            // Drag-scrubbable position slider (AGS GestureDrag scrub)
+            // Drag-scrubbable position slider
             Rectangle {
                 id: progBg
                 Layout.fillWidth: true

@@ -1,8 +1,0 @@
-.progress {
-  @include module;
-  // margin: 0px;
-  // padding: 0px;
-  &.success {
-    background-color: $green;
-  }
-}

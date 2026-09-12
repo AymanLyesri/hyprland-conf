@@ -80,7 +80,7 @@ Column {
         }
 
         // keep focus while the search island is open (clicks elsewhere shouldn't
-        // strand the caret — AGS grabs the keyboard exclusively in legacy mode)
+        // strand the caret)
         Connections {
             target: BarState
             function onStateChanged() {

@@ -167,8 +167,8 @@ QtObject {
         return `${root.booruBase}/${api}/images/${img.id}.${ext}`;
     }
 
-    // Open the downloaded file in an external viewer (AGS
-    // BooruImage.openInViewer parity: swayimg for images, mpv for videos).
+    // Open the downloaded file in an external viewer (swayimg for images,
+    // mpv for videos).
     function openInViewer(img) {
         if (!img)
             return;
@@ -212,7 +212,7 @@ QtObject {
         const home = Quickshell.env("HOME");
         const targetDir = home + "/.config/wallpapers/custom";
         const targetPath = targetDir + "/" + basename;
-        const thumbDir = home + "/.config/ags/cache/thumbnails/custom";
+        const thumbDir = home + "/.cache/quickshell/thumbnails/custom";
         const thumbPath = thumbDir + "/" + basename.replace(/\.[^/.]+$/, ".jpg");
         const thumbCmd = root.isVideo(img) ? `ffmpeg -y -loglevel error -i ${JSON.stringify(targetPath)} -vframes 1 -vf "scale=500:-1" ${JSON.stringify(thumbPath)}` : `magick ${JSON.stringify(targetPath)} -resize "500x500^" -gravity center -extent 500x500 ${JSON.stringify(thumbPath)}`;
         const script = `test -s ${JSON.stringify(src)} || exit 3; ` + `mkdir -p ${JSON.stringify(targetDir)} ${JSON.stringify(thumbDir)} && ` + `cp -- ${JSON.stringify(src)} ${JSON.stringify(targetPath)} && ` + thumbCmd;

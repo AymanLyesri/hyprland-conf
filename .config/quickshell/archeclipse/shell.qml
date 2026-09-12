@@ -10,7 +10,7 @@ import qs.widgets.media
 import qs.widgets.notifications
 
 // ArchEclipse shell — multi-monitor via Variants over Quickshell.screens.
-// Each window is instantiated once per monitor (matching AGS perMonitorDisplay).
+// Each window is instantiated once per monitor.
 ShellRoot {
     // FileView won't create missing parent dirs, so ensure every cache
     // dir it writes to exists at startup (else writes silently fail).
@@ -19,10 +19,9 @@ ShellRoot {
     }
     Component.onCompleted: {
         _cacheDirsProc.running = true
-        // AGS startFastfetchPinsSync() parity: instantiate the lazy
-        // singleton at boot so it runs its initial sync (self-healing
-        // pins whose files are missing) and attaches its pins watcher —
-        // otherwise it only wakes on the first manual pin toggle.
+        // Instantiate the lazy singleton at boot so it runs its initial sync
+        // (self-healing pins whose files are missing) and attaches its pins
+        // watcher — otherwise it only wakes on the first manual pin toggle.
         FastfetchPins.start()
     }
 

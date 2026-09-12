@@ -38,7 +38,7 @@ Item {
     // previous queue (page turn / new search) — leftover tasks are
     // dropped instead of spending bandwidth on a stale grid.
     property int _dlSeq: 0
-    // AGS createImagesContent masonry: distribute to the shortest column by
+    // Masonry: distribute to the shortest column by
     // aspect ratio (NOT row-by-row Flow). NOTE: must live on root — a
     // property declared among ColumnLayout children belongs to the layout.
     readonly property var masonryColumns: {
@@ -76,7 +76,7 @@ Item {
     // Diagnostic: last fetch command with secrets redacted (IPC-readable)
     property string lastFetchCmd: ""
     property string lastFetchError: ""
-    // AGS renderAsImageDialog state — the currently open image dialog.
+    // Image-dialog state — the currently open image dialog.
     // The detail is a root-level overlay (bottom of this file): opening it
     // resizes nothing, so no frozen grid widths or revealer flags exist.
     property var dialogImage: null
@@ -178,7 +178,7 @@ Item {
         }) || root.booruApis[0];
     }
     // Local preview-file ids verified present on disk. Grid prefers these
-    // (AGS renders the downloaded local preview via getPreviewPath()).
+    // (the downloaded local preview via getPreviewPath()).
     property var previewIds: ({})
     // Cards allowed to fade in. previewIds flips the moment a file lands
     // on disk (Image starts decoding ASAP); revealedIds is drained one
@@ -190,7 +190,7 @@ Item {
     // Remote danbooru URLs 403 inside Qt, so the dialog can only show
     // full files downloaded with Referer headers by fetchOriginal().
     property var fullIds: ({})
-    // Initial fetch on load (AGS fetchImages branches to bookmarks/pins/API
+    // Initial fetch on load (branches to bookmarks/pins/API
     // from the restored tab — saved Bookmarks/Pins must not fetch the API).
     // Deferred until Settings.ready: booting on defaults would fetch with
     // limit 100 / the wrong tab and persist the defaults over the file.
@@ -568,7 +568,7 @@ Item {
     }
 
     // Dialog tag hold ("Hold: search"): ADD the tag to the current search
-    // instead of replacing it (AGS addTags parity: current + new, deduped).
+    // instead of replacing it (current + new, deduped).
     // No-op when the tag is already in the search.
     function openTags(tag) {
         if (!tag)
@@ -594,8 +594,8 @@ Item {
         return tag;
     }
 
-    // Manual property copy (QML JS has no object-spread `{...obj}`). AGS
-    // parity (BooruViewer.tsx:219-221 via new BooruImage(b)): preserve the
+    // Manual property copy (QML JS has no object-spread `{...obj}`):
+    // preserve the
     // item's own stored api so cross-API bookmarks/pins resolve to the right
     // preview dir and idSearchUrl — never overwrite with the current tab.
     function clonify(img) {
@@ -647,7 +647,7 @@ Item {
         const startIndex = root.limit > 0 ? (currentPage - 1) * root.limit : 0;
         // Build command
         let cmd = ["python", root.booruScript, "--api", apiValue, "--tags", tagsStr, "--limit", String(root.limit), "--page", String(currentPage)];
-        // Add API credentials if available (AGS: credentials.user.value /
+        // Add API credentials if available (credentials.user.value /
         // credentials.key.value; Settings.apiKey unwraps either shape and
         // falls back to the shipped public defaults)
         const apiUser = Settings.apiKey(apiValue, "user");
@@ -696,7 +696,7 @@ Item {
                 proc.destroy();
                 return;
             }
-            // AGS parseBooruArrayResponse: surface the script's error envelope
+            // Surface the script's error envelope
             // message (e.g. missing API credentials) instead of a generic error
             let parsed = null;
             try {
@@ -716,7 +716,7 @@ Item {
             }
             if (!Array.isArray(parsed)) {
                 root.progressStatus = "error";
-                // AGS notifies per-tab error (bookmarks/pins/images)
+                // Notify per-tab error (bookmarks/pins/images)
                 const tab = root.selectedTab;
                 const summary = tab === "Bookmarks" ? "Error loading bookmarks" : tab === "Pins" ? "Error loading pins" : "Error fetching images";
                 const body = tab === "Bookmarks" ? "Failed to load bookmarks" : tab === "Pins" ? "Failed to load pins" : "Failed to fetch images";
@@ -934,14 +934,14 @@ Item {
         });
     }
 
-    // Build page-number buttons with AGS PageDisplay logic:
+    // Build page-number buttons:
     // show "1 ..." if page > 3, then a window of ~(width/100+2) pages;
     // current page labelled with refresh glyph, others with the number.
     function buildPageButtons() {
         return BooruUtils.buildPageButtons(root.widgetWidth, root.page);
     }
 
-    // Local tabs (AGS: paginate local list with (page-1)*limit offset)
+    // Local tabs (paginate local list with (page-1)*limit offset)
     function pagedSlice(list) {
         return BooruUtils.pagedSlice(list, root.limit, root.page);
     }
@@ -977,7 +977,7 @@ Item {
     }
 
     function gotoPage(p) {
-        // AGS page buttons always fetchImages() — same-page click refreshes.
+        // Page buttons always fetchImages() — same-page click refreshes.
         if (p < 1)
             return;
 
@@ -1023,7 +1023,7 @@ Item {
             Qt.callLater(() => root.refreshDialogTop(-1));
         }
     }
-    // AGS Images subscribe: slide new page in from the travel direction,
+    // On new images: slide new page in from the travel direction,
     // scroll to top; first render appears without transition.
     // New results invalidate the anchor card → drop the dialog at once
     // (the scroll reset below would auto-close it a frame later anyway).
@@ -1131,7 +1131,7 @@ Item {
         anchors.fill: parent
         spacing: 10
 
-        // Image masonry grid (Flickable: ScrollView hides contentY, and AGS
+        // Image masonry grid (Flickable: ScrollView hides contentY, and
         // scrolls to top after every page transition)
         Booru.BooruGrid {
             id: grid

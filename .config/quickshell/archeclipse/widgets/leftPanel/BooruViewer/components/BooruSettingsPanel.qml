@@ -59,7 +59,7 @@ Rectangle {
                     viewer.limit = v;
                     Settings.booru.limit = viewer.limit;
                     Settings.updateSetting("booru.limit", viewer.limit);
-                    // AGS LimitDisplay setValue triggers fetchImages (debounced 300ms)
+                    // Changing the limit triggers fetchImages (debounced 300ms)
                     viewer._limitDebounce.restart();
                 }
             }
@@ -89,7 +89,7 @@ Rectangle {
                     viewer.columns = v;
                     Settings.booru.columns = viewer.columns;
                     Settings.updateSetting("booru.columns", viewer.columns);
-                    // AGS ColumnDisplay setValue triggers fetchImages (debounced 300ms)
+                    // Changing the column count triggers fetchImages (debounced 300ms)
                     viewer._limitDebounce.restart();
                 }
             }
@@ -100,7 +100,7 @@ Rectangle {
             spacing: 4
             width: parent.width
 
-            // Tags flow (AGS TagDisplay)
+            // Tags flow
             Flow {
                 spacing: 4
                 width: parent.width
@@ -126,7 +126,7 @@ Rectangle {
                             // refetch below never runs.
                             const v = viewer;
                             if (isRating) {
-                                // AGS: toggle -rating:explicit <-> rating:explicit, move to front, refetch
+                                // Toggle -rating:explicit <-> rating:explicit, move to front, refetch
                                 const newRating = modelData.startsWith("-") ? "rating:explicit" : "-rating:explicit";
                                 let newTags = v.currentTags.filter(t => !t.match(/[-]rating:explicit|rating:explicit/));
                                 newTags.unshift(newRating);
@@ -134,14 +134,14 @@ Rectangle {
                                 Settings.booru.tags = newTags;
                                 Settings.updateSetting("booru.tags", newTags);
                             } else {
-                                // AGS: remove tag, refetch
+                                // Remove tag, refetch
                                 const newTags = v.currentTags.filter(t => t !== modelData);
                                 console.info("[Booru] chip remove:", modelData, "->", JSON.stringify(newTags));
                                 v.currentTags = newTags;
                                 Settings.booru.tags = newTags;
                                 Settings.updateSetting("booru.tags", newTags);
                             }
-                            // AGS refetches except in Bookmarks/Pins tabs
+                            // Refetch except in Bookmarks/Pins tabs
                             if (v.selectedTab !== "Bookmarks" && v.selectedTab !== "Pins") {
                                 v.fetchImages();
                             }
@@ -173,7 +173,7 @@ Rectangle {
                             Settings.booru.tags = newTags;
                             Settings.updateSetting("booru.tags", newTags);
                             tagEntry.text = "";
-                            // AGS Entry addTags always refetches
+                            // Adding tags always refetches
                             if (viewer.selectedTab !== "Bookmarks" && viewer.selectedTab !== "Pins") {
                                 viewer.fetchImages();
                             }
@@ -211,7 +211,7 @@ Rectangle {
                             v.currentTags = newTags;
                             Settings.booru.tags = newTags;
                             Settings.updateSetting("booru.tags", newTags);
-                            // AGS fetched-tag click refetches (except local tabs)
+                            // Fetched-tag click refetches (except local tabs)
                             if (v.selectedTab !== "Bookmarks" && v.selectedTab !== "Pins") {
                                 v.fetchImages();
                             }

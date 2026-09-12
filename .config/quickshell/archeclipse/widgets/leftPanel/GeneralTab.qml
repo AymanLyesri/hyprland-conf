@@ -8,8 +8,7 @@ import qs.theme
 import qs.widgets.shared
 import qs.services
 
-// GeneralTab — port of AGS General.tsx
-// ArchEclipse avatar, version checking, update, links, GitHub stars
+// GeneralTab — ArchEclipse avatar, version checking, update, links, GitHub stars
 Item {
     id: root
     // NOTE: real-number width (was string: relied on JS coercion), and an
@@ -20,7 +19,7 @@ Item {
 
     readonly property string homeDir: Quickshell.env("HOME")
     readonly property string repoDir: homeDir
-    readonly property string avatarPath: homeDir + "/.config/ags/assets/userpanel/archeclipse_default_pfp.jpg"
+    readonly property string avatarPath: homeDir + "/.config/quickshell/archeclipse/assets/userpanel/archeclipse_default_pfp.jpg"
 
     // --- State ---
     property string currentVersion: ""
@@ -32,7 +31,7 @@ Item {
     property bool isOutdated: currentVersion !== "" && remoteVersion !== "" && currentVersion !== remoteVersion && currentVersion !== "Unknown"
 
     // --- Process: check local HEAD --
-    // (failure sets both Unknown and skips the remote check, like AGS)
+    // (failure sets both Unknown and skips the remote check)
     Process {
         id: localHashProc
         command: ["git", "-C", root.repoDir, "rev-parse", "--short", "HEAD"]
@@ -52,7 +51,7 @@ Item {
         }
     }
 
-    // --- Process: fetch + check remote (AGS: upstream else origin,
+    // --- Process: fetch + check remote (upstream else origin,
     // fetch <remote> master, rev-parse <remote>/master — NOT @{u}, which
     // resolves the current branch's upstream and is wrong on detached HEAD
     // or branches without tracking)
@@ -71,7 +70,7 @@ Item {
         }
     }
 
-    // --- Update launcher (AGS hl.dsp.exec_cmd via the Hyprland dispatcher;
+    // --- Update launcher (via the Hyprland dispatcher;
     // bare `hyprctl dispatch exec` fails against the Lua registry) --
     function runUpdate() {
         try {

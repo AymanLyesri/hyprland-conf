@@ -2,9 +2,8 @@ import QtQuick
 import qs.theme
 import qs.services
 
-// Port of barStates Recording.tsx — pulsing dot + "Recording" + TRUE elapsed
-// timer (mm:ss since the recording actually started). AGS computes
-// Date.now() - start; we use ScreenRecorder.startTimestamp captured on the
+// Recording island — pulsing dot + "Recording" + TRUE elapsed timer (mm:ss
+// since the recording actually started). Uses ScreenRecorder.startTimestamp
 // 0->1 recording-state edge. When not recording, elapsed resets to 00:00.
 Rectangle {
     width: 180; height: 24
@@ -44,7 +43,7 @@ Rectangle {
         repeat: true
         triggeredOnStart: true
         onTriggered: {
-            // Real elapsed duration since recording start (AGS Date.now() - start).
+            // Real elapsed duration since recording start.
             if (ScreenRecorder.isRecording) {
                 parent.elapsed = parent.formatElapsed(Date.now() - ScreenRecorder.startTimestamp);
             } else {

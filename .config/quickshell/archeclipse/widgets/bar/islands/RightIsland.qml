@@ -44,8 +44,7 @@ Column {
     // same as the search island's fixed body height).
     property int bodyHeight: Math.max(400, screenHeight - 15)
 
-    // True while a widget selector is being drag-reordered (AGS
-    // Window.isDragging: drag-begin/drag-end around the Gtk.DragSource).
+    // True while a widget selector is being drag-reordered.
     // The auto-hide timer skips hiding while this is set.
     property bool isDragging: false
 
@@ -141,8 +140,8 @@ Column {
             width: parent.width
             height: root.bodyHeight
             spacing: 0
-            // AGS RightPanel puts <main-content/> first and <Actions/> last:
-            // the sidebar displays on the RIGHT (mirrors the left island's rail).
+            // <main-content/> first, <Actions/> last: the sidebar displays
+            // on the RIGHT (mirrors the left island's rail).
             layoutDirection: Qt.RightToLeft
 
             // ----- Sidebar with widget toggles (drag-reorderable) -----
@@ -174,7 +173,7 @@ Column {
                             width: parent.width
                             height: 40
 
-                            // --- Drag to reorder (AGS WidgetActions drag) ---
+                            // --- Drag to reorder ---
                             Drag.active: cellBtn.dragActive
                             Drag.hotSpot: Qt.point(width / 2, height / 2)
                             Drag.source: selectorItem
@@ -188,7 +187,7 @@ Column {
                                 icon: modelData.icon
                                 toggle: true
                                 checked: modelData.enabled
-                                // AGS tooltipMarkup: "<b>Hold To Drag</b>\n${name}"
+                                // Tooltip: "<b>Hold To Drag</b>\n${name}"
                                 tooltipText: "Hold To Drag\n" + modelData.name
                                 draggable: true
                                 dragTarget: selectorItem
@@ -235,7 +234,7 @@ Column {
                     }
                 }
 
-                // ----- Window Actions (AGS WindowActions, valign END) -----
+                // ----- Window Actions (valign END) -----
                 Column {
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
@@ -272,7 +271,7 @@ Column {
                             Settings.rightPanelWidth = w > 250 ? w - 50 : 250;
                         }
                     }
-                    // Exclusivity (AGS: active = non-exclusive, inverted) —
+                    // Exclusivity (active = non-exclusive, inverted) —
                     // reserves the island's width from the docked screen
                     // edge while open (vertical zone; the bar's top strip
                     // reservation is replaced, not added).
@@ -372,8 +371,8 @@ Column {
                                 }
                             }
                             Component.onCompleted: opacity = 1
-                            // Panel-card heights per widget (AGS stacks natural-height
-                            // cards; QS cards have fixed heights with internal scroll).
+                            // Panel-card heights per widget (fixed heights
+                            // with internal scroll).
                             // Heights must stay in sync with each widget's content.
                             // Each widget owns its inner padding (8px per side);
                             // Media/Waifu have no outer card and size to content.

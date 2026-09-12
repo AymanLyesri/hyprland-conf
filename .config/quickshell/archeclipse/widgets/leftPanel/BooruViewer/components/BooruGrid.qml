@@ -43,7 +43,7 @@ SmoothFlickable {
             viewer.refreshDialogTop(-1);
     }
 
-    // Shared masonry: shortest-column by aspect ratio (AGS algorithm).
+    // Shared masonry: shortest-column by aspect ratio.
     AppMasonry {
         id: masonry
 
@@ -84,7 +84,7 @@ SmoothFlickable {
         }
     }
 
-    // Slide transition on page change (AGS Gtk.Stack
+    // Slide transition on page change (slide left/right
     // SLIDE_LEFT/RIGHT + scroll-to-top after transition)
     NumberAnimation {
         id: slideAnim

@@ -6,10 +6,11 @@ import Quickshell.Io
 import qs.theme
 import qs.widgets.shared
 
-// Key Binds widget — port of AGS KeyBinds.tsx + KeyBind.tsx
-// Loads keybinds from ~/.config/ags/scripts/get-keybinds.sh (JSON),
+// Key Binds widget — reads the Hyprland Lua keybinds, groups them by
+// category, and renders each binding as an array of key chips joined by "+".
+// Loads keybinds from scripts/get-keybinds.sh (JSON),
 // groups by category, renders each binding as an array of key chips
-// joined by "+", per AGS.
+// joined by "+".
 Item {
     id: root
     property int widgetWidth: parent.width
@@ -66,10 +67,10 @@ Item {
             root.playReveal();
     }
 
-    // ---- load keybinds from script (AGS execAsync get-keybinds.sh -> JSON.parse) ----
+    // ---- load keybinds from script (get-keybinds.sh -> JSON.parse) ----
     Process {
         id: loadProc
-        command: [Quickshell.env("HOME") + "/.config/ags/scripts/get-keybinds.sh"]
+        command: [Quickshell.env("HOME") + "/.config/quickshell/archeclipse/scripts/get-keybinds.sh"]
         running: true
         stdout: StdioCollector {
             onStreamFinished: {
@@ -87,7 +88,7 @@ Item {
     // sorted category names
     property var categories: Object.keys(root.keybinds).sort()
 
-    // ---- UI: vertical category list exactly like AGS (no filter row) ----
+    // ---- UI: vertical category list (no filter row) ----
     ColumnLayout {
         anchors.fill: parent
         spacing: 10

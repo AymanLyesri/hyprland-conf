@@ -46,12 +46,11 @@ Column {
         return p.trackTitle ?? "";
     }
 
-    // Resolve the player's app icon via its MPRIS DesktopEntry (AGS
-    // AstalApps.exact_query(player.entry) parity) with identity fallbacks,
-    // then through Quickshell.iconPath() into an image:// URL —
+    // Resolve the player's app icon via its MPRIS DesktopEntry, with identity
+    // fallbacks, then through Quickshell.iconPath() into an image:// URL —
     // IconImage.source is a plain Image URL alias, so bare theme names
-    // never load (AppEntry _iconSrc parity). Missing icons yield "" and
-    // the pill falls back to its music-note glyph.
+    // never load. Missing icons yield "" and the pill falls back to its
+    // music-note glyph.
     readonly property string playerIconSource: {
         const p = root.firstPlayable;
         if (!p)
@@ -254,8 +253,8 @@ Column {
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
 
-                // media pill (AGS PlayerWidget parity: app icon + track title;
-                // hover/click pulses the full player island) — first on the right
+                // media pill (app icon + track title; hover/click pulses the
+                // full player island) — first on the right
                 Rectangle {
                     id: playerPill
                     visible: root.firstPlayable !== null
@@ -276,7 +275,7 @@ Column {
                         anchors.centerIn: parent
                         spacing: 6
 
-                        // app icon (fallback: music-note glyph like AGS empty state)
+                        // app icon (fallback: music-note glyph for the empty state)
                         Item {
                             width: 14
                             height: 14

@@ -5,12 +5,9 @@ import qs.widgets.bar
 import qs.theme
 import qs.services
 
-// Port of widgets/bar/BarHover.tsx — a thin edge strip that dwell-reveals the
-// auto-hidden bar. AGS augments this with a physical-push pressure stream via
-// a compiled helper (pointer-pressure-loop-ags over /dev/input/mice); that
-// needs the helper binary + raw-input read access, so the portable dwell path
-// (threshold<=0 → instant, else 1s dwell) is reproduced here. The strip is
-// only relevant when the bar is auto-hidden (unlocked), matching AGS.
+// A thin edge strip that dwell-reveals the auto-hidden bar.
+// (threshold<=0 → instant, else 1s dwell). The strip is only relevant when
+// the bar is auto-hidden (unlocked).
 PanelWindow {
     id: root
 
@@ -27,8 +24,7 @@ PanelWindow {
     color: "transparent"
     aboveWindows: true
 
-    // hidden when the bar is locked (dwell has nothing to reveal; AGS sets
-    // visible = !bar.lock on the hover window too)
+    // hidden when the bar is locked (dwell has nothing to reveal)
     visible: !Settings.barLock
 
     implicitHeight: 5
@@ -50,7 +46,7 @@ PanelWindow {
         enabled: !Settings.barLock
         onHoveredChanged: {
             if (hovered) {
-                // threshold<=0 → instant reveal, else dwell (matches AGS)
+                // threshold<=0 → instant reveal, else dwell
                 if (Settings.revealPressure <= 0) {
                     BarState.revealBar(root.monitorName)
                 } else {

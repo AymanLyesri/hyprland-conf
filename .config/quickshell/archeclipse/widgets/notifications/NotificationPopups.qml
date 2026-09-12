@@ -9,8 +9,8 @@ import qs.theme
 import qs.services
 import qs.widgets.shared
 
-// Port of NotificationPopups.tsx window — top-right stack of popup cards,
-// overlay layer, hidden when empty. One per monitor like AGS.
+// Top-right stack of popup cards,
+// overlay layer, hidden when empty. One per monitor.
 // Model rows are Toast snapshot wrappers (plain props resolved once at
 // receipt); delegates never touch live NotificationObjects, so bindings
 // stay cheap and the exit transition can never null-deref.
@@ -344,7 +344,7 @@ PanelWindow {
                             }
                             spacing: 3
 
-                            // ---- top bar: title + time (24h %H:%M, AGS) ----
+                            // ---- top bar: title + time (24h %H:%M) ----
                             RowLayout {
                                 spacing: 6
                                 width: parent.width
@@ -370,7 +370,7 @@ PanelWindow {
                                 }
                             }
 
-                            // ---- body (expandable, AGS markup handling) ----
+                            // ---- body (expandable, markup handling) ----
                             // Hidden when it's just the image path — the
                             // image beside it already shows it.
                             Text {
@@ -388,7 +388,7 @@ PanelWindow {
                         }
                     }
 
-                    // ---- action buttons (AGS: all actions, invoke, NO dismiss) ----
+                    // ---- action buttons (all actions, invoke, NO dismiss) ----
                     Row {
                         id: actionsRow
                         visible: card.toast ? card.toast.actionDefs.length > 0 : false
@@ -431,7 +431,7 @@ PanelWindow {
                             onClicked: {
                                 if (!card.toast)
                                     return;
-                                // AGS: image payload via wl-copy + toast. Uses the
+                                // Image payload via wl-copy + toast. Uses the
                                 // resolved file icon (screenshot arrives as
                                 // appIcon, not image) with its real MIME type.
                                 if (card.toast.iconFile !== "") {

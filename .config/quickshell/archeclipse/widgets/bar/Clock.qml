@@ -3,8 +3,8 @@ import Quickshell
 import qs.theme
 import qs.services
 
-// Time always visible; hovering reveals the long date (AGS CustomRevealer
-// parity). Tight margins: 4px padding each side, 6px between time and date.
+// Time always visible; hovering reveals the long date. Tight margins: 4px
+// padding each side, 6px between time and date.
 Rectangle {
     id: root
 

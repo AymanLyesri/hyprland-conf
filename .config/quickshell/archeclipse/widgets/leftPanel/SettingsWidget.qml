@@ -8,7 +8,7 @@ import qs.theme
 import qs.widgets.shared
 import qs.services
 
-// Settings Widget — full AGS parity port
+// Settings Widget — shell settings panel
 // Sections: Bar (layout reorder + toggles), Panels, Theme, Interface,
 // Always-On Widget, KeyStrokeVisualizer, Api Keys, File Manager, Hyprland,
 // Apply/Reset buttons
@@ -78,8 +78,8 @@ Item {
                 width: settingsScroll.width
 
                 // ============ BAR SETTINGS ============
-                // AGS parity note: AGS also exposes bar layout (drag-reorder),
-                // smart-hide and full-width. Those are intentionally not
+                // NOTE: bar layout (drag-reorder), smart-hide and full-width
+                // are intentionally not
                 // exposed here: the bar always shows all sections in a
                 // centered pill, and an unlocked bar always auto-hides until
                 // the screen edge is hovered. Lock Bar below is the only
@@ -772,7 +772,7 @@ Item {
                                             Layout.preferredWidth: 160
                                             onAccepted: {
                                                 root.setNestedValue("apiKeys", modelData.path, keyField.text, true);
-                                                // AGS notifies masked value on save (secret)
+                                                // Notify masked value on save (secret)
                                                 Notifications.notify({
                                                     summary: modelData.label,
                                                     body: "Changed to ••••••••"
@@ -846,7 +846,7 @@ Item {
                                         onToggled: {
                                             if (checked) {
                                                 Settings.fileManager = modelData.id;
-                                                // AGS notifies "Changed to <name>"
+                                                // Notify "Changed to <name>"
                                                 Notifications.notify({
                                                     summary: "File Manager",
                                                     body: "Changed to " + modelData.name
@@ -1345,7 +1345,7 @@ Item {
     property var fileManagerOptions: Settings.fileManagerOptions || []
     property var installedFileManagers: []
 
-    // Port of AGS detectFileManagers — check which FMs are installed via `command -v`
+    // Detect installed file managers via `command -v`
     function detectFileManagers() {
         const found = [];
         for (let i = 0; i < root.allFileManagers.length; i++) {
@@ -1405,7 +1405,7 @@ Item {
         Settings.schedulePersist();
     }
 
-    // Port of AGS toLuaValue/toLuaKey/buildLuaConfig (SettingsWidget.tsx):
+    // Lua value/key builders:
     // nested tables — hl.config({ decoration = { rounding = 16 } }).
     // The old QS flat form hl.config({ decoration:rounding = 16 }) is
     // invalid Lua and hyprland silently ignores those files.
@@ -1429,7 +1429,7 @@ Item {
         return "hl.config(" + expr + ")";
     }
 
-    // Get nested value from an object by dotted path. Unwraps AGS
+    // Get nested value from an object by dotted path. Unwraps
     // credential objects ({value: ...}) to plain strings for display.
     function getNested(obj, path) {
         if (!path || !obj)
@@ -1449,7 +1449,7 @@ Item {
     }
 
     // Set nested value by dotted path. persistIfSetting == true for apiKeys group.
-    // Preserves AGS credential objects (writes .value, keeps shape on disk).
+    // Preserves credential objects (writes .value, keeps shape on disk).
     function setNestedValue(propRoot, path, value, persist) {
         // propRoot is a Settings property name; navigate from Settings
         const keys = path.split(".");
@@ -1477,7 +1477,7 @@ Item {
         });
     }
 
-    // Port of AGS setThemeFlagInConf — write autocolor/autovariant flag into hypr theme conf
+    // Write autocolor/autovariant flag into hypr theme conf
     function setThemeFlagInConf(flag, enabled) {
         const confPath = "$HOME/.config/hypr/" + root.themeConfName;
         const val = enabled ? "true" : "false";
@@ -1499,9 +1499,8 @@ Item {
         });
     }
 
-    // Apply single Hyprland setting immediately (live), mirroring AGS
-    // applyHyprlandSetting: nested-table lua file per key (AGS filename
-    // `${fullKey}.lua`, so both shells overwrite the same file) + instant
+    // Apply single Hyprland setting immediately (live): nested-table lua
+    // file per key (`${fullKey}.lua`) + instant
     // `hyprctl keyword`.
     function applyHyprlandSettingLive(fullKey, value) {
         const keyword = fullKey.replace(/\./g, ":");
@@ -1513,10 +1512,10 @@ Item {
         }
     }
 
-    // Add user to input group (for KeyStrokeVisualizer) — port of AGS
-    // addUserToInputGroup. Declarative chained Processes + Timer (no
+    // Add user to input group (for KeyStrokeVisualizer). Declarative
+    // chained Processes + Timer (no
     // setTimeout — doesn't exist in QML; no createQmlObject string escaping).
-    // Exit via Hyprland.dispatch("hl.dsp.exit()") matching AGS.
+    // Exit via Hyprland.dispatch("hl.dsp.exit()").
     property string _inputUser: ""
     property Timer _inputExitTimer: Timer {
         interval: 5000
@@ -1570,7 +1569,7 @@ Item {
     }
 
     function applyHyprlandSettings() {
-        // Write one nested-table lua file per leaf (AGS applyHyprlandSettings
+        // Write one nested-table lua file per leaf (recursive
         // recursion) + reload. JSON.stringify of the whole object is NOT
         // valid lua (keys need `=`, nesting needs tables).
         try {
@@ -1631,7 +1630,7 @@ Item {
         Settings.keyStrokeVisualizerVisibility = false;
         Settings.keyStrokeVisualizerAnchor = ["bottom", "left"];
         Settings.fileManager = "nautilus";
-        // Hyprland defaults (AGS settings.constants.ts hyprland schema)
+        // Hyprland defaults
         root.hyprSet("general.border_size", 0);
         root.hyprSet("general.gaps_in", 7);
         root.hyprSet("general.gaps_out", 10);

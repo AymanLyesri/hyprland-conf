@@ -5,8 +5,8 @@ import QtQuick.Controls
 import qs.theme
 import qs.widgets.shared
 
-// Port of bar/components/sub-components/Bandwidth.tsx
-// Reads real network speeds from the bandwidth-loop-ags daemon (JSON on stdout
+// Network speed pill + popover.
+// Reads real network speeds from the bandwidth-loop daemon (JSON on stdout
 // every 3s: [upload_speed, download_speed, today_upload, today_download] in B/s).
 // Compact form shows up/down speeds; click reveals the Network Statistics
 // popover (Upload/Download, Packets + today's Data).
@@ -21,8 +21,8 @@ Item {
     property real todayDownload: 0        // b[3] bytes
 
     // Persistent daemon — Spawns on load and restarts if it exits/crashes.
-    // NOTE: never hardcode /tmp/ags-<user> (breaks multi-user); SysInfo.qml
-    // builds /tmp/ags-$USER the same way.
+    // NOTE: never hardcode /tmp/quickshell-<user> (breaks multi-user);
+    // SysInfo.qml builds /tmp/quickshell-$USER the same way.
     // NOTE: SysInfo.qml owns compiling the binary; this only restarts with
     // backoff so a missing binary (fresh /tmp, compile not done yet) doesn't
     // spin at 100% CPU or die permanently.
@@ -35,7 +35,7 @@ Item {
         }
     }
     property Process _bandwidthProc: Process {
-        command: [`/tmp/ags-${Quickshell.env("USER")}/bandwidth-loop-ags`]
+        command: [`/tmp/quickshell-${Quickshell.env("USER")}/bandwidth-loop`]
         stdout: SplitParser {
             splitMarker: "\n"
             onRead: data => root.parse(data)
@@ -50,7 +50,7 @@ Item {
         }
     }
 
-    // Hover popover (AGS bandwidth popover, Network Statistics)
+    // Hover popover (Network Statistics)
     Popup {
         id: bwPopup
         parent: root
@@ -157,7 +157,7 @@ Item {
         }
     }
 
-    // Compact display (AGS bandwidth-button) — click to open popover
+    // Compact display — click to open popover
     Rectangle {
         id: bg
         anchors.fill: parent
@@ -231,7 +231,7 @@ Item {
         root.todayDownload = parts[3];
     }
 
-    // formatKiloBytes equivalent (AGS utils/bytes)
+    // Human-readable byte formatter (B/KB/MB/GB)
     function formatData(bytes) {
         if (bytes >= 1024 * 1024 * 1024)
             return (bytes / (1024 * 1024 * 1024)).toFixed(2) + " GB";

@@ -120,7 +120,7 @@ Item {
             border.width: 1
             clip: true
 
-            // video downloaded → playable via QtMultimedia (AGS Video.tsx)
+            // video downloaded → playable via QtMultimedia
             MediaVideo {
                 anchors.fill: parent
                 anchors.margins: 4

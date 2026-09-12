@@ -3,10 +3,9 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// ArchEclipse theme — mirrors scss/colors.scss + scss/constants.scss.
-// Colors are read from the same cwal (pywal) colors.scss the AGS bar uses,
-// so switching wallpaper palettes affects both bars identically.
-// Fallback = scss/defaultColors.scss.
+// ArchEclipse theme — colors are read from the cwal (pywal) colors.scss
+// generated from the active wallpaper, so switching palettes re-themes the
+// shell live. Built-in fallbacks below apply until the file loads.
 QtObject {
     id: root
 
@@ -60,7 +59,7 @@ QtObject {
     readonly property int fontSize: Settings.uiFontSize
     readonly property int scale: Settings.uiScale
     readonly property int radius: 10
-    readonly property int spacing: 8          // bar element spacing (AGS look)
+    readonly property int spacing: 8          // bar element spacing
     readonly property int sectionSpacing: 20  // between compact sections / expanded groups
     // Single source of truth for bar content height — every bar widget
     // (Clock, Battery, Volume, ...) binds to this instead of hardcoding

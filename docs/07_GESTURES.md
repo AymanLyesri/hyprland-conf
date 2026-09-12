@@ -108,7 +108,7 @@ hl.gesture({
     fingers = 2,
     direction = "up",
     action = "custom",
-    command = "ags toggle app-launcher"
+    command = "qs -p $HOME/.config/quickshell/archeclipse ipc call bar toggleSearch"
 })
 ```
 

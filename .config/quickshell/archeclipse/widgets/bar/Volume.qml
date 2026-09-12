@@ -7,7 +7,7 @@ import qs.services
 
 // Port of sub-components/Volume.tsx — icon + %, right-click opens pavucontrol,
 // hover reveals slider. Also used as the transient "volume" pulse page.
-// Reproduces AGS behaviors: icon, %, change-triggered reveal w/ 2s auto-hide,
+// icon, %, change-triggered reveal w/ 2s auto-hide,
 // "Volume: N%" tooltip, right-click → pavucontrol.
 Rectangle {
     id: root
@@ -33,8 +33,8 @@ Rectangle {
         return isNaN(v) || v < 0 ? 0 : (v > 1 ? 1 : v);
     }
 
-    // AGS: reveal slider on volume change, auto-hide after 2s (hover keeps open).
-    // AGS Volume.tsx skips the mount notification — first vol evaluation must
+    // Reveal slider on volume change, auto-hide after 2s (hover keeps open).
+    // Skip the mount notification — first vol evaluation must
     // not pop the slider open at launch.
     property bool sliderRevealed: false
     property bool keepOpen: false

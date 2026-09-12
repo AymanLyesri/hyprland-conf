@@ -4,8 +4,7 @@ import qs.theme
 import qs.services
 
 // Hot-zone strips at the bar's left/right ends — reveal the left/right
-// islands immediately on hover (AGS LeftPanelHover.tsx/RightPanelHover.tsx
-// show on motion-enter with no dwell). Per-side lock + hotZone toggle;
+// islands immediately on hover (no dwell). Per-side lock + hotZone toggle;
 // click also reveals (harmless extra, helps touch users).
 // The islands live inside the bar pill (BarState "left"/"right"), so the
 // bar slides toward the hovered side and unfolds the island as one unit.

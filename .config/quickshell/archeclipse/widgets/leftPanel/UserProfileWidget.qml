@@ -24,7 +24,7 @@ Item {
     readonly property string supabaseKey: Supabase.anonKey
     readonly property string homeDir: Supabase.homeDir
     // scripts/auth-server-callback.py owns session.json (SESSION_PATH in the
-    // script) — quickshell-native, no AGS paths. shell.qml ensures the auth
+    // script) — no legacy paths. shell.qml ensures the auth
     // cache dir exists at startup.
     readonly property string authServerScript: homeDir + "/.config/quickshell/archeclipse/scripts/auth-server-callback.py"
     readonly property string authSessionPath: Supabase.authSessionPath
@@ -52,11 +52,11 @@ Item {
     property string lastSyncResult: "-"
     property string lastRemoteUpdatedAt: "Never"
     property var _cachedSession: null
-    // Magic-link button confirmation (AGS flips the label on success)
+    // Magic-link button confirmation (flips the label on success)
     property string magicState: "Send Magic Link"
 
-    // AGS UserProfile.tsx:113-125 — per-API bookmark counts from
-    // globalSettings booru.bookmarks (each item stores api.value).
+    // Per-API bookmark counts from Settings.booru.bookmarks
+    // (each item stores api.value).
     readonly property var booruApis: [
         {
             name: "Danbooru",
@@ -86,7 +86,7 @@ Item {
             }
         return counts;
     }
-    // AGS UserProfile.tsx:44 — fastfetch pin count.
+    // Fastfetch pin count.
     readonly property int pinnedCount: {
         const pins = Settings.booru ? Settings.booru.pins : null;
         return pins ? pins.length : 0;
@@ -97,8 +97,7 @@ Item {
     }
     property int activeTab: 0
 
-    // Change-gated polling: AGS uses monitorFile on the auth dir + meta
-    // file (event-driven). QS polls the two LOCAL files and only refetches
+    // Change-gated polling: poll the two LOCAL files and only refetch
     // the profile when session.json actually changed — no network on ticks.
     property string _lastSessionText: ""
     property int _netAttempts: 0
@@ -176,7 +175,7 @@ Item {
         root.saveToCache();
     }
 
-    // Network gate (AGS waitForNetwork up to 30s): check the Supabase
+    // Network gate (wait up to 30s): check the Supabase
     // health endpoint, 3s apart, max 10 tries, then proceed regardless.
     property Timer _netTimer: Timer {
         interval: 3000
@@ -229,7 +228,7 @@ Item {
     function lookupUserId() {
         return root._cachedUid || _cachedSession?.user?.id || _cachedSession?.id || "";
     }
-    // UID resolved from /auth/v1/user (AGS fetchCurrentUserProfile step 1).
+    // UID resolved from /auth/v1/user (step 1).
     // session.json from auth-server-callback.py only carries tokens — no id —
     // so the profile query cannot reuse lookupUserId() synchronously.
     property string _cachedUid: ""
@@ -363,7 +362,7 @@ Item {
             return;
         }
         // Fast path: session.json already embeds the user (older saves) —
-        // skip straight to the profile query like AGS does after /user.
+        // skip straight to the profile query.
         const embeddedId = session?.user?.id ?? session?.id ?? "";
         if (embeddedId) {
             root._cachedUid = embeddedId;
@@ -374,7 +373,7 @@ Item {
         }
         root.progressStatus = "loading";
         root.progressText = "Loading profile...";
-        // Step 1 (AGS Supabase.fetchCurrentUserProfile): resolve the uid
+        // Step 1: resolve the uid
         // from /auth/v1/user first — the profile table needs id=eq.<uid>.
         const p = fetchUserComp.createObject(root);
         p.command = ["bash", "-c", "curl -sS -H 'apikey: " + supabaseKey + "' -H 'Authorization: Bearer " + session.access_token + "' '" + supabaseUrl + "/auth/v1/user'"];
@@ -691,13 +690,13 @@ Item {
         }
     }
 
-    // AGS readLocalSettings (utils/settings-sync.ts): the real on-disk
+    // Read the real on-disk
     // settings file — never {} (an empty upload would wipe the remote copy).
     function readLocalSettings() {
         return Settings.readLocalSettingsJson();
     }
 
-    // ===== AVATAR (AGS UserProfile avatar button + setProfileAvatarFromPath) =====
+    // ===== AVATAR =====
     // State carried across the convert -> upload -> patch -> fetch chain.
     property string _avatarSrc: ""
     property string _avatarUid: ""
@@ -726,7 +725,7 @@ Item {
         }
         const session = root._cachedSession;
         const uid = lookupUserId();
-        // Not signed in: local-only copy (AGS setProfileAvatarFromPath path).
+        // Not signed in: local-only copy.
         if (!session?.access_token || !uid) {
             root.progressStatus = "loading";
             root.progressText = "Updating local avatar...";
@@ -746,7 +745,7 @@ Item {
         root._avatarExt = ext === "jpeg" ? "jpg" : ext;
         root.progressStatus = "loading";
         root.progressText = "Uploading avatar...";
-        // Convert non-JPEG via magick/convert (AGS uploadCurrentUserAvatar);
+        // Convert non-JPEG via magick/convert;
         // failures fall back to the original file inside the chain step.
         if (ext === "jpg" || ext === "jpeg") {
             root._avatarUploadPath = clean;
@@ -810,8 +809,8 @@ Item {
             });
             return;
         }
-        // Sync the fresh avatar down to ~/.face.icon (AGS syncAvatarToFaceIcon,
-        // without the 10s delay — immediate keeps the UI truthful).
+        // Sync the fresh avatar down to ~/.face.icon immediately
+        // (keeps the UI truthful).
         const p = avatarFetchComp.createObject(root);
         p.command = ["curl", "-sS", "--max-time", "30", "-o", root.avatarPath, root._avatarUrl];
         p.running = true;
@@ -846,7 +845,7 @@ Item {
         return email.slice(0, 1) + "***@" + email.slice(at + 1);
     }
 
-    // ===== UI: MINIMAL MODE (AGS UserProfileMinimal: avatar + 2em username on a pill) =====
+    // ===== UI: MINIMAL MODE (avatar + 2em username on a pill) =====
     Item {
         id: minimalView
         anchors.fill: parent
@@ -933,7 +932,7 @@ Item {
             height: parent.height - tabRow.height - fullView.spacing
             currentIndex: root.activeTab
 
-            // Account tab (AGS scrolledwindow: scrolls on narrow panels)
+            // Account tab (scrolls on narrow panels)
             SmoothFlickable {
                 id: acctFlick
                 width: parent.width
@@ -1012,7 +1011,7 @@ Item {
                                     text: root.profile?.username ?? ""
                                     horizontalAlignment: TextInput.AlignHCenter
                                     onAccepted: root.updateProfile()
-                                    // AGS username entry tooltip
+                                    // Username entry tooltip
                                     AppTooltip {
                                         visible: usernameField.hovered
                                         text: "Click to edit username"
@@ -1068,7 +1067,7 @@ Item {
                             text: "Refresh"
                             tooltipText: "Refresh profile"
                             enabled: !root.isRefreshing
-                            // AGS awaits loadProfile in try/finally — the flag
+                            // loadProfile is awaited in try/finally — the flag
                             // clears when the fetch completes (see fetchProfileComp
                             // + handleSessionJson), not synchronously here.
                             onClicked: {
@@ -1149,7 +1148,7 @@ Item {
                         }
                     }
 
-                    // AGS UserProfile.tsx:524-555 — favorites + pins side by side.
+                    // Favorites + pins side by side.
                     Row {
                         width: parent.width
                         spacing: 10
@@ -1378,13 +1377,13 @@ Item {
                             root.saveToCache();
                             root.progressStatus = "idle";
                             root.progressText = root.supporterLabel();
-                            // AGS syncAvatarToFaceIcon on every load:
+                            // Sync avatar to ~/.face.icon on every load:
                             // silent download, notify only on failure.
                             if (prof[0].avatar)
                                 root.syncAvatarSilent(prof[0].avatar);
                             root.checkSupporter();
                         } else {
-                            // AGS falls back to a user-only profile when the
+                            // Fall back to a user-only profile when the
                             // user_profiles row is missing — stay signed in.
                             if (root._cachedUid) {
                                 root.profile = {
@@ -1573,9 +1572,8 @@ Item {
             command: ["rm", "-f", root.authSessionPath]
         }
     }
-    // AGS settings-sync.ts SettingsSyncMeta is camelCase {lastSyncAt,
-    // lastDirection, lastRemoteUpdatedAt}; direction maps to human labels
-    // (UserProfile.tsx lastSyncResult).
+    // SettingsSyncMeta is camelCase {lastSyncAt, lastDirection,
+    // lastRemoteUpdatedAt}; direction maps to human labels.
     Component {
         id: readMetaComp
         Process {
@@ -1760,7 +1758,7 @@ Item {
         id: metaWriteComp
         Process {}
     }
-    // zenity exits 1 on cancel — silent, like AGS catching "exit status 1".
+    // zenity exits 1 on cancel — silent.
     Component {
         id: zenityComp
         Process {
@@ -1838,7 +1836,7 @@ Item {
             }
         }
     }
-    // Silent avatar sync on profile load (AGS syncAvatarToFaceIcon):
+    // Silent avatar sync on profile load:
     // no success notification, failure notifies once (retried next load).
     function syncAvatarSilent(url) {
         if (!url)

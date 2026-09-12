@@ -99,7 +99,7 @@ Item {
     }
 
     function executeTask(task) {
-        // Execute the command; on failure notify (AGS "Script Timer Error"):
+        // Execute the command; on failure notify ("Script Timer Error"):
         // only remove/reschedule a task after the command actually succeeded.
         const process = Qt.createQmlObject('import Quickshell.Io; Process { }', root);
         process.command = ["bash", "-c", task.command];

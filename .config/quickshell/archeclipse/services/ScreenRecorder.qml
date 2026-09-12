@@ -11,7 +11,7 @@ QtObject {
     property bool isRecording: false
 
     // Epoch ms when the current recording started (0 when not recording).
-    // AGS Recording.tsx computes elapsed as Date.now() - start.
+    // Elapsed is computed as Date.now() - start.
     property double startTimestamp: 0
 
     readonly property string scriptPath: Quickshell.env("HOME") + "/.config/hypr/scripts/screenrecord.sh"
@@ -23,7 +23,7 @@ QtObject {
             onStreamFinished: {
                 const running = text.trim().length > 0;
                 if (running !== root.isRecording) {
-                    // Capture the start moment on the 0->1 edge (AGS: Date.now() - start).
+                    // Capture the start moment on the 0->1 edge.
                     if (running) root.startTimestamp = Date.now();
                     root.isRecording = running;
                 }
@@ -77,7 +77,7 @@ QtObject {
         onTriggered: root._checkRecProc.running = true
     }
 
-    // Poll like the AGS version, but at 1s: pgrep truthfully reflects
+    // Poll at 1s: pgrep truthfully reflects
     // wf-recorder liveness (covers kills from outside the shell too).
     property Timer _pollTimer: Timer {
         interval: 1000

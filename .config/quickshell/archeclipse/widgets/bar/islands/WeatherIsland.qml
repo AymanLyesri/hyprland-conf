@@ -5,7 +5,7 @@ import qs.services
 import qs.widgets.shared
 
 // Weather island — shown when the bar weather button is hovered/clicked.
-// Layout mirrors the AGS Weather widget (main column: icon/city/temp/
+// Layout (main column: icon/city/temp/
 // description/feels-like/date; side column: sun, humidity/precip, wind;
 // city search; Today's + Hourly forecast) in the current Quickshell
 // card styling (code-colored header, Theme.surface forecast cards).

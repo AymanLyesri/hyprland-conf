@@ -95,8 +95,8 @@ PanelWindow {
     implicitWidth: pill.width
 
     // visibility: fullscreen focused client hides; search pins; override wins;
-    // otherwise lock/smart-hide geometric room-check (matches AGS Bar.tsx).
-    // AGS: fullscreenClient = focusedClient with fullscreen === 2.
+    // otherwise lock/smart-hide geometric room-check.
+    // fullscreenClient = focusedClient with fullscreen === 2.
     readonly property bool fullscreenActive: {
         const mon = Hyprland.monitorFor(screen);
         const ws = mon?.activeWorkspace;
@@ -126,7 +126,7 @@ PanelWindow {
         return BarState.barVisibleFor(monitorName);
     }
 
-    // --- hover: expand on enter, collapse after leave delay (AGS: motion
+    // --- hover: expand on enter, collapse after leave delay (motion
     // controller on the bar pill; leave arms a 250ms timer that collapses
     // only if the pointer is still off AND no popup is open) ---
     property bool hovered: pillHover.hovered
@@ -146,7 +146,7 @@ PanelWindow {
         id: hideTimer
         interval: 250
         onTriggered: {
-            // AGS leave handler: collapse default (guarded by hover+popup),
+            // Leave handler: collapse default (guarded by hover+popup),
             // then conceal the bar when unlocked and search isn't pinning it.
             if (!root.hovered && BarState.popupCount <= 0 && !Settings.barDefault)
                 BarState.deactivate("default");
@@ -176,7 +176,7 @@ PanelWindow {
                 idleTimer.restart();
                 return;
             }
-            // AGS watchdog parity: don't trust the hover read alone (reveals
+            // Watchdog: don't trust the hover read alone (reveals
             // can fire without an enter/leave cycle). Ask Hyprland where the
             // cursor actually is; if it is over the bar band or a popup is
             // open, keep waiting. If position is unknown, DON'T conceal
@@ -189,7 +189,7 @@ PanelWindow {
         }
     }
 
-    // AGS pointerOnBar(): cursorpos vs monitor band geometry.
+    // pointerOnBar(): cursorpos vs monitor band geometry.
     property var _cursorProc: null
     function verifyCursorOffBar() {
         if (root._cursorProc)
@@ -208,7 +208,7 @@ PanelWindow {
             } else if (stillOff === false) {
                 idleTimer.restart();
             } else {
-                // unknown — don't conceal blindly (AGS catch branch)
+                // unknown — don't conceal blindly
                 idleTimer.restart();
             }
             out.destroy();
@@ -257,8 +257,8 @@ PanelWindow {
             // QML Timer ticking JS physics on the GUI thread (jitter from
             // timer drift + fixed-dt integration + a full re-polish/
             // re-anchor of the centered stack on every write = choppy).
-            // NOTE: QML SpringAnimation units are NOT the AGS constants
-            // (QML damping range is 0..1); values match the repo's proven
+            // NOTE: QML SpringAnimation units differ (QML damping range is
+            // 0..1); values match the repo's proven
             // island springs (Control/SearchIsland 3.5/0.32), stiffened and
             // damped a touch for the wide pill. Same feel: quick settle,
             // slight overshoot.
@@ -312,19 +312,19 @@ PanelWindow {
             anchors.horizontalCenterOffset: (root.leftVert || root.rightVert) ? 0 : shift
 
             // Hover detection lives on the pill itself (stable container).
-            // AGS parity: the motion controller is on the bar pill — hot-zone
+            // The motion controller is on the bar pill — hot-zone
             // strips at the bar ends must NOT trigger expand.
             HoverHandler {
                 id: pillHover
             }
 
-            // Spring target (AGS Bar.tsx grow-first/shrink-first sequencing).
+            // Spring target (grow-first/shrink-first sequencing).
             // widthOverride pins the target during grow-first sequencing.
             property real widthOverride: -1
             property real targetWidth: widthOverride >= 0 ? widthOverride : Math.max(stack.width + 10, 100)
 
             // ---- state stack with crossfade ----
-            // AGS parity (Bar.tsx barState.subscribe): when GROWING, animate
+            // When GROWING, animate
             // the width first and swap content 100ms later; when SHRINKING,
             // swap content first and animate after 100ms. This keeps the
             // pill from clipping big content or collapsing under small one.
@@ -395,7 +395,7 @@ PanelWindow {
                 // The state actually shown (lags BarState.state by 100ms on grow)
                 property string displayed: BarState.state
                 property string pending: ""
-                // Measured widths per state (AGS barWidths registry)
+                // Measured widths per state
                 property var widthCache: ({})
 
                 Connections {
@@ -593,7 +593,7 @@ PanelWindow {
                             return defaultPage;
                         }
                     }
-                    // Feed the per-state width registry (AGS barWidths).
+                    // Feed the per-state width registry.
                     // Left/right are served by the cached Loaders (which
                     // release their own pin onLoaded), so this must NOT
                     // touch widthOverride — the empty page loads instantly

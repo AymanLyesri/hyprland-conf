@@ -10,7 +10,7 @@ import qs.widgets.shared
 // Port of Weather.tsx <Weather /> — full current-conditions card with
 // sunrise/sunset, humidity/precip/wind, and a city search (apply/clear).
 // When moreDetails=true, also renders Today's Forecast and Hourly Forecast
-// (AGS WeatherButton popover mode). Rendered in AlwaysOnWidget.
+// (popover mode). Rendered in AlwaysOnWidget.
 Item {
     id: root
     property bool moreDetails: false
@@ -307,7 +307,7 @@ Item {
                 }
             }
 
-            // Today's Forecast (moreDetails only — AGS popover mode)
+            // Today's Forecast (moreDetails only — popover mode)
             Column {
                 visible: root.moreDetails
                 width: parent.width
@@ -427,7 +427,7 @@ Item {
         }
     }
 
-    // Build hourly forecast items: starting from current hour, every 3h, 4 items (AGS logic)
+    // Build hourly forecast items: starting from current hour, every 3h, 4 items
     function hourlyItems() {
         const h = root.hour;
         if (!h || !h.time || h.time.length === 0)

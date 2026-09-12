@@ -13,7 +13,7 @@ import qs.theme
 //   - toasts:       newest-first wrappers (display strings + live ref)
 //   - popupToasts:  derived filter bound by the popup ListView's ScriptModel
 //   - one-shot self-destroying ToastTimer per toast; timeout only hides the
-//     toast (AGS parity — history keeps it, DND toasts never show)
+//     toast (history keeps it, DND toasts never show)
 //   - hover holds the countdown (timer destroyed); unhover hides the toast.
 //     No remaining-time bookkeeping, no per-frame timers anywhere.
 Singleton {
@@ -72,7 +72,7 @@ Singleton {
     // ---- the daemon ----
     NotificationServer {
         id: server
-        keepOnReload: false          // match AGS: popups die on shell reload
+        keepOnReload: false          // popups die on shell reload
         bodySupported: true
         bodyMarkupSupported: true
         bodyImagesSupported: true
@@ -90,11 +90,11 @@ Singleton {
     }
 
     // Emitted on every incoming notification (even when DND skips the toast),
-    // mirrors AGS notifd "notified" handler used by the DND ping.
+    // mirrors the notifd "notified" handler used by the DND ping.
     signal notified(var notification)
 
     // Prune toast + history when the notification closes from anywhere
-    // (dismiss button, history clear, external retraction). Mirrors AGS
+    // (dismiss button, history clear, external retraction). Mirrors
     // notifd "resolved" handling.
     property var _watched: ({})
     function watchClosed(n) {
@@ -116,7 +116,7 @@ Singleton {
     function addHistory(n) {
         const entry = { id: n.id, time: Date.now() / 1000, notif: n };
         const next = [entry].concat(root.history.filter(h => h.id !== n.id));
-        // Cap newest-first at maxHistory (AGS dismisses overflow)
+        // Cap newest-first at maxHistory (dismiss overflow)
         while (next.length > root.maxHistory) {
             const dropped = next.pop();
             try { dropped.notif.dismiss(); } catch (e) {}
@@ -168,7 +168,7 @@ Singleton {
         root.toasts = [w].concat(root.toasts.filter(t => t.notificationId !== n.id));
 
         // auto-hide the TOAST after its life; critical lingers. Hiding never
-        // dismisses from the daemon (AGS parity) so history keeps it.
+        // dismisses from the daemon so history keeps it.
         if (!root.dnd) {
             w.popup = true;
             if (w.life > 0) {
@@ -237,7 +237,7 @@ Singleton {
         if (w) w.timer = null;
     }
 
-    // AGS parity: invoking an action does NOT dismiss the notification.
+    // Invoking an action does NOT dismiss the notification.
     function invokeToastAction(id, identifier) {
         const w = root.findToast(id);
         const acts = (w && w.live) ? liveActions(w.live) : [];
@@ -248,7 +248,7 @@ Singleton {
     }
 
     // Live action list (per-notification QList needs values() call).
-    // AGS keeps ALL actions (including "default"); label = last ":" segment.
+    // Keep ALL actions (including "default"); label = last ":" segment.
     function liveActions(n) {
         if (!n || !n.actions) return [];
         try { return Array.from(n.actions.values()); } catch (e) { return []; }
@@ -273,7 +273,7 @@ Singleton {
     }
 
     // Resolved image file for a notification (preview, copy). Checks
-    // appIcon first, then image — same order as the AGS icon chain.
+    // appIcon first, then image.
     function imageFile(n) {
         if (!n) return "";
         return root.iconToFile(n.appIcon) || root.iconToFile(n.image);
@@ -320,7 +320,7 @@ Singleton {
 
     function clearHistory() {
         // Dismissing triggers each object's closed signal, which prunes both
-        // lists via pruneClosed (AGS: dismiss removes from daemon list).
+        // lists via pruneClosed (dismiss removes from daemon list).
         const all = root.history.slice();
         for (const h of all) {
             try { h.notif.dismiss(); } catch (e) {}

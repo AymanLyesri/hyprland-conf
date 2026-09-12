@@ -40,9 +40,9 @@ Rectangle {
         }
     }
 
-    // Preview image (or placeholder). AGS renders the
-    // downloaded local preview; prefer the local file once
-    // cached instead of re-downloading the remote URL.
+    // Preview image (or placeholder). Render the downloaded local preview;
+    // prefer the local file once cached instead of re-downloading the
+    // remote URL.
     AppImage {
         id: previewImg
         anchors.fill: parent

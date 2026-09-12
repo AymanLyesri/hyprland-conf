@@ -18,8 +18,6 @@
 !.config/kitty/
 # include pipwire config
 !.config/pipewire/
-# include ags
-!.config/ags/
 # include fastfetch config
 !.config/fastfetch/
 # wallpapers

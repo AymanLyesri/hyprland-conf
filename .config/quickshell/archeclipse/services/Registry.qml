@@ -35,7 +35,7 @@ QtObject {
     }
 
     // Show the left island and switch its active tab
-    // (mirrors AGS QuickApps "Keybinds": show left panel + setGlobalSetting leftPanel.widget).
+    // ("Keybinds" quickapp: show left panel + set the leftPanel.widget setting).
     function selectLeftTab(tabName) {
         Settings.leftPanelWidget = tabName;
         BarState.activate("left", 0);

@@ -148,7 +148,7 @@ A custom pipeline generates a full system color scheme from the active wallpaper
 
 ### Quickshell Widget System (QML / QtQuick)
 
-All shell UI is built with the **Quickshell** framework — replacing prior Eww and AGS (GTK) implementations. Widgets are written in QML with JavaScript, enabling declarative, reactive UI development with per-monitor windows driven by `shell.qml` and singleton services (`BarState`, `GlobalTheme`, `Supabase`, `Weather`).
+All shell UI is built with the **Quickshell** framework — which replaced the prior Eww and AGS (GTK) implementations (migration completed 2026-09-12; the legacy AGS tree has been removed). Widgets are written in QML with JavaScript, enabling declarative, reactive UI development with per-monitor windows driven by `shell.qml` and singleton services (`BarState`, `GlobalTheme`, `Supabase`, `Weather`).
 
 The bar is fully modular — widgets are swappable at runtime. Current slots include:
 

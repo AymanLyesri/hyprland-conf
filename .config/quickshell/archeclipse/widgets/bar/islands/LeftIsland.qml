@@ -237,8 +237,7 @@ Column {
                     spacing: 8
 
                     Repeater {
-                        // Order + icons mirror AGS leftPanelWidgetSelectors
-                        // (widget.constants.ts): UserProfile, BooruViewer,
+                        // Tab order + icons: UserProfile, BooruViewer,
                         // ChatBot, MangaViewer, Settings, CustomScripts,
                         // KeyBinds, Donations. Names keep the QS "Widget"
                         // suffix (IPC showWidget/widgetState compat).
@@ -288,7 +287,7 @@ Column {
                                 icon: modelData.icon
                                 toggle: true
                                 checked: root.selectedWidget === modelData.name
-                                // AGS: .widget-actions .Donations special red color
+                                // Donations special red color
                                 // to nudge users toward the support widget.
                                 idleBg: modelData.name === "Donations" ? "#f96854" : "transparent"
                                 idleFg: modelData.name === "Donations" ? "#052d49" : Theme.fg
@@ -302,7 +301,7 @@ Column {
                     }
                 }
 
-                // ── WindowActions — bottom cluster (AGS valign END) ──
+                // ── WindowActions — bottom cluster (valign END) ──
                 Column {
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
@@ -313,7 +312,7 @@ Column {
                         width: 1
                         height: 8
                     } // spacer
-                    // Expand (+50 to max 1500, AGS WindowActions defaults)
+                    // Expand (+50 to max 1500)
                     AppButton {
                         width: parent.width
                         icon: ""
@@ -323,10 +322,10 @@ Column {
                         hoverFg: Theme.accent
                         tooltipText: "Expand island"
                         // implicitWidth tracks Settings via binding — only
-                        // write the setting (AGS setGlobalSetting + queueResize).
+                        // write the setting.
                         onClicked: Settings.leftPanelWidth = Math.min(1500, Settings.leftPanelWidth + 50)
                     }
-                    // Shrink (−50 to min 400, AGS LeftPanel minPanelWidth={400})
+                    // Shrink (−50 to min 400)
                     AppButton {
                         width: parent.width
                         icon: ""
@@ -337,7 +336,7 @@ Column {
                         tooltipText: "Shrink island"
                         onClicked: Settings.leftPanelWidth = Math.max(400, Settings.leftPanelWidth - 50)
                     }
-                    // Exclusivity (AGS: active = non-exclusive, inverted) —
+                    // Exclusivity (active = non-exclusive, inverted) —
                     // reserves the island's width from the docked screen
                     // edge while open (vertical zone; the bar's top strip
                     // reservation is replaced, not added).
@@ -354,7 +353,7 @@ Column {
                         // back as-is toggles exclusivity.
                         onClicked: Settings.leftPanelExclusivity = checked
                     }
-                    // Lock (AGS FA lock F023 / unlock F2FC) — pins the
+                    // Lock — pins the
                     // island open across hover-leave.
                     AppButton {
                         width: parent.width
@@ -367,7 +366,7 @@ Column {
                         tooltipText: Settings.leftPanelLock ? "Unlock island" : "Lock island"
                         onClicked: Settings.leftPanelLock = !checked
                     }
-                    // Close (AGS WindowActions close F00D)
+                    // Close
                     AppButton {
                         width: parent.width
                         icon: ""
@@ -388,13 +387,13 @@ Column {
                 height: parent.height
 
                 // Widget stack — each tab is a Loader that activates on first
-                // select and stays alive (AGS Gtk.Stack equivalent), so tab
+                // select and stays alive, so tab
                 // switches preserve scroll/page/chat/booru state. Only the
                 // selected tab instantiates: opening the island builds one
                 // widget instead of all eight. Only the current one is
                 // visible; loaded hidden tabs exist in memory but don't
-                // paint. Order mirrors AGS leftPanelWidgetSelectors.
-                // Fade-in on switch mirrors AGS `.main-content > *` opacity-in 0.6s.
+                // paint. Order matches the tab rail above.
+                // Fade-in on switch (opacity-in 0.6s).
                 OpacityAnimator on opacity {
                     id: switchAnim
                     from: 0

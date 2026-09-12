@@ -4,7 +4,7 @@ import Quickshell
 import Quickshell.Io
 import qs.theme
 
-// Port of services/fastfetch.ts — syncs booru pins to fastfetch cache directory
+// Booru pin sync — syncs booru pins to the fastfetch cache directory
 // as rounded WebP images for fastfetch display.
 // Uses ImageMagick magick CLI for the roundrectangle composite + WebP conversion.
 QtObject {
@@ -12,9 +12,7 @@ QtObject {
 
     property string cacheDir: Quickshell.env("HOME") + "/.config/fastfetch/cache"
     // Single source of truth for pin sources: must match BooruViewer.booruPath
-    // (~/.cache/quickshell/booru). AGS used ~/.config/ags/cache/booru; the old
-    // ported path ~/.config/booru never existed, so magick never found a
-    // source file and pinning silently did nothing.
+    // (~/.cache/quickshell/booru).
     readonly property string booruBase: Quickshell.env("HOME") + "/.cache/quickshell/booru"
     readonly property string generatedPrefix: "booru-pin-"
     readonly property int cornerRadiusPercent: 5
@@ -332,7 +330,7 @@ QtObject {
         scheduleSync()
 
         // Watch for settings changes and re-sync when pins change
-        // AGS: globalSettings.subscribe(() => { ... scheduleSync() })
+        // (subscribe to Settings.booruChanged, then scheduleSync())
         Settings.booruChanged.connect(function() {
             const pins = (Settings.booru || {}).pins || []
             const sig = root.getPinsSignature(pins)

@@ -4,9 +4,8 @@ import Quickshell
 import Quickshell.Io
 import qs.theme
 
-// Port of variables.ts weather pipeline: IP geolocation -> open-meteo,
-// refreshed every 10 minutes, with optional city override (setWeatherCity
-// equivalent). Same endpoints as AGS.
+// Weather pipeline: IP geolocation -> open-meteo, refreshed every 10
+// minutes, with optional city override. Same open-meteo endpoints throughout.
 QtObject {
     id: root
 
@@ -63,7 +62,7 @@ QtObject {
     }
     property string _detectedCity: ""
 
-    // ifconfig.co fallback matching AGS
+    // ifconfig.co fallback for IP geolocation
     function ifconfigFallback() {
         fallbackProc.running = true;
     }
@@ -149,7 +148,7 @@ QtObject {
 
     // --- mapping helpers (mirror Weather.tsx) ---
 
-    // Nearest description + background color per WMO weather code (AGS weatherCodes)
+    // Nearest description + background color per WMO weather code
     readonly property var codeInfo: ({
         "0": { description: "Clear sky", background: "#0F4C81" },
         "1": { description: "Mainly clear", background: "#1F5D8A" },

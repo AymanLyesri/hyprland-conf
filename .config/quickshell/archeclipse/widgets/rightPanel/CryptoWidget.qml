@@ -71,7 +71,7 @@ Item {
 
     function toggleForm(editEntry = null) {
         editingEntry = editEntry;
-        // Initialize the selected timeframe for the form (AGS default 7d)
+        // Initialize the selected timeframe for the form (default 7d)
         root._selectedTimeframe = editEntry && editEntry.timeframe ? editEntry.timeframe : "7d";
         showAddForm = !showAddForm;
         if (!showAddForm) {
@@ -183,7 +183,7 @@ Item {
                     }
                 }
 
-                // Timeframe (AGS uses a row of toggle buttons, not a dropdown)
+                // Timeframe (row of toggle buttons, not a dropdown)
                 Column {
                     spacing: 4
                     width: parent.width

@@ -8,7 +8,7 @@ import qs.theme
 import qs.services
 
 // MediaWindow — standalone player control window (SUPER+m).
-// Port of AGS's MediaWidget.tsx + Player.tsx toggleable window (media-<monitor>).
+// Standalone toggleable player window (media-<monitor>).
 // Toggled via IPC (`qs ipc call bar togglePanel media-panel <monitor>`).
 PanelWindow {
     id: root
@@ -16,7 +16,7 @@ PanelWindow {
     required property ShellScreen screen
     readonly property string monitorName: Hyprland.monitorFor(screen)?.name ?? ""
 
-    // Top-center floating panel (matches AGS media window feel: overlay layer,
+    // Top-center floating panel (overlay layer,
     // no exclusive zone, on-demand keyboard focus).
     // Top, full-width layer surface; content pill centered horizontally
     // (layer-shell has no horizontalCenter anchor, so center the inner rect).

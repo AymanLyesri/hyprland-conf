@@ -15,7 +15,7 @@ Item {
     // MPRIS players
     property var players: Quickshell.Services.Mpris.players.values
     // Computed (not assigned): re-evaluates whenever the player list OR any
-    // player's title/playbackStatus changes — mirrors AGS playablePlayers
+    // player's title/playbackStatus changes — re-filters on title +
     // createComputed which re-filters on title + playbackStatus bindings.
     readonly property var activePlayer: {
         let firstPlayable = null;
@@ -35,7 +35,7 @@ Item {
     property var visualizerPoints: []
     readonly property bool isPlaying: root.activePlayer?.isPlaying ?? false
 
-    // AGS isPlayablePlayer (PlayerWidget.tsx:18-29): browsers leave zombie
+    // Browsers leave zombie
     // mpris players behind after a media tab closes — no title, nothing
     // playing — which would render as "Unknown Track" entries. Only players
     // with real metadata or active playback count.
@@ -67,7 +67,7 @@ Item {
     // Player info
     property string title: activePlayer?.trackTitle ?? ""
     property string artist: activePlayer?.trackArtist ?? ""
-    // AGS cover guard (PlayerWidget.tsx:54-60): YouTube clears coverArt
+    // Cover guard: YouTube clears coverArt
     // transiently — keep the last valid cover instead of flickering.
     property string _lastValidArt: ""
     property string artUrl: {

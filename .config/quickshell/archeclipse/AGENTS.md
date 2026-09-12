@@ -1,7 +1,10 @@
 # AGENTS.md — ArchEclipse Quickshell Config
 
-> Contributor guide for agentic workers. The active branch is `quickshell-migration`
-> (AGS → Quickshell migration, ~90% complete as of 2026-09-11). `master` is the old AGS code.
+> Contributor guide for agentic workers. The AGS → Quickshell migration is
+> **complete (2026-09-12)**: the shell is 100% Quickshell/QtQuick, the legacy
+> AGS tree (`.config/ags/`) has been removed, and its scripts/assets were
+> vendored into `.config/quickshell/archeclipse/scripts/` + `assets/`.
+> Branch `quickshell-migration` is pending merge into `master`.
 
 ## 1. Architecture
 
@@ -167,6 +170,10 @@ wrappers. Rules:
 
 - `quickshell-migration` branch: AGS→Quickshell port, widget-by-widget (BooruViewer,
   lockscreen, RightIsland, notifications daemon, launcher pipeline, bar states).
+  Completed 2026-09-12: legacy `.config/ags/` tree removed; needed scripts
+  (`chatbot/manga/crypto/translate/get-keybinds/get-wallpapers`, C loops) +
+  assets (`emojis.json`, default avatar) vendored into quickshell `scripts/` +
+  `assets/`; runtime paths moved to `~/.cache/quickshell/` + `/tmp/quickshell-$USER`.
 - 2026-09-11 lockscreen: `UserPanel` overlay → real `WlSessionLock`+PAM
   (`widgets/lock/`, spec + plan under `~/.config/opencode/superpowers/`).
 - 2026-09-12 scrolling + islands + launcher: `wheelScale` 60→28, HotZone 400ms dwell,

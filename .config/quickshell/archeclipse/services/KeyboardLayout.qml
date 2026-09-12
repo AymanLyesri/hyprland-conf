@@ -141,7 +141,7 @@ QtObject {
     }
 
     // Switch process — cycles to the next keymap on the current keyboard.
-    // (AGS hyprctlCommand injects -i $HYPRLAND_INSTANCE_SIGNATURE — plain
+    // (hyprctl needs -i $HYPRLAND_INSTANCE_SIGNATURE injected — plain
     // hyprctl breaks with multiple Hyprland instances.)
     property Process _switchLayoutProc: Process {
         stderr: StdioCollector {

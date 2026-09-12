@@ -31,14 +31,14 @@ Column {
             Settings.booru.selectedTab = "Bookmarks";
             Settings.updateSetting("booru.selectedTab", "Bookmarks");
             resetPage();
-            // Load bookmarks (AGS: paginate + download previews)
+            // Load bookmarks (paginate + download previews)
             viewer.loadBookmarks();
         } else if (v === "Pins") {
             viewer.selectedTab = "Pins";
             Settings.booru.selectedTab = "Pins";
             Settings.updateSetting("booru.selectedTab", "Pins");
             resetPage();
-            // Load pins (AGS: paginate + download previews)
+            // Load pins (paginate + download previews)
             viewer.loadPins();
         } else {
             const api = viewer.booruApis.find(a => a.name === v) || viewer.booruApis[0];
@@ -68,7 +68,7 @@ Column {
         spacing: 4
         anchors.horizontalCenter: parent.horizontalCenter
 
-        // Windowed page buttons (AGS logic) as a sliding segment: the
+        // Windowed page buttons as a sliding segment: the
         // active page carries the highlight, "..." is a disabled cell.
         // NOTE: viewer.page / viewer.widgetWidth are read directly so
         // these bindings re-run on page turns and panel resizes (reads
@@ -140,7 +140,7 @@ Column {
         height: 28
 
         AppButton {
-            text: "\u{F053}" // chevron left (AGS prev)
+            text: "\u{F053}" // chevron left (prev)
             width: 32
             height: 28
             enabled: viewer.progressStatus !== "loading"
@@ -160,7 +160,7 @@ Column {
         }
 
         AppButton {
-            text: "\u{F054}" // chevron right (AGS next)
+            text: "\u{F054}" // chevron right (next)
             width: 32
             height: 28
             enabled: viewer.progressStatus !== "loading"

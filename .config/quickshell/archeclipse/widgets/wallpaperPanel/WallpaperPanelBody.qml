@@ -27,14 +27,14 @@ Item {
     implicitHeight: 360
 
     readonly property string home: Quickshell.env("HOME")
-    readonly property string wallpaperScript: home + "/.config/ags/scripts/get-wallpapers.sh"
+    readonly property string wallpaperScript: home + "/.config/quickshell/archeclipse/scripts/get-wallpapers.sh"
     readonly property string setScript: home + "/.config/hypr/wallpaper-daemon/set-wallpaper.sh"
     readonly property string reloadScript: home + "/.config/hypr/wallpaper-daemon/reload.sh"
 
     // Must match thumbnail_folder in get-wallpapers.sh
-    // ($HOME/.config/ags/cache/thumbnails). That script is the sole
+    // ($HOME/.cache/quickshell/thumbnails). That script is the sole
     // thumbnail generator; pointing elsewhere yields blank tiles.
-    readonly property string thumbnailBase: home + "/.config/ags/cache/thumbnails"
+    readonly property string thumbnailBase: home + "/.cache/quickshell/thumbnails"
 
     function toThumbnailPath(file) {
         return file.replace(home + "/.config/wallpapers/", thumbnailBase + "/").replace(/\.[^/.]+$/, ".jpg");
@@ -64,8 +64,7 @@ Item {
 
     property var wallpapers: ({})               // category -> [paths]
     readonly property var categories: Object.keys(wallpapers)
-    // Single source of truth: Settings.wallpaperCategory (AGS
-    // globalSettings wallpaperSwitcher.category). This binding is NEVER
+    // Single source of truth: Settings.wallpaperCategory. This binding is NEVER
     // assigned locally, so it can't desync like a mirrored var: every
     // writer goes through Settings.updateSetting (immediate persist) and
     // every reader — grid, combobox — follows the binding.
@@ -130,7 +129,7 @@ Item {
     }
 
     // Keep the selected workspace synced to whatever's focused when the
-    // switcher opens, like the AGS version's focusedWorkspace.subscribe().
+    // switcher opens.
     Connections {
         target: Hyprland
         function onFocusedWorkspaceChanged() {
@@ -469,7 +468,7 @@ Item {
                         font.family: Theme.fontFamily
                     }
 
-                    // pywal palette swatches (AGS displayColorScheme: color1..7)
+                    // pywal palette swatches (color1..7)
                     Row {
                         spacing: 6
                         Repeater {

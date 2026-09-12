@@ -1,9 +1,9 @@
 import QtQuick
 import QtMultimedia
 
-// MediaVideo — QML port of AGS widgets/Video.tsx (Gtk.Video).
+// MediaVideo — video player widget.
 // autoplay=true, loop=true, fills the parent (hexpand/vexpand), with a
-// destroy-time teardown that releases the media source (mirrors AGS's
+// destroy-time teardown that releases the media source (mirrors the old
 // gst teardown on unrealize to avoid GL-context crashes on re-init).
 Item {
     id: root
@@ -33,7 +33,7 @@ Item {
         visible: root.source !== "" && player.hasVideo
     }
 
-    // AGS Video.tsx teardown: pause + release the stream when the widget
+    // Teardown: pause + release the stream when the widget
     // leaves the screen (prevents the GStreamer GL context crash on re-init).
     // Stop (not just pause) so a re-shown item rebinds a fresh source
     // instead of resuming a failed decode loop.

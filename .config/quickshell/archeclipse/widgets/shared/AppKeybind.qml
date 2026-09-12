@@ -1,5 +1,4 @@
-// Shared keybind chips — extracted from CustomScriptsWidget (AGS KeyBind
-// component: key chips joined by "+"). Renders each entry of `keys` as a
+// Shared keybind chips — renders each entry of `keys` as a rounded chip
 // rounded chip with a "+" separator between them. Used by CustomScripts and
 // the app-launcher help/commands list so both stay visually identical.
 import QtQuick

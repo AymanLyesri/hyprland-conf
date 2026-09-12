@@ -4,19 +4,18 @@ import Quickshell
 import Quickshell.Io
 
 // System resources for the bar's resource monitor.
-// Reuses the exact loop binaries the AGS bar feeds on (no extra polling):
-//   /tmp/ags-$USER/system-resources-loop-ags  -> JSON {cpuLoad, ramUsedGB, ramTotalGB, gpus:[{driver,load}]}
-//   /tmp/ags-$USER/bandwidth-loop-ags         -> JSON [upPkts, downPkts, upBytes, downBytes]
-// The binaries are compiled from the AGS C sources at startup so Quickshell
-// works standalone (does not depend on AGS having been started first).
+// Two tiny compiled C helpers (no extra polling) stream JSON on stdout:
+//   /tmp/quickshell-$USER/system-resources-loop  -> JSON {cpuLoad, ramUsedGB, ramTotalGB, gpus:[{driver,load}]}
+//   /tmp/quickshell-$USER/bandwidth-loop         -> JSON [upPkts, downPkts, upBytes, downBytes]
+// The binaries are compiled from the C sources in scripts/ at startup.
 QtObject {
     id: root
 
     property var systemResources: null
     property var bandwidth: [0, 0, 0, 0]
 
-    property string tmpDir: `/tmp/ags-${Quickshell.env("USER")}`
-    property string scriptsDir: `${Quickshell.env("HOME")}/.config/ags/scripts`
+    property string tmpDir: `/tmp/quickshell-${Quickshell.env("USER")}`
+    property string scriptsDir: `${Quickshell.env("HOME")}/.config/quickshell/archeclipse/scripts`
 
     property var resProcObj: null
     property var bwProcObj: null
@@ -28,8 +27,8 @@ QtObject {
         command: [
             "bash", "-c",
             "mkdir -p " + root.tmpDir
-            + " && gcc -o " + root.tmpDir + "/system-resources-loop-ags " + root.scriptsDir + "/system-resources-loop-ags.c -lm"
-            + " && gcc -o " + root.tmpDir + "/bandwidth-loop-ags " + root.scriptsDir + "/bandwidth-loop-ags.c -lm"
+            + " && gcc -o " + root.tmpDir + "/system-resources-loop " + root.scriptsDir + "/system-resources-loop.c -lm"
+            + " && gcc -o " + root.tmpDir + "/bandwidth-loop " + root.scriptsDir + "/bandwidth-loop.c -lm"
         ]
         stdout: SplitParser {
             splitMarker: "\n"
@@ -94,7 +93,7 @@ QtObject {
         root.resProcObj = Qt.createQmlObject(`
             import Quickshell.Io; import QtQuick;
             Process {
-                command: ["${root.tmpDir}/system-resources-loop-ags"]
+                command: ["${root.tmpDir}/system-resources-loop"]
                 stdout: SplitParser {
                     splitMarker: "\\n"
                     onRead: data => {
@@ -118,7 +117,7 @@ QtObject {
         root.bwProcObj = Qt.createQmlObject(`
             import Quickshell.Io; import QtQuick;
             Process {
-                command: ["${root.tmpDir}/bandwidth-loop-ags"]
+                command: ["${root.tmpDir}/bandwidth-loop"]
                 stdout: SplitParser {
                     splitMarker: "\\n"
                     onRead: data => {

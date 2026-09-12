@@ -5,15 +5,14 @@ import Quickshell
 import Quickshell.Io
 import qs.theme
 
-// Crypto entry item — port of widgets/Crypto.tsx + CryptoViewer.tsx CryptoEntryItem.
-// Fetches crypto price data via crypto.py, displays symbol, price, change %,
-// and a Unicode bar chart graph (▁▂▃▄▅▆▇█).
+// Crypto entry item — fetches price data via scripts/crypto.py and displays
+// symbol, price, change %, and a Unicode bar chart graph (▁▂▃▄▅▆▇█).
 Item {
     id: root
     property var entry: {}
     property int itemWidth: parent ? parent.width : 200
 
-    readonly property string cryptoScript: `${Quickshell.env("HOME")}/.config/ags/scripts/crypto.py`
+    readonly property string cryptoScript: `${Quickshell.env("HOME")}/.config/quickshell/archeclipse/scripts/crypto.py`
     readonly property var barChars: ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"]
     property var prices: []
     property double currentPrice: 0
@@ -100,7 +99,7 @@ Item {
         })
     }
 
-    // Poll every 5 minutes (like AGS POLL_INTERVAL = 300000)
+    // Poll every 5 minutes (POLL_INTERVAL = 300000)
     Timer {
         interval: 300000
         repeat: true
@@ -141,8 +140,7 @@ Item {
                 elide: Text.ElideRight
             }
 
-            // Change — AGS Crypto.tsx has this COMMENTED OUT (lines 176-179).
-            // We hide it to match AGS visual behavior exactly.
+            // Change display is hidden to match the original visual behavior.
             /*
             Label {
                 text: root.formattedChange
