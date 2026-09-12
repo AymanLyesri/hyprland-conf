@@ -3,69 +3,9 @@
 # Define the file that contains the wallpaper paths
 wallpaper_config="$HOME/.config/hypr/wallpaper-daemon/config"
 wallpaper_folder="$HOME/.config/wallpapers"
-thumbnail_folder="$HOME/.cache/quickshell/thumbnails"
 
 # Initialize an empty array for the wallpaper paths
 wallpaper_paths=()
-
-generate_thumbnails() {
-    local source_dir="$1"
-    local thumb_dir="$2"
-    
-    # Ensure thumbnail directory exists
-    mkdir -p "$thumb_dir"
-    
-    # Generate missing thumbnails in parallel, preserving folder structure
-    find "$source_dir" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.bmp" -o -iname "*.gif" -o -iname "*.svg" -o -iname "*.mp4" -o -iname "*.webm" -o -iname "*.mkv" -o -iname "*.mov" \) | while read -r wallpaper; do
-        # Get relative path from source_dir to preserve folder structure
-        relative_path="${wallpaper#$source_dir/}"
-        relative_no_ext="${relative_path%.*}"
-        thumbnail="$thumb_dir/$relative_no_ext.jpg"
-        ext="${wallpaper##*.}"
-        ext="${ext,,}"
-        
-        # Create subdirectory if needed
-        mkdir -p "$(dirname "$thumbnail")"
-        
-        # Skip if thumbnail already exists
-        if [ ! -f "$thumbnail" ]; then
-            notify-send "Generating Wallpaper Thumbnail" "Generating wallpaper thumbnail for $relative_path" --expire-time=2000 --urgency=low
-            case "$ext" in
-                mp4|webm|mkv|mov)
-                    ffmpeg -y -loglevel error -i "$wallpaper" -vf "thumbnail,scale=256:-1" -frames:v 1 "$thumbnail" >/dev/null 2>&1 &
-                    ;;
-                gif)
-                    magick "${wallpaper}[0]" -resize 256x256 -quality 85 -strip "$thumbnail" >/dev/null 2>&1 &
-                    ;;
-                *)
-                    magick "$wallpaper" -resize 256x256 -quality 85 -strip "$thumbnail" >/dev/null 2>&1 &
-                    ;;
-            esac
-        fi
-    done
-    
-    wait # Ensure all parallel processes finish before proceeding
-    
-    # Remove orphaned thumbnails
-    find "$thumb_dir" -type f | while read -r thumb; do
-        # Get relative path from thumb_dir to match with source structure
-        relative_path="${thumb#$thumb_dir/}"
-        relative_no_ext="${relative_path%.*}"
-
-        original_exists=false
-        for ext in jpg jpeg png webp bmp gif svg mp4 webm mkv mov; do
-            if [ -f "$source_dir/$relative_no_ext.$ext" ]; then
-                original_exists=true
-                break
-            fi
-        done
-
-        # Delete thumbnail if original wallpaper is missing
-        if [ "$original_exists" = false ]; then
-            rm "$thumb"
-        fi
-    done
-}
 
 # check if $1 == current
 if [ "$1" == "--current" ]; then
@@ -100,9 +40,6 @@ else
         fi
     done < <(find "$wallpaper_folder" -type d -print0)
 
-    # Generate thumbnails based on all wallpapers found
-    generate_thumbnails "$wallpaper_folder" "$thumbnail_folder"
-    
     # For categorized wallpapers, output as JSON object
     (IFS=,; echo "{${wallpaper_paths[*]}}")
     exit 0

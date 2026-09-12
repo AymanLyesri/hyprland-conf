@@ -9,13 +9,15 @@ import qs.services
 import qs.widgets.shared
 
 // WallpaperPanelBody — pick a wallpaper per workspace, or set the sddm
-// background, browse a category, add a new wallpaper (with
-// automatic thumbnail generation), or delete one.
+// background, browse a category, add a new wallpaper, or delete one.
 //
 // Lives in its own widgets/wallpaperPanel folder (same pattern as
 // widgets/controlPanel/ControlPanelBody) and is hosted by WallpaperIsland
 // in the main bar pill. Hosts size this Item (implicit 960x360) and call
 // refresh() when it becomes visible.
+//
+// Previews render the original files directly via AppImage (Qt Quick
+// Image, asynchronous + sourceSize-constrained) — no thumbnail files.
 Item {
     id: root
 
@@ -30,15 +32,6 @@ Item {
     readonly property string wallpaperScript: home + "/.config/quickshell/archeclipse/scripts/get-wallpapers.sh"
     readonly property string setScript: home + "/.config/hypr/wallpaper-daemon/set-wallpaper.sh"
     readonly property string reloadScript: home + "/.config/hypr/wallpaper-daemon/reload.sh"
-
-    // Must match thumbnail_folder in get-wallpapers.sh
-    // ($HOME/.cache/quickshell/thumbnails). That script is the sole
-    // thumbnail generator; pointing elsewhere yields blank tiles.
-    readonly property string thumbnailBase: home + "/.cache/quickshell/thumbnails"
-
-    function toThumbnailPath(file) {
-        return file.replace(home + "/.config/wallpapers/", thumbnailBase + "/").replace(/\.[^/.]+$/, ".jpg");
-    }
 
     function isVideoFile(file) {
         return /\.(mp4|webm|mkv|mov)$/i.test(file);
@@ -270,7 +263,7 @@ Item {
     }
     function deleteWallpaper(path) {
         setProgress("loading");
-        deleteProc.command = ["bash", "-c", `rm -f ${JSON.stringify(root.toThumbnailPath(path))} && rm -f ${JSON.stringify(path)}`];
+        deleteProc.command = ["bash", "-c", `rm -f ${JSON.stringify(path)}`];
         deleteProc.running = true;
     }
 
@@ -325,7 +318,7 @@ Item {
                 root.fetchWallpapers();
                 root.setProgress("success");
             } else {
-                root.notifyError("adding wallpaper", "copy/thumbnail step failed");
+                root.notifyError("adding wallpaper", "copy step failed");
             }
         }
     }
@@ -334,12 +327,8 @@ Item {
         const targetDir = root.home + "/.config/wallpapers/custom";
         const basename = sourcePath.split("/").pop();
         const targetPath = targetDir + "/" + basename;
-        const thumbDir = root.thumbnailBase + "/custom";
-        const thumbPath = thumbDir + "/" + basename.replace(/\.[^/.]+$/, ".jpg");
-        const isVideo = root.isVideoFile(sourcePath);
-        const thumbCmd = isVideo ? `ffmpeg -i ${JSON.stringify(targetPath)} -vframes 1 -vf "scale=500:-1" -y ${JSON.stringify(thumbPath)}` : `magick ${JSON.stringify(targetPath)} -resize "500x500^" -gravity center -extent 500x500 ${JSON.stringify(thumbPath)}`;
 
-        importProc.command = ["bash", "-c", `mkdir -p ${JSON.stringify(targetDir)} ${JSON.stringify(thumbDir)} && ` + `cp -- ${JSON.stringify(sourcePath)} ${JSON.stringify(targetPath)} && ` + thumbCmd];
+        importProc.command = ["bash", "-c", `mkdir -p ${JSON.stringify(targetDir)} && ` + `cp -- ${JSON.stringify(sourcePath)} ${JSON.stringify(targetPath)}`];
         importProc.running = true;
     }
 
@@ -410,11 +399,21 @@ Item {
                             visible: wsTile.modelData !== ""
                             anchors.fill: parent
                             anchors.margins: 2
-                            source: wsTile.modelData === "" ? "" : "file://" + root.toThumbnailPath(wsTile.modelData)
-                            // Still images can render directly if the thumbnail is missing;
-                            // videos cannot, so keep the thumbnail source for those.
-                            fallbackSource: (wsTile.modelData !== "" && !root.isVideoFile(wsTile.modelData)) ? "file://" + wsTile.modelData : ""
+                            // Native preview: original file, decoded near
+                            // tile size (async + cached inside AppImage).
+                            // Videos can't render in an Image — empty
+                            // source keeps the badges, icon below marks it.
+                            source: (wsTile.modelData === "" || root.isVideoFile(wsTile.modelData)) ? "" : "file://" + wsTile.modelData
+                            sourceWidth: wsTile.width
                             badges: [(wsTile.index + 1).toString()]
+                        }
+                        Text {
+                            visible: wsTile.modelData !== "" && root.isVideoFile(wsTile.modelData)
+                            anchors.centerIn: parent
+                            text: ""
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 20
+                            color: Theme.fgDim
                         }
                         Text {
                             visible: wsTile.modelData === ""
@@ -540,11 +539,18 @@ Item {
                             required property int index
                             // Staggered fade pop-in: each tile's turn
                             // arrives with its position, and it only fades
-                            // in once the thumbnail decoded (Error counts
-                            // as settled so a missing thumb can't hide a
-                            // tile forever).
+                            // in once the preview settled — image decoded
+                            // (Error counts as settled so a missing file
+                            // can't hide a tile forever) or video ready
+                            // (first frame or decode failure, which falls
+                            // back to the icon below).
                             property bool revealed: false
-                            readonly property bool thumbSettled: tileImg.status === Image.Ready || tileImg.status === Image.Error
+                            readonly property bool thumbSettled: root.isVideoFile(tile.modelData) ? tileVideo.ready : (tileImg.status === Image.Ready || tileImg.status === Image.Error)
+                            // Viewport gate for live video previews: the
+                            // strip is a Repeater (no virtualization), so
+                            // only tiles near the visible window may hold
+                            // a decoder. Buffer preloads just off-screen.
+                            readonly property bool inView: tile.x + tile.width > wallScroll.contentX - 320 && tile.x < wallScroll.contentX + wallScroll.width + 320
                             opacity: (revealed && thumbSettled) ? 1 : 0
                             Behavior on opacity {
                                 NumberAnimation {
@@ -558,11 +564,14 @@ Item {
                                 running: true
                                 onTriggered: tile.revealed = true
                             }
-                            // Hovered tile widens to its image aspect ratio
+                            // Hovered tile widens to its preview aspect ratio
                             // relative to the current height (never shrinks
                             // below base, capped so panoramas stay sane).
+                            // Images use the decoded size; videos use the
+                            // native resolution from metadata.
                             readonly property real imgRatio: (tileImg.implicitImageWidth > 0 && tileImg.implicitImageHeight > 0) ? tileImg.implicitImageWidth / tileImg.implicitImageHeight : 0
-                            width: tileMa.containsMouse && tile.imgRatio > 0 ? Math.min(Math.max(tile.height * tile.imgRatio, 150), 480) : 150
+                            readonly property real hoverRatio: tile.imgRatio > 0 ? tile.imgRatio : tileVideo.videoRatio
+                            width: tileMa.containsMouse && tile.hoverRatio > 0 ? Math.min(Math.max(tile.height * tile.hoverRatio, 150), 480) : 150
                             Behavior on width {
                                 NumberAnimation {
                                     duration: 180
@@ -580,8 +589,18 @@ Item {
                                 id: tileImg
                                 anchors.fill: parent
                                 anchors.margins: 3
-                                source: "file://" + root.toThumbnailPath(tile.modelData)
-                                fallbackSource: !root.isVideoFile(tile.modelData) ? "file://" + tile.modelData : ""
+                                // Native preview: original file decoded near
+                                // tile size (asynchronous + cached; the
+                                // strip's virtualized Repeater keeps the
+                                // instance count bounded while scrolling).
+                                // Videos can't render in an Image — empty
+                                // source keeps the badges, the icon below
+                                // marks the tile as video.
+                                source: root.isVideoFile(tile.modelData) ? "" : "file://" + tile.modelData
+                                // Two-step decode size (base vs hover-wide):
+                                // tracks the displayed width without
+                                // re-decoding on every animation frame.
+                                sourceWidth: tileMa.containsMouse ? 480 : 150
                                 // Workspace number badge: which workspace(s)
                                 // currently use this wallpaper (top-right).
                                 badges: {
@@ -592,6 +611,44 @@ Item {
                                             ids.push(String(i + 1));
                                     }
                                     return ids;
+                                }
+                            }
+                            // Live video preview (MP4/WebM): native Qt
+                            // Multimedia, muted + looping, cropped like the
+                            // static tiles. `active` unloads the decoder
+                            // off-screen (see tile.inView); AppImage above
+                            // stays empty for videos and keeps the badges.
+                            WallpaperVideoPreview {
+                                id: tileVideo
+                                anchors.fill: parent
+                                anchors.margins: 3
+                                visible: root.isVideoFile(tile.modelData)
+                                source: tile.modelData
+                                active: tileVideo.visible && tile.inView
+                            }
+                            Column {
+                                // Loading/error fallback for videos: shown
+                                // until the first frame lands (tile fades in
+                                // on ready) or permanently on decode failure.
+                                visible: root.isVideoFile(tile.modelData) && !tileVideo.ready
+                                anchors.centerIn: parent
+                                spacing: 4
+                                Text {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    text: ""
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 24
+                                    color: Theme.fgDim
+                                }
+                                Text {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    text: tile.modelData.split("/").pop()
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: Theme.fontSize - 2
+                                    color: Theme.fgDim
+                                    elide: Text.ElideMiddle
+                                    width: Math.max(0, tile.width - 16)
+                                    horizontalAlignment: Text.AlignHCenter
                                 }
                             }
 

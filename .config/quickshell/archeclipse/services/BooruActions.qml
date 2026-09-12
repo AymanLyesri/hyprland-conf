@@ -186,8 +186,8 @@ QtObject {
     }
 
     // Copy the downloaded full image into ~/.config/wallpapers/custom so
-    // the Wallpaper switcher can apply it (thumbnail generated like
-    // WallpaperPanelBody.importWallpaper). after(saved: bool) optional.
+    // the Wallpaper switcher can apply it (previews render the original
+    // file natively). after(saved: bool) optional.
     // Requires the full file on disk — the BooruViewer dialog
     // auto-downloads it on open, so by button-press time it is there;
     // exit 3 (test -s failed) tells the user to wait for the download.
@@ -212,10 +212,7 @@ QtObject {
         const home = Quickshell.env("HOME");
         const targetDir = home + "/.config/wallpapers/custom";
         const targetPath = targetDir + "/" + basename;
-        const thumbDir = home + "/.cache/quickshell/thumbnails/custom";
-        const thumbPath = thumbDir + "/" + basename.replace(/\.[^/.]+$/, ".jpg");
-        const thumbCmd = root.isVideo(img) ? `ffmpeg -y -loglevel error -i ${JSON.stringify(targetPath)} -vframes 1 -vf "scale=500:-1" ${JSON.stringify(thumbPath)}` : `magick ${JSON.stringify(targetPath)} -resize "500x500^" -gravity center -extent 500x500 ${JSON.stringify(thumbPath)}`;
-        const script = `test -s ${JSON.stringify(src)} || exit 3; ` + `mkdir -p ${JSON.stringify(targetDir)} ${JSON.stringify(thumbDir)} && ` + `cp -- ${JSON.stringify(src)} ${JSON.stringify(targetPath)} && ` + thumbCmd;
+        const script = `test -s ${JSON.stringify(src)} || exit 3; ` + `mkdir -p ${JSON.stringify(targetDir)} && ` + `cp -- ${JSON.stringify(src)} ${JSON.stringify(targetPath)}`;
         const p = Qt.createQmlObject('import Quickshell.Io; Process {}', root);
         p.stdout = Qt.createQmlObject('import Quickshell.Io; StdioCollector {}', p);
         p.stderr = Qt.createQmlObject('import Quickshell.Io; StdioCollector {}', p);
