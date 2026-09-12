@@ -19,7 +19,7 @@ ListView {
     maximumFlickVelocity: 2500
 
     // Per-notch gain: angleDelta.y=120 -> d=60 -> 60*scale velocity.
-    property real wheelScale: 60
+    property real wheelScale: 28
 
     SmoothWheelHandler {
         target: root

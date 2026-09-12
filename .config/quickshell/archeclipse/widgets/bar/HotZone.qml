@@ -28,18 +28,40 @@ Rectangle {
 
     property bool preview: false
 
+    // Dwell before hover opens the island: the strips sit at both bar
+    // ends, so dragging the cursor out of an open island across the bar
+    // used to brush the rival strip and instantly swap islands (left ->
+    // right with no intent). Intentional hovers dwell; crossings don't.
+    // Click still opens immediately (touch users).
+    property int dwellMs: 400
+    Timer {
+        id: dwellTimer
+        interval: root.dwellMs
+        repeat: false
+        onTriggered: {
+            if (root.panelLock || !root.enabledHotZone)
+                return;
+            root.showIsland();
+        }
+    }
+
     // Also track hover on the zone itself for preview mode (debug)
     MouseArea {
         anchors.fill: parent
         hoverEnabled: root.enabledHotZone
         onEntered: {
             // Per-side lock gate (was: either panel's lock blocked both sides)
-            if (root.panelLock || !root.enabledHotZone) return
-            root.showIsland()
+            if (root.panelLock || !root.enabledHotZone)
+                return;
+            dwellTimer.restart();
+        }
+        onExited: {
+            dwellTimer.stop();
         }
         onClicked: {
             if (root.panelLock || !root.enabledHotZone)
                 return;
+            dwellTimer.stop();
             root.showIsland();
         }
     }

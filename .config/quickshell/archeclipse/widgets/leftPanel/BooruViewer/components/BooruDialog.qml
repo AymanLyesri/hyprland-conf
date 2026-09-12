@@ -7,10 +7,10 @@ import qs.services
 import qs.widgets.media
 
 // Detail card: the image is the parent — it fills the card and every
-// info + action lives in overlays (WaifuWidget parity). A persistent top
-// bar (drag grip, type badge, title, close) and a hover-reveal bottom
-// sheet (meta, tags, all actions, resize cell). The entrance is
-// slide/fade on the inner wrapper only — never layout geometry.
+// info + action lives in a single hover-reveal bottom sheet (WaifuWidget
+// parity). The sheet header carries the drag grip, type badge, title,
+// and close; below sit meta, tags, all actions, and resize cell. The
+// entrance is slide/fade on the inner wrapper only — never layout geometry.
 // viewer: entry root (dialogImage, download/bookmark/pin actions,
 // detach + free-geometry for the float window).
 //
@@ -79,8 +79,8 @@ Item {
     readonly property string dlgTypeIcon: dlgIsZip ? "" : (dlgIsVideo ? "" : "")
     readonly property int dlgVisibleTagCount: showAllTags ? dlgTags.length : Math.min(dlgTags.length, 12)
     // Bottom sheet reveal (WaifuWidget parity): hovering anywhere on the
-    // card (media, top bar, or the sheet itself — all children of slider)
-    // slides the sheet up. The handler must live on the container, not on
+    // card (media or the sheet itself — all children of slider) slides
+    // the sheet up. The handler must live on the container, not on
     // the media: a handler inside dialogMedia goes false the moment the
     // cursor moves onto the sibling sheet, hiding it under the cursor.
     readonly property bool sheetRevealed: sliderHover.hovered
@@ -177,138 +177,6 @@ Item {
             }
         } // dialogMedia
 
-        // ---- top info bar: always visible (grip + badge + title + close) ----
-        Rectangle {
-            id: topBar
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.margins: 8
-            height: 40
-            radius: Theme.radius
-            color: Theme.surface
-            opacity: 0.94
-
-            RowLayout {
-                anchors.fill: parent
-                anchors.margins: 4
-                spacing: 6
-
-                // Drag grip: floats the card into its own window on first
-                // move, then moves it anywhere on screen (local deltas —
-                // no compositor handshake, no gesture race).
-                // Pure-QML dots (no font dependency).
-                Item {
-                    id: dragGrip
-                    width: 14
-                    height: 26
-                    Layout.alignment: Qt.AlignVCenter
-                    Row {
-                        anchors.centerIn: parent
-                        spacing: 2
-                        Repeater {
-                            model: 2
-                            Column {
-                                spacing: 2
-                                Repeater {
-                                    model: 3
-                                    Rectangle {
-                                        width: 3
-                                        height: 3
-                                        radius: 1.5
-                                        color: Theme.fgDim
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    MouseArea {
-                        id: dragMouse
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.SizeAllCursor
-                        property bool moveStarted: false
-                        AppTooltip {
-                            visible: parent.containsMouse
-                            text: "Drag to float as window"
-                        }
-                        // Detach on press so the window exists, then
-                        // start the system move on first motion: a
-                        // press-time request can predate the new
-                        // window's mapping and be ignored.
-                        onPressed: {
-                            if (viewer)
-                                viewer.detachDialog();
-                            dragMouse.moveStarted = false;
-                        }
-                        onPositionChanged: {
-                            if (!dragMouse.pressed || dragMouse.moveStarted)
-                                return;
-                            dragMouse.moveStarted = true;
-                            if (viewer)
-                                viewer.moveFloat();
-                        }
-                        onReleased: dragMouse.moveStarted = false
-                        onCanceled: dragMouse.moveStarted = false
-                    }
-                }
-
-                Rectangle {
-                    width: 26
-                    height: 26
-                    radius: 6
-                    color: Theme.surfaceActive
-                    Layout.alignment: Qt.AlignVCenter
-                    Text {
-                        anchors.centerIn: parent
-                        text: dialogRoot.dlgTypeIcon
-                        font.pixelSize: 12
-                        font.family: Theme.fontFamily
-                        color: Theme.accent
-                    }
-                }
-
-                Column {
-                    Layout.fillWidth: true
-                    Layout.alignment: Qt.AlignVCenter
-                    spacing: 0
-                    Text {
-                        text: dlg ? `#${dlg.id}` : ""
-                        color: Theme.fg
-                        font.pixelSize: Theme.fontSize
-                        font.bold: true
-                        font.family: Theme.fontFamily
-                        elide: Text.ElideRight
-                        width: parent.width
-                    }
-                    Text {
-                        text: dlg ? `${dialogRoot.dlgApiName} • ${dialogRoot.dlgDims}` : ""
-                        color: Theme.fgDim
-                        font.pixelSize: Theme.fontSize - 2
-                        font.family: Theme.fontFamily
-                        elide: Text.ElideRight
-                        width: parent.width
-                    }
-                }
-
-                AppButton {
-                    icon: ""
-                    width: 26
-                    height: 26
-                    pixelSize: 11
-                    cornerRadius: 6
-                    outlined: true
-                    hoverFg: Theme.danger
-                    tooltipText: "Close (Esc)"
-                    Layout.alignment: Qt.AlignVCenter
-                    onClicked: {
-                        if (viewer)
-                            viewer.requestClose();
-                    }
-                }
-            }
-        } // topBar
-
         // Peek handle — affordance hint shown while the sheet is hidden.
         Rectangle {
             anchors.bottom: parent.bottom
@@ -327,7 +195,7 @@ Item {
             }
         }
 
-        // ---- bottom sheet: meta + tags + all actions, slides up on hover ----
+        // ---- bottom sheet: header + meta + tags + all actions ----
         Rectangle {
             id: bottomSheet
             anchors.left: parent.left
@@ -344,8 +212,8 @@ Item {
                     easing.type: Easing.OutCubic
                 }
             }
-            // Cap at the free space below the top bar; overflow scrolls.
-            height: Math.min(sheetContent.height + 16, Math.max(120, dialogRoot.height - topBar.height - 32))
+            // Cap at the card height; overflow scrolls.
+            height: Math.min(sheetContent.height + 16, Math.max(120, dialogRoot.height - 16))
             radius: Theme.radius
             color: Theme.surfaceHover
             border.color: Theme.border
@@ -371,6 +239,128 @@ Item {
                     id: sheetContent
                     width: parent.width
                     spacing: 6
+
+                    // Header (merged top bar — NotificationItem parity:
+                    // icon, bold title fillWidth, dim meta, 24px outlined
+                    // icon button). Single Close lives here; dims live
+                    // only in the meta pill below.
+                    RowLayout {
+                        width: parent.width
+                        spacing: 6
+
+                        // Drag grip: floats the card into its own window
+                        // on first move, then moves it anywhere on screen
+                        // (local deltas — no compositor handshake, no
+                        // gesture race). Pure-QML dots (no font dep).
+                        Item {
+                            id: dragGrip
+                            width: 14
+                            height: 26
+                            Layout.alignment: Qt.AlignVCenter
+                            Row {
+                                anchors.centerIn: parent
+                                spacing: 2
+                                Repeater {
+                                    model: 2
+                                    Column {
+                                        spacing: 2
+                                        Repeater {
+                                            model: 3
+                                            Rectangle {
+                                                width: 3
+                                                height: 3
+                                                radius: 1.5
+                                                color: Theme.fgDim
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            MouseArea {
+                                id: dragMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.SizeAllCursor
+                                property bool moveStarted: false
+                                AppTooltip {
+                                    visible: parent.containsMouse
+                                    text: "Drag to float as window"
+                                }
+                                // Detach on press so the window exists,
+                                // then start the system move on first
+                                // motion: a press-time request can predate
+                                // the new window's mapping and be ignored.
+                                onPressed: {
+                                    if (viewer)
+                                        viewer.detachDialog();
+                                    dragMouse.moveStarted = false;
+                                }
+                                onPositionChanged: {
+                                    if (!dragMouse.pressed || dragMouse.moveStarted)
+                                        return;
+                                    dragMouse.moveStarted = true;
+                                    if (viewer)
+                                        viewer.moveFloat();
+                                }
+                                onReleased: dragMouse.moveStarted = false
+                                onCanceled: dragMouse.moveStarted = false
+                            }
+                        }
+
+                        Rectangle {
+                            width: 26
+                            height: 26
+                            radius: 6
+                            color: Theme.surfaceActive
+                            Layout.alignment: Qt.AlignVCenter
+                            Text {
+                                anchors.centerIn: parent
+                                text: dialogRoot.dlgTypeIcon
+                                font.pixelSize: 12
+                                font.family: Theme.fontFamily
+                                color: Theme.accent
+                            }
+                        }
+
+                        Column {
+                            Layout.fillWidth: true
+                            Layout.alignment: Qt.AlignVCenter
+                            spacing: 0
+                            Text {
+                                text: dlg ? `#${dlg.id}` : ""
+                                color: Theme.fg
+                                font.pixelSize: Theme.fontSize
+                                font.bold: true
+                                font.family: Theme.fontFamily
+                                elide: Text.ElideRight
+                                width: parent.width
+                            }
+                            Text {
+                                text: dlg ? dialogRoot.dlgApiName : ""
+                                color: Theme.fgDim
+                                font.pixelSize: Theme.fontSize - 2
+                                font.family: Theme.fontFamily
+                                elide: Text.ElideRight
+                                width: parent.width
+                            }
+                        }
+
+                        AppButton {
+                            icon: ""
+                            width: 26
+                            height: 26
+                            pixelSize: 11
+                            cornerRadius: 6
+                            outlined: true
+                            hoverFg: Theme.danger
+                            tooltipText: "Close (Esc)"
+                            Layout.alignment: Qt.AlignVCenter
+                            onClicked: {
+                                if (viewer)
+                                    viewer.requestClose();
+                            }
+                        }
+                    }
 
                     // Meta strip: dims • ext • status (WallpaperPanel pill parity).
                     Rectangle {
@@ -567,6 +557,24 @@ Item {
                                 viewer.setAsWaifu(dlg);
                         }
                     }
+                    // Save the full file into ~/.config/wallpapers/custom
+                    // (thumbnail included) for the Wallpaper switcher.
+                    // Needs the auto-downloaded full file, like Pin —
+                    // videos play as animated wallpapers, only zips excluded.
+                    AppButton {
+                        width: parent.width
+                        height: 30
+                        icon: ""
+                        text: "Wallpaper"
+                        outlined: true
+                        pixelSize: Theme.fontSize - 2
+                        enabled: dialogRoot.dlgDownloaded && !dialogRoot.dlgIsZip
+                        tooltipText: dialogRoot.dlgIsZip ? "Cannot use this file type as wallpaper" : !dialogRoot.dlgDownloaded ? "Downloading full image…" : "Save to wallpapers folder"
+                        onClicked: {
+                            if (viewer && dlg)
+                                viewer.saveAsWallpaper(dlg);
+                        }
+                    }
                     RowLayout {
                         width: parent.width
                         spacing: 6
@@ -597,65 +605,53 @@ Item {
                             }
                         }
                     }
-                    // Dismiss row + window-resize cell at the sheet's
-                    // bottom-right corner (aspect-locked via the viewer).
-                    RowLayout {
-                        width: parent.width
-                        spacing: 6
-                        AppButton {
-                            Layout.fillWidth: true
-                            height: 28
-                            icon: ""
-                            text: "Close"
-                            pixelSize: Theme.fontSize - 2
-                            idleFg: Theme.fgDim
-                            tooltipText: "Close (Esc)"
-                            onClicked: {
-                                if (viewer)
-                                    viewer.requestClose();
-                            }
-                        }
-                        Item {
-                            width: 16
-                            height: 28
-                            Repeater {
-                                model: 3
-                                Rectangle {
-                                    width: 3
-                                    height: 3
-                                    radius: 1.5
-                                    color: Theme.fgDim
-                                    x: 12 - index * 4
-                                    y: 16 - index * 4
-                                }
-                            }
-                            MouseArea {
-                                id: resizeMouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.SizeFDiagCursor
-                                property point last
-                                AppTooltip {
-                                    visible: parent.containsMouse
-                                    text: "Drag to resize (keeps ratio)"
-                                }
-                                onPressed: mouse => {
-                                    resizeMouse.last = Qt.point(mouse.x, mouse.y);
-                                }
-                                onPositionChanged: mouse => {
-                                    if (!resizeMouse.pressed)
-                                        return;
-                                    const dx = mouse.x - resizeMouse.last.x;
-                                    const dy = mouse.y - resizeMouse.last.y;
-                                    resizeMouse.last = Qt.point(mouse.x, mouse.y);
-                                    if (viewer)
-                                        viewer.resizeFloat(dx, dy);
-                                }
-                            }
-                        }
-                    }
                 } // sheetContent
             } // sheet flickable
+
+            // Resize cell overlay at the sheet's bottom-right corner
+            // (aspect-locked via the viewer). Absolute — not a layout
+            // row — so no space is reserved and no Close is duplicated.
+            Item {
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.margins: 4
+                width: 16
+                height: 16
+                Repeater {
+                    model: 3
+                    Rectangle {
+                        width: 3
+                        height: 3
+                        radius: 1.5
+                        color: Theme.fgDim
+                        x: 12 - index * 4
+                        y: 12 - index * 4
+                    }
+                }
+                MouseArea {
+                    id: resizeMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.SizeFDiagCursor
+                    property point last
+                    AppTooltip {
+                        visible: parent.containsMouse
+                        text: "Drag to resize (keeps ratio)"
+                    }
+                    onPressed: mouse => {
+                        resizeMouse.last = Qt.point(mouse.x, mouse.y);
+                    }
+                    onPositionChanged: mouse => {
+                        if (!resizeMouse.pressed)
+                            return;
+                        const dx = mouse.x - resizeMouse.last.x;
+                        const dy = mouse.y - resizeMouse.last.y;
+                        resizeMouse.last = Qt.point(mouse.x, mouse.y);
+                        if (viewer)
+                            viewer.resizeFloat(dx, dy);
+                    }
+                }
+            }
         } // bottomSheet
     } // slider
 

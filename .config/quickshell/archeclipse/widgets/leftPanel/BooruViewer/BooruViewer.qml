@@ -561,6 +561,12 @@ Item {
         return BooruActions.setAsWaifu(img);
     }
 
+    // Copy the downloaded full image into ~/.config/wallpapers/custom
+    // (thumbnail included) so the Wallpaper switcher can apply it.
+    function saveAsWallpaper(img) {
+        return BooruActions.saveAsWallpaper(img);
+    }
+
     // Dialog tag hold ("Hold: search"): ADD the tag to the current search
     // instead of replacing it (AGS addTags parity: current + new, deduped).
     // No-op when the tag is already in the search.

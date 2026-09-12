@@ -113,3 +113,6 @@ alias wallpapers="$HOME/.config/hypr/maintenance/components/wallpapers.py"
 # export PATH=$PATH:$ANDROID_HOME/emulator
 # export PATH=$PATH:$ANDROID_HOME/platform-tools
 ############################################################
+
+# ArchEclipse Discord bot token (OpenCode MCP, read-only scout)
+[ -f ~/.config/opencode/discord-token.env ] && source ~/.config/opencode/discord-token.env

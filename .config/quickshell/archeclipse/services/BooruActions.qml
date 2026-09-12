@@ -185,6 +185,60 @@ QtObject {
             Quickshell.execDetached(["swayimg", "-w", "690,690", "--class", "preview-image", path]);
     }
 
+    // Copy the downloaded full image into ~/.config/wallpapers/custom so
+    // the Wallpaper switcher can apply it (thumbnail generated like
+    // WallpaperPanelBody.importWallpaper). after(saved: bool) optional.
+    // Requires the full file on disk — the BooruViewer dialog
+    // auto-downloads it on open, so by button-press time it is there;
+    // exit 3 (test -s failed) tells the user to wait for the download.
+    function saveAsWallpaper(img, after) {
+        if (!img || img.id === undefined || img.id === null)
+            return;
+        if (root.isZip(img)) {
+            Notifications.notify({ summary: "Cannot use as wallpaper", body: "This file type cannot be previewed" });
+            if (after)
+                after(false);
+            return;
+        }
+        const src = root.localImagePath(img);
+        if (src === "") {
+            if (after)
+                after(false);
+            return;
+        }
+        const ext = String(img.extension || "jpg").toLowerCase();
+        const api = root.apiOf(img) || "danbooru";
+        const basename = `booru-${api}-${img.id}.${ext}`;
+        const home = Quickshell.env("HOME");
+        const targetDir = home + "/.config/wallpapers/custom";
+        const targetPath = targetDir + "/" + basename;
+        const thumbDir = home + "/.config/ags/cache/thumbnails/custom";
+        const thumbPath = thumbDir + "/" + basename.replace(/\.[^/.]+$/, ".jpg");
+        const thumbCmd = root.isVideo(img) ? `ffmpeg -y -loglevel error -i ${JSON.stringify(targetPath)} -vframes 1 -vf "scale=500:-1" ${JSON.stringify(thumbPath)}` : `magick ${JSON.stringify(targetPath)} -resize "500x500^" -gravity center -extent 500x500 ${JSON.stringify(thumbPath)}`;
+        const script = `test -s ${JSON.stringify(src)} || exit 3; ` + `mkdir -p ${JSON.stringify(targetDir)} ${JSON.stringify(thumbDir)} && ` + `cp -- ${JSON.stringify(src)} ${JSON.stringify(targetPath)} && ` + thumbCmd;
+        const p = Qt.createQmlObject('import Quickshell.Io; Process {}', root);
+        p.stdout = Qt.createQmlObject('import Quickshell.Io; StdioCollector {}', p);
+        p.stderr = Qt.createQmlObject('import Quickshell.Io; StdioCollector {}', p);
+        p.command = ["bash", "-c", script];
+        p.exited.connect(function (code) {
+            p.destroy();
+            if (code === 3) {
+                Notifications.notify({ summary: "Full image not downloaded yet", body: "Wait for the download, then try again" });
+                if (after)
+                    after(false);
+            } else if (code === 0) {
+                Notifications.notify({ summary: "Success", body: "Saved to wallpapers/custom — pick it in the Wallpaper switcher" });
+                if (after)
+                    after(true);
+            } else {
+                Notifications.notify({ summary: "Error", body: "Could not save to wallpapers folder" });
+                if (after)
+                    after(false);
+            }
+        });
+        p.running = true;
+    }
+
     function copyTag(tag) {
         if (tag === undefined || tag === null)
             return;

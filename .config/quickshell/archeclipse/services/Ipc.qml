@@ -117,6 +117,57 @@ Item {
             }
         }
 
+        // Player-icon probe: dumps the raw MPRIS fields and each
+        // MediaWidget.appIconSource resolution step, so a stuck
+        // fallback glyph can be traced to its failing layer. Mirrors
+        // MediaWidget's player pick (first isPlaying, else first).
+        function playerIconDiag(): string {
+            try {
+                let target = null;
+                for (const p of Mpris.players.values) {
+                    if (p.isPlaying) {
+                        target = p;
+                        break;
+                    }
+                    if (!target)
+                        target = p;
+                }
+                if (!target)
+                    return "no players";
+                const de = String(target.desktopEntry ?? "");
+                const id = String(target.identity ?? "");
+                const bus = String(target.dbusName ?? "");
+                let out = "identity=[" + id + "] desktopEntry=[" + de + "] dbus=[" + bus + "]";
+                try {
+                    out += " DesktopEntries=" + (typeof DesktopEntries !== "undefined" ? "defined" : "UNDEFINED");
+                } catch (e) {
+                    out += " DesktopEntries=ERR:" + String(e).slice(0, 80);
+                }
+                let entryIcon = "";
+                try {
+                    let entry = null;
+                    if (de.trim() !== "")
+                        entry = DesktopEntries.byId(de.trim()) ?? DesktopEntries.heuristicLookup(de.trim());
+                    if (!entry && id.trim() !== "")
+                        entry = DesktopEntries.heuristicLookup(id.trim());
+                    entryIcon = (entry && entry.icon) || "";
+                    out += " entryIcon=[" + entryIcon + "]";
+                } catch (e) {
+                    out += " entryERR=" + String(e).slice(0, 120);
+                }
+                const cand = entryIcon !== "" ? entryIcon : (id.trim() !== "" ? id.trim().toLowerCase() : (bus.trim() !== "" ? bus.trim().split(".").pop().toLowerCase() : ""));
+                out += " candidate=[" + cand + "]";
+                try {
+                    out += " iconPath=[" + Quickshell.iconPath(cand, true) + "]";
+                } catch (e) {
+                    out += " iconPathERR=" + String(e).slice(0, 120);
+                }
+                return out;
+            } catch (e) {
+                return "EX: " + e;
+            }
+        }
+
         // Timer-pattern probe: replicates BarState's watcher-timer wiring to
         // verify Qt.createQmlObject Timer + onTriggered.connect fires.
         // Call "timerfire" (arms 300ms timer), then "timerread".

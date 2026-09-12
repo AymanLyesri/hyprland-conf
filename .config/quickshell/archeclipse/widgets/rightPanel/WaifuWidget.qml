@@ -198,59 +198,102 @@ Item {
         },
     ]
 
+    // Upload pipeline state (set by pickProc → identifyProc → copyProc below).
+    property string _uploadSrc: ""
+    property string _uploadExt: "png"
+    property int _uploadW: 0
+    property int _uploadH: 0
+
+    // Declarative zenity picker (WallpaperPanelBody pickProc parity):
+    // collectors are attached in the constructor, never assigned after
+    // running=true, and paths travel as argv — never interpolated into a
+    // QML string or shell quote (the old Qt.createQmlObject flow raced
+    // stdout attachment and broke on paths with quotes/spaces).
+    Process {
+        id: pickProc
+        command: ["zenity", "--file-selection", "--title=Select Image", "--file-filter=Images (png, jpg, webp, gif) | *.png *.jpg *.jpeg *.webp *.gif"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const path = text.trim();
+                if (path === "")
+                    return;
+                root._uploadSrc = path;
+                const ext = (path.split("/").pop().split(".").pop() || "png").toLowerCase();
+                root._uploadExt = ext;
+                identifyProc.command = ["identify", "-format", "%w %h", path];
+                identifyProc.running = true;
+            }
+        }
+        onExited: code => {
+            // zenity exits 1 on Cancel — not an error; empty stdout means
+            // nothing was picked (handled above by the empty-path return).
+            if (code !== 0 && code !== 1)
+                Notifications.notify({ summary: "Waifu", body: "Image picker failed" });
+        }
+    }
+
+    // Image dimensions via ImageMagick (argv path — no shell quoting).
+    // Parsed once on exit (single path: stdout may be empty on failure,
+    // and handling both onStreamFinished + onExited would copy twice).
+    Process {
+        id: identifyProc
+        stdout: StdioCollector {}
+        onExited: code => {
+            if (code === 0) {
+                const dims = stdout.text.trim().split(/\s+/).map(Number);
+                root._uploadW = dims[0] || 0;
+                root._uploadH = dims[1] || 0;
+            } else {
+                // identify missing/failed: still install the file with
+                // unknown dims (aspect falls back to the loaded image).
+                root._uploadW = 0;
+                root._uploadH = 0;
+            }
+            const dir = `${root.booruPath}/custom/images`;
+            const dest = `${dir}/-1.${root._uploadExt}`;
+            // $1=dest dir, $2=source, $3=dest: argv, so paths with
+            // quotes/spaces survive; drop stale -1.* siblings from a
+            // previous upload with a different extension.
+            copyProc.command = ["bash", "-c", 'mkdir -p "$1" && rm -f "$1"/-1.* && cp -- "$2" "$3"', "--", dir, root._uploadSrc, dest];
+            copyProc.running = true;
+        }
+    }
+
+    // mkdir + copy of the picked file into the custom cache dir.
+    Process {
+        id: copyProc
+        onExited: code => {
+            if (code !== 0) {
+                Notifications.notify({ summary: "Waifu", body: "Could not install custom image" });
+                return;
+            }
+            const dest = `${root.booruPath}/custom/images/-1.${root._uploadExt}`;
+            const newWaifu = {
+                id: -1,
+                width: root._uploadW,
+                height: root._uploadH,
+                api: {
+                    name: "Custom",
+                    value: "custom"
+                },
+                extension: root._uploadExt,
+                tags: ["custom"],
+                url: dest,
+                preview: dest
+            };
+            Settings.waifu = newWaifu;
+            Settings.persist();
+            Notifications.notify({
+                summary: "Waifu",
+                body: "Custom image set"
+            });
+        }
+    }
+
     // Upload a custom local image as the current waifu (AGS upload button:
     // zenity file-selection → identify dims → copy to custom/images/-1.<ext>).
     function uploadCustomImage() {
-        const pick = Qt.createQmlObject('import Quickshell.Io; Process { command: ["zenity", "--file-selection", "--title=Select Image", "--file-filter=Images (png, jpg, webp, gif) | *.png *.jpg *.jpeg *.webp *.gif"] }', root);
-        pick.running = true;
-        pick.stdout = Qt.createQmlObject('import Quickshell.Io; StdioCollector {}', root);
-        pick.finished.connect(function (code) {
-            const path = pick.stdout.text.trim();
-            if (!path) {
-                pick.destroy();
-                return;
-            }
-            const ext = (path.split(".").pop() || "png").toLowerCase();
-            // identify dims
-            const idProc = Qt.createQmlObject('import Quickshell.Io; Process { command: ["identify", "-format", "%h %w", "' + path.replace(/'/g, "'\\''") + '"] }', root);
-            idProc.running = true;
-            idProc.stdout = Qt.createQmlObject('import Quickshell.Io; StdioCollector {}', root);
-            idProc.finished.connect(function () {
-                const dims = idProc.stdout.text.trim().split(" ").map(Number);
-                const h = dims[0] || 0, w = dims[1] || 0;
-                // mkdir + copy
-                const dest = `${root.booruPath}/custom/images/-1.${ext}`;
-                const cp = Qt.createQmlObject('import Quickshell.Io; Process { running: false }', root);
-                cp.command = ["bash", "-c", `mkdir -p '${root.booruPath}/custom/images' && cp -- '${path}' '${dest}'`];
-                cp.finished.connect(function () {
-                    const newWaifu = {
-                        id: -1,
-                        width: w,
-                        height: h,
-                        api: {
-                            name: "Custom",
-                            value: "custom"
-                        },
-                        extension: ext,
-                        tags: ["custom"],
-                        url: dest,
-                        preview: dest
-                    };
-                    Settings.waifu = newWaifu;
-                    Settings.persist();
-                    Notifications.notify({
-                        summary: "Waifu",
-                        body: "Custom image set"
-                    });
-                    cp.destroy();
-                    idProc.destroy();
-                    pick.destroy();
-                });
-                cp.running = true;
-            });
-            idProc.running = true;
-        });
-        pick.running = true;
+        pickProc.running = true;
     }
 
     // Open the current waifu as a floating Booru dialog window (same

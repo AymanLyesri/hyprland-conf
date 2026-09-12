@@ -47,33 +47,48 @@ Column {
     }
 
     // Resolve the player's app icon via its MPRIS DesktopEntry (AGS
-    // AstalApps.exact_query(player.entry) parity) with identity fallbacks.
+    // AstalApps.exact_query(player.entry) parity) with identity fallbacks,
+    // then through Quickshell.iconPath() into an image:// URL —
+    // IconImage.source is a plain Image URL alias, so bare theme names
+    // never load (AppEntry _iconSrc parity). Missing icons yield "" and
+    // the pill falls back to its music-note glyph.
     readonly property string playerIconSource: {
         const p = root.firstPlayable;
         if (!p)
             return "";
-        const de = (p.desktopEntry ?? "").trim();
-        const id = (p.identity ?? "").trim();
-        let entry = null;
+        const de = String(p.desktopEntry ?? "").trim();
+        const id = String(p.identity ?? "").trim();
+        let raw = "";
         try {
+            let entry = null;
             if (de !== "")
                 entry = DesktopEntries.byId(de) ?? DesktopEntries.heuristicLookup(de);
             if (!entry && id !== "")
                 entry = DesktopEntries.heuristicLookup(id);
+            if (entry && entry.icon)
+                raw = entry.icon;
         } catch (e) {}
-        if (entry && entry.icon)
-            return entry.icon;
-        // IconImage resolves theme names — lowercase identity usually
-        // matches (e.g. "Spotify" -> "spotify"); dbus suffix as last resort.
-        if (id !== "")
-            return id.toLowerCase();
-        const bus = (p.dbusName ?? "").trim();
-        if (bus !== "") {
-            const tail = bus.split(".").pop();
-            if (tail)
-                return tail.toLowerCase();
+        // Lowercase identity usually matches (e.g. "Spotify" -> "spotify");
+        // dbus suffix as last resort.
+        if (raw === "" && id !== "")
+            raw = id.toLowerCase();
+        if (raw === "") {
+            const bus = String(p.dbusName ?? "").trim();
+            if (bus !== "") {
+                const tail = bus.split(".").pop();
+                if (tail)
+                    raw = tail.toLowerCase();
+            }
         }
-        return "";
+        if (raw === "")
+            return "";
+        if (raw.startsWith("image://") || raw.startsWith("file://") || raw.startsWith("qrc:/") || raw.startsWith("/"))
+            return raw;
+        try {
+            return Quickshell.iconPath(raw, true);
+        } catch (e) {
+            return "";
+        }
     }
     readonly property string playerTooltip: {
         const p = root.firstPlayable;

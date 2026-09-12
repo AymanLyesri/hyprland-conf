@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Quickshell
+import Quickshell.Widgets
 import Quickshell.Services.Mpris
 import qs.theme
 import qs.services
@@ -49,6 +51,51 @@ Item {
     property string title: root.player?.trackTitle ?? "Unknown Track"
     property string artist: root.player?.trackArtist ?? "Unknown Artist"
     property string artUrl: root.player?.trackArtUrl ?? ""
+
+    // Resolve the player's app icon via its MPRIS DesktopEntry (DefaultBar
+    // playerIconSource parity) with identity fallbacks, then through
+    // Quickshell.iconPath() into an image:// URL — IconImage.source is a
+    // plain Image URL alias, so bare theme names never load (AppEntry
+    // _iconSrc parity). Missing icons yield "" and the music-note glyph
+    // fallback shows instead of the provider's missing-texture.
+    readonly property string appIconSource: {
+        const p = root.player;
+        if (!p)
+            return "";
+        const de = String(p.desktopEntry ?? "").trim();
+        const id = String(p.identity ?? "").trim();
+        let raw = "";
+        try {
+            let entry = null;
+            if (de !== "")
+                entry = DesktopEntries.byId(de) ?? DesktopEntries.heuristicLookup(de);
+            if (!entry && id !== "")
+                entry = DesktopEntries.heuristicLookup(id);
+            if (entry && entry.icon)
+                raw = entry.icon;
+        } catch (e) {}
+        if (raw === "" && id !== "")
+            raw = id.toLowerCase();
+        if (raw === "") {
+            try {
+                const bus = String(p.dbusName ?? "").trim();
+                if (bus !== "") {
+                    const tail = bus.split(".").pop();
+                    if (tail)
+                        raw = tail.toLowerCase();
+                }
+            } catch (e) {}
+        }
+        if (raw === "")
+            return "";
+        if (raw.startsWith("image://") || raw.startsWith("file://") || raw.startsWith("qrc:/") || raw.startsWith("/"))
+            return raw;
+        try {
+            return Quickshell.iconPath(raw, true);
+        } catch (e) {
+            return "";
+        }
+    }
 
     // Title change → slide animation via MPRIS trackTitleChanged signal
     Connections {
@@ -206,15 +253,30 @@ Item {
                     }
                 }
 
-                // App icon (AGS identity tooltip + entry icon)
-                Label {
+                // App icon (DefaultBar parity: real theme icon via
+                // DesktopEntry/identity lookup, music-note glyph fallback)
+                Item {
                     width: 22
                     height: 64
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    text: "\u{F1FE}"  // music-note icon
-                    color: Theme.fgDim
-                    font.pixelSize: 18
+
+                    IconImage {
+                        id: appIconImg
+                        anchors.centerIn: parent
+                        width: 20
+                        height: 20
+                        source: root.appIconSource
+                        visible: status === Image.Ready && root.appIconSource !== ""
+                        asynchronous: true
+                    }
+                    Label {
+                        anchors.centerIn: parent
+                        visible: !appIconImg.visible
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        text: ""  // music-note icon
+                        color: Theme.fgDim
+                        font.pixelSize: 18
+                    }
                     AppTooltip {
                         visible: iconTip.hovered
                         text: root.player?.identity ?? ""

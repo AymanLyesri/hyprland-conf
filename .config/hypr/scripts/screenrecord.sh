@@ -4,6 +4,12 @@ screenrecord_fullscreen_dir="$screenrecord_dir/fullscreen"
 screenrecord_area_dir="$screenrecord_dir/area"
 pid_file="/tmp/screenrecord.pid"
 file_name="/tmp/screenrecord_name"
+log_file="/tmp/screenrecord.log"
+
+slog() {
+    # Append-only diagnostic log (never fails the script).
+    echo "$(date +%Y%m%d_%H%M%S) [$$] $*" >> "$log_file" 2>/dev/null || true
+}
 
 mkdir -p "$screenrecord_dir"
 mkdir -p "$screenrecord_fullscreen_dir"
@@ -26,8 +32,10 @@ drop_stale_pid() {
 }
 
 start() {
+    slog "start args=[$*] wayland=${WAYLAND_DISPLAY:-UNSET} hypr=${HYPRLAND_INSTANCE_SIGNATURE:-UNSET}"
     drop_stale_pid
     if [[ -f "$pid_file" ]]; then
+        slog "start abort: already recording pid=$(cat "$pid_file" 2>/dev/null)"
         echo "Already recording (pid $(cat "$pid_file"))" >&2
         exit 1
     fi
@@ -41,8 +49,51 @@ start() {
     fi
 
     if [[ "$1" == "--area" ]]; then
+        # A single trigger must never stack two selectors: two slurp
+        # instances contend for the compositor overlay and NEITHER
+        # displays until one is killed (kill-one-side frees the other).
+        # The pgrep check alone races when two starts land within
+        # milliseconds, so the check+launch is serialized with an
+        # atomic flock (held until this script exits). Duplicates exit
+        # silent; the first selection keeps the display.
+        exec {area_lock}>/tmp/screenrecord-area.lock
+        if ! flock -n "$area_lock"; then
+            slog "area: duplicate trigger ignored (selection already in progress)"
+            exit 0
+        fi
+        if pgrep -x slurp >/dev/null 2>&1; then
+            slog "area: duplicate trigger ignored (slurp already running)"
+            exit 0
+        fi
         file="$screenrecord_area_dir/screenrecord_area_${timestamp}.mp4"
-        geometry=$(slurp) || exit 1  # user cancelled selection
+        slog "area: invoking slurp..."
+        # Parity with grimblast's working area selection (screenshot.sh):
+        # freeze the screen and disable the open-animation for slurp's
+        # layer namespace — without this the overlay can stay invisible.
+        hyprctl keyword layerrule "match:selection, no_anim on" >/dev/null 2>&1 || true
+        freeze_pid=""
+        if command -v hyprpicker >/dev/null 2>&1; then
+            hyprpicker -rz & freeze_pid=$!
+            sleep 0.2
+        fi
+        # NOTE: stdin MUST be /dev/null. Quickshell's Process (and any
+        # piped launcher) gives slurp an open-but-empty stdin pipe, and
+        # slurp blocks before creating its overlay surface while stdin
+        # has no data/EOF — alive, invisible, unresponsive. </dev/null
+        # makes the launch context irrelevant.
+        geometry=$(slurp </dev/null 2>>"$log_file") || {
+            code=$?
+            [[ -n "$freeze_pid" ]] && kill "$freeze_pid" 2>/dev/null || true
+            slog "area: slurp exited code=${code} (cancel or crash)"
+            exit 1  # user cancelled selection
+        }
+        [[ -n "$freeze_pid" ]] && kill "$freeze_pid" 2>/dev/null || true
+        slog "area: geometry=[${geometry}]"
+        # Release the selection lock BEFORE spawning the recorder:
+        # background children inherit our fds, so a leaked lock would
+        # stay held for the whole recording and wrongly reject triggers.
+        # From here on the pid file owns mutual exclusion.
+        exec {area_lock}>&-
         # shellcheck disable=SC2086
         wf-recorder -g "$geometry" ${audio_args[@]} -p crf=24 -p preset=medium -F fps=60 -f "$file" &
     else
@@ -58,10 +109,12 @@ start() {
     # Verify it actually survived startup (bad args/codec fail fast).
     sleep 1
     if ! is_recorder_pid "$rec_pid"; then
+        slog "start FAILED: wf-recorder pid=${rec_pid} died within 1s file=[${file}]"
         rm -f "$pid_file" "$file_name"
         echo "wf-recorder failed to start — see output above" >&2
         exit 1
     fi
+    slog "start OK: pid=${rec_pid} file=[${file}]"
     notify-send -a "Recorder" -i "media-record" "Recording Started" "$(basename "$file")"
 }
 

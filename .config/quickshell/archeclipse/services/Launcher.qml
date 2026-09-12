@@ -3,6 +3,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs.theme
+import qs.services
 
 // Port of widgets/applauncher + utilities: query parsing pipeline and results.
 //
